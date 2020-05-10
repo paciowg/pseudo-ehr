@@ -1,5 +1,5 @@
 body {
-  background-color: black;
+  background-color: #002;
   color: #eee;
   padding-bottom: 20px;
 }
@@ -30,7 +30,7 @@ main > .container {
 }
 
 footer {
-  background-color: #222;
+  background-color: #224;
   height: 80px;
   position: fixed;
   bottom: 0px;
@@ -50,15 +50,15 @@ footer {
 }
 
 .bg-dark {
-  background-color: #343a40 !important;
+  background-color: #343a50 !important;
 }
 
 .table-dark {
-  background-color: #343a40;
+  background-color: #343a50;
 }
 
 .table-dark th, .table-dark td, .table-dark thead th {
-    border-color: #454d55;
+  border-color: #454d65;
 }
 
 .welcome-form {
