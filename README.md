@@ -1,15 +1,20 @@
-# Transfer Summary RI Client
+# Pseudo EHR
 
-Reference implementation client for the [PACIO Functional Status 
-IG](https://paciowg.github.io/functional-status-ig) and [PACIO Cognitive Status IG](https://paciowg.github.io/cognitive-status-ig).
+The Pseudo EHR is a component of the architecture used during the PACIO / eLTSS
+connectathon tracks.
+
+The Pseudo EHR system that receives Structure Data Capture-based Post-Acute Care 
+(PAC) assessment data from the PAC Assessment App, extracts the information 
+in the QuestionnaireResponses into PACIO Functional and Cognitive Status 
+resources, and pushes them to the Health Data Manager.
 
 ## Installation
 
-To pull in remote `transfer-summary-ri-client` from github for local development:
+To pull in remote `pseudo-ehr` from github for local development:
 
 ```
 cd ~/path/to/your/workspace/
-git clone https://github.com/paciowg/transfer-summary-ri-client.git
+git clone https://github.com/paciowg/pseudo-ehr.git
 ```
 
 ## Running
@@ -48,4 +53,4 @@ more effort than just `rails s`.
 
 ## Copyright
 
-Copyright 2019 The MITRE Corporation
+Copyright 2020 The MITRE Corporation
