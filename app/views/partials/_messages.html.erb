@@ -1,0 +1,16 @@
+<% if flash.count > 0 %>
+	<section class='container messages'>
+		<section class='row col-12'>
+			<% flash.each do |key, value| %>
+				<% if key.is_a?(String) %>
+				  <div data-alert class="<%= flash_class(key) %> alert dismissible fade show col-12" role="alert">
+				    <%= value %>
+						<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+							<span aria-hidden='true'>&times;</span>
+						</button>
+				  </div>
+				<% end %>
+			<% end %>
+		</section>
+	</section>
+<% end %>

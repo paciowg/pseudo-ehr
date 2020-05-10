@@ -1,0 +1,21 @@
+<section class='container'>
+  <div class="select-patient-container">
+    <h2 class="select-patient-header">Patients</h2>
+    <form class="select-patient-form" action="/dashboard" accept-charset="UTF-8" method="get"> 
+      <%= text_field_tag nil, nil, class: "form-control patient-filter", 
+              placeholder: "Filter patients by name" %>
+      <div class="patient-list-container">
+        <ul class="patient-list">
+          <% @patients.each do |patient| %>
+            <li>
+              <button class="btn btn-primary btn-lg btn-block patient-option collapse show" 
+                      type="submit" name="patient" value="<%= patient.id %>">
+                  <%= patient.name.first.family + ", " + patient.name.first.given.join(' ') %>
+              </button>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </form>
+  </div>
+</section>

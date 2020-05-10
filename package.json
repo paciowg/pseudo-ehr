@@ -1,0 +1,5 @@
+{
+  "name": "base-fhir-client-rails",
+  "private": true,
+  "dependencies": {}
+}

@@ -1,0 +1,73 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# The following keys must be escaped otherwise they will not be retrieved by
+# the default I18n backend:
+#
+# true, false, on, off, yes, no
+#
+# Instead, surround them with single quotes.
+#
+# en:
+#   'true': 'foo'
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+en:
+  hello: "Hello world"
+  functional-status:
+    section-gg:
+      question1: "What was the patient's usual performance related to their ability to roll from lying on back to left and right side, and return to lying on back on the bed?"
+      question2: "What was the patient's usual performance related to their ability to move from sitting on side of bed to lying flat on the bed?"
+      question3: "What was the patient's usual performance related to their ability to move from lying on the back to sitting on the side of the bed with feet flat on the floor, and with no back support?"
+      question4: "What was the patient's usual performance related to their ability come to a standing position from sitting in a chair, wheelchair, or on the side of the bed?"
+      question5: "What was the patient's usual performance related to their ability to transfer to and from a bed to a chair (or wheelchair)?"
+      question6: "What was the patient's usual performance related to their ability to get on and off a toilet or commode?"
+      question7: "What was the patient's usual performance related to their ability to transfer in and out of a car or van on the passenger side?  Does not include the ability to open/close door or fasten seat belt?"
+      question8: "What was the patient's usual performance related to their ability to once standing, walk at least 10 feet in a room, corridor, or similar space?"
+      question9: "What was the patient's usual performance related to their ability to once standing, walk at least 50 feet and make two turns?"
+      question10: "What was the patient's usual performance related to their ability once standing, to walk at least 150 feet in a corridor or similar space?"
+      question11: "What was the patient's usual performance related to their ability to walk 10 feet on uneven or sloping surfaces (indoor or outdoor), such as turf or gravel?"
+      question12: "What was the patient's usual performance related to their ability to go up and down a curb and/or up and down one step?"
+      question13: "What was the patient's usual performance related to their ability to go up and down four steps with or without a rail?"
+      question14: "What was the patient's usual performance related to their ability to go up and down 12 steps with or without a rail?"
+      question15: "What was the patient's usual performance related to their ability to bend/stoop from a standing position to pick up a small object, such as a spoon, from the floor?"
+      question16: "What was the patient's usual performance related to their ability to once seated in a wheelchair/scooter, wheel at least 50 feet and make two turns?"
+      question17: "What was the patient's usual performance related to their ability to once seated in a wheelchair/scooter, wheel at least 150 feet in a corridor or similar space?"
+      independent: "Independent"
+      supervise-assist: "Supervision or touching assistance"
+      setup-assist: "Setup or clean-up assistance"
+      moderate-assist: "Partial/moderate Assist"
+      max-assist: "Substantial/maximal Assist"
+      not-attempted: "Not attempted due to medical condition or safety concern"
+
+  cognitive-status:
+    cam:
+      54632-5: "Is there evidence of an acute change in mental status from the patients baseline?"
+      54628-3: "Did the patient have difficulty focusing attention, for example being easily distractible, or having difficulty keeping track of what was being said?"
+      54629-1: "Did the resident have altered level of consiousness as indicated by any of the following criteria: (1) Vigilant - startles easily to any sound or touch, (2) Lethargic - repeatedly dozed off when being asked questions, but responded to voice or touch, (3) Stuporous - very difficult to arouse and keep aroused for the interview, (4) Comatose - could not be aroused"
+      yes: "yes"
+      no: "no"
+      not-present: "Behavior not present"
+      continuous: "Behavior continuously present, does not fluctuate"
+      intermittent: "Behavior present, fluctuates (comes and goes, changes in severity)"
+
+
+
+

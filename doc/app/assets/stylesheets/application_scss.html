@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>application.scss - RDoc Documentation</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../../../";
+  var index_rel_prefix = "../../../";
+</script>
+
+<script src="../../../js/navigation.js" defer></script>
+<script src="../../../js/search.js" defer></script>
+<script src="../../../js/search_index.js" defer></script>
+<script src="../../../js/searcher.js" defer></script>
+<script src="../../../js/darkfish.js" defer></script>
+
+<link href="../../../css/fonts.css" rel="stylesheet">
+<link href="../../../css/rdoc.css" rel="stylesheet">
+
+
+
+
+<body id="top" role="document" class="file">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../../../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../../../table_of_contents.html#pages">Pages</a>
+    <a href="../../../table_of_contents.html#classes">Classes</a>
+    <a href="../../../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="project-metadata">
+    <div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="../../../Gemfile.html">Gemfile</a>
+  
+    <li><a href="../../../Gemfile_lock.html">Gemfile.lock</a>
+  
+    <li><a href="../../../README_md.html">README</a>
+  
+    <li><a href="../../../Rakefile.html">Rakefile</a>
+  
+    <li><a href="../../../app/assets/config/manifest_js.html">manifest.js</a>
+  
+    <li><a href="../../../app/assets/javascripts/application_js.html">application.js</a>
+  
+    <li><a href="../../../app/assets/javascripts/bootstrap-toggle-listener_js.html">bootstrap-toggle-listener.js</a>
+  
+    <li><a href="../../../app/assets/javascripts/cable_js.html">cable.js</a>
+  
+    <li><a href="../../../app/assets/javascripts/home_coffee.html">home.coffee</a>
+  
+    <li><a href="../../../app/assets/stylesheets/application_scss.html">application.scss</a>
+  
+    <li><a href="../../../app/assets/stylesheets/home_scss.html">home.scss</a>
+  
+    <li><a href="../../../config_ru.html">config.ru</a>
+  
+    <li><a href="../../../config/credentials_yml_enc.html">credentials.yml.enc</a>
+  
+    <li><a href="../../../config/master_key.html">master.key</a>
+  
+    <li><a href="../../../log/development_log.html">development.log</a>
+  
+    <li><a href="../../../package_json.html">package.json</a>
+  
+    <li><a href="../../../public/404_html.html">404.html</a>
+  
+    <li><a href="../../../public/422_html.html">422.html</a>
+  
+    <li><a href="../../../public/500_html.html">500.html</a>
+  
+    <li><a href="../../../public/apple-touch-icon-precomposed_png.html">apple-touch-icon-precomposed.png</a>
+  
+    <li><a href="../../../public/apple-touch-icon_png.html">apple-touch-icon.png</a>
+  
+    <li><a href="../../../public/favicon_ico.html">favicon.ico</a>
+  
+    <li><a href="../../../public/robots_txt.html">robots</a>
+  
+    <li><a href="../../../tmp/development_secret_txt.html">development_secret</a>
+  
+    <li><a href="../../../tmp/restart_txt.html">restart</a>
+  
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-label="Page app/assets/stylesheets/application.scss">
+
+<p>/*</p>
+
+<pre>* This is a manifest file that&#39;ll be compiled into application.css, which will include all the 
+* files listed below.
+*
+* Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin&#39;s
+* vendor/assets/stylesheets directory can be referenced here using a relative path.
+*
+* You&#39;re free to add application-wide styles to this file and they&#39;ll appear at the bottom of the
+* compiled file so the styles you add here take precedence over styles defined in any other 
+* CSS/SCSS files in this directory. Styles in this file should be added after the last require_* 
+* statement. It is generally better to create a new file per style scope.
+*
+*= require_tree .
+*= require_self
+*= require bootstrap-toggle
+*/</pre>
+
+<p>// These are the bootstrap color variables. Changes here apply across project $primary: #9E2A2B; // bootstrap originally has this set to #007BFF $secondary: #A0A0A0; // bootstrap originally has this set to #6C757D $success: #28A745; // same as bootstrap $danger: #DC3545; // same as bootstrap $warning: #FFC107; // same as bootstrap $info: #17A2B8; // same as bootstrap $light: #F8F9FA; // same as bootstrap $dark: #343A40; // same as bootstrap $code-color: #009030; // bootstrap originally has this set to #E83E8C</p>
+
+<p>// Project-specific background color (not a color variable in bootstrap) $background: #E1E6E1;</p>
+
+<p>@import &#39;bootstrap&#39;;</p>
+
+<p>body {</p>
+
+<pre>background-color: $background;</pre>
+
+<p>}</p>
+
+<p>div#header-container {</p>
+
+<pre>margin-top: 50pt;</pre>
+
+<p>}</p>
+
+<p>header#header {</p>
+
+<pre>padding: 0pt;
+color: white;
+font-size: 24pt;
+height: 50pt;
+overflow: hidden;
+display: flex;
+background-color: $primary;
+position: fixed;
+top: 0;
+width: 100%;
+z-index: 3;</pre>
+
+<p>}</p>
+
+<p>.header-title-container, .header-title-container:hover, .header-title-container:active {</p>
+
+<pre>padding: 5pt;
+margin-right: auto;
+cursor: pointer;
+color: white;
+font-size: 24pt;
+text-decoration: none;
+display: flex;
+min-width: max-content;</pre>
+
+<p>}</p>
+
+<p>.header-title {</p>
+
+<pre>margin-left: 5pt;
+min-width: max-content;</pre>
+
+<p>}</p>
+
+<p>.logo {</p>
+
+<pre>width: 40pt;
+height: 40pt;</pre>
+
+<p>}</p>
+
+<p>a.header-button, a.header-button:hover, a.header-button:active {</p>
+
+<pre>text-decoration: none;
+color: white;
+overflow: hidden;</pre>
+
+<p>}</p>
+
+<p>a.header-button:hover {</p>
+
+<pre>background-color: darken($primary, 5%);</pre>
+
+<p>}</p>
+
+<p>a.header-button:active {</p>
+
+<pre>background-color: darken($primary, 10%);</pre>
+
+<p>}</p>
+
+<p>.header-button-text, .header-button-text:hover, .header-button-text:active {</p>
+
+<pre>margin: auto 15pt;
+font-size: 14pt;
+color: white;
+text-decoration: none;
+cursor: pointer;
+display: inline;
+overflow: hidden;</pre>
+
+<p>}</p>
+
+<p>div#footer-container {</p>
+
+<pre>margin-top: 50pt;</pre>
+
+<p>}</p>
+
+<p>footer#footer {</p>
+
+<pre>height: 50pt;
+position: fixed;
+bottom: 0;
+width: 100%;
+text-align: center;
+background-color: $background;
+z-index: 3;</pre>
+
+<p>}</p>
+
+<p>.footer-hr {</p>
+
+<pre>margin: 0 auto 5pt;</pre>
+
+<p>}</p>
+
+</main>
+
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.2.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

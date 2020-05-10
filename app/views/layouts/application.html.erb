@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <%= render 'partials/head' %>
+  <body>
+    <%= render 'partials/header' %>
+    <div id='content'>
+      <main role='main'>
+        <%= render 'partials/messages' %>
+        <div class="body-padding">
+          <%= yield %>
+        </div>
+      </main>
+      <%= render 'partials/footer' %>
+    </div>
+    <%= yield :scripts %>
+  </body>
+</html>

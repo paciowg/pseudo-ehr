@@ -1,0 +1,20 @@
+<section class='container'>
+  <section class='row'>
+  	<p>
+  		Context: <%= display_categories(@bundled_functional_status.category) %><br />
+  		Date/Time: <%= display_datetime(@bundled_functional_status.effective) %>
+  	</p>
+  	<table class='table table-striped table-dark full-status'>
+  		<tr>
+  			<th>Question</th>
+  			<th>Response</th>
+  		</tr>
+ 			<% @functional_statuses.each do |functional_status| %>
+	  		<tr>
+	  			<td><%= functional_status.code.text %></td>
+	  			<td><%= functional_status.value.text %></td>
+	  		</tr>
+	  	<% end %>
+	  </table>
+	</section>
+</section>

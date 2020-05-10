@@ -1,0 +1,61 @@
+// Place all the styles related to the Dashboard controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.dashboard-header-container {
+  display: grid;
+}
+
+.dashboard-header-profile-replica {
+  grid-column-start: 3;
+  grid-column-end: 4;
+  grid-row-start: 1;
+  grid-row-end: 3;
+}
+
+.dashboard-header-profile {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 3;
+  border-width: 1.5pt !important;
+  // border-color: $primary !important;
+  // background-color: $secondary-background !important;
+  margin-right: 5pt;
+}
+
+.dashboard-header-profile-replica,
+.dashboard-header-profile {
+  width: 90pt;
+  height: fit-content;
+}
+
+.dashboard-header-profile > .card-body {
+  border-top: 1.5pt;
+  padding: 5pt;
+  height: fit-content;
+}
+
+.dashboard-header-profile > .card-body > .card-text {
+  text-align: center;
+}
+
+.dashboard-header-title {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  text-align: center;
+}
+
+.dashboard-header-text {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  text-align: center;
+}
+
+.dashboard-header-text > p > span {
+  // color: $primary;
+}

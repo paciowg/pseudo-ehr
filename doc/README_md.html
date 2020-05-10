@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>README - RDoc Documentation</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+
+
+<body id="top" role="document" class="file">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+  <ul class="link-list" role="directory">
+    <li><a href="#label-Base+FHIR+Client+-28Rails-29">Base FHIR Client (Rails)</a>
+    <li><a href="#label-Use">Use</a>
+    <li><a href="#label-Customization">Customization</a>
+    <li><a href="#label-Running">Running</a>
+    <li><a href="#label-Installation">Installation</a>
+    <li><a href="#label-Copyright">Copyright</a>
+  </ul>
+</div>
+
+
+  <div id="project-metadata">
+    <div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./Gemfile.html">Gemfile</a>
+  
+    <li><a href="./Gemfile_lock.html">Gemfile.lock</a>
+  
+    <li><a href="./README_md.html">README</a>
+  
+    <li><a href="./Rakefile.html">Rakefile</a>
+  
+    <li><a href="./app/assets/config/manifest_js.html">manifest.js</a>
+  
+    <li><a href="./app/assets/javascripts/application_js.html">application.js</a>
+  
+    <li><a href="./app/assets/javascripts/bootstrap-toggle-listener_js.html">bootstrap-toggle-listener.js</a>
+  
+    <li><a href="./app/assets/javascripts/cable_js.html">cable.js</a>
+  
+    <li><a href="./app/assets/javascripts/home_coffee.html">home.coffee</a>
+  
+    <li><a href="./app/assets/stylesheets/application_scss.html">application.scss</a>
+  
+    <li><a href="./app/assets/stylesheets/home_scss.html">home.scss</a>
+  
+    <li><a href="./config_ru.html">config.ru</a>
+  
+    <li><a href="./config/credentials_yml_enc.html">credentials.yml.enc</a>
+  
+    <li><a href="./config/master_key.html">master.key</a>
+  
+    <li><a href="./log/development_log.html">development.log</a>
+  
+    <li><a href="./package_json.html">package.json</a>
+  
+    <li><a href="./public/404_html.html">404.html</a>
+  
+    <li><a href="./public/422_html.html">422.html</a>
+  
+    <li><a href="./public/500_html.html">500.html</a>
+  
+    <li><a href="./public/apple-touch-icon-precomposed_png.html">apple-touch-icon-precomposed.png</a>
+  
+    <li><a href="./public/apple-touch-icon_png.html">apple-touch-icon.png</a>
+  
+    <li><a href="./public/favicon_ico.html">favicon.ico</a>
+  
+    <li><a href="./public/robots_txt.html">robots</a>
+  
+    <li><a href="./tmp/development_secret_txt.html">development_secret</a>
+  
+    <li><a href="./tmp/restart_txt.html">restart</a>
+  
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-label="Page README.md">
+
+<h1 id="label-Base+FHIR+Client+-28Rails-29">Base FHIR Client (Rails)<span><a href="#label-Base+FHIR+Client+-28Rails-29">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>Provides the boilerplate code for jumpstarting any rails-based FHIR client. Configured for Heroku deployment (<code>rails_12factor</code> gem included, and db configured to use <code>pg</code> instead of <code>sqlite3</code>)</p>
+
+<h2 id="label-Use">Use<span><a href="#label-Use">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>To use, just fork this repository and begin building your rails app according to your own specs.</p>
+
+<h3 id="label-Customization">Customization<span><a href="#label-Customization">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>TODO</p>
+
+<h3 id="label-Running">Running<span><a href="#label-Running">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>Since this base app is configured for heroku deployment, running it is slightly more effort than just <code>rails s</code>.</p>
+<ol><li>
+<p>To start, you must be running <code>postgres</code></p>
+
+<pre>pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start</pre>
+
+<p>(This gets old. Personally, I made a <code>pg_start</code> alias for this command)</p>
+</li><li>
+<p>Next, run the rails app the way you would any other</p>
+
+<pre>cd ~/path/to/your/app/
+rails s</pre>
+</li><li>
+<p>Now you should be able to see it up and running at <code>localhost:3000</code></p>
+</li><li>
+<p>When done, gracefully stop your <code>puma</code> server</p>
+
+<pre class="ruby"><span class="ruby-constant">Control</span><span class="ruby-operator">-</span><span class="ruby-constant">C</span>
+</pre>
+</li><li>
+<p>Finally, stop your <code>postgres</code> instance</p>
+
+<pre>pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log stop</pre>
+
+<p>(This also gets old. Personally, I made a <code>pg_stop</code> alias for this command)</p>
+</li></ol>
+
+<h2 id="label-Installation">Installation<span><a href="#label-Installation">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>If you intend on building off of this project, please fork the <code>base-fhir-client-rails</code> repo and go from there. However, if you intend on furthering development of this base project, follow the below instructions.</p>
+
+<p>To pull in remote <code>base-fhir-client-rails</code> from github for local development:</p>
+
+<pre>```
+cd ~/path/to/your/workspace/
+mkdir base-fhir-client-rails
+cd base-fhir-client-rails
+git clone https://github.com/paciowg/base-fhir-client-rails
+```</pre>
+
+<h2 id="label-Copyright">Copyright<span><a href="#label-Copyright">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Copyright 2019 The MITRE Corporation</p>
+
+</main>
+
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.2.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

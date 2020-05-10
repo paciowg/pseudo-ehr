@@ -1,0 +1,52 @@
+<section class='container'>
+  <section class='row'>
+    <% unless @practitioner.nil? %>
+      <div class='col-12'>
+        <h2><%= display_human_name(@practitioner.name.first) %></h2>
+      </div>
+      <div class='col-6'>
+        <%= display_photo(@practitioner.photo, @practitioner.gender, 
+                    class: 'profile-photo') %>
+      </div>
+      <div class='col-6'>
+        <table class='table table-dark'>
+          <tr>
+            <td>Phone/Fax:</td>
+            <td>
+              <% @practitioner.telecoms.each do |telecom| %>
+                <%= display_telecom(telecom) %><br />
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <td>Locations:</td>
+            <td>
+              <% @practitioner.addresses.each do |address| %>
+                <%= render partial: 'partials/address', 
+                            locals: { address: address } %>
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <td>Gender:</td>
+            <td><%= @practitioner.gender %></td>
+          </tr>
+          <tr>
+            <td>Licenses:</td>
+            <td>           
+              <% @practitioner.qualifications.each do |qualification| %>
+                <%= render partial: 'qualification', 
+                          locals: { qualification: qualification } %>
+                Period: <%= display_period(qualification.period) %><br />
+                Issuer: <%= display_issuer(qualification.issuer) %><br />
+                <br />
+              <% end %>
+            </td>
+          </tr>
+        </table>
+      </div>
+    <% else %>
+      Not available
+    <% end %>
+  </section>
+</section>

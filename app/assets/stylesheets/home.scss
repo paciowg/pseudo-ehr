@@ -1,0 +1,37 @@
+// Place all the styles related to the Home controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+.select-patient-container {
+  margin: 25pt auto 0;
+}
+
+.select-patient-header {
+  text-align: center;
+  margin: 0 auto;
+}
+
+.select-patient-form {
+  width: 350pt;
+  margin: 10pt auto 0;
+}
+
+.patient-filter {
+  margin-bottom: 10pt;
+}
+
+.patient-list-container {
+  overflow: scroll;
+  min-height: 100pt;
+  height: calc(100vh - 215pt);
+  max-height: 300pt;
+}
+
+.patient-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.patient-option {
+  margin-bottom: 5pt;
+}
