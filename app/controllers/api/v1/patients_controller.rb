@@ -2,7 +2,7 @@
 #
 # Patients Controller
 #
-# Copyright (c) 2019 The MITRE Corporation.  All rights reserved.
+# Copyright (c) 2020 The MITRE Corporation.  All rights reserved.
 #
 ################################################################################
 
