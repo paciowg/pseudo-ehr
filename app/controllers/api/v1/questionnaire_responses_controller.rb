@@ -29,6 +29,10 @@ module Api
         bundled_observation.category = category('survey')
         bundled_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-bfs') 
 
+        # TODO - Temporary hack to get handle QuestionnaireResponse node items 
+        # that don't have an answer code.  Need to follow up with SDC team.
+        bundled_observation.code.coding = default_coding
+
       	extract_node(@sdc_questionnaire_response, bundled_observation)
         @fhir_client.add_transaction_request('POST', nil, bundled_observation)
 
@@ -47,6 +51,7 @@ module Api
         fhir_observation.text                = text(fhir_questionnaire_response)
         fhir_observation.basedOn             = fhir_questionnaire_response[:basedOn]
         fhir_observation.partOf              = fhir_questionnaire_response[:partOf]
+        fhir_observation.code                = FHIR::CodeableConcept.new
         fhir_observation.status              = 'final'
         fhir_observation.subject             = fhir_questionnaire_response[:subject]
         fhir_observation.encounter           = fhir_questionnaire_response[:context]
@@ -67,7 +72,11 @@ module Api
           if item[:item].present?
             node_observation = init_base_observation(item)
             node_observation.category = category('survey')
-            node_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-bfs') 
+            node_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-bfs')
+
+            # TODO - Temporary hack to get handle QuestionnaireResponse node items 
+            # that don't have an answer code.  Need to follow up with SDC team.
+            node_observation.code.coding = default_coding
 
             bundled_observation.hasMember << reference(node_observation)
 
@@ -87,11 +96,15 @@ module Api
           fhir_observation = init_base_observation(fhir_questionnaire_response)
           fhir_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-fs') 
 
+          # TODO - Add multiple answer support
           answer = item[:answer].first
-          fhir_observation.code = FHIR::CodeableConcept.new
           if answer[:valueCoding].present?
             fhir_observation.code.coding    = answer[:valueCoding]
           else
+            # TODO - Temporary hack to get handle QuestionnaireResponse node items 
+            # that don't have an answer code.  Need to follow up with SDC team.
+            fhir_observation.code.coding    = default_coding
+
             fhir_observation.valueBoolean   = answer[:valueBoolean]
             fhir_observation.valueDateTime  = answer[:valueDateTime]
             fhir_observation.valueTime      = answer[:valueTime]
@@ -202,6 +215,16 @@ module Api
             reference: "QuestionnaireResponse/#{value}"
           }
         ]     
+      end
+
+      #-------------------------------------------------------------------------
+
+      def default_coding
+        {
+          system: "http://foobar",
+          code: "FFFFFF",
+          display: "Default"
+        }
       end
 
     end
