@@ -1,0 +1,32 @@
+<section class='container'>
+  <section class='row'>
+    <% unless @related_person.nil? %>
+      <div class='col-12'>
+        <h2><%= display_human_name(@related_person.name.first) %></h2>
+      </div>
+      <div class='col-6'>
+        <table class='table table-dark'>
+          <tr>
+            <td>Related to:</td>
+            <td>
+              <%= link_to display_human_name(@patient.name.first), 
+                            dashboard_path(patient: @patient.id)  %>
+            </td>
+          </tr>
+          <tr>
+            <td>Relationship:</td>
+            <td>
+              <% @related_person.relationship.each do |relationship| %>
+                <% relationship.coding.each do |code| %>
+                <%= I18n.translate(code.code, :scope => ["related-person"]) %> 
+                <% end %>
+              <% end %>
+            </td>
+          </tr>
+        </table>
+      </div>
+    <% else %>
+      Not available
+    <% end %>
+  </section>
+</section>

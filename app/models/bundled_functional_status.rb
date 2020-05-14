@@ -29,7 +29,7 @@ class BundledFunctionalStatus < Resource
 		@subject							= fhir_bundled_functional_status.subject
 		@focus								= fhir_bundled_functional_status.focus
 		@encounter						= fhir_bundled_functional_status.encounter
-		@effective						= DateTime.parse(fhir_bundled_functional_status.effective)
+		@effective						= parse_datetime(fhir_bundled_functional_status.effective)
 		@performer						= fhir_bundled_functional_status.performer
 		@value_string					= fhir_bundled_functional_status.valueString
 		@data_absent_reason		= fhir_bundled_functional_status.dataAbsentReason
@@ -60,6 +60,14 @@ class BundledFunctionalStatus < Resource
     end
 
     return functional_statuses
+  end
+
+  #-----------------------------------------------------------------------------
+  private
+  #-----------------------------------------------------------------------------
+
+  def parse_datetime(datetime)
+    datetime.present? ? DateTime.parse(datetime) : nil
   end
 
 end

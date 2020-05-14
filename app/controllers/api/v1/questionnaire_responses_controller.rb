@@ -34,7 +34,7 @@ module Api
         bundled_observation.code.coding = default_coding
 
       	extract_node(@sdc_questionnaire_response, bundled_observation)
-        @fhir_client.add_transaction_request('POST', nil, bundled_observation)
+        @fhir_client.add_transaction_request('PUT', nil, bundled_observation)
 
         reply = @fhir_client.end_transaction
         head(reply.code)
@@ -49,15 +49,16 @@ module Api
 
         fhir_observation.id                  = unique_id
         fhir_observation.text                = text(fhir_questionnaire_response)
-        fhir_observation.basedOn             = fhir_questionnaire_response[:basedOn]
-        fhir_observation.partOf              = fhir_questionnaire_response[:partOf]
+        fhir_observation.basedOn             = @sdc_questionnaire_response[:basedOn]
+        fhir_observation.partOf              = @sdc_questionnaire_response[:partOf]
         fhir_observation.code                = FHIR::CodeableConcept.new
         fhir_observation.status              = 'final'
-        fhir_observation.subject             = fhir_questionnaire_response[:subject]
-        fhir_observation.encounter           = fhir_questionnaire_response[:context]
-        fhir_observation.effectiveDateTime   = fhir_questionnaire_response[:authored]
-        fhir_observation.issued              = fhir_questionnaire_response[:authored]
-        fhir_observation.performer           = performer(fhir_questionnaire_response)
+        fhir_observation.category            = category('survey')
+        fhir_observation.subject             = @sdc_questionnaire_response[:subject]
+        fhir_observation.encounter           = @sdc_questionnaire_response[:context]
+        fhir_observation.effectiveDateTime   = @sdc_questionnaire_response[:authored]
+        fhir_observation.issued              = @sdc_questionnaire_response[:authored]
+        fhir_observation.performer           = performer(@sdc_questionnaire_response)
         fhir_observation.derivedFrom         = derived_from(@sdc_questionnaire_response[:id])
 
         fhir_observation
@@ -68,23 +69,24 @@ module Api
       def extract_node(fhir_questionnaire_response, bundled_observation, items = nil)
         items = fhir_questionnaire_response if items.nil?
 
-        items[:item].each do |item|
-          if item[:item].present?
-            node_observation = init_base_observation(item)
-            node_observation.category = category('survey')
-            node_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-bfs')
+        if items[:item].present?
+          items[:item].each do |item|
+            if item[:item].present?
+              node_observation = init_base_observation(item)
+              node_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-bfs')
 
-            # TODO - Temporary hack to get handle QuestionnaireResponse node items 
-            # that don't have an answer code.  Need to follow up with SDC team.
-            node_observation.code.coding = default_coding
+              # TODO - Temporary hack to get handle QuestionnaireResponse node items 
+              # that don't have an answer code.  Need to follow up with SDC team.
+              node_observation.code.coding = default_coding
 
-            bundled_observation.hasMember << reference(node_observation)
+              bundled_observation.hasMember << reference(node_observation)
 
-            extract_node(item, node_observation, item)
+              extract_node(item, node_observation, item)
 
-            @fhir_client.add_transaction_request('POST', nil, node_observation)
-          else
-            extract_leaf(item, bundled_observation, item)
+              @fhir_client.add_transaction_request('PUT', nil, node_observation)
+            else
+              extract_leaf(item, bundled_observation, item)
+            end
           end
         end
       end
@@ -112,7 +114,7 @@ module Api
             fhir_observation.valueString    = answer[:valueString]
           end
 
-          @fhir_client.add_transaction_request('POST', nil, fhir_observation)
+          @fhir_client.add_transaction_request('PUT', nil, fhir_observation)
           bundled_observation.hasMember << reference(fhir_observation)
         end
       end
@@ -128,7 +130,7 @@ module Api
       #-------------------------------------------------------------------------
 
       def questionnaire_name(fhir_questionnaire_response)
-        fhir_questionnaire_response[:questionnaire].split('/').last
+        fhir_questionnaire_response[:questionnaire]#.split('/').last
       end
 
       #-------------------------------------------------------------------------
@@ -221,9 +223,9 @@ module Api
 
       def default_coding
         {
-          system: "http://foobar",
-          code: "FFFFFF",
-          display: "Default"
+          system: "http://loinc.org",
+          code: "87509-6",
+          display: "Long-Term Care Hospital (LTCH) Continuity Assessment Record and Evaluation (CARE) Data Set (LCDS) - Admission - version 4.00 [CMS Assessment]"
         }
       end
 

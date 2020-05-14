@@ -1,0 +1,11 @@
+<section class='container'>
+  <section class='row'>
+    <% unless @organization.nil? %>
+      <div class='col-12'>
+        <h1><%= @organization.name %></h1>
+      </div>
+    <% else %>
+      Not available
+    <% end %>
+  </section>
+</section>

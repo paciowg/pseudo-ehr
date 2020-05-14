@@ -1,0 +1,11 @@
+<p id="notice"><%= notice %></p>
+
+<%= link_to 'Edit', edit_service_request_path(@service_request) %> |
+<%= link_to 'Back', service_requests_path %>
+
+    <% performer_obj = get_object_from_url(performer.reference, @care_plan.fhir_client) %>
+    <% if performer_obj.name.is_a? String %>
+        <td><%= link_to performer_obj.name, performer_obj %></td>
+    <% else %>
+        <td><%= link_to display_human_name(performer_obj.name[0]), performer_obj %></td>
+    <% end %>

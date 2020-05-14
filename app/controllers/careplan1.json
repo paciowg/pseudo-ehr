@@ -1,0 +1,132 @@
+
+
+{
+    "resourceType": "CarePlan",
+    "id": "careplan1",
+    "meta": {
+      "versionId": "5",
+      "lastUpdated": "2020-04-28T14:20:16.639-07:00",
+      "profile": [
+        "http://hl7.org/fhir/us/eLTSS/StructureDefinition/CarePlan-eltss"
+      ]
+    },
+    "text": {
+      "status": "generated",
+      "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">\n            <p><b>Betsy Smith-Johnson's Services and Supports Plan</b></p>\n            <blockquote>\n\t\t\t\t<p><b>Plan Effective Date:</b> 2020-05-01 - 2020-12-31</p>\n\t\t\t\t<p><b>Steps or Actions to meet Goals:</b> Improve balance skills and dance at son's upcoming wedding</p>\n\t\t\t</blockquote>\n          </div>"
+    },
+    "status": "active",
+    "intent": "plan",
+    "category": [
+      {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/us/core/CodeSystem/careplan-category",
+            "code": "assess-plan"
+          }
+        ]
+      }
+    ],
+    "title": "Betsy Smith Johnson's Services and Supports Plan",
+    "description": "A service and support plan that outlines Betsy's assessed needs, goals, strengths, preferences, and services/providers to meet those needs and goals.",
+    "subject": {
+      "reference": "Patient/patientBSJ1"
+    },
+    "period": {
+      "fhir_comments": [
+        "   [eLTSS Plan Effective Date]   "
+      ],
+      "start": "2018-05-01",
+      "end": "2018-12-31"
+    },
+    "author": {
+      "reference": "Practitioner/planner1"
+    },
+    "addresses": [
+      {
+        "reference": "Condition/need1"
+      },
+      {
+        "reference": "Condition/need2"
+      },
+      {
+        "reference": "Condition/need3"
+      }
+    ],
+    "supportingInfo": [
+      {
+        "reference": "Observation/strength1"
+      },
+      {
+        "reference": "Observation/strength2"
+      },
+      {
+        "reference": "QuestionnaireResponse/questionnaireresponse1"
+      },
+      {
+        "reference": "Contract/contract1"
+      },
+      {
+        "reference": "RiskAssessment/risk1"
+      }
+    ],
+    "goal": [
+      {
+        "reference": "Goal/goal1"
+      },
+      {
+        "reference": "Goal/goal2"
+      }
+    ],
+    "activity": [
+      {
+        "detail": {
+          "fhir_comments": [
+            "   [eLTSS Step or Action]   "
+          ],
+          "goal": [
+            {
+              "reference": "Goal/goal1"
+            }
+          ],
+          "status": "not-started",
+          "description": "Improve balance skills"
+        }
+      },
+      {
+        "detail": {
+          "fhir_comments": [
+            "   [eLTSS Step or Action]   "
+          ],
+          "goal": [
+            {
+              "reference": "Goal/goal2"
+            }
+          ],
+          "status": "not-started",
+          "description": "Dance at son's upcoming wedding"
+        }
+      },
+      {
+        "reference": {
+          "reference": "ServiceRequest/service1"
+        }
+      },
+      {
+        "reference": {
+          "reference": "ServiceRequest/service2"
+        }
+      },
+      {
+        "reference": {
+          "reference": "ServiceRequest/service3"
+        }
+      },
+      {
+        "reference": {
+          "reference": "ServiceRequest/service4"
+        }
+      }
+    ]
+  }
+  
+  

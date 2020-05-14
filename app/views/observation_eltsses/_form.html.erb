@@ -1,0 +1,17 @@
+<%= form_with(model: observation_eltss, local: true) do |form| %>
+  <% if observation_eltss.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(observation_eltss.errors.count, "error") %> prohibited this observation_eltss from being saved:</h2>
+
+      <ul>
+      <% observation_eltss.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

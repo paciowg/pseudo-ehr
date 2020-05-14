@@ -1,0 +1,16 @@
+<div class='card bg-dark text-white'>
+  <div class='card-header'>
+    Supporting info
+  </div>
+  <div class='card-body'>
+    <table class='table table-striped table-dark status'>
+      <% @care_plan.supportingInfo.each do |supportingInfoReference| %>
+        <% supportingInfoObject = get_object_from_url(supportingInfoReference.reference, @care_plan.fhir_client) %>
+          <tr>
+            <%= render :partial => [get_type(supportingInfoReference.reference), "-card"].join, 
+                        :locals => {:supportingInfoObject => get_object_from_url(supportingInfoReference.reference, @care_plan.fhir_client)} %>
+         </tr>
+        <% end %>
+    </table>
+  </div>
+</div>

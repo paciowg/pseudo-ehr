@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Observation Eltsses</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @observation_eltsses.each do |observation_eltss| %>
+      <tr>
+        <td><%= link_to 'Show', observation_eltss %></td>
+        <td><%= link_to 'Edit', edit_observation_eltss_path(observation_eltss) %></td>
+        <td><%= link_to 'Destroy', observation_eltss, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Observation Eltss', new_observation_eltss_path %>

@@ -1,0 +1,17 @@
+<%= form_with(model: eltss_questionnaire, local: true) do |form| %>
+  <% if eltss_questionnaire.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(eltss_questionnaire.errors.count, "error") %> prohibited this eltss_questionnaire from being saved:</h2>
+
+      <ul>
+      <% eltss_questionnaire.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

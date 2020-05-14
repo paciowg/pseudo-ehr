@@ -1,5 +1,8 @@
 <tr>
-	<td><%= display_raw_date(address.period.start) %> - <%= display_raw_date(address.period.end) %></td>
+	<td>
+		<%= display_raw_date(address.try(:period).try(:start)) %> - 
+		<%= display_raw_date(address.try(:period).try(:end)) %>  
+  </td>
 	<td>
 		<%= link_to google_maps(address), target: '_blank' do %>
 		  <% address.line.each do |line| %>

@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Conditions</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @conditions.each do |condition| %>
+      <tr>
+        <td><%= link_to 'Show', condition %></td>
+        <td><%= link_to 'Edit', edit_condition_path(condition) %></td>
+        <td><%= link_to 'Destroy', condition, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Condition', new_condition_path %>

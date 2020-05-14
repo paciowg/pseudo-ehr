@@ -1,0 +1,11 @@
+<section class='container'>
+  <section class='row'>
+    <% unless @practitioner_role.nil? %>
+      <div class='col-12'>
+        <h1><%= @practitioner_role.code[0].coding[0].display %></h1>
+      </div>
+    <% else %>
+      Not available
+    <% end %>
+  </section>
+</section>

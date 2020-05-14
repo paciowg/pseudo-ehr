@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Risk Assessments</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @risk_assessments.each do |risk_assessment| %>
+      <tr>
+        <td><%= link_to 'Show', risk_assessment %></td>
+        <td><%= link_to 'Edit', edit_risk_assessment_path(risk_assessment) %></td>
+        <td><%= link_to 'Destroy', risk_assessment, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Risk Assessment', new_risk_assessment_path %>
