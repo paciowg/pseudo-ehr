@@ -284,20 +284,6 @@ module Api
 
       #-------------------------------------------------------------------------
 
-      # def map_coding(item = nil)
-      #   coding = CODE_MAPPING[item[:linkId]] if item.present?
-      #   coding = 
-      #     {
-      #       system: "http://loinc.org",
-      #       code: "87509-6",
-      #       display: "Long-Term Care Hospital (LTCH) Continuity Assessment Record and Evaluation (CARE) Data Set (LCDS) - Admission - version 4.00 [CMS Assessment]"
-      #     } if coding.nil?
-
-      #   coding
-      # end
-
-      #-------------------------------------------------------------------------
-
       def default_coding
         {
           system: "http://loinc.org",
