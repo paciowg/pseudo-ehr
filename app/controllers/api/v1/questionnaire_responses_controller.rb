@@ -6,6 +6,8 @@
 #
 ################################################################################
 
+require 'json'
+
 module Api
   module V1
 
@@ -22,21 +24,18 @@ module Api
         params.permit!
 
         @sdc_questionnaire_response = params
-  
+        parse_questionnaire(@sdc_questionnaire_response[:questionnaire])
+
         @fhir_client.begin_transaction
 
-      	bundled_observation = init_base_observation(@sdc_questionnaire_response)
-        bundled_observation.category = category('survey')
-        bundled_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-bfs') 
+        # Write the original questionnaire response and extract data into PACIO
+        # resources
+        questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
 
-        # TODO - Temporary hack to get handle QuestionnaireResponse node items 
-        # that don't have an answer code.  Need to follow up with SDC team.
-        bundled_observation.code.coding = default_coding
-
-      	extract_node(@sdc_questionnaire_response, bundled_observation)
-        @fhir_client.add_transaction_request('PUT', nil, bundled_observation)
-
+        @fhir_client.add_transaction_request('PUT', nil, questionnaire_response)
+        extract_data_from_questionnaire_response
         reply = @fhir_client.end_transaction
+
         head(reply.code)
       end
 
@@ -44,24 +43,42 @@ module Api
       private
       #-------------------------------------------------------------------------
 
-      def init_base_observation(fhir_questionnaire_response)
-        fhir_observation = FHIR::Observation.new
+      def parse_questionnaire(url)
+        @questions = {}
 
-        fhir_observation.id                  = unique_id
-        fhir_observation.text                = text(fhir_questionnaire_response)
-        fhir_observation.basedOn             = @sdc_questionnaire_response[:basedOn]
-        fhir_observation.partOf              = @sdc_questionnaire_response[:partOf]
-        fhir_observation.code                = FHIR::CodeableConcept.new
-        fhir_observation.status              = 'final'
-        fhir_observation.category            = category('survey')
-        fhir_observation.subject             = @sdc_questionnaire_response[:subject]
-        fhir_observation.encounter           = @sdc_questionnaire_response[:context]
-        fhir_observation.effectiveDateTime   = @sdc_questionnaire_response[:authored]
-        fhir_observation.issued              = @sdc_questionnaire_response[:authored]
-        fhir_observation.performer           = performer(@sdc_questionnaire_response)
-        fhir_observation.derivedFrom         = derived_from(@sdc_questionnaire_response[:id])
+        response = RestClient.get(url)
+        questionnaire = JSON.parse(response.body)
 
-        fhir_observation
+        parse_questionnaire_node(questionnaire["item"])
+      end
+
+      #-------------------------------------------------------------------------
+
+      def parse_questionnaire_node(items)
+        items.each do |item|
+          if item["item"].present?
+            parse_questionnaire_node(item["item"])
+          else
+            parse_questionnaire_leaf(item)
+          end
+        end
+      end
+
+      #-------------------------------------------------------------------------
+
+      def parse_questionnaire_leaf(item)
+        @questions[item["linkId"]] = item["code"]
+      end
+
+      #-------------------------------------------------------------------------
+
+      def extract_data_from_questionnaire_response
+        bundled_observation = init_base_observation(@sdc_questionnaire_response)
+        bundled_observation.category = category('survey')
+        bundled_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-bfs') 
+
+        extract_node(@sdc_questionnaire_response, bundled_observation)
+        #@fhir_client.add_transaction_request('PUT', nil, bundled_observation)
       end
 
       #-------------------------------------------------------------------------
@@ -72,19 +89,19 @@ module Api
         if items[:item].present?
           items[:item].each do |item|
             if item[:item].present?
+              puts 'item[:linkId]...'
               node_observation = init_base_observation(item)
-              node_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-bfs')
-
-              # TODO - Temporary hack to get handle QuestionnaireResponse node items 
-              # that don't have an answer code.  Need to follow up with SDC team.
-              node_observation.code.coding = default_coding
+              node_observation.meta = node_meta(item)
 
               bundled_observation.hasMember << reference(node_observation)
 
+              # TODO - Temporarily limit data we're converting
               extract_node(item, node_observation, item)
-
-              @fhir_client.add_transaction_request('PUT', nil, node_observation)
-            else
+              if filter(item)
+                puts 'yes'
+                @fhir_client.add_transaction_request('PUT', nil, node_observation)
+              end
+           else
               extract_leaf(item, bundled_observation, item)
             end
           end
@@ -96,17 +113,14 @@ module Api
       def extract_leaf(fhir_questionnaire_response, bundled_observation, item)
         if item[:answer].present?
           fhir_observation = init_base_observation(fhir_questionnaire_response)
-          fhir_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-fs') 
+          fhir_observation.meta = leaf_meta(bundled_observation) 
 
           # TODO - Add multiple answer support
           answer = item[:answer].first
           if answer[:valueCoding].present?
-            fhir_observation.code.coding    = answer[:valueCoding]
+            fhir_observation.valueCodeableConcept = FHIR::CodeableConcept.new
+            fhir_observation.valueCodeableConcept.coding = [ answer[:valueCoding] ]
           else
-            # TODO - Temporary hack to get handle QuestionnaireResponse node items 
-            # that don't have an answer code.  Need to follow up with SDC team.
-            fhir_observation.code.coding    = default_coding
-
             fhir_observation.valueBoolean   = answer[:valueBoolean]
             fhir_observation.valueDateTime  = answer[:valueDateTime]
             fhir_observation.valueTime      = answer[:valueTime]
@@ -117,6 +131,28 @@ module Api
           @fhir_client.add_transaction_request('PUT', nil, fhir_observation)
           bundled_observation.hasMember << reference(fhir_observation)
         end
+      end
+
+      #-------------------------------------------------------------------------
+
+      def init_base_observation(fhir_questionnaire_response)
+        fhir_observation = FHIR::Observation.new
+
+        fhir_observation.id                  = unique_id
+        fhir_observation.text                = text(fhir_questionnaire_response)
+        fhir_observation.basedOn             = @sdc_questionnaire_response[:basedOn]
+        fhir_observation.partOf              = @sdc_questionnaire_response[:partOf]
+        fhir_observation.code                = question_coding(fhir_questionnaire_response)
+        fhir_observation.status              = 'final'
+        fhir_observation.category            = category('survey')
+        fhir_observation.subject             = @sdc_questionnaire_response[:subject]
+        fhir_observation.encounter           = @sdc_questionnaire_response[:context]
+        fhir_observation.effectiveDateTime   = @sdc_questionnaire_response[:authored]
+        fhir_observation.issued              = @sdc_questionnaire_response[:authored]
+        fhir_observation.performer           = performer(@sdc_questionnaire_response)
+        fhir_observation.derivedFrom         = derived_from(@sdc_questionnaire_response[:id])
+
+        fhir_observation
       end
 
       #-------------------------------------------------------------------------
@@ -203,6 +239,24 @@ module Api
 
       #-------------------------------------------------------------------------
 
+      def node_meta(item)
+        meta(META_MAPPING[item[:linkId]] || 
+                    "http://pacioproject.org/StructuredDefinition/pacio-bfs")
+      end
+
+      #-------------------------------------------------------------------------
+
+      def leaf_meta(bundled_observation)
+        bundled_type = bundled_observation.meta[:profile].first
+        if bundled_type.ends_with?('pacio-bfs')
+          meta("http://pacioproject.org/StructuredDefinition/pacio-fs")
+        else
+          meta("http://pacioproject.org/StructuredDefinition/pacio-cs")
+        end
+      end
+
+      #-------------------------------------------------------------------------
+
       def meta(value)
         { 
           profile: [ value ] 
@@ -221,12 +275,41 @@ module Api
 
       #-------------------------------------------------------------------------
 
+      def question_coding(fhir_questionnaire_response)
+        {
+          coding: @questions[fhir_questionnaire_response[:linkId]] || 
+                      [ CODE_MAPPING[fhir_questionnaire_response[:linkId]] ]
+        }
+      end
+
+      #-------------------------------------------------------------------------
+
+      # def map_coding(item = nil)
+      #   coding = CODE_MAPPING[item[:linkId]] if item.present?
+      #   coding = 
+      #     {
+      #       system: "http://loinc.org",
+      #       code: "87509-6",
+      #       display: "Long-Term Care Hospital (LTCH) Continuity Assessment Record and Evaluation (CARE) Data Set (LCDS) - Admission - version 4.00 [CMS Assessment]"
+      #     } if coding.nil?
+
+      #   coding
+      # end
+
+      #-------------------------------------------------------------------------
+
       def default_coding
         {
           system: "http://loinc.org",
           code: "87509-6",
           display: "Long-Term Care Hospital (LTCH) Continuity Assessment Record and Evaluation (CARE) Data Set (LCDS) - Admission - version 4.00 [CMS Assessment]"
         }
+      end
+
+      #-------------------------------------------------------------------------
+
+      def filter(item)
+        [ "Section-3/C1610", "Section-37/GG0130", "Section-37/GG0170" ].include?(item[:linkId])
       end
 
     end
