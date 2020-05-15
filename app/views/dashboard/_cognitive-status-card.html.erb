@@ -7,9 +7,9 @@
       <% @cognitive_statuses.each do |cognitive_status| %>
         <tr>
           <td><%= display_date(cognitive_status.effective) %></td>
-          <td><%= link_to display_categories(cognitive_status.category), 
+          <td><%= link_to display_code(cognitive_status.code), 
                         cognitive_status_path(id: cognitive_status.id) %></td>
-          <td><%= display_performers(cognitive_status.performer) %></td>
+          <!--<td><%= display_performers(cognitive_status.performer) %></td>-->
         </tr>
       <% end %>
     </table>

@@ -51,6 +51,7 @@ class BundledFunctionalStatus < Resource
 
   def functional_statuses
     functional_statuses = []
+    
     self.has_member.each do |member|
       member_id = member.reference.split('/').last
       fhir_functional_status = @fhir_client.read(FHIR::Observation, member_id).resource

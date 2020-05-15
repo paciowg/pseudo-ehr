@@ -11,8 +11,8 @@
   		</tr>
  			<% @functional_statuses.each do |functional_status| %>
 	  		<tr>
-	  			<td><%= functional_status.code.text %></td>
-	  			<td><%= functional_status.value.text %></td>
+	  			<td><%= functional_status.code.coding[0].display %></td>
+	  			<td><%= functional_status.value.coding[0].display %></td>
 	  		</tr>
 	  	<% end %>
 	  </table>

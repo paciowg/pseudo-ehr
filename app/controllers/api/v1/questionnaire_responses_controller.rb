@@ -195,18 +195,33 @@ module Api
           # In real life, this is something that could/would be enforced by the 
           # software used to fill out the assessment.
 
-          performer = [
-            {
-              reference: "Practitioner/Connectathon-Practitioner-DanielGranger"
-            },
-            {
-              reference: "PractitionerRole/Connectathon-Role-RN"
-            },
-            {
-              reference: "Organization/Connectathon-Org-02",
-              display: "Organization"
-            }
-          ]
+          if @sdc_questionnaire_response[:authored] == "2020-04-08T19:57:19+00:00"
+            performer = [
+              {
+                reference: "Practitioner/Connectathon-Practitioner-RonMarble"
+              },
+              {
+                reference: "PractitionerRole/Connectathon-Role-PT"
+              },
+              {
+                reference: "Organization/Connectathon-Org-01",
+                display: "Organization"
+              }
+            ]
+          else
+            performer = [
+              {
+                reference: "Practitioner/Connectathon-Practitioner-DanielGranger"
+              },
+              {
+                reference: "PractitionerRole/Connectathon-Role-RN"
+              },
+              {
+                reference: "Organization/Connectathon-Org-02",
+                display: "Organization"
+              }
+            ]
+          end
         end
 
         performer
@@ -241,7 +256,7 @@ module Api
 
       def node_meta(item)
         meta(META_MAPPING[item[:linkId]] || 
-                    "http://pacioproject.org/StructuredDefinition/pacio-bfs")
+                    "http://pacioproject.org/StructureDefinition/pacio-bfs")
       end
 
       #-------------------------------------------------------------------------
@@ -249,9 +264,9 @@ module Api
       def leaf_meta(bundled_observation)
         bundled_type = bundled_observation.meta[:profile].first
         if bundled_type.ends_with?('pacio-bfs')
-          meta("http://pacioproject.org/StructuredDefinition/pacio-fs")
+          meta("http://pacioproject.org/StructureDefinition/pacio-fs")
         else
-          meta("http://pacioproject.org/StructuredDefinition/pacio-cs")
+          meta("http://pacioproject.org/StructureDefinition/pacio-cs")
         end
       end
 

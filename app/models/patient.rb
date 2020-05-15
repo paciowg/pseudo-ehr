@@ -38,8 +38,9 @@ class Patient < Resource
     search_param = 	{ search: 
     									{ parameters: 
     										{ 
-                          patient: ["Patient", @id].join('/'), 
-    											_include: ['MedicationRequest:medication'] 
+                          patient: ["Patient", @id].join('/'),
+                          _count: 10 #,
+                          #_include: ['MedicationRequest:medication'] 
     										} 
     									} 
     								}
@@ -109,7 +110,8 @@ class Patient < Resource
   def all_functional_statuses
     all_functional_statuses = []
 
-    fhir_functional_statuses = get_fhir_statuses_with_profile('http://pacioproject.org/StructureDefinition/pacio-bfs')
+    fhir_functional_statuses = get_fhir_statuses_with_profile(
+                        'http://pacioproject.org/StructureDefinition/pacio-bfs')
     fhir_functional_statuses.each do |fhir_functional_status|
       functional_statuses = {}
       functional_statuses[:bundle] = 
@@ -127,7 +129,8 @@ class Patient < Resource
   def all_cognitive_statuses
     all_cognitive_statuses = []
 
-    fhir_cognitive_statuses = get_fhir_statuses_with_profile('http://pacioproject.org/StructureDefinition/pacio-bcs')
+    fhir_cognitive_statuses = get_fhir_statuses_with_profile(
+                        'http://pacioproject.org/StructureDefinition/pacio-bcs')
     fhir_cognitive_statuses.each do |fhir_cognitive_status|
       cognitive_statuses = {}
       cognitive_statuses[:bundle] =

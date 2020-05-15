@@ -58,7 +58,7 @@ module ApplicationHelper
   #-----------------------------------------------------------------------------
 
   def display_code(code)
-    sanitize(code.coding.display)
+    sanitize(code.coding[0].display)
   end
 
 	#-----------------------------------------------------------------------------
@@ -149,7 +149,7 @@ module ApplicationHelper
 	#-----------------------------------------------------------------------------
 
 	def display_categories(categories)
-		sanitize(categories.each.map { |category| category.text }.join(', '))	
+		sanitize(categories.each.map { |category| category.coding[0].code }.join(', '))	
 	end
 
 	#-----------------------------------------------------------------------------

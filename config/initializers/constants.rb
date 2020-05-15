@@ -30,6 +30,6 @@ CODE_MAPPING = {
 
 META_MAPPING = {
   "Section-3/C1610" => "http://pacioproject.org/StructureDefinition/pacio-bcs",
-  "Section-37/GG0130" => "http://pacioproject.org/StructuredDefinition/pacio-bfs",
-  "Section-37/GG0170" => "http://pacioproject.org/StructuredDefinition/pacio-bfs"
+  "Section-37/GG0130" => "http://pacioproject.org/StructureDefinition/pacio-bfs",
+  "Section-37/GG0170" => "http://pacioproject.org/StructureDefinition/pacio-bfs"
 }

@@ -7,9 +7,9 @@
       <% @functional_statuses.each do |functional_status| %>
         <tr>
           <td><%= display_date(functional_status.effective) %></td>
-          <td><%= link_to display_categories(functional_status.category), 
+          <td><%= link_to display_code(functional_status.code), 
                         functional_status_path(id: functional_status.id) %></td>
-          <td><%= display_performers(functional_status.performer) %></td>
+          <!--<td><%= display_performers(functional_status.performer) %></td>-->
         </tr>
       <% end %>
     </table>

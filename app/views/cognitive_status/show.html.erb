@@ -11,8 +11,8 @@
       </tr>
       <% @cognitive_statuses.each do |cognitive_status| %>
         <tr>
-          <td><%= cognitive_status.code.text %></td>
-          <td><%= cognitive_status.value.text %></td>
+          <td><%= cognitive_status.code.coding[0].display %></td>
+          <td><%= cognitive_status.value.coding[0].display %></td>
         </tr>
       <% end %>
     </table>
