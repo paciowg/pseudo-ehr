@@ -8,15 +8,15 @@
 
 class PractitionerRole < Resource
 
-    include ActiveModel::Model
-  
-    attr_reader :id, :code
-  
-    #-----------------------------------------------------------------------------
-  
-    def initialize(fhir_practitioner)
-      @id             = fhir_practitioner.id
-      @code   = fhir_practitioner.code
-    end
-  
+  include ActiveModel::Model
+
+  attr_reader :id, :code
+
+  #-----------------------------------------------------------------------------
+
+  def initialize(fhir_practitioner)
+    @id     = fhir_practitioner.id
+    @code   = fhir_practitioner.code
+  end
+
 end

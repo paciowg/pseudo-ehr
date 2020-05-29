@@ -6,15 +6,16 @@
 #
 ################################################################################
 
-
 class Contract < Resource
-    include ActiveModel::Model
 
-    attr_reader :id, :signer, :resourceType
+  include ActiveModel::Model
 
-    def initialize(fhir_contract)
-        @id = fhir_contract.id
-        @signer = fhir_contract.signer
-        @resourceType = fhir_contract.resourceType
-    end
+  attr_reader :id, :signer, :resourceType
+
+  def initialize(fhir_contract)
+    @id             = fhir_contract.id
+    @signer         = fhir_contract.signer
+    @resourceType   = fhir_contract.resourceType
+  end
+
 end
