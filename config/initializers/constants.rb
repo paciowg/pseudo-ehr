@@ -8,7 +8,7 @@
 
 DEFAULT_SERVER = "http://hapi.fhir.org/baseR4"
 #DEFAULT_SERVER = "http://data-mgr.azurewebsites.net/open"
-HEALTH_DATA_MGR = "https://data-mgr.azurewebsites.net/open"
+HEALTH_DATA_MGR = "https://data-mgr.azurewebsites.net/open2"
 
 CODE_MAPPING = { 
             "Section-3/C1610" => { 

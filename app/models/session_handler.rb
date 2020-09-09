@@ -29,11 +29,11 @@ class SessionHandler
   # * +oauth2_secret+ - _Optional_ _param_, overrides <code>@oauth2_secret</code> from 
   #   +FhirServerInteraction+ and replaces it as the default OAuth2 secret for this session
 
-  def self.establish(session_id, url = nil, oauth2_id = nil, oauth2_secret = nil)
+  def self.establish(session_id, url = nil, oauth2_id = nil, oauth2_secret = nil, temp_client = nil)
     if established?(session_id)
       client = Rails.cache.read(session_id.public_id + "--connection")
     else
-      client = FhirServerInteraction.new(url, oauth2_id, oauth2_secret)
+      client = FhirServerInteraction.new(url, oauth2_id, oauth2_secret, temp_client)
     end
     store(session_id, "connection", client)
   end
