@@ -36,7 +36,7 @@ Rails.application.routes.draw do
   get '/home',          to: 'home#index'
   get '/dashboard',     to: 'dashboard#index'
   get '/patients/show', to: 'dashboard#index'
-  get '/auth/token',    to: 'home#index'
+  get '/login',         to: 'home#index'
   get '/env',           to: 'env#index'
 
   root 'welcome#index'
