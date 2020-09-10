@@ -6,9 +6,12 @@
 #
 ################################################################################
 
-# For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+# For details on the DSL available within this file, see 
+# http://guides.rubyonrails.org/routing.html
 
 Rails.application.routes.draw do
+
+  # Define 'EHR' web app routes
 
   resources :functional_status,   only: [:index, :show]
   resources :cognitive_status, 	  only: [:index, :show]
@@ -42,10 +45,18 @@ Rails.application.routes.draw do
 
   root 'welcome#index'
 
+  # Define 'FHIR' API for retrieving patients and converting questionnaire 
+  # response resources posts to PACIO resources
+
   namespace :api do
     namespace :v1 do
-      resources :patients,                  only: [:index, :show]
-      resources :questionnaire_responses,   only: [:create]
+      # Make this compatible with the way other FHIR servers handle resources
+      get 'Patient',      to: 'patients#index',   as: :patients
+      get 'Patient/:id',  to: 'patients#show',    as: :patient
+
+      post 'QuestionnaireResponse', to: 'questionnaire_responses#create', 
+                    as: :questionnaire_responses
     end
   end
+  
 end
