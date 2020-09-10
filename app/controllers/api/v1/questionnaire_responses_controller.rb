@@ -32,7 +32,7 @@ module Api
         # resources
         questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
 
-        @fhir_client.add_transaction_request('PUT', nil, questionnaire_response)
+        @fhir_client.add_transaction_request('POST', nil, questionnaire_response)
         extract_data_from_questionnaire_response
         reply = @fhir_client.end_transaction
 
@@ -78,7 +78,7 @@ module Api
         bundled_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-bfs') 
 
         extract_node(@sdc_questionnaire_response, bundled_observation)
-        #@fhir_client.add_transaction_request('PUT', nil, bundled_observation)
+        #@fhir_client.add_transaction_request('POST', nil, bundled_observation)
       end
 
       #-------------------------------------------------------------------------
@@ -99,7 +99,7 @@ module Api
               extract_node(item, node_observation, item)
               if filter(item)
                 puts 'yes'
-                @fhir_client.add_transaction_request('PUT', nil, node_observation)
+                @fhir_client.add_transaction_request('POST', nil, node_observation)
               end
            else
               extract_leaf(item, bundled_observation, item)
@@ -128,7 +128,7 @@ module Api
             fhir_observation.valueString    = answer[:valueString]
           end
 
-          @fhir_client.add_transaction_request('PUT', nil, fhir_observation)
+          @fhir_client.add_transaction_request('POST', nil, fhir_observation)
           bundled_observation.hasMember << reference(fhir_observation)
         end
       end
@@ -186,42 +186,42 @@ module Api
       def performer(fhir_questionnaire_response)
         if fhir_questionnaire_response[:author].present?
           performer = fhir_questionnaire_response[:author]
-        else
-          # This is a hack for the connectathon to account for Structured Data 
-          # Capture data that does not provide the author of the response.  The 
-          # performer is required by Observation-based resources, so we have to 
-          # put something there.
-          #
-          # In real life, this is something that could/would be enforced by the 
-          # software used to fill out the assessment.
+        # else
+        #   # This is a hack for the connectathon to account for Structured Data 
+        #   # Capture data that does not provide the author of the response.  The 
+        #   # performer is required by Observation-based resources, so we have to 
+        #   # put something there.
+        #   #
+        #   # In real life, this is something that could/would be enforced by the 
+        #   # software used to fill out the assessment.
 
-          if @sdc_questionnaire_response[:authored] == "2020-04-08T19:57:19+00:00"
-            performer = [
-              {
-                reference: "Practitioner/Connectathon-Practitioner-RonMarble"
-              },
-              {
-                reference: "PractitionerRole/Connectathon-Role-PT"
-              },
-              {
-                reference: "Organization/Connectathon-Org-01",
-                display: "Organization"
-              }
-            ]
-          else
-            performer = [
-              {
-                reference: "Practitioner/Connectathon-Practitioner-DanielGranger"
-              },
-              {
-                reference: "PractitionerRole/Connectathon-Role-RN"
-              },
-              {
-                reference: "Organization/Connectathon-Org-02",
-                display: "Organization"
-              }
-            ]
-          end
+        #   if @sdc_questionnaire_response[:authored] == "2020-04-08T19:57:19+00:00"
+        #     performer = [
+        #       {
+        #         reference: "Practitioner/Connectathon-Practitioner-RonMarble"
+        #       },
+        #       {
+        #         reference: "PractitionerRole/Connectathon-Role-PT"
+        #       },
+        #       {
+        #         reference: "Organization/Connectathon-Org-01",
+        #         display: "Organization"
+        #       }
+        #     ]
+        #   else
+        #     performer = [
+        #       {
+        #         reference: "Practitioner/Connectathon-Practitioner-DanielGranger"
+        #       },
+        #       {
+        #         reference: "PractitionerRole/Connectathon-Role-RN"
+        #       },
+        #       {
+        #         reference: "Organization/Connectathon-Org-02",
+        #         display: "Organization"
+        #       }
+        #     ]
+        #   end
         end
 
         performer
