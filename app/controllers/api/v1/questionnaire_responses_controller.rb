@@ -22,10 +22,8 @@ module Api
       def create
         # TODO - Need to eliminate this...
         params.permit!
-        byebug
-        Rails.logger.info "params = " + params.inspect
+
         @sdc_questionnaire_response = params
-        Rails.logger.info "questionnaire URL = " + @sdc_questionnaire_response[:questionnaire]
         parse_questionnaire(@sdc_questionnaire_response[:questionnaire])
 
         @fhir_client.begin_transaction
