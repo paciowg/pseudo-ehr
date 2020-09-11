@@ -23,7 +23,9 @@ module Api
         # TODO - Need to eliminate this...
         params.permit!
 
+        puts "params = " + params.inspect
         @sdc_questionnaire_response = params
+        puts "questionnaire URL = " + @sdc_questionnaire_response[:questionnaire]
         parse_questionnaire(@sdc_questionnaire_response[:questionnaire])
 
         @fhir_client.begin_transaction
