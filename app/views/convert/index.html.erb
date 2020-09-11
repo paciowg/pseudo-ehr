@@ -1,0 +1,11 @@
+<section class='container'>
+  <% if @questionnaire_responses.count > 0 %>
+    <ul>
+    <% @questionnaire_responses.each do |questionnaire_response| %>
+      <li><%= link_to questionnaire_response[:id], convert_path(questionnaire_response[:id]) %></li>
+    <% end %>
+    </ul>
+  <% else %>
+    <p>No questionnaire responses found.</p>
+  <% end %>
+</section>

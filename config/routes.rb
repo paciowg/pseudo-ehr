@@ -42,6 +42,8 @@ Rails.application.routes.draw do
   get '/login',         to: 'home#index'
   get '/auth/token',    to: 'home#index'
   get '/env',           to: 'env#index'
+  get '/convert',       to: 'convert#index'
+  put '/convert/:id',   to: 'convert#update'
 
   root 'welcome#index'
 

@@ -22,7 +22,7 @@ module Api
       def create
         # TODO - Need to eliminate this...
         params.permit!
-
+        byebug
         Rails.logger.info "params = " + params.inspect
         @sdc_questionnaire_response = params
         Rails.logger.info "questionnaire URL = " + @sdc_questionnaire_response[:questionnaire]
@@ -77,7 +77,7 @@ module Api
       def extract_data_from_questionnaire_response
         bundled_observation = init_base_observation(@sdc_questionnaire_response)
         bundled_observation.category = category('survey')
-        bundled_observation.meta = meta('http://pacioproject.org/StructureDefinition/pacio-bfs') 
+        bundled_observation.meta = meta('https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs') 
 
         extract_node(@sdc_questionnaire_response, bundled_observation)
         #@fhir_client.add_transaction_request('PUT', nil, bundled_observation)
@@ -258,7 +258,7 @@ module Api
 
       def node_meta(item)
         meta(META_MAPPING[item[:linkId]] || 
-                    "http://pacioproject.org/StructureDefinition/pacio-bfs")
+                    "https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs")
       end
 
       #-------------------------------------------------------------------------
@@ -266,9 +266,9 @@ module Api
       def leaf_meta(bundled_observation)
         bundled_type = bundled_observation.meta[:profile].first
         if bundled_type.ends_with?('pacio-bfs')
-          meta("http://pacioproject.org/StructureDefinition/pacio-fs")
+          meta("https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs")
         else
-          meta("http://pacioproject.org/StructureDefinition/pacio-cs")
+          meta("https://paciowg.github.io/cognitive-status-ig/StructureDefinition/pacio-bcs")
         end
       end
 
