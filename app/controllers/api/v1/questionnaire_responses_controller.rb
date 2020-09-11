@@ -47,11 +47,9 @@ module Api
 
       def parse_questionnaire(url)
         @questions = {}
-
-        response = RestClient.get(url)
-        questionnaire = JSON.parse(response.body)
-
-        parse_questionnaire_node(questionnaire["item"])
+        temp = @fhir_client.read(FHIR::QuestionnaireResponse, url.split('/').last)
+        questionnaire = temp.resource
+        parse_questionnaire_node(questionnaire
       end
 
       #-------------------------------------------------------------------------
