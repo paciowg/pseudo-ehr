@@ -52,15 +52,15 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :patients,                  only: [:index, :show]
-      resources :questionnaire_responses,   only: [:create]
+      # resources :patients,                  only: [:index, :show]
+      # resources :questionnaire_responses,   only: [:create]
 
-      # # Make this compatible with the way other FHIR servers handle resources
-      # get 'Patient',      to: 'patients#index',   as: :patients
-      # get 'Patient/:id',  to: 'patients#show',    as: :patient
+      # Make this compatible with the way other FHIR servers handle resources
+      get 'Patient',      to: 'patients#index',   as: :patients
+      get 'Patient/:id',  to: 'patients#show',    as: :patient
 
-      # post 'QuestionnaireResponse', to: 'questionnaire_responses#create', 
-      #               as: :questionnaire_responses
+      post 'QuestionnaireResponse', to: 'questionnaire_responses#create', 
+                    as: :questionnaire_responses
     end
   end
   

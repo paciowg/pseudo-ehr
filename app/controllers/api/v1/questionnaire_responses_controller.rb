@@ -32,7 +32,7 @@ module Api
         # resources
         questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
 
-        @fhir_client.add_transaction_request('PUT', nil, questionnaire_response)
+        @fhir_client.add_transaction_request('POST', nil, questionnaire_response)
         extract_data_from_questionnaire_response
         reply = @fhir_client.end_transaction
 
@@ -78,7 +78,7 @@ module Api
         bundled_observation.meta = meta('https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs') 
 
         extract_node(@sdc_questionnaire_response, bundled_observation)
-        #@fhir_client.add_transaction_request('PUT', nil, bundled_observation)
+        #@fhir_client.add_transaction_request('POST', nil, bundled_observation)
       end
 
       #-------------------------------------------------------------------------
@@ -89,18 +89,16 @@ module Api
         if items[:item].present?
           items[:item].each do |item|
             if item[:item].present?
-              puts 'item[:linkId]...'
+              puts "Node item[:linkId] = #{item[:linkId]}"
               node_observation = init_base_observation(item)
               node_observation.meta = node_meta(item)
 
               bundled_observation.hasMember << reference(node_observation)
 
-              # TODO - Temporarily limit data we're converting
               extract_node(item, node_observation, item)
-              if filter(item)
-                puts 'yes'
-                @fhir_client.add_transaction_request('PUT', nil, node_observation)
-              end
+              puts "    Adding node ID = #{node_observation.id}"
+              puts "    Observation.code = #{node_observation.code}"
+              @fhir_client.add_transaction_request('POST', nil, node_observation)
            else
               extract_leaf(item, bundled_observation, item)
             end
@@ -112,6 +110,7 @@ module Api
 
       def extract_leaf(fhir_questionnaire_response, bundled_observation, item)
         if item[:answer].present?
+          puts "Leaf item[:linkId] = #{item[:linkId]}"
           fhir_observation = init_base_observation(fhir_questionnaire_response)
           fhir_observation.meta = leaf_meta(bundled_observation) 
 
@@ -128,7 +127,9 @@ module Api
             fhir_observation.valueString    = answer[:valueString]
           end
 
-          @fhir_client.add_transaction_request('PUT', nil, fhir_observation)
+          puts "    Adding leaf ID = #{fhir_observation.id}"
+          puts "    Observation.code = #{fhir_observation.code}"
+          @fhir_client.add_transaction_request('POST', nil, fhir_observation)
           bundled_observation.hasMember << reference(fhir_observation)
         end
       end
