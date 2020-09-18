@@ -24,16 +24,19 @@ module Api
         params.permit!
 
         @sdc_questionnaire_response = params
-        parse_questionnaire(@sdc_questionnaire_response[:questionnaire])
+        @questionnaire = get_questionnaire(@sdc_questionnaire_response[:questionnaire])
 
-        @fhir_client.begin_transaction
+        # Collect all of the LOINC codes for the questions.  We'll need them
+        # later to populate the PACIO observation codes.
+        parse_questionnaire
 
         # Write the original questionnaire response and extract data into PACIO
         # resources
-        questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
+        @fhir_client.begin_transaction
+          questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
 
-        @fhir_client.add_transaction_request('POST', nil, questionnaire_response)
-        extract_data_from_questionnaire_response
+          @fhir_client.add_transaction_request('POST', nil, questionnaire_response)
+          extract_data_from_questionnaire_response
         reply = @fhir_client.end_transaction
 
         head(reply.code)
@@ -43,13 +46,16 @@ module Api
       private
       #-------------------------------------------------------------------------
 
-      def parse_questionnaire(url)
-        @questions = {}
-
+      def get_questionnaire(url)
         response = RestClient.get(url)
-        questionnaire = JSON.parse(response.body)
+        JSON.parse(response.body)
+      end
 
-        parse_questionnaire_node(questionnaire["item"])
+      #-------------------------------------------------------------------------
+
+      def parse_questionnaire
+        @questions = {}
+        parse_questionnaire_node(@questionnaire["item"])
       end
 
       #-------------------------------------------------------------------------
@@ -73,12 +79,15 @@ module Api
       #-------------------------------------------------------------------------
 
       def extract_data_from_questionnaire_response
+        # Create top-level bundled status observation
         bundled_observation = init_base_observation(@sdc_questionnaire_response)
         bundled_observation.category = category('survey')
         bundled_observation.meta = meta('https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs') 
+        bundled_observation.code = bundled_status_code
 
+        # Extract all of the individual responses
         extract_node(@sdc_questionnaire_response, bundled_observation)
-        #@fhir_client.add_transaction_request('POST', nil, bundled_observation)
+        @fhir_client.add_transaction_request('POST', nil, bundled_observation)
       end
 
       #-------------------------------------------------------------------------
@@ -90,15 +99,15 @@ module Api
           items[:item].each do |item|
             if item[:item].present?
               puts "Node item[:linkId] = #{item[:linkId]}"
-              node_observation = init_base_observation(item)
-              node_observation.meta = node_meta(item)
+              # node_observation = init_base_observation(item)
+              # node_observation.meta = node_meta(item)
 
-              bundled_observation.hasMember << reference(node_observation)
+              # bundled_observation.hasMember << reference(node_observation)
 
-              extract_node(item, node_observation, item)
-              puts "    Adding node ID = #{node_observation.id}"
-              puts "    Observation.code = #{node_observation.code}"
-              @fhir_client.add_transaction_request('POST', nil, node_observation)
+              extract_node(item, bundled_observation, item)
+              # puts "    Adding node ID = #{node_observation.id}"
+              # puts "    Observation.code = #{node_observation.code}"
+              # @fhir_client.add_transaction_request('POST', nil, node_observation)
            else
               extract_leaf(item, bundled_observation, item)
             end
@@ -255,19 +264,19 @@ module Api
 
       #-------------------------------------------------------------------------
 
-      def node_meta(item)
-        meta(META_MAPPING[item[:linkId]] || 
-                    "https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs")
-      end
+      # def node_meta(item)
+      #   meta(META_MAPPING[item[:linkId]] || 
+      #               "https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs")
+      # end
 
       #-------------------------------------------------------------------------
 
       def leaf_meta(bundled_observation)
         bundled_type = bundled_observation.meta[:profile].first
         if bundled_type.ends_with?('pacio-bfs')
-          meta("https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs")
+          meta("https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-fs")
         else
-          meta("https://paciowg.github.io/cognitive-status-ig/StructureDefinition/pacio-bcs")
+          meta("https://paciowg.github.io/cognitive-status-ig/StructureDefinition/pacio-cs")
         end
       end
 
@@ -293,18 +302,22 @@ module Api
 
       def question_coding(fhir_questionnaire_response)
         {
-          coding: @questions[fhir_questionnaire_response[:linkId]] || 
-                      [ CODE_MAPPING[fhir_questionnaire_response[:linkId]] ]
+          coding: @questions[fhir_questionnaire_response[:linkId]] #|| 
+                      # [ CODE_MAPPING[fhir_questionnaire_response[:linkId]] ]
         }
       end
 
       #-------------------------------------------------------------------------
 
-      def default_coding
-        {
-          system: "http://loinc.org",
-          code: "87509-6",
-          display: "Long-Term Care Hospital (LTCH) Continuity Assessment Record and Evaluation (CARE) Data Set (LCDS) - Admission - version 4.00 [CMS Assessment]"
+      def bundled_status_code
+        { 
+          coding: [
+            {
+              system:   @questionnaire["code"].first["system"], 
+              code:     @questionnaire["code"].first["code"], 
+              display:  @questionnaire["title"] 
+            }
+          ]
         }
       end
 
