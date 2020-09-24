@@ -30,13 +30,13 @@ module Api
         # later to populate the PACIO observation codes.
         parse_questionnaire
 
-        # Write the original questionnaire response and extract data into PACIO
-        # resources
         @fhir_client.begin_transaction
+          #Write the original questionnaire response
           questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
-
           @fhir_client.add_transaction_request('POST', nil, questionnaire_response,
                                                 nil, full_url(questionnaire_response))
+
+          # Convert questionnaire response data into PACIO resources
           extract_data_from_questionnaire_response
         reply = @fhir_client.end_transaction
 
