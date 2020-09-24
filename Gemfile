@@ -23,7 +23,8 @@ gem 'bootsnap', '>= 1.1.0', require: false  # Reduces boot times through caching
 gem 'bootstrap'                 # bootstrap
 gem 'jquery-rails'              # jQuery
 gem 'bootstrap-toggle-rails'    # bootstrap toggle
-gem 'fhir_client', git: 'https://github.com/fhir-crucible/fhir_client.git'  # FHIR client from MITRE's crucible project
+gem 'fhir_client', git: 'https://github.com/paciowg/fhir_client.git'		# FHIR client that supports fullUrl for transaction entries
+#gem 'fhir_client', git: 'https://github.com/fhir-crucible/fhir_client.git'  # FHIR client from MITRE's crucible project
 gem 'rdoc'                      # RDoc for documentation
 gem 'chartkick'					# Integrates chart.js functionality into Ruby
 gem 'masonry-rails'				# JQuery Masonry plugin for use with Rails asset pipeline

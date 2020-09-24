@@ -35,7 +35,8 @@ module Api
         @fhir_client.begin_transaction
           questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
 
-          @fhir_client.add_transaction_request('POST', nil, questionnaire_response)
+          @fhir_client.add_transaction_request('POST', nil, questionnaire_response,
+                                                nil, full_url(questionnaire_response))
           extract_data_from_questionnaire_response
         reply = @fhir_client.end_transaction
 
@@ -87,7 +88,8 @@ module Api
 
         # Extract all of the individual responses
         extract_node(@sdc_questionnaire_response, bundled_observation)
-        @fhir_client.add_transaction_request('POST', nil, bundled_observation)
+        @fhir_client.add_transaction_request('POST', nil, bundled_observation, nil,
+                                              full_url(bundled_observation))
       end
 
       #-------------------------------------------------------------------------
@@ -138,7 +140,8 @@ module Api
 
           puts "    Adding leaf ID = #{fhir_observation.id}"
           puts "    Observation.code = #{fhir_observation.code}"
-          @fhir_client.add_transaction_request('POST', nil, fhir_observation)
+          @fhir_client.add_transaction_request('POST', nil, fhir_observation, nil,
+                                                full_url(fhir_observation))
           bundled_observation.hasMember << reference(fhir_observation)
         end
       end
@@ -147,8 +150,9 @@ module Api
 
       def init_base_observation(fhir_questionnaire_response)
         fhir_observation = FHIR::Observation.new
+        id = unique_id
 
-        fhir_observation.id                  = unique_id
+        fhir_observation.id                  = id
         fhir_observation.text                = text(fhir_questionnaire_response)
         fhir_observation.basedOn             = @sdc_questionnaire_response[:basedOn]
         fhir_observation.partOf              = @sdc_questionnaire_response[:partOf]
@@ -167,9 +171,15 @@ module Api
 
       #-------------------------------------------------------------------------
 
+      def full_url(resource)
+        "#{HEALTH_DATA_MGR}/Observation/#{resource.id}"
+      end
+
+      #-------------------------------------------------------------------------
+
       def reference(resource)
         { 
-          reference: "Observation/#{resource.id}" 
+          reference: "#{HEALTH_DATA_MGR}/Observation/#{resource.id}" 
         }
       end
 
