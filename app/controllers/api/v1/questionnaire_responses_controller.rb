@@ -47,6 +47,12 @@ module Api
       private
       #-------------------------------------------------------------------------
 
+      def setup_fhir_client
+        @fhir_client ||= FHIR::Client.new(HEALTH_DATA_MGR)
+      end
+
+      #-------------------------------------------------------------------------
+
       def get_questionnaire(url)
         response = RestClient.get(url)
         JSON.parse(response.body)
@@ -186,13 +192,7 @@ module Api
       #-------------------------------------------------------------------------
 
       def questionnaire_name(fhir_questionnaire_response)
-        fhir_questionnaire_response[:questionnaire]#.split('/').last
-      end
-
-      #-------------------------------------------------------------------------
-
-      def setup_fhir_client
-        @fhir_client ||= FHIR::Client.new(HEALTH_DATA_MGR)
+        fhir_questionnaire_response[:questionnaire]
       end
 
       #-------------------------------------------------------------------------
@@ -204,47 +204,8 @@ module Api
       #-------------------------------------------------------------------------
 
       def performer(fhir_questionnaire_response)
-        if fhir_questionnaire_response[:author].present?
-          performer = fhir_questionnaire_response[:author]
-        # else
-        #   # This is a hack for the connectathon to account for Structured Data 
-        #   # Capture data that does not provide the author of the response.  The 
-        #   # performer is required by Observation-based resources, so we have to 
-        #   # put something there.
-        #   #
-        #   # In real life, this is something that could/would be enforced by the 
-        #   # software used to fill out the assessment.
-
-        #   if @sdc_questionnaire_response[:authored] == "2020-04-08T19:57:19+00:00"
-        #     performer = [
-        #       {
-        #         reference: "Practitioner/Connectathon-Practitioner-RonMarble"
-        #       },
-        #       {
-        #         reference: "PractitionerRole/Connectathon-Role-PT"
-        #       },
-        #       {
-        #         reference: "Organization/Connectathon-Org-01",
-        #         display: "Organization"
-        #       }
-        #     ]
-        #   else
-        #     performer = [
-        #       {
-        #         reference: "Practitioner/Connectathon-Practitioner-DanielGranger"
-        #       },
-        #       {
-        #         reference: "PractitionerRole/Connectathon-Role-RN"
-        #       },
-        #       {
-        #         reference: "Organization/Connectathon-Org-02",
-        #         display: "Organization"
-        #       }
-        #     ]
-        #   end
-        end
-
-        performer
+        fhir_questionnaire_response[:author].present? ? 
+                      fhir_questionnaire_response[:author] : nil
       end
 
       #-------------------------------------------------------------------------
@@ -312,8 +273,7 @@ module Api
 
       def question_coding(fhir_questionnaire_response)
         {
-          coding: @questions[fhir_questionnaire_response[:linkId]] #|| 
-                      # [ CODE_MAPPING[fhir_questionnaire_response[:linkId]] ]
+          coding: @questions[fhir_questionnaire_response[:linkId]] 
         }
       end
 
@@ -329,12 +289,6 @@ module Api
             }
           ]
         }
-      end
-
-      #-------------------------------------------------------------------------
-
-      def filter(item)
-        [ "Section-3/C1610", "Section-37/GG0130", "Section-37/GG0170" ].include?(item[:linkId])
       end
 
     end
