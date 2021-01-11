@@ -16,15 +16,23 @@ class Medication < Resource
 
   def initialize(fhir_medication)
   	@id 					= fhir_medication.id
+    @language     = fhir_medication.language
     @text         = fhir_medication.text
+    @contained    = fhir_medication.contained
+    @identifier   = fhir_medication.identifier
+    @code         = fhir_medication.code
     @status       = fhir_medication.status
+    @manufacturer = fhir_medication.manufacturer
+    @form         = fhir_medication.form
+    @amount       = fhir_medication.amount
     @ingredients  = fhir_medication.ingredient
+    @batch        = fhir_medication.batch
   end
 
   #-----------------------------------------------------------------------------
 
   def codings
-    @ingredients.map { |ingredient| ingredient.itemCodeableConcept.coding }
+    @code.coding
   end
 
 end
