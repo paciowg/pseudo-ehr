@@ -64,7 +64,7 @@ class Patient < Resource
                       { parameters:
                         { 
                           patient: @id,
-                          _profile: 'http://pacioproject.org/StructureDefinition/pacio-bfs' 
+                          _profile: 'https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs' 
                         }
                       }
                     }
@@ -89,7 +89,7 @@ class Patient < Resource
                       { parameters:
                         { 
                           patient: @id,
-                          _profile: 'http://pacioproject.org/StructureDefinition/pacio-bcs' 
+                          _profile: 'https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bcs' 
                         }
                       }
                     }
@@ -111,7 +111,7 @@ class Patient < Resource
     all_functional_statuses = []
 
     fhir_functional_statuses = get_fhir_statuses_with_profile(
-                        'http://pacioproject.org/StructureDefinition/pacio-bfs')
+                        'https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs')
     fhir_functional_statuses.each do |fhir_functional_status|
       functional_statuses = {}
       functional_statuses[:bundle] = 
@@ -130,7 +130,7 @@ class Patient < Resource
     all_cognitive_statuses = []
 
     fhir_cognitive_statuses = get_fhir_statuses_with_profile(
-                        'http://pacioproject.org/StructureDefinition/pacio-bcs')
+                        'https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bcs')
     fhir_cognitive_statuses.each do |fhir_cognitive_status|
       cognitive_statuses = {}
       cognitive_statuses[:bundle] =

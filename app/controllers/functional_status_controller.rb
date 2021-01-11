@@ -21,8 +21,9 @@ class FunctionalStatusController < ApplicationController
 
 	def show
 		fhir_client = SessionHandler.fhir_client(session.id)
-    fhir_bundled_functional_status = fhir_client.read(
-    																			FHIR::Observation, params[:id]).resource
+    fhir_bundled_functional_status = 
+            fhir_client.read(FHIR::Observation, params[:id]).resource
+            
 		@bundled_functional_status = 
 						BundledFunctionalStatus.new(fhir_bundled_functional_status, fhir_client)
 		@functional_statuses = @bundled_functional_status.functional_statuses
