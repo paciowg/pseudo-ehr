@@ -204,8 +204,20 @@ module Api
       #-------------------------------------------------------------------------
 
       def performer(fhir_questionnaire_response)
-        fhir_questionnaire_response[:author].present? ? 
-                      fhir_questionnaire_response[:author] : nil
+        author = fhir_questionnaire_response[:author][:reference]
+
+        [
+          {
+            "reference": "#{HEALTH_DATA_MGR}/#{author}"
+          },
+          {
+            "reference": "#{HEALTH_DATA_MGR}/#{PRACTITIONER_ROLE[author]}"
+          },
+          {
+            "reference": "#{HEALTH_DATA_MGR}/#{ORGANIZATION[author]}",
+            "display": "Organization"
+          }
+        ]
       end
 
       #-------------------------------------------------------------------------
@@ -284,12 +296,42 @@ module Api
           coding: [
             {
               system:   @questionnaire["code"].first["system"], 
-              code:     @questionnaire["code"].first["code"], 
-              display:  @questionnaire["title"] 
+              # code:     @questionnaire["code"].first["code"], 
+              # display:  @questionnaire["title"]
+              code: "88330-6",
+              display: "Mobility - admission performance during 3 day assessment period [CMS Assessment]"
             }
           ]
         }
       end
+
+      #-------------------------------------------------------------------------
+
+      PRACTITIONER_ROLE = {
+        "Practitioner/Practitioner-SallySmith"    => "PractitionerRole/Role-PT",
+        "Practitioner/Practitioner-RonMarble"     => "PractitionerRole/Role-PT",
+        "Practitioner/Practitioner-JenCadbury"    => "PractitionerRole/Role-PT",
+        "Practitioner/Practitioner-DanielGranger" => "PractitionerRole/Role-PT",
+        "Practitioner/Practitioner-LunaBaskins"   => "PractitionerRole/Role-PT",
+        "Practitioner/Practitioner-ScottDumble"   => "PractitionerRole/Role-PT",
+        "Practitioner/Practitioner-JohnSmith"     => "PractitionerRole/provider-role-pcp",
+        "Practitioner/Practitioner-JennyGlass"    => "PractitionerRole/Role-SLP",
+        "Practitioner/Practitioner-HoneyJones"    => "PractitionerRole/Role-SLP",
+      }.freeze
+
+      #-------------------------------------------------------------------------
+
+      ORGANIZATION = {
+        "Practitioner/Practitioner-SallySmith"    => "Organization/Org-01",
+        "Practitioner/Practitioner-RonMarble"     => "Organization/Org-01",
+        "Practitioner/Practitioner-JenCadbury"    => "Organization/Org-02",
+        "Practitioner/Practitioner-DanielGranger" => "Organization/Org-02",
+        "Practitioner/Practitioner-LunaBaskins"   => "Organization/Org-03",
+        "Practitioner/Practitioner-ScottDumble"   => "Organization/Org-03",
+        "Practitioner/Practitioner-JohnSmith"     => "Organization/Org-01",
+        "Practitioner/Practitioner-JennyGlass"    => "Organization/Org-01",
+        "Practitioner/Practitioner-HoneyJones"    => "Organization/Org-02",
+      }.freeze
 
     end
 
