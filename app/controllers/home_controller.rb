@@ -6,11 +6,58 @@
 #
 ################################################################################
 
+require 'securerandom'
+
 class HomeController < ApplicationController
 
   #before_action :establish_session_handler, only: [ :index ]
 
   #-----------------------------------------------------------------------------
+
+
+  def create_measure_report(measure_id, patient_id, period_start, period_end)
+    FHIR::MeasureReport.new.from_hash(
+      type: 'data-collection',
+      identifier: [{
+        value: SecureRandom.uuid
+      }],
+      patient: {
+        reference: "Patient/#{patient_id}"
+      },
+      measure: "Measure/#{measure_id}",
+      period: {
+        start: period_start,
+        end: period_end
+      }
+    )
+  end
+
+  def submit_data(measure_id, patient_resources, measure_report)
+    parameters = FHIR::Parameters.new
+    measure_report_param = FHIR::Parameters::Parameter.new(name: 'measure-report')
+    measure_report_param.resource = measure_report
+    parameters.parameter.push(measure_report_param)
+
+    patient_resources.each do |r|
+      resource_param = FHIR::Parameters::Parameter.new(name: 'resource')
+      resource_param.resource = r
+      parameters.parameter.push(resource_param)
+    end
+
+    headers = {
+
+      # http://localhost:8080/cqf-ruler-r4/fhir/OperationDefinition/Measure-submit-data
+      content_type: 'application/json'
+    }
+
+    headers.merge!(@client.additional_headers) if @client.additional_headers
+    @submit_url = @base_server_url + "/Measure/#{measure_id}/$submit-data"
+    puts @submit_url
+    puts parameters.to_json
+    @reply = RestClient.post(@submit_url, parameters.to_json, headers)
+    puts @reply
+    
+  end
 
   def index
     session[:wakeupsession] = "ok" # using session hash prompts rails session to load\
@@ -54,24 +101,34 @@ class HomeController < ApplicationController
 
       # Temporary code to pull only the patient that has cognitive and functional
       # status in the default server.
-      if SessionHandler.from_storage(session.id, "connection").base_server_url == DEFAULT_SERVER
-        searchParam = { search: { parameters: { _id: 'cms-patient-01' } } }
-        bundle = SessionHandler.fhir_client(session.id).search(FHIR::Patient, searchParam).resource
-      else
-        bundle = SessionHandler.fhir_client(session.id).search(FHIR::Patient).resource
-      end
+      # if SessionHandler.from_storage(session.id, "connection").base_server_url == DEFAULT_SERVER
+      #   searchParam = { search: { parameters: { _id: 'cms-patient-01' } } }
+      #   bundle = SessionHandler.fhir_client(session.id).search(FHIR::Patient, searchParam).resource
+      # else
+        # @client = FHIR::Client.new("http://localhost:8080/cqf-ruler-dstu3")
+        # bundle = SessionHandler.fhir_client(session.id).search(FHIR::Patient).resource
+        @measure_report = create_measure_report("7", "denom-EXM130", "2020", "2020")
+        puts @measure_report
+        patient_bundle = FHIR::Json.from_json(File.read('app/controllers/careplan1.json'))
+        resources = patient_bundle.entry.map(&:resource)
+        submit_data_response = submit_data("7", resources, @measure_report)
+        puts "fooooo"
+        puts submit_data_response
+        # searchParam = { search: { parameters: { _id: 'cms-patient-01' } } }
+        # bundle = SessionHandler.fhir_client(session.id).search(FHIR::Patient, searchParam).resource
+      # end
 
-      @patients = bundle.entry.collect{ |singleEntry| singleEntry.resource } unless bundle.nil?
-      if @patients.nil?
-        SessionHandler.disconnect(session.id)
+      # @patients = bundle.entry.collect{ |singleEntry| singleEntry.resource } unless bundle.nil?
+      # if @patients.nil?
+      #   SessionHandler.disconnect(session.id)
 
-        err = "Connection failed: Ensure provided url points to a valid FHIR server"
-        err += " that holds at least one patient"
-        redirect_to root_path, flash: { error: err }
-      else
-        # Cache the results so we don't burden the server.
-        Rails.cache.write("patients", @patients, expires_in: 1.hour)
-      end
+      #   err = "Connection failed: Ensure provided url points to a valid FHIR server"
+      #   err += " that holds at least one patient"
+      #   redirect_to root_path, flash: { error: err }
+      # else
+      #   # Cache the results so we don't burden the server.
+      #   Rails.cache.write("patients", @patients, expires_in: 1.hour)
+      # end
     end
   end
 
