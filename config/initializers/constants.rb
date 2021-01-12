@@ -12,6 +12,8 @@ HEALTH_DATA_MGR = "https://data-mgr.azurewebsites.net/PACIOJ21"
 #HEALTH_DATA_MGR = "http://hapi.fhir.org/baseR4"
 EHR_FHIR_SERVER = "https://api.logicahealth.org/mCODEv1/open"
 #EHR_FHIR_SERVER = "http://hapi.fhir.org/baseR4"
+ADI_SERVER = "https://qa-rr-fhir.maxmddirect.com"
+PQRS_SERVER = "http://api.logicahealth.org/pCRS/open"
 
 CODE_MAPPING = { 
             "Section-3/C1610" => { 

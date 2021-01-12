@@ -15,7 +15,7 @@ module Api
 
       respond_to :json
 
-      before_action :setup_fhir_client  # Make sure we're connected to the server
+      before_action :setup_fhir_clients  # Make sure we're connected to the servers
 
       #-------------------------------------------------------------------------
 
@@ -30,15 +30,23 @@ module Api
         # later to populate the PACIO observation codes.
         parse_questionnaire
 
-        @fhir_client.begin_transaction
+        # Send questionnaire response to prototype quality reporting system (pQRS)
+        # @fhir_qual_rpt_client.begin_transaction
+        #   #Write the original questionnaire response
+        #   questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
+        #   @fhir_qual_rpt_client.add_transaction_request('POST', nil, questionnaire_response,
+        #                                         nil, full_url(questionnaire_response))
+        # reply = @fhir_qual_rpt_client.end_transaction
+
+        @fhir_data_mgr_client.begin_transaction
           #Write the original questionnaire response
           questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
-          @fhir_client.add_transaction_request('POST', nil, questionnaire_response,
+          @fhir_data_mgr_client.add_transaction_request('POST', nil, questionnaire_response,
                                                 nil, full_url(questionnaire_response))
 
           # Convert questionnaire response data into PACIO resources
           extract_data_from_questionnaire_response
-        reply = @fhir_client.end_transaction
+        reply = @fhir_data_mgr_client.end_transaction
 
         head(reply.code)
       end
@@ -47,8 +55,9 @@ module Api
       private
       #-------------------------------------------------------------------------
 
-      def setup_fhir_client
-        @fhir_client ||= FHIR::Client.new(HEALTH_DATA_MGR)
+      def setup_fhir_clients
+        @fhir_data_mgr_client ||= FHIR::Client.new(HEALTH_DATA_MGR)
+        @fhir_qual_rpt_client ||= FHIR::Client.new(PQRS_SERVER)
       end
 
       #-------------------------------------------------------------------------
@@ -89,12 +98,12 @@ module Api
         # Create top-level bundled status observation
         bundled_observation = init_base_observation(@sdc_questionnaire_response)
         bundled_observation.category = category('survey')
-        bundled_observation.meta = meta('https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs') 
+        bundled_observation.meta = meta('http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs') 
         bundled_observation.code = bundled_status_code
 
         # Extract all of the individual responses
         extract_node(@sdc_questionnaire_response, bundled_observation)
-        @fhir_client.add_transaction_request('POST', nil, bundled_observation, nil,
+        @fhir_data_mgr_client.add_transaction_request('POST', nil, bundled_observation, nil,
                                               full_url(bundled_observation))
       end
 
@@ -115,7 +124,7 @@ module Api
               extract_node(item, bundled_observation, item)
               # puts "    Adding node ID = #{node_observation.id}"
               # puts "    Observation.code = #{node_observation.code}"
-              # @fhir_client.add_transaction_request('POST', nil, node_observation)
+              # @fhir_data_mgr_client.add_transaction_request('POST', nil, node_observation)
            else
               extract_leaf(item, bundled_observation, item)
             end
@@ -146,7 +155,7 @@ module Api
 
           puts "    Adding leaf ID = #{fhir_observation.id}"
           puts "    Observation.code = #{fhir_observation.code}"
-          @fhir_client.add_transaction_request('POST', nil, fhir_observation, nil,
+          @fhir_data_mgr_client.add_transaction_request('POST', nil, fhir_observation, nil,
                                                 full_url(fhir_observation))
           bundled_observation.hasMember << reference(fhir_observation)
         end
@@ -257,9 +266,9 @@ module Api
       def leaf_meta(bundled_observation)
         bundled_type = bundled_observation.meta[:profile].first
         if bundled_type.ends_with?('pacio-bfs')
-          meta("https://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-fs")
+          meta("http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-fs")
         else
-          meta("https://paciowg.github.io/cognitive-status-ig/StructureDefinition/pacio-cs")
+          meta("http://paciowg.github.io/cognitive-status-ig/StructureDefinition/pacio-cs")
         end
       end
 
