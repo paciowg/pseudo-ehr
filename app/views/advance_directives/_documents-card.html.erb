@@ -3,6 +3,16 @@
     Documents
   </div>
   <div class='card-body'>
-    Body
+    <table class='table table-striped table-dark status'>
+      <% @documents.each do |document| %>
+        <tr>
+          <td><%= display_date(document.date) %></td>
+          <td><%= link_to document.description, 
+                        advance_directive_path(document.identifier['Binary.id']) %></td>
+          <td><%= document.status %></td>
+          <td><%= document.doc_status %></td>
+        </tr>
+      <% end %>
+    </table>
   </div>
 </div>

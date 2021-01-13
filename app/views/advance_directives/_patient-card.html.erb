@@ -24,10 +24,12 @@
             <td>DOB</td>
             <td><%= display_date(@patient.birth_date) %></td>
           </tr>
+          <% if @patient.marital_status.present? %>
           <tr>
             <td>Marital Status</td>
             <td><%= sanitize(@patient.marital_status.text) %></td>
           </tr>
+          <% end %>
           <tr>
             <td>Phone</td>
             <td>

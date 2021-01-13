@@ -13,31 +13,41 @@ class AdvanceDirectivesController < ApplicationController
   #-----------------------------------------------------------------------------
 
   def index
-    # fhir_patient = @fhir_client.search(FHIR::Patient, 
-    #                                     search: {
-    #                                       parameters: {
-    #                                         given: 'Betsy', 
-    #                                         family: 'Smith-Johnson',
-    #                                         birthdate: '1950-11-07'
-    #                                       }
-    #                                     }
-    #                                   ).resource
+    fhir_patient = @fhir_client.search(FHIR::Patient, 
+                                        search: {
+                                          parameters: {
+                                            given: 'Betsy', 
+                                            family: 'Smith-Johnson',
+                                            birthdate: '1950-11-01'
+                                          }
+                                        }
+                                      ).resource.entry.first.resource
 
-    # fhir_patient = get_resource("https://qa-rr-fhir.maxmddirect.com/Patient?given=Betsy&family=Smith-Johnson&birthdate=1950-11-07")
-    # @patient = Patient.new(fhir_patient, @fhir_client)
+    @patient = Patient.new(fhir_patient, @fhir_client)
 
-    # @documents = get_resource("https://qa-rr-fhir.maxmddirect.com/DocumentReference?patient=ed8e82e7-8ad8-4825-b5f4-3a182aa967a5&status=current")
-    # @documents = @fhir_client.search(FHIR::DocumentReference, 
-    #                                   search: {
-    #                                     parameters: {
-    #                                       patient: patient.id
-    #                                     }
-    #                                   }
-    #                                 )
+    fhir_document_refs = @fhir_client.search(FHIR::DocumentReference, 
+                                        search: {
+                                          parameters: {
+                                            patient: @patient.id,
+                                            status: 'current'
+                                          }
+                                        }
+                                      ).resource.entry
 
-    @binary = get_resource("https://qa-rr-fhir.maxmddirect.com/Binary/4cac07b9-99a1-4f7f-86cc-ecde72901d61")
+    @documents = []
+    fhir_document_refs.each do |fhir_document_ref|
+      @documents << DocumentReference.new(fhir_document_ref.resource)
+    end
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def show
+    document = @fhir_client.read(FHIR::Binary, params[:id]).response
+    json = JSON.parse(document[:body])
+    xml = Base64.decode64(json['data'])
     
-    foo = 0
+    @document = Nokogiri::XML(xml).to_xml
   end
 
   #-----------------------------------------------------------------------------
@@ -46,14 +56,6 @@ class AdvanceDirectivesController < ApplicationController
 
   def setup_fhir_client
     @fhir_client ||= FHIR::Client.new(ADI_SERVER)
-  end
-
-  #-------------------------------------------------------------------------
-
-  def get_resource(url)
-    response = RestClient.get(url)
-    byebug
-    JSON.parse(response.body)
   end
 
 end

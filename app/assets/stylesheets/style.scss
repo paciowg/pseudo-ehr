@@ -131,6 +131,15 @@ div.address {
   margin-right: 0px;
 }
 
+.document {
+  height: 600px;
+  overflow: auto;
+}
+
+pre {
+  color: #888;
+}
+
 @media (min-width: 200px) and (max-width: 767px) {
   .welcome-form {
     display: block;
