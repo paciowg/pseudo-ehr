@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   # Define 'EHR' web app routes
 
+  resources :assessments,         only: [:index, :create]
   resources :advance_directives,  only: [:index, :show]
   resources :functional_status,   only: [:index, :show]
   resources :cognitive_status, 	  only: [:index, :show]

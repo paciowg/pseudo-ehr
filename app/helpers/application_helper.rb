@@ -152,6 +152,40 @@ module ApplicationHelper
 		sanitize(categories.each.map { |category| category.coding[0].code }.join(', '))	
 	end
 
+  #-----------------------------------------------------------------------------
+
+  def display_hash(hash)
+    result = []
+    hash.each_pair do |key, value|
+      if Hash == value.class
+        result << display_hash(value)
+      elsif Array == value.class
+        result << display_array(value)
+      else
+        result << "#{key}: #{value}"
+      end
+    end
+
+    result = sanitize(result.join('<br />'))
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def display_array(array)
+    result = []
+    array.each do |value|
+      if Hash == value.class
+        result << display_hash(value)
+      elsif Array == value.class
+        result << display_array(value)
+      else
+        result << value
+      end
+    end
+    
+    result = sanitize(result.join('<br />'))
+  end
+
 	#-----------------------------------------------------------------------------
 
 	def display_performers(performers)

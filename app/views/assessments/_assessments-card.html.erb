@@ -1,0 +1,17 @@
+<div class='card bg-dark text-white'>
+  <div class='card-header'>
+    Assessments
+  </div>
+  <div class='card-body'>
+    <table class='table table-striped table-dark status'>
+      <% @assessments.each do |assessment| %>
+        <tr>
+          <td><%= assessment[:name] %></td>
+          <td><%= link_to "Submit", assessments_path(assessment[:file]),
+                            method: :post, 
+                            class: "btn btn-primary", role: "button" %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+</div>

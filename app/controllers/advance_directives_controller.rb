@@ -46,8 +46,10 @@ class AdvanceDirectivesController < ApplicationController
     document = @fhir_client.read(FHIR::Binary, params[:id]).response
     json = JSON.parse(document[:body])
     xml = Base64.decode64(json['data'])
-    
-    @document = Nokogiri::XML(xml).to_xml
+    hash = Hash.from_xml(xml)
+
+    @document = hash["ClinicalDocument"]
+    # @document = Nokogiri::XML(xml)
   end
 
   #-----------------------------------------------------------------------------
