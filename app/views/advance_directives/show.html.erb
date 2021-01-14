@@ -1,24 +1,6 @@
 <section class='container'>
   <section class='row'>
     <h1><%= @document["title"] %></h1>
-    <div class='document'>
-      <!--<pre><%= @document %></pre>-->
-      <table class='table table-striped table-dark status'>
-        <% @document.each_pair do |key, value| %>
-          <tr>
-            <td><%= key %></td>
-            <td>
-              <% if Hash == value.class %>
-                <%= display_hash(value) %>
-              <% elsif Array == value.class %>
-                <%= display_array(value) %>
-              <% else %>
-                <%= value %>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-      </table>
-  	</div>
+    <embed src="content.pdf" width="1000px" height="700px" />
   </section>
 </section>

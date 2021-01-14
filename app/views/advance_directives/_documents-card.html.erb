@@ -8,7 +8,7 @@
         <tr>
           <td><%= display_date(document.date) %></td>
           <td><%= link_to document.description, 
-                        advance_directive_path(document.identifier['Binary.id']) %></td>
+                        advance_directive_path(document.identifier['Binary.id'], format: :pdf) %></td>
           <td><%= document.status %></td>
           <td><%= document.doc_status %></td>
         </tr>

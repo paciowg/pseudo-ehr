@@ -8,6 +8,8 @@
 
 class AdvanceDirectivesController < ApplicationController
 
+  respond_to :pdf
+
   before_action :setup_fhir_client  # Make sure we're connected to the server
 
   #-----------------------------------------------------------------------------
@@ -43,13 +45,15 @@ class AdvanceDirectivesController < ApplicationController
   #-----------------------------------------------------------------------------
 
   def show
-    document = @fhir_client.read(FHIR::Binary, params[:id]).response
-    json = JSON.parse(document[:body])
+    attachment = @fhir_client.read(FHIR::Binary, params[:id]).response
+    json = JSON.parse(attachment[:body])
     xml = Base64.decode64(json['data'])
     hash = Hash.from_xml(xml)
 
-    @document = hash["ClinicalDocument"]
-    # @document = Nokogiri::XML(xml)
+    document = hash["ClinicalDocument"]
+    content = Base64.decode64(document["component"]["nonXMLBody"]["text"])
+    send_data(content, filename: "#{document["title"]}.pdf", type: :pdf,
+                      disposition: :inline)
   end
 
   #-----------------------------------------------------------------------------

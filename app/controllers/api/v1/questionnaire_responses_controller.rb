@@ -29,7 +29,6 @@ module Api
         # Collect all of the LOINC codes for the questions.  We'll need them
         # later to populate the PACIO observation codes.
         parse_questionnaire
-        byebug
 
         # Send questionnaire response to prototype quality reporting system (pQRS)
         # @fhir_qual_rpt_client.begin_transaction
@@ -41,15 +40,15 @@ module Api
 
         # Send questionnaire response and associated PACIO observations to 
         # Health Data Manager
-        # @fhir_data_mgr_client.begin_transaction
-        #   #Write the original questionnaire response
-        #   questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
-        #   @fhir_data_mgr_client.add_transaction_request('POST', nil, questionnaire_response,
-        #                                         nil, full_url(questionnaire_response))
+        @fhir_data_mgr_client.begin_transaction
+          #Write the original questionnaire response
+          questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
+          @fhir_data_mgr_client.add_transaction_request('POST', nil, questionnaire_response,
+                                                nil, full_url(questionnaire_response))
 
-        #   # Convert questionnaire response data into PACIO resources
-        #   extract_data_from_questionnaire_response
-        # reply = @fhir_data_mgr_client.end_transaction
+          # Convert questionnaire response data into PACIO resources
+          extract_data_from_questionnaire_response
+        reply = @fhir_data_mgr_client.end_transaction
 
         head(reply.code)
       end
