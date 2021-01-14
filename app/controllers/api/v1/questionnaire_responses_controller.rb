@@ -180,6 +180,7 @@ module Api
         fhir_observation.issued              = @sdc_questionnaire_response[:authored]
         fhir_observation.performer           = performer(@sdc_questionnaire_response)
         fhir_observation.derivedFrom         = derived_from(@sdc_questionnaire_response[:id])
+        fhir_observation.extension           = extension(@sdc_questionnaire_response)
 
         fhir_observation
       end
@@ -225,6 +226,21 @@ module Api
           {
             "reference": "#{HEALTH_DATA_MGR}/#{ORGANIZATION[author]}",
             "display": "Organization"
+          }
+        ]
+      end
+
+      #-------------------------------------------------------------------------
+
+      def extension(fhir_questionnaire_response)
+        author = fhir_questionnaire_response[:author][:reference]
+
+        [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/event-location",
+            "valueReference": {
+              "reference": "#{HEALTH_DATA_MGR}/#{LOCATION[author]}"
+            }
           }
         ]
       end
@@ -342,6 +358,19 @@ module Api
         "Practitioner/Practitioner-HoneyJones"    => "Organization/Org-02",
       }.freeze
 
+      #-------------------------------------------------------------------------
+
+      LOCATION = {
+        "Practitioner/Practitioner-SallySmith"    => "Location/Org-Loc-01",
+        "Practitioner/Practitioner-RonMarble"     => "Location/Org-Loc-01",
+        "Practitioner/Practitioner-JenCadbury"    => "Location/Org-Loc-02",
+        "Practitioner/Practitioner-DanielGranger" => "Location/Org-Loc-02",
+        "Practitioner/Practitioner-LunaBaskins"   => "Location/Org-Loc-03",
+        "Practitioner/Practitioner-ScottDumble"   => "Location/Org-Loc-03",
+        "Practitioner/Practitioner-JohnSmith"     => "Location/Org-Loc-01",
+        "Practitioner/Practitioner-JennyGlass"    => "Location/Org-Loc-01",
+        "Practitioner/Practitioner-HoneyJones"    => "Location/Org-Loc-02",        
+      }.freeze
     end
 
   end
