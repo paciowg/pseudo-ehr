@@ -373,50 +373,6 @@ class AssessmentsController < ApplicationController
 
   FUNCTIONAL_ASSESSMENTS = [
     { 
-      name: "Hospital admission: Mobility", 
-      file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-Hospital-Admission-Mobility-1.json" 
-    },
-    { 
-      name: "Hospital admission: Self-care", 
-      file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-Hospital-Admission-Mobility-SelfCare-1.json" 
-    },
-    { 
-      name: "Hospital admission: Discharge mobility goals", 
-      file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-Hospital-DischargeGoal-Mobility-1.json" 
-    },
-    { 
-      name: "Hospital discharge: Mobility", 
-      file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-Hospital-Discharge-Mobility-1.json" 
-    },
-    { 
-      name: "Hospital discharge: Self-care", 
-      file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-Hospital-Discharge-Mobility-SelfCare-1.json" 
-    },
-    { 
-      name: "SNF admission: Mobility", 
-      file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-SNF-Admission-Mobility-1.json" 
-    },
-    { 
-      name: "SNF admission: Self-care", 
-      file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-SNF-Admission-Mobility-SelfCare-1.json" 
-    },
-    { 
-      name: "SNF admission: Discharge mobility goals", 
-      file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-SNF-DischargeGoal-Mobility-1.json" 
-    },
-    { 
-      name: "SNF admission: Discharge self-care goals", 
-      file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-SNF-DischargeGoal-Mobility-SelfCare-1.json" 
-    },
-    { 
-      name: "SNF discharge: Mobility", 
-      file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-SNF-Discharge-Mobility-1.json" 
-    },
-    { 
-      name: "SNF discharge: Self-care" , 
-      file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-SNF-Discharge-Mobility-SelfCare-1.json" 
-    },
-    { 
       name: "HHA start of care: Mobility", 
       file: "assessments/functional/QuestionnaireResponse-SDC-QResponse-HH-StartOfCare-Mobility-1.json" 
     },
@@ -435,38 +391,6 @@ class AssessmentsController < ApplicationController
   ]
 
   COGNITIVE_ASSESSMENTS = [
-    {
-      name: "Hospital: MMSE-1",
-      file: "assessments/cognitive/QuestionnaireResponse-SDC-QResponse-Hospital-MMSE-1.json"
-    },
-    {
-      name: "Hospital: MMSE-2",
-      file: "assessments/cognitive/QuestionnaireResponse-SDC-QResponse-Hospital-MMSE-2.json"
-    },
-    {
-      name: "Hospital: MOCA-1",
-      file: "assessments/cognitive/QuestionnaireResponse-SDC-QResponse-Hospital-MOCA-1.json"
-    },
-    {
-      name: "Hospital: MOCA-2",
-      file: "assessments/cognitive/QuestionnaireResponse-SDC-QResponse-Hospital-MOCA-2.json"
-    },
-    {
-      name: "SNF: BCAT",
-      file: "assessments/cognitive/QuestionnaireResponse-SDC-QResponse-SNF-BCAT-1.json"
-    },
-    {
-      name: "SNF: BIMS",
-      file: "assessments/cognitive/QuestionnaireResponse-SDC-QResponse-SNF-BIMS-1.json"
-    },
-    {
-      name: "SNF: CAM",
-      file: "assessments/cognitive/QuestionnaireResponse-SDC-QResponse-SNF-CAM-Admission-1.json"
-    },
-    {
-      name: "SNF: PHQ9",
-      file: "assessments/cognitive/QuestionnaireResponse-SDC-QResponse-SNF-PHQ9-1.json"
-    }
   ]
 
 end
