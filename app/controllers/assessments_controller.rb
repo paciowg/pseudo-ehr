@@ -298,7 +298,7 @@ class AssessmentsController < ApplicationController
   def derived_from(value)
     [
       {
-        reference: "QuestionnaireResponse/#{value}"
+        reference: "#{@server_url}/QuestionnaireResponse/#{value}"
       }
     ]     
   end

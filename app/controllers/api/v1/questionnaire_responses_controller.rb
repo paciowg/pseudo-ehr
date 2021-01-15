@@ -41,7 +41,8 @@ module Api
         # Send questionnaire response and associated PACIO observations to 
         # Health Data Manager
         @fhir_data_mgr_client.begin_transaction
-          #Write the original questionnaire response
+          #Write the original questionnaire response with a new unique ID
+          @sdc_questionnaire_response[:id] = unique_id
           questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
           @fhir_data_mgr_client.add_transaction_request('POST', nil, questionnaire_response,
                                                 nil, full_url(questionnaire_response))
@@ -311,7 +312,7 @@ module Api
       def derived_from(value)
         [
           {
-            reference: "QuestionnaireResponse/#{value}"
+            reference: "#{HEALTH_DATA_MGR}/QuestionnaireResponse/#{value}"
           }
         ]     
       end
