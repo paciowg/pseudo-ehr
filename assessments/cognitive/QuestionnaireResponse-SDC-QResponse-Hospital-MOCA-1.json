@@ -1,0 +1,34 @@
+{
+  "resourceType": "QuestionnaireResponse",
+  "id": "QResponse-Hospital-MOCA-1",
+  "meta": {
+    "profile": [
+      "http://paciowg.github.io/cognitive-status-ig/StructureDefinition/pacio-cognition-qr"
+    ]
+  },
+  "subject": {
+    "reference": "Patient/patientBSJ1"
+  },
+  "status": "completed",
+  "questionnaire": "https://api.logicahealth.org/PACIO/open/Questionnaire/MDS3.0-NC-1.17",
+  "authored": "2020-07-08T17:32:00-05:00",
+  "item": [
+    {
+      "linkId": "MoCA",
+      "text": "Montreal Cognitive Assessment [MoCA]",
+      "id": "72133-2",
+      "item": [
+        {
+          "linkId": "MoCA/TotalScore",
+          "text": "Total score [MoCA]",
+          "id": "72172-0",
+          "answer": [
+            {
+              "valueString": "18"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

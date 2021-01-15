@@ -1,0 +1,34 @@
+{
+  "resourceType": "QuestionnaireResponse",
+  "id": "QResponse-Hospital-MMSE-2",
+  "meta": {
+    "profile": [
+      "http://paciowg.github.io/cognitive-status-ig/StructureDefinition/pacio-cognition-qr"
+    ]
+  },
+  "subject": {
+    "reference": "Patient/patientBSJ1"
+  },
+  "status": "completed",
+  "questionnaire": "https://api.logicahealth.org/PACIO/open/Questionnaire/MDS3.0-NC-1.17",
+  "authored": "2020-07-10T12:16:00-05:00",
+  "item": [
+    {
+      "linkId": "MMSE",
+      "text": "Mini-Mental State Examination [MMSE]",
+      "id": "72107-6",
+      "item": [
+        {
+          "linkId": "MMSE/ToTalScore",
+          "text": "MMSE Total Score",
+          "id": "72106-8",
+          "answer": [
+            {
+              "valueString": "24"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

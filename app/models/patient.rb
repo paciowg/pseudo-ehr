@@ -34,13 +34,10 @@ class Patient < Resource
   def medications
   	medications = []
 
-  	# /MedicationRequest?patient=[@id]&_include=MedicationRequest:medication
     search_param = 	{ search: 
     									{ parameters: 
     										{ 
-                          patient: ["Patient", @id].join('/'),
-                          _count: 10 #,
-                          #_include: ['MedicationRequest:medication'] 
+                          patient: ["Patient", @id].join('/') 
     										} 
     									} 
     								}
@@ -57,13 +54,39 @@ class Patient < Resource
 
   #-----------------------------------------------------------------------------
 
+  def medication_statements
+    medication_statements = []
+
+    search_param =  { search: 
+                      { parameters: 
+                        { 
+                          subject: ["Patient", @id].join('/') 
+                        } 
+                      } 
+                    }
+
+    fhir_bundle = @fhir_client.search(FHIR::MedicationStatement, search_param).resource
+    fhir_medication_statements = filter(fhir_bundle.entry.map(&:resource), 
+                                              'MedicationStatement')
+
+    fhir_medication_statements.each do |fhir_medication_statement|
+      medication_statements << 
+              MedicationStatement.new(fhir_medication_statement, @fhir_client) unless 
+                                    fhir_medication_statement.nil?
+    end
+
+    return medication_statements
+  end
+
+  #-----------------------------------------------------------------------------
+
   def bundled_functional_statuses
     bundled_functional_statuses = []
 
     search_param =  { search:
                       { parameters:
                         { 
-                          patient: @id,
+                          subject: ["Patient", @id].join('/'),
                           _profile: 'http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs' 
                         }
                       }
@@ -88,7 +111,7 @@ class Patient < Resource
     search_param =  { search:
                       { parameters:
                         { 
-                          patient: @id,
+                          subject: ["Patient", @id].join('/'),
                           _profile: 'http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bcs' 
                         }
                       }
@@ -173,7 +196,7 @@ class Patient < Resource
     search_param =  { search:
                       { parameters:
                         { 
-                          patient: @id,
+                          subject: ["Patient", @id].join('/'),
                           _profile: profile 
                         }
                       }

@@ -4,25 +4,31 @@ class CarePlansController < ApplicationController
   # GET /care_plans
   # GET /care_plans.json
   def index
-    @care_plans = CarePlan.all
+    fhir_client = SessionHandler.fhir_client(session.id)
+    bundle = fhir_client.read_feed(FHIR::CarePlan).resource
+    @care_plans = []
+    bundle.entry.each do |entry|
+      fhir_care_plan = entry.resource
+      @care_plans << CarePlan.new(fhir_care_plan, fhir_client)
+    end
   end
 
   # GET /care_plans/1
   # GET /care_plans/1.json
   def show
     fhir_client = SessionHandler.fhir_client(session.id)
-    fhir_CarePlan = fhir_client.read(FHIR::CarePlan, params[:id]).resource
+    fhir_care_plan = fhir_client.read(FHIR::CarePlan, params[:id]).resource
     # file = File.read('app/controllers/careplan1.json')
-    # fhir_CarePlan = JSON.parse(file)
-    @care_plan = CarePlan.new(fhir_CarePlan, fhir_client) unless fhir_CarePlan.nil?
+    # fhir_care_plan = JSON.parse(file)
+    @care_plan = CarePlan.new(fhir_care_plan, fhir_client) unless fhir_care_plan.nil?
   end
 
   # GET /care_plans/new
   def new
     fhir_client = SessionHandler.fhir_client(session.id)
     file = File.read('app/controllers/careplan1.json')
-    fhir_CarePlan = JSON.parse(file)
-    @care_plan = CarePlan.new(fhir_CarePlan, fhir_client)
+    fhir_care_plan = JSON.parse(file)
+    @care_plan = CarePlan.new(fhir_care_plan, fhir_client)
   end
 
   # GET /care_plans/1/edit

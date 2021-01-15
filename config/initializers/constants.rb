@@ -14,6 +14,7 @@ EHR_FHIR_SERVER = "https://api.logicahealth.org/mCODEv1/open"
 #EHR_FHIR_SERVER = "http://hapi.fhir.org/baseR4"
 ADI_SERVER = "https://qa-rr-fhir.maxmddirect.com"
 PQRS_SERVER = "http://api.logicahealth.org/pCRS/open"
+STRUCTURE_DEFINITION_BASE = "http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-"
 
 CODE_MAPPING = { 
             "Section-3/C1610" => { 

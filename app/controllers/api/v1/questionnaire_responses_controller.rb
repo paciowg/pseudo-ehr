@@ -216,35 +216,43 @@ module Api
       #-------------------------------------------------------------------------
 
       def performer(fhir_questionnaire_response)
-        author = fhir_questionnaire_response[:author][:reference]
+        if fhir_questionnaire_response[:author].present?
+          author = fhir_questionnaire_response[:author][:reference]
 
-        [
-          {
-            "reference": "#{HEALTH_DATA_MGR}/#{author}"
-          },
-          {
-            "reference": "#{HEALTH_DATA_MGR}/#{PRACTITIONER_ROLE[author]}"
-          },
-          {
-            "reference": "#{HEALTH_DATA_MGR}/#{ORGANIZATION[author]}",
-            "display": "Organization"
-          }
-        ]
+          [
+            {
+              "reference": "#{HEALTH_DATA_MGR}/#{author}"
+            },
+            {
+              "reference": "#{HEALTH_DATA_MGR}/#{PRACTITIONER_ROLE[author]}"
+            },
+            {
+              "reference": "#{HEALTH_DATA_MGR}/#{ORGANIZATION[author]}",
+              "display": "Organization"
+            }
+          ]
+        else
+          nil
+        end
       end
 
       #-------------------------------------------------------------------------
 
       def extension(fhir_questionnaire_response)
-        author = fhir_questionnaire_response[:author][:reference]
+        if fhir_questionnaire_response[:author].present?
+          author = fhir_questionnaire_response[:author][:reference]
 
-        [
-          {
-            "url": "http://hl7.org/fhir/StructureDefinition/event-location",
-            "valueReference": {
-              "reference": "#{HEALTH_DATA_MGR}/#{LOCATION[author]}"
+          [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/event-location",
+              "valueReference": {
+                "reference": "#{HEALTH_DATA_MGR}/#{LOCATION[author]}"
+              }
             }
-          }
-        ]
+          ]
+        else
+          nil
+        end
       end
 
       #-------------------------------------------------------------------------
@@ -323,10 +331,10 @@ module Api
           coding: [
             {
               system:   @questionnaire["code"].first["system"], 
-              # code:     @questionnaire["code"].first["code"], 
-              # display:  @questionnaire["title"]
-              code: "88330-6",
-              display: "Mobility - admission performance during 3 day assessment period [CMS Assessment]"
+              code:     @questionnaire["code"].first["code"], 
+              display:  @questionnaire["title"]
+              # code: "88330-6",
+              # display: "Mobility - admission performance during 3 day assessment period [CMS Assessment]"
             }
           ]
         }

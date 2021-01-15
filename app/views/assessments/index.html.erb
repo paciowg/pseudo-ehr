@@ -1,7 +1,14 @@
 <section class='container'>
   <section class='row'>
     <div class='col-6 card-container'>
-      <%= render 'assessments-card' %>
+      <%= render partial: 'assessments-card', locals: { assessments: @functional_assessments,
+                                                  title: "Functional Assessments",
+                                                  category: "functional" } %>
+    </div>
+    <div class='col-6 card-container'>
+      <%= render partial: 'assessments-card', locals: { assessments: @cognitive_assessments,
+                                                  title: "Cognitive Assessments",
+                                                  category: "cognitive" } %>
     </div>
   </section>
 </section>
