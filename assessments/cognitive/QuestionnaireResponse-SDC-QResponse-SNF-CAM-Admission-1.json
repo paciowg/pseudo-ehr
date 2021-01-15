@@ -1,0 +1,72 @@
+{
+  "resourceType": "QuestionnaireResponse",
+  "id": "QResponse-SNF-CAM-Admission-1",
+  "meta": {
+    "profile": [
+      "http://paciowg.github.io/cognitive-status-ig/StructureDefinition/pacio-cognition-qr"
+    ]
+  },
+  "subject": {
+    "reference": "Patient/patientBSJ1"
+  },
+  "status": "completed",
+  "authored": "2020-04-09T18:00:00-05:00",
+  "item": [
+    {
+      "linkId": "Section-3",
+      "text": "Cognitive Patterns",
+      "id": "86529-5",
+      "item": [
+        {
+          "linkId": "Section-3/C1310",
+          "text": "Signs and Symptoms of Delirium (from CAM)",
+          "id": "86585-7",
+          "item": [
+            {
+              "linkId": "Section-3/C1310A",
+              "text": "Is there evidence of an acute change in mental status from the patients baseline?",
+              "id": "54632-5",
+			  "answer": [
+				{
+				  "valueCoding": {
+					"code": "LA32-8",
+					"system": "http://loinc.org",
+        			"display": "No"
+				  }
+				}
+			  ]
+            },
+            {
+              "linkId": "Section-3/C1310B",
+              "text": "Did the patient have difficulty focusing attention, for example being easily distractible, or having difficulty keeping track of what was being said?",
+              "id": "54628-3",
+			  "answer": [
+				{
+				  "valueCoding": {
+					"code": "LA61-7",
+					"system": "http://loinc.org",
+					"display": "Behavior not present"
+				  }
+				}
+			  ]
+            },
+            {
+              "linkId": "Section-3/C1310C",
+              "text": "Did the resident have altered level of consiousness as indicated by any of the following criteria: (1) Vigilant - startles easily to any sound or touch, (2) Lethargic - repeatedly dozed off when being asked questions, but responded to voice or touch, (3) Stuporous - very difficult to arouse and keep aroused for the interview, (4) Comatose - could not be aroused",
+              "id": "54629-1",
+			  "answer": [
+				{
+				  "valueCoding": {
+					"code": "LA61-7",
+					"system": "http://loinc.org",
+					"display": "Behavior not present"
+				  }
+				}
+			  ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

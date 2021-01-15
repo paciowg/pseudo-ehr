@@ -1,0 +1,129 @@
+{
+  "resourceType": "QuestionnaireResponse",
+  "id": "QResponse-SNF-Discharge-Mobility-SelfCare-1",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaireresponse"
+    ]
+  },
+  "subject": {
+    "reference": "Patient/patientBSJ1"
+  },
+  "status": "completed",
+  "questionnaire": "https://api.logicahealth.org/PACIO/open/Questionnaire/MDS3.0-NC-1.17",
+  "authored": "2020-08-01T11:00:00-05:00",
+  "item": [
+    {
+      "linkId": "Section-37",
+      "text": "Functional abilities and goals - discharge [CMS Assessment]",
+      "id": "88483-3",
+      "item": [
+        {
+          "linkId": "Section-37/GG0130_3",
+          "text": "Self-care - discharge performance [CMS Assessment]",
+          "id": "83254-3",
+          "item": [
+            {
+              "linkId": "Section-37/GG0130A3",
+              "text": "Eating - functional ability during 3 day assessment period [CMS Assessment]",
+              "id": "83232-9",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA9983-3",
+					"system": "http://loinc.org",
+					"display": "Independent - Patient completes the activity by him/herself with no assistance from a helper."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0130B3",
+              "text": "Oral hygiene - functional ability during 3 day assessment period [CMS Assessment]",
+              "id": "83230-3",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA9983-3",
+					"system": "http://loinc.org",
+					"display": "Independent - Patient completes the activity by him/herself with no assistance from a helper."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0130C3",
+              "text": "Toileting hygiene - functional ability during 3 day assessment period [CMS Assessment]",
+              "id": "83228-7",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA10073-7",
+					"system": "http://loinc.org",
+					"display": "Setup or clean-up assistance - Helper sets up or cleans up; patient completes activity. Helper assists only prior to or following the activity."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0130E3",
+              "text": "Shower/bathe self - functional ability during 3 day assessment period [CMS Assessment]",
+              "id": "83226-1",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11759-0",
+					"system": "http://loinc.org",
+					"display": "Substantial/maximal assistance - Helper does more than half the effort. Helper lifts or holds trunk or limbs and provides more than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0130F3",
+              "text": "Upper body dressing - functional ability during 3 day assessment period [CMS Assessment]",
+              "id": "83224-6",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA10073-7",
+					"system": "http://loinc.org",
+					"display": "Setup or clean-up assistance - Helper sets up or cleans up; patient completes activity. Helper assists only prior to or following the activity."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0130G3",
+              "text": "Lower body dressing - functional ability during 3 day assessment period [CMS Assessment]",
+              "id": "83222-0",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA10055-4",
+					"system": "http://loinc.org",
+					"display": "Partial/moderate assistance - Helper does less than half the effort. Helper lifts, holds or supports trunk or limbs, but provides less than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0130H3",
+              "text": "Putting on/taking off footwear - functional ability during 3 day assessment period [CMS Assessment]",
+              "id": "83220-4",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA10055-4",
+					"system": "http://loinc.org",
+					"display": "Partial/moderate assistance - Helper does less than half the effort. Helper lifts, holds or supports trunk or limbs, but provides less than half the effort."
+				  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

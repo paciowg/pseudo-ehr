@@ -38,6 +38,8 @@ module Api
         #                                         nil, full_url(questionnaire_response))
         # reply = @fhir_qual_rpt_client.end_transaction
 
+        # Send questionnaire response and associated PACIO observations to 
+        # Health Data Manager
         @fhir_data_mgr_client.begin_transaction
           #Write the original questionnaire response
           questionnaire_response = FHIR::QuestionnaireResponse.new(@sdc_questionnaire_response)
@@ -329,10 +331,10 @@ module Api
           coding: [
             {
               system:   @questionnaire["code"].first["system"], 
-              # code:     @questionnaire["code"].first["code"], 
-              # display:  @questionnaire["title"]
-              code: "88330-6",
-              display: "Mobility - admission performance during 3 day assessment period [CMS Assessment]"
+              code:     @questionnaire["code"].first["code"], 
+              display:  @questionnaire["title"]
+              # code: "88330-6",
+              # display: "Mobility - admission performance during 3 day assessment period [CMS Assessment]"
             }
           ]
         }

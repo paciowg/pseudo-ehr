@@ -1,0 +1,269 @@
+{
+  "resourceType": "QuestionnaireResponse",
+  "id": "QResponse-SNF-DischargeGoal-Mobility-1",
+  "meta": {
+    "profile": [
+      "http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-functional-qr"
+    ]
+  },
+  "subject": {
+    "reference": "Patient/patientBSJ1"
+  },
+  "status": "completed",
+  "questionnaire": "https://api.logicahealth.org/PACIO/open/Questionnaire/MDS3.0-NC-1.17",
+  "authored": "2020-07-11T16:32:00-05:00",
+  "item": [
+    {
+      "linkId": "Section-37",
+      "text": "Functional abilities and goals - admission [CMS Assessment]",
+      "id": "88482-5",
+      "item": [
+        {
+          "linkId": "Section-37/GG0170_2",
+          "text": "Mobility - discharge goal during 3 day assessment period [CMS Assessment]",
+          "id": "85056-0",
+          "item": [
+            {
+              "linkId": "Section-37/GG0170A2",
+              "text": "Roll left and right - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83217-0",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11757-4",
+					"system": "http://loinc.org",
+					"display": "Supervision or touching assistance - Helper provides verbal cues or touching/steadying assistance as patient completes activity. Assistance may be provided throughout the activity or intermittently."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170B2",
+              "text": "Sit to lying - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83215-4",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA10073-7",
+					"system": "http://loinc.org",
+					"display": "Setup or clean-up assistance - Helper sets up or cleans up; patient completes activity. Helper assists only prior to or following the activity."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170C2",
+              "text": "Lying to sitting on side of bed - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83213-9",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA10073-7",
+					"system": "http://loinc.org",
+					"display": "Setup or clean-up assistance - Helper sets up or cleans up; patient completes activity. Helper assists only prior to or following the activity."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170D2",
+              "text": "Sit to stand - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83211-3",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11757-4",
+					"system": "http://loinc.org",
+					"display": "Supervision or touching assistance - Helper provides verbal cues or touching/steadying assistance as patient completes activity. Assistance may be provided throughout the activity or intermittently."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170E2",
+              "text": "Bed-to-chair transfer - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83209-7",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11758-2",
+					"system": "http://loinc.org",
+					"display": "Partial/moderate assistance - Helper does less than half the effort. Helper lifts, holds or supports truck or limbs, but provides less than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170F2",
+              "text": "Toilet transfer - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83207-1",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11758-2",
+					"system": "http://loinc.org",
+					"display": "Partial/moderate assistance - Helper does less than half the effort. Helper lifts, holds or supports truck or limbs, but provides less than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170G2",
+              "text": "Car transfer - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83205-5",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11758-2",
+					"system": "http://loinc.org",
+					"display": "Partial/moderate assistance - Helper does less than half the effort. Helper lifts, holds or supports truck or limbs, but provides less than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170I2",
+              "text": "Walk 10 feet - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83203-0",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11758-2",
+					"system": "http://loinc.org",
+					"display": "Partial/moderate assistance - Helper does less than half the effort. Helper lifts, holds or supports truck or limbs, but provides less than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170J2",
+              "text": "Walk 50 feet with two turns - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83201-4",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11758-2",
+					"system": "http://loinc.org",
+					"display": "Partial/moderate assistance - Helper does less than half the effort. Helper lifts, holds or supports truck or limbs, but provides less than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170K2",
+              "text": "Walk 150 feet - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83199-0",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11758-2",
+					"system": "http://loinc.org",
+					"display": "Partial/moderate assistance - Helper does less than half the effort. Helper lifts, holds or supports truck or limbs, but provides less than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170L2",
+              "text": "Walking 10 feet on uneven surfaces - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83197-4",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11759-0",
+					"system": "http://loinc.org",
+					"display": "Substantial/maximal assistance - Helper does more than half the effort. Helper lifts or holds trunk or limbs and provides more than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170M2",
+              "text": "1 step (curb) - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83195-8",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11758-2",
+					"system": "http://loinc.org",
+					"display": "Partial/moderate assistance - Helper does less than half the effort. Helper lifts, holds or supports truck or limbs, but provides less than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170N2",
+              "text": "4 steps - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83193-3",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11759-0",
+					"system": "http://loinc.org",
+					"display": "Substantial/maximal assistance - Helper does more than half the effort. Helper lifts or holds trunk or limbs and provides more than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170O2",
+              "text": "12 steps - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83191-7",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11759-0",
+					"system": "http://loinc.org",
+					"display": "Substantial/maximal assistance - Helper does more than half the effort. Helper lifts or holds trunk or limbs and provides more than half the effort."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170P2",
+              "text": "Picking up object - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83189-1",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA27665-1",
+					"system": "http://loinc.org",
+					"display": "Dependent - Helper does all of the effort. Patient does none of the effort to complete the activity. Or, the assistance of 2 or more helpers is required for the patient to complete the activity."
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170R2",
+              "text": "Wheel 50 feet with two turns - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83187-5",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA11539-6",
+					"system": "http://loinc.org",
+					"display": "Independent"
+				  }
+                }
+              ]
+            },
+            {
+              "linkId": "Section-37/GG0170S2",
+              "text": "Wheel 150 feet - functional goal during 3 day assessment period [CMS Assessment]",
+              "id": "83236-0",
+              "answer": [
+              	{
+				  "valueCoding": {
+					"code": "LA27993-7",
+					"system": "http://loinc.org",
+					"display": "Independent"
+				  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
