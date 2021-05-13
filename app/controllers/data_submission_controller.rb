@@ -89,7 +89,7 @@ class DataSubmissionController < ApplicationController
     end
     @SessionHandler = SessionHandler.establish(session.id, Rails.cache.read("base_server_url"), params[:client_id], params[:client_secret], @client)
       @measure_report = create_measure_report("26", "patientBSJ1", "2020", "2020")
-      patient_bundle = FHIR::Json.from_json(File.read('app/controllers/careplan1.json'))
+      patient_bundle = FHIR::Json.from_json(File.read('app/controllers/measure_data.json'))
       resources = patient_bundle.entry.map(&:resource)
       submit_data_response = submit_data("26", resources, @measure_report)
       @response = JSON.parse(submit_data_response)["entry"]

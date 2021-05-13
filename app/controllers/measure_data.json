@@ -1,0 +1,1175 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patientBSJ1",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+          ]
+        },
+        "active": true,
+        "name": [
+          {
+            "text": "Betsy Smith-Johnson",
+            "given": [
+              "Betsy"
+            ],
+            "family": "Smith-Johnson"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1950-11-01",
+        "maritalStatus": {
+          "coding": [
+            {
+              "code": "U",
+              "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+              "display": "unmarried"
+            }
+          ],
+          "text": "Not married"
+        },
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical Record Number"
+                }
+              ]
+            },
+            "system": "http://hl7.org/fhir/sid/us-medicare",
+            "value": "10A3D58WH1600"
+          }
+        ],
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2106-3",
+                  "display": "White"
+                }
+              }
+            ]
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2186-5",
+                  "display": "Not Hispanic or Latino"
+                }
+              }
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "210-222-1111",
+            "use": "mobile"
+          }
+        ],
+        "address": [
+          {
+            "text": "111 Maple Ct, San Antonio, TX 78212",
+            "line": [
+              "111 Maple Ct"
+            ],
+            "city": "San Antonio",
+            "district": "Bexar",
+            "state": "TX",
+            "postalCode": "78212"
+          }
+        ],
+        "communication": [
+          {
+            "language": {
+              "coding": [
+                {
+                  "code": "en",
+                  "system": "urn:oid:2.16.840.1.113883.1.11.11526",
+                  "display": "English"
+                }
+              ],
+              "text": "US"
+            },
+            "preferred": true
+          }
+        ],
+        "contact": [
+          {
+            "name": {
+              "text": "Charles Johnson",
+              "given": [
+                "Charles"
+              ],
+              "family": "Johnson"
+            },
+            "relationship": [
+              {
+                "coding": [
+                  {
+                    "code": "SONC",
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                    "display": "Son"
+                  }
+                ]
+              },
+              {
+                "coding": [
+                  {
+                    "code": "C",
+                    "system": "http://hl7.org/fhir/v2/0131",
+                    "display": "Emergency Contact"
+                  }
+                ]
+              },
+              {
+                "coding": [
+                  {
+                    "code": "GUARD",
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                    "display": "Guardian"
+                  }
+                ]
+              }
+            ],
+            "address": {
+              "text": "100 Montana St., San Antonio, TX 78203"
+            },
+            "telecom": [
+              {
+                "system": "phone",
+                "value": "(210) 222-3333"
+              }
+            ]
+          },
+          {
+            "name": {
+              "text": "Debra Johnson",
+              "given": [
+                "Debra"
+              ],
+              "family": "Johnson"
+            },
+            "relationship": [
+              {
+                "coding": [
+                  {
+                    "code": "DAUC",
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                    "display": "Daughter"
+                  }
+                ]
+              }
+            ],
+            "address": {
+              "text": "333 W. Camden St., Baltimore, MD 21201"
+            },
+            "telecom": [
+              {
+                "system": "phone",
+                "value": "(410) 444-5555"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/patientBSJ1"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "BSJ-Diagnosis1",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "active",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "confirmed",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "encounter-diagnosis",
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "code": "38341003",
+              "system": "http://snomed.info/sct",
+              "display": "Hypertension"
+            }
+          ],
+          "text": "Hypertensive disorder, systemic arterial (disorder)"
+        },
+        "onsetDateTime": "2020-07-06T12:15:00-05:00",
+        "asserter": {
+          "reference": "Practitioner/Practitioner-JohnSmith",
+          "display": "PCP John Smith"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/BSJ-Diagnosis1"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "BSJ-Diagnosis2",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "active",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "confirmed",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "encounter-diagnosis",
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "code": "55822004",
+              "system": "http://snomed.info/sct",
+              "display": "Hyperlipidemia"
+            }
+          ],
+          "text": "Hyperlipidemia (disorder)"
+        },
+        "onsetDateTime": "2020-07-06T12:15:00-05:01",
+        "asserter": {
+          "reference": "Practitioner/Practitioner-JohnSmith",
+          "display": "PCP John Smith"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/BSJ-Diagnosis2"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "BSJ-Diagnosis3",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "active",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "confirmed",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "encounter-diagnosis",
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "code": "433144002",
+              "system": "http://snomed.info/sct",
+              "display": "Stage 3 chronic kideny disease"
+            }
+          ],
+          "text": "Chronic kidney disease stage 3 (disorder)"
+        },
+        "onsetDateTime": "2020-07-06T12:15:00-05:02",
+        "asserter": {
+          "reference": "Practitioner/Practitioner-JohnSmith",
+          "display": "PCP John Smith"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/BSJ-Diagnosis3"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "BSJ-Diagnosis4",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "active",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "confirmed",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "encounter-diagnosis",
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "code": "414545008",
+              "system": "http://snomed.info/sct",
+              "display": "Ischemic heart disease"
+            }
+          ],
+          "text": "Ischemic heart disease (disorder)"
+        },
+        "onsetDateTime": "2020-07-06T12:15:00-05:03",
+        "asserter": {
+          "reference": "Practitioner/Practitioner-JohnSmith",
+          "display": "PCP John Smith"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/BSJ-Diagnosis4"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "BSJ-Diagnosis5",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "active",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "confirmed",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "encounter-diagnosis",
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "code": "192080009",
+              "system": "http://snomed.info/sct",
+              "display": "Depression"
+            }
+          ],
+          "text": "Chronic depression (disorder)"
+        },
+        "onsetDateTime": "2020-07-06T12:15:00-05:04",
+        "asserter": {
+          "reference": "Practitioner/Practitioner-JohnSmith",
+          "display": "PCP John Smith"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/BSJ-Diagnosis5"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "BSJ-Diagnosis6",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "active",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "confirmed",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "encounter-diagnosis",
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "code": "95722004",
+              "system": "http://snomed.info/sct",
+              "display": "Cataracts"
+            }
+          ],
+          "text": "Bilateral cataracts (disorder)"
+        },
+        "onsetDateTime": "2020-07-06T12:15:00-05:05",
+        "asserter": {
+          "reference": "Practitioner/Practitioner-JohnSmith",
+          "display": "PCP John Smith"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/BSJ-Diagnosis6"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "BSJ-Diagnosis7",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "active",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "confirmed",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "encounter-diagnosis",
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "code": "396275006",
+              "system": "http://snomed.info/sct",
+              "display": "Osteoarthiritis"
+            }
+          ],
+          "text": "Osteoarthritis (disorder)"
+        },
+        "onsetDateTime": "2020-07-06T12:15:00-05:06",
+        "asserter": {
+          "reference": "Practitioner/Practitioner-JohnSmith",
+          "display": "PCP John Smith"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/BSJ-Diagnosis7"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "BSJ-Diagnosis8",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "active",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "confirmed",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "encounter-diagnosis",
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "code": "44054006",
+              "system": "http://snomed.info/sct",
+              "display": "Type 2 diabetes"
+            }
+          ],
+          "text": "Diabetes mellitus type 2 (disorder)"
+        },
+        "onsetDateTime": "2020-07-06T12:15:00-05:07",
+        "asserter": {
+          "reference": "Practitioner/Practitioner-JohnSmith",
+          "display": "PCP John Smith"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/BSJ-Diagnosis8"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "BSJ-Diagnosis9",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "active",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "confirmed",
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "encounter-diagnosis",
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "code": "422504002",
+              "system": "http://snomed.info/sct",
+              "display": "Ischemic stroke"
+            }
+          ],
+          "text": "Ischemic stroke (disorder) "
+        },
+        "onsetDateTime": "2020-07-07T15:32:00-05:07",
+        "asserter": {
+          "reference": "Practitioner/Practitioner-NoraOlogist",
+          "display": "Neurologist Nora Ologist"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/BSJ-Diagnosis9"
+      }
+    },
+
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "BSJ-Encounter-1",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "IMP",
+          "display": "Inpatient encounter"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "code": "32485007",
+                "system": "http://snomed.info/sct",
+                "display": "Hospital admission (procedure)"
+              }
+            ]
+          }
+        ],
+        "period": {
+          "start": "2020-07-07T15:00:00-05:00",
+          "end": "2020-07-11T10:30:00-05:00"
+        },
+        "diagnosis": [
+          {
+            "condition": {
+              "reference": "Condition/BSJ-Diagnosis9"
+            },
+            "rank": 1,
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-encounter-diagnosisPresentOnAdmission",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "code": "y",
+                      "system": "http://hl7.org/fhir/ValueSet/ex-diagnosis-on-admission",
+                      "display": "Yes"
+                    }
+                  ]
+                }
+              }
+            ],
+            "use": {
+              "coding": [
+                {
+                  "code": "AD",
+                  "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                  "display": "Admission diagnosis"
+                }
+              ]
+            }
+          },
+          {
+            "condition": {
+              "reference": "Condition/BSJ-Diagnosis1"
+            },
+            "use": {
+              "coding": [
+                {
+                  "code": "CM",
+                  "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                  "display": "Comorbidity diagnosis"
+                }
+              ]
+            }
+          },
+          {
+            "condition": {
+              "reference": "Condition/BSJ-Diagnosis2"
+            },
+            "use": {
+              "coding": [
+                {
+                  "code": "CM",
+                  "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                  "display": "Comorbidity diagnosis"
+                }
+              ]
+            }
+          },
+          {
+            "condition": {
+              "reference": "Condition/BSJ-Diagnosis3"
+            },
+            "use": {
+              "coding": [
+                {
+                  "code": "CM",
+                  "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                  "display": "Comorbidity diagnosis"
+                }
+              ]
+            }
+          },
+          {
+            "condition": {
+              "reference": "Condition/BSJ-Diagnosis4"
+            },
+            "use": {
+              "coding": [
+                {
+                  "code": "CM",
+                  "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                  "display": "Comorbidity diagnosis"
+                }
+              ]
+            }
+          },
+          {
+            "condition": {
+              "reference": "Condition/BSJ-Diagnosis5"
+            },
+            "use": {
+              "coding": [
+                {
+                  "code": "CM",
+                  "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                  "display": "Comorbidity diagnosis"
+                }
+              ]
+            }
+          },
+          {
+            "condition": {
+              "reference": "Condition/BSJ-Diagnosis6"
+            },
+            "use": {
+              "coding": [
+                {
+                  "code": "CM",
+                  "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                  "display": "Comorbidity diagnosis"
+                }
+              ]
+            }
+          },
+          {
+            "condition": {
+              "reference": "Condition/BSJ-Diagnosis7"
+            },
+            "use": {
+              "coding": [
+                {
+                  "code": "CM",
+                  "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                  "display": "Comorbidity diagnosis"
+                }
+              ]
+            }
+          },
+          {
+            "condition": {
+              "reference": "Condition/BSJ-Diagnosis8"
+            },
+            "use": {
+              "coding": [
+                {
+                  "code": "CM",
+                  "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                  "display": "Comorbidity diagnosis"
+                }
+              ]
+            }
+          }
+        ],
+        "participant": [
+          {
+            "individual": {
+              "reference": "Practitioner/Practitioner-NoraOlogist"
+            }
+          }
+        ],
+        "hospitalization": {
+          "dischargeDisposition": {
+            "coding": [
+              {
+                "code": "snf",
+                "system": "http://hl7.org/fhir/ValueSet/encounter-discharge-disposition",
+                "display": "Skilled nursing facility"
+              }
+            ]
+          }
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Encounter/BSJ-Encounter-1"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "Medication-Request-1",
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "discharge",
+                "system": "http://hl7.org/fhir/ValueSet/medicationrequest-category"
+              }
+            ]
+          }
+        ],
+        "medicationReference": {
+          "reference": "Medication/Medication-Aspirin"
+        },
+        "authoredOn": "2020-07-11T05:42:00-05:00",
+        "requester": {
+          "reference": "Practitioner/Practitioner-NoraOlogist"
+        },
+        "reasonReference": [
+          {
+            "reference": "Condition/BSJ-Diagnosis9"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "Take daily"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationRequest/Medication-Request-1"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "Medication-Request-2",
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "discharge",
+                "system": "http://hl7.org/fhir/ValueSet/medicationrequest-category"
+              }
+            ]
+          }
+        ],
+        "medicationReference": {
+          "reference": "Medication/Medication-Atorvastatin80mg"
+        },
+        "authoredOn": "2020-07-11T05:42:00-05:00",
+        "requester": {
+          "reference": "Practitioner/Practitioner-NoraOlogist"
+        },
+        "reasonReference": [
+          {
+            "reference": "Condition/BSJ-Diagnosis2"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "Take nightly"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationRequest/Medication-Request-2"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "Medication-Request-3",
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "discharge",
+                "system": "http://hl7.org/fhir/ValueSet/medicationrequest-category"
+              }
+            ]
+          }
+        ],
+        "medicationReference": {
+          "reference": "Medication/Medication-Plavix"
+        },
+        "authoredOn": "2020-07-11T05:42:00-05:00",
+        "requester": {
+          "reference": "Practitioner/Practitioner-NoraOlogist"
+        },
+        "reasonReference": [
+          {
+            "reference": "Condition/BSJ-Diagnosis4"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "Take daily"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationRequest/Medication-Request-3"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "Medication-Request-4",
+        "subject": {
+          "reference": "Patient/patientBSJ1"
+        },
+        "status": "stopped",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "discharge",
+                "system": "http://hl7.org/fhir/ValueSet/medicationrequest-category"
+              }
+            ]
+          }
+        ],
+        "medicationReference": {
+          "reference": "Medication/Medication-Atorvastatin40mg"
+        },
+        "authoredOn": "2020-07-11T05:42:00-05:00",
+        "requester": {
+          "reference": "Practitioner/Practitioner-NoraOlogist"
+        },
+        "reasonReference": [
+          {
+            "reference": "Condition/BSJ-Diagnosis2"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "Take nightly"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "MedicationRequest/Medication-Request-4"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "Practitioner-JohnSmith",
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "4278275001"
+          }
+        ],
+        "name": [
+          {
+            "given": [
+              "John"
+            ],
+            "family": "Smith",
+            "text": "Primary Care Physician"
+          }
+        ],
+        "active": true,
+        "gender": "male",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(210) 564 1389"
+          }
+        ],
+        "address": [
+          {
+            "text": "177 Deerfield St. San Antonio, TX 78207"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Practitioner/Practitioner-JohnSmith"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "Practitioner-NoraOlogist",
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "3668788925"
+          }
+        ],
+        "name": [
+          {
+            "given": [
+              "Nora"
+            ],
+            "family": "Ologist",
+            "text": "Neurologist"
+          }
+        ],
+        "active": true,
+        "gender": "female",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(210) 555 7632"
+          }
+        ],
+        "address": [
+          {
+            "text": "26022 Meadowlark Bay, San Antonio, TX 78260"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Practitioner/Practitioner-NoraOlogist"
+      }
+    }
+  ]
+}
