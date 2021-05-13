@@ -44,7 +44,7 @@ Rails.application.routes.draw do
   get '/env',           to: 'env#index'
   get '/convert',       to: 'convert#index'
   put '/convert/:id',   to: 'convert#update'
-
+  get '/submit_data',   to: 'data_submission#index'
   root 'welcome#index'
 
   # Define 'FHIR' API for retrieving patients and converting questionnaire 

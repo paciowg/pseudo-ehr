@@ -1,0 +1,12 @@
+<section class='container'>
+<h1 class="select-patient-header">Measure Report successfully submitted!</h1>
+  <div class="patient-list-container">
+  <ul class="patient-list">
+    <% @response.each do |response_item| %>
+      <li>
+        <a class="btn btn-primary btn-md btn-block patient-option collapse show" href="<%= @base_server_url + response_item["response"]["location"] %>"><%=response_item["response"]["location"] %></a>
+      </li>
+    <% end %>
+  </ul>
+  </div>
+</section>
