@@ -23,21 +23,21 @@ class AdvanceDirectivesController < ApplicationController
                                             birthdate: '1950-11-01'
                                           }
                                         }
-                                      ).resource.entry.first.resource
+                                      ).resource&.entry&.first&.resource
 
-    @patient = Patient.new(fhir_patient, @fhir_client)
+    @patient = fhir_patient ? Patient.new(fhir_patient, @fhir_client) : nil
 
     fhir_document_refs = @fhir_client.search(FHIR::DocumentReference, 
                                         search: {
                                           parameters: {
-                                            patient: @patient.id,
+                                            patient: @patient&.id,
                                             status: 'current'
                                           }
                                         }
-                                      ).resource.entry
+                                      ).resource&.entry
 
     @documents = []
-    fhir_document_refs.each do |fhir_document_ref|
+    fhir_document_refs&.each do |fhir_document_ref|
       @documents << DocumentReference.new(fhir_document_ref.resource)
     end
   end
