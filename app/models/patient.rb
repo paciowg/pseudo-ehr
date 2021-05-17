@@ -43,12 +43,13 @@ class Patient < Resource
     								}
 
     fhir_bundle = @fhir_client.search(FHIR::Medication, search_param).resource
-    fhir_medications = filter(fhir_bundle.entry.map(&:resource), 'Medication')
+    unless fhir_bundle.nil?
+      fhir_medications = filter(fhir_bundle.entry.map(&:resource), 'Medication')
 
-    fhir_medications.each do |fhir_medication|
-    	medications << Medication.new(fhir_medication) unless fhir_medication.nil?
+      fhir_medications.each do |fhir_medication|
+    	  medications << Medication.new(fhir_medication) unless fhir_medication.nil?
+      end
     end
-
     return medications
   end
 
@@ -66,13 +67,15 @@ class Patient < Resource
                     }
 
     fhir_bundle = @fhir_client.search(FHIR::MedicationStatement, search_param).resource
-    fhir_medication_statements = filter(fhir_bundle.entry.map(&:resource), 
+    unless fhir_bundle.nil?
+      fhir_medication_statements = filter(fhir_bundle.entry.map(&:resource), 
                                               'MedicationStatement')
 
-    fhir_medication_statements.each do |fhir_medication_statement|
-      medication_statements << 
-              MedicationStatement.new(fhir_medication_statement, @fhir_client) unless 
-                                    fhir_medication_statement.nil?
+      fhir_medication_statements.each do |fhir_medication_statement|
+       medication_statements << 
+                MedicationStatement.new(fhir_medication_statement, @fhir_client) unless 
+                                     fhir_medication_statement.nil?
+     end
     end
 
     return medication_statements
