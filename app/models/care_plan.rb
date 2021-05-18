@@ -51,8 +51,6 @@ class CarePlan < Resource
 
   def get_type_and_id(url)
   	components = url.split('/')
-  	puts components
-  	puts "GETTING TYPE"
   	max_index = components.length - 1
   	return [components[max_index-1], components[max_index]].join('/')
   end
@@ -102,8 +100,6 @@ class CarePlan < Resource
             activity_details << activity_ref
         else
             # activity_objects << activity_ref
-            puts "PRINTING REFERENCE"
-            puts activity_ref.reference
             fhir_activity = @fhir_client.read(nil, get_type_and_id(activity_ref.reference.reference)).resource
             class_string = get_type_and_id(activity_ref.reference.reference).split('/')[0].constantize
             activity_objects << class_string.new(fhir_activity)

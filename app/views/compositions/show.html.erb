@@ -12,10 +12,10 @@
     <div class='col-6 card-container'>
       <%= render partial: 'dashboard/patient-card'%>
     </div>
-    <div class='col-6 card-container'>
-      <% @composition.section.each do |section| %>
+    <div class='col-6 card-container accordion' id="sections">
+      <% @composition.section.each_with_index do |section, index| %>
        <div class='row'>
-        <%= render 'section_card', section: section %>
+        <%= render 'section_card', section: section, index: index %>
        </div>
        <br>
       <% end %>
