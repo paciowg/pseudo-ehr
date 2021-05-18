@@ -1,0 +1,4 @@
+## Add colums here after adding columns to the model
+one: {}
+  # created_at: <%= 5.day.ago.to_s(:db) %>
+  # updated_at: <%= 5.day.ago.to_s(:db) %>
