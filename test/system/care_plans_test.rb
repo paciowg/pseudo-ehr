@@ -1,13 +1,19 @@
 require "application_system_test_case"
 
 class CarePlansTest < ApplicationSystemTestCase
-  setup do
-    @care_plan = care_plans(:one)
-  end
+  # setup do
+  #   @care_plan = care_plans(:one)
+  # end
 
   test "visiting the index" do
     visit care_plans_url
     assert_selector "h1", text: "Care Plans"
+  end
+
+  test "showing a Care Plan" do
+    visit care_plans_url
+    click_on "Show", match: :first
+    assert page.has_content?("Conditions")
   end
 
   test "creating a Care plan" do
