@@ -43,9 +43,9 @@ class Patient < Resource
     								}
 
     fhir_bundle = @fhir_client.search(FHIR::Medication, search_param).resource
-    fhir_medications = filter(fhir_bundle.entry.map(&:resource), 'Medication')
+    fhir_medications = filter(fhir_bundle.entry.map(&:resource), 'Medication') unless fhir_bundle.nil?
 
-    fhir_medications.each do |fhir_medication|
+    fhir_medications&.each do |fhir_medication|
     	medications << Medication.new(fhir_medication) unless fhir_medication.nil?
     end
 
