@@ -1,9 +1,15 @@
 require "application_system_test_case"
 
 class CarePlansTest < ApplicationSystemTestCase
-  # setup do
-  #   @care_plan = care_plans(:one)
-  # end
+  setup do
+    # Provide a fhir server url and setup a session
+    visit root_url
+    fill_in("server_url", with: "http://hapi.fhir.org/baseR4/")
+    click_on "Connect"
+    
+    fhir_care_plan = FHIR::CarePlan.all.entry.first.resource
+    @care_plan = CarePlan.new(fhir_care_plan, nil)
+  end
 
   test "visiting the index" do
     visit care_plans_url
@@ -12,8 +18,13 @@ class CarePlansTest < ApplicationSystemTestCase
 
   test "showing a Care Plan" do
     visit care_plans_url
-    click_on "Show", match: :first
-    assert page.has_content?("Conditions")
+    if page.has_link?("Show")
+      click_on "Show", match: :first
+    else
+      visit care_plan_url(@care_plan.id)
+    end
+
+    assert page.has_content?("Conditions" || "Not available")
   end
 
   test "creating a Care plan" do
@@ -23,17 +34,18 @@ class CarePlansTest < ApplicationSystemTestCase
     click_on "Create Care plan"
 
     assert_text "Care plan was successfully created"
-    click_on "Back"
   end
 
   test "updating a Care plan" do
     visit care_plans_url
-    click_on "Edit", match: :first
+    if page.has_link?("Edit")
+      click_on "Edit", match: :first
+      click_on "Update Care plan"
+    else
+      patch care_plan_url(@care_plan.id), params: { care_plan: {  } }
+    end 
 
-    click_on "Update Care plan"
-
-    assert_text "Care plan was successfully updated"
-    click_on "Back"
+    assert_text "Care plan was successfully updated", "Should be able to update a plan"
   end
 
   test "destroying a Care plan" do

@@ -23,7 +23,7 @@ class HomeController < ApplicationController
         @token_params = {:grant_type => 'authorization_code', :code => @code, :redirect_uri => ENV["REDIRECT_URI"], :client_id => ENV["CLIENT_ID"]}
         @token_url = Rails.cache.read("token_url")
         @response = Net::HTTP.post_form URI(@token_url), @token_params
-        puts @response.body
+        
         @token = JSON.parse(@response.body)["access_token"]
         @base_server_url = Rails.cache.read("base_server_url")
         @client = FHIR::Client.new(@base_server_url)
