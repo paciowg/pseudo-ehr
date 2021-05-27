@@ -1,0 +1,15 @@
+<div class='card bg-dark text-white'>
+  <div class='card-header' id="sectionHeader-<%= index %>">
+    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#sectionBody-<%= index %>" aria-expanded="false" aria-controls="sectionHeader-<%= index %>">
+        <%= section["title"] %>
+    </button>
+  </div>
+  <div id="sectionBody-<%= index %>" class="collapse" aria-labelledby="sectionHeader-<%= index %>" data-parent="#sections">
+    <div class='card-body'>
+      <% section["objects"].each do |object| %>
+        <%= render object.resourceType + "_card", object: object %>
+        <br>
+      <% end %>
+    </div>
+  </div>
+</div>

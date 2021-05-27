@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   resources :organizations
   resources :conditions
   resources :care_plans
+  resources :compositions
   resources :questionnaire_responses
 
   get 'questionnaire_responses/index'
