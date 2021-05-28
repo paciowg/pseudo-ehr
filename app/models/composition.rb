@@ -49,9 +49,12 @@ class Composition < Resource
 
   def get_object_from_bundle(fhir_reference, fhir_bundle)
     referenced_object = fhir_bundle.entry.map(&:resource).select do |resource| 
-      resource.resourceType == fhir_reference.reference.split('/')[0]
-      # puts resource.resourceType
-      resource.id == fhir_reference.reference.split('/')[1]
+      if fhir_reference
+        resource.resourceType == fhir_reference.reference.split('/')[0]
+        # puts resource.resourceType
+        resource.id == fhir_reference.reference.split('/')[1]
+      end
+      
     end
     referenced_object[0]
   end

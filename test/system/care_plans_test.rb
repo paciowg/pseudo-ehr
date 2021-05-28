@@ -24,7 +24,7 @@ class CarePlansTest < ApplicationSystemTestCase
       visit care_plan_url(@care_plan.id)
     end
 
-    assert page.has_content?("Conditions" || "Not available")
+    assert page.has_content?("Conditions")
   end
 
   test "creating a Care plan" do
@@ -33,19 +33,19 @@ class CarePlansTest < ApplicationSystemTestCase
 
     click_on "Create Care plan"
 
-    assert_text "Care plan was successfully created"
+    assert_content "Care plan was successfully created."
   end
 
   test "updating a Care plan" do
     visit care_plans_url
     if page.has_link?("Edit")
       click_on "Edit", match: :first
-      click_on "Update Care plan"
+      click_on "Create Care plan"
     else
       patch care_plan_url(@care_plan.id), params: { care_plan: {  } }
     end 
 
-    assert_text "Care plan was successfully updated", "Should be able to update a plan"
+    assert_content "Care plan was successfully created."
   end
 
   test "destroying a Care plan" do

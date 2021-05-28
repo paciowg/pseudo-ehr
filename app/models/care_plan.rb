@@ -17,21 +17,21 @@ class CarePlan < Resource
   #-----------------------------------------------------------------------------
 
   def initialize(fhir_carePlan, fhir_client)
-    @id = fhir_carePlan.id
-    @status = fhir_carePlan.status
-    @intent = fhir_carePlan.intent
-    @category = fhir_carePlan.category
-    @subject = fhir_carePlan.subject
-    @period = fhir_carePlan.period
-    @author = fhir_carePlan.author
-    @conditions = fhir_carePlan.addresses
-    @supportingInfo = fhir_carePlan.supportingInfo
-    @goal = fhir_carePlan.goal
-    @contributor = fhir_carePlan.contributor
-    @activity = fhir_carePlan.activity
+    @id = fhir_carePlan&.id
+    @status = fhir_carePlan&.status
+    @intent = fhir_carePlan&.intent
+    @category = fhir_carePlan&.category
+    @subject = fhir_carePlan&.subject
+    @period = fhir_carePlan&.period
+    @author = fhir_carePlan&.author
+    @conditions = fhir_carePlan&.addresses
+    @supportingInfo = fhir_carePlan&.supportingInfo
+    @goal = fhir_carePlan&.goal
+    @contributor = fhir_carePlan&.contributor
+    @activity = fhir_carePlan&.activity
     
-    @title = fhir_carePlan.title
-    @description = fhir_carePlan.description
+    @title = fhir_carePlan&.title
+    @description = fhir_carePlan&.description
 
     @fhir_client = fhir_client
   end
@@ -45,18 +45,21 @@ class CarePlan < Resource
   #-----------------------------------------------------------------------------
 
   def get_type_and_id(url)
-  	components = url.split('/')
-  	max_index = components.length - 1
-  	return [components[max_index-1], components[max_index]].join('/')
+  	if url
+      components = url.split('/')
+  	  max_index = components.length - 1
+  	  return [components[max_index-1], components[max_index]].join('/')
+    end
+    
   end
 
   #-----------------------------------------------------------------------------
 
   def addresses
     addresses = []
-    conditions.each do |condition|
-      fhir_condition = @fhir_client.read(nil, get_type_and_id(condition.reference)).resource
-      addresses << Condition.new(fhir_condition)
+    conditions&.each do |condition|
+      fhir_condition = @fhir_client.read(nil, get_type_and_id(condition&.reference)).resource
+      addresses << Condition.new(fhir_condition) if fhir_condition
     end
     return addresses
   end
@@ -65,9 +68,9 @@ class CarePlan < Resource
 
   def goals
     goals = []
-    goal.each do |subGoal|
-      fhir_goal = @fhir_client.read(nil, get_type_and_id(subGoal.reference)).resource
-      goals << Goal.new(fhir_goal)
+    goal&.each do |subGoal|
+      fhir_goal = @fhir_client.read(nil, get_type_and_id(subGoal&.reference)).resource
+      goals << Goal.new(fhir_goal) if fhir_goal
     end
     return goals
   end
@@ -76,10 +79,13 @@ class CarePlan < Resource
 
   def subject_names
     names = []
-    fhir_patient = @fhir_client.read(nil, get_type_and_id(subject.reference)).resource
-    fhir_patient.name.each do |name|
-      names << name
+    if subject && subject.reference
+      fhir_patient = @fhir_client.read(nil, get_type_and_id(subject.reference)).resource
+      fhir_patient&.name&.each do |name|
+        names << name
+      end
     end
+    
     return names
   end
 

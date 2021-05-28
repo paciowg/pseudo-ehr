@@ -6,7 +6,7 @@
   </div>
   <div id="sectionBody-<%= index %>" class="collapse" aria-labelledby="sectionHeader-<%= index %>" data-parent="#sections">
     <div class='card-body'>
-      <% section["objects"].each do |object| %>
+      <% section["objects"]&.compact&.each do |object| %>
         <%= render object.resourceType + "_card", object: object %>
         <br>
       <% end %>

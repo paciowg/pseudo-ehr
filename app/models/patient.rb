@@ -16,15 +16,15 @@ class Patient < Resource
   #-----------------------------------------------------------------------------
 
   def initialize(fhir_patient, fhir_client)
-    @id               = fhir_patient.id
-  	@names 						= fhir_patient.name
-  	@telecoms 				= fhir_patient.telecom
-  	@addresses 				= fhir_patient.address
-  	@birth_date 			= fhir_patient.birthDate.to_date
-  	@gender 					= fhir_patient.gender
-  	@marital_status 	= fhir_patient.maritalStatus
+    @id               = fhir_patient&.id
+  	@names 						= fhir_patient&.name
+  	@telecoms 				= fhir_patient&.telecom
+  	@addresses 				= fhir_patient&.address
+  	@birth_date 			= fhir_patient&.birthDate&.to_date
+  	@gender 					= fhir_patient&.gender
+  	@marital_status 	= fhir_patient&.maritalStatus
   	@photo						= nil
-    @resource_type    = fhir_patient.resourceType
+    @resource_type    = fhir_patient&.resourceType
 
   	@fhir_client			= fhir_client
   end
@@ -46,8 +46,8 @@ class Patient < Resource
     unless fhir_bundle.nil?
       fhir_medications = filter(fhir_bundle.entry.map(&:resource), 'Medication')
 
-      fhir_medications.each do |fhir_medication|
-    	  medications << Medication.new(fhir_medication) unless fhir_medication.nil?
+      fhir_medications.compact.each do |fhir_medication|
+    	  medications << Medication.new(fhir_medication)
       end
     end
     return medications
@@ -71,10 +71,8 @@ class Patient < Resource
       fhir_medication_statements = filter(fhir_bundle.entry.map(&:resource), 
                                               'MedicationStatement')
 
-      fhir_medication_statements.each do |fhir_medication_statement|
-       medication_statements << 
-                MedicationStatement.new(fhir_medication_statement, @fhir_client) unless 
-                                     fhir_medication_statement.nil?
+      fhir_medication_statements.compact.each do |fhir_medication_statement|
+       medication_statements << MedicationStatement.new(fhir_medication_statement, @fhir_client)
      end
     end
 
@@ -96,11 +94,12 @@ class Patient < Resource
                     }
 
     fhir_bundle = @fhir_client.search(FHIR::Observation, search_param).resource
-    fhir_functional_statuses = filter(fhir_bundle.entry.map(&:resource), 'Observation')
-    # puts fhir_functional_statuses
-    fhir_functional_statuses.each do |fhir_functional_status|
-      bundled_functional_statuses << BundledFunctionalStatus.new(fhir_functional_status, @fhir_client) unless 
-                                                          fhir_functional_status.nil?
+    unless fhir_bundle.nil?
+      fhir_functional_statuses = filter(fhir_bundle.entry.map(&:resource), 'Observation')
+    
+      fhir_functional_statuses.compact.each do |fhir_functional_status|
+      bundled_functional_statuses << BundledFunctionalStatus.new(fhir_functional_status, @fhir_client) 
+    end
     end
 
     return bundled_functional_statuses
@@ -121,11 +120,12 @@ class Patient < Resource
                     }
 
     fhir_bundle = @fhir_client.search(FHIR::Observation, search_param).resource
-    fhir_cognitive_statuses = filter(fhir_bundle.entry.map(&:resource), 'Observation')
+    unless fhir_bundle.nil?
+      fhir_cognitive_statuses = filter(fhir_bundle.entry.map(&:resource), 'Observation')
 
-    fhir_cognitive_statuses.each do |fhir_cognitive_status|
-      bundled_cognitive_statuses << BundledCognitiveStatus.new(fhir_cognitive_status, @fhir_client) unless
-                                                            fhir_cognitive_status.nil?
+      fhir_cognitive_statuses.compact.each do |fhir_cognitive_status|
+        bundled_cognitive_statuses << BundledCognitiveStatus.new(fhir_cognitive_status, @fhir_client)
+      end
     end
 
     return bundled_cognitive_statuses
@@ -138,11 +138,9 @@ class Patient < Resource
 
     fhir_functional_statuses = get_fhir_statuses_with_profile(
                         'http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs')
-    fhir_functional_statuses.each do |fhir_functional_status|
+    fhir_functional_statuses.compact.each do |fhir_functional_status|
       functional_statuses = {}
-      functional_statuses[:bundle] = 
-                BundledFunctionalStatus.new(fhir_functional_status, @fhir_client) unless 
-                                                          fhir_functional_status.nil?
+      functional_statuses[:bundle] = BundledFunctionalStatus.new(fhir_functional_status, @fhir_client)
       functional_statuses[:assessments] = functional_statuses[:bundle].functional_statuses
       all_functional_statuses << functional_statuses
     end
@@ -157,11 +155,9 @@ class Patient < Resource
 
     fhir_cognitive_statuses = get_fhir_statuses_with_profile(
                         'http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bcs')
-    fhir_cognitive_statuses.each do |fhir_cognitive_status|
+    fhir_cognitive_statuses.compact.each do |fhir_cognitive_status|
       cognitive_statuses = {}
-      cognitive_statuses[:bundle] =
-                BundledCognitiveStatus.new(fhir_cognitive_status, @fhir_client) unless 
-                                                          fhir_cognitive_status.nil?
+      cognitive_statuses[:bundle] = BundledCognitiveStatus.new(fhir_cognitive_status, @fhir_client)
       cognitive_statuses[:assessments] = cognitive_statuses[:bundle].cognitive_statuses
       all_cognitive_statuses << cognitive_statuses
     end
@@ -172,15 +168,17 @@ class Patient < Resource
   #-----------------------------------------------------------------------------
 
   def age
-    now = Time.now.to_date
-    age = now.year - @birth_date.year
+    if @birth_date
+      now = Time.now.to_date
+      age = now.year - @birth_date.year
 
-    if now.month < @birth_date.month || 
-                  (now.month == @birth_date.month && now.day < @birth_date.day)
-      age -= 1
+      if now.month < @birth_date.month || (now.month == @birth_date.month && now.day < @birth_date.day)
+        age -= 1
+      end
+
+      return age.to_s
     end
-
-    age.to_s
+    
   end
 
   #-----------------------------------------------------------------------------
@@ -206,7 +204,7 @@ class Patient < Resource
                     }
 
     fhir_bundle = @fhir_client.search(FHIR::Observation, search_param).resource
-    fhir_statuses = fhir_bundle.entry.map(&:resource)
+    fhir_statuses = fhir_bundle&.entry&.map(&:resource)
   end
 
 end

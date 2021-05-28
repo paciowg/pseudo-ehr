@@ -5,7 +5,7 @@
       <% @cognitive_statuses.each do |cognitive_status| %>
         <th><%= display_date(cognitive_status[:bundle].effective) %></th>
       <% end %>
-      <% assessment_count = @cognitive_statuses.first[:assessments].count %>
+      <% assessment_count = @cognitive_statuses.first&[:assessments]&.count || 0 %>
       <% i = 0 %>
       <% while i < assessment_count %>
         <tr>
