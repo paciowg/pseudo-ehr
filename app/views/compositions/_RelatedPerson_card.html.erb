@@ -5,12 +5,20 @@
         <td>Name: </td>
         <td><%= display_human_name(object.name[0]) %></td>
       </tr>
+      <tr>
         <td>Relationships: </td>
         <% object.relationship.each do |relation| %>
           <td><%= relation.coding[0].display %></td>
         <% end %>
-      <tr>
       </tr>
+      
+      <% object.telecom.each do |contact| %>
+        <tr>
+          <td><%= "#{contact.system&.capitalize}:" %></td>
+          <td><%= contact.value %></td>
+        </tr>
+      <% end %>
+      
     </table>
   </div>
 </div>
