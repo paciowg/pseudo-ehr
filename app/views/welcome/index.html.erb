@@ -1,7 +1,7 @@
 <section class='container'>
 	<h2 class="text-light welcome-text">Connect to a FHIR server</h2>
 	<div class='row'>
-		<%= form_tag home_path, method: 'get', class: 'form-inline welcome-form', id: 'server-form' do %>
+		<%= form_tag home_path, method: 'get', class: 'form-inline welcome-form d-flex', id: 'server-form' do %>
 			<div class='col'></div>
 			<div class='form-group col-md-7 last'>
 				<%= text_field_tag :server_url, nil, class: 'form-control',

@@ -139,6 +139,14 @@ div.address {
 pre {
   color: #888;
 }
+.center {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+.text-responsive {
+  font-size: calc(10% + 1vw + 1vh);
+}
 
 @media (min-width: 200px) and (max-width: 767px) {
   .welcome-form {
