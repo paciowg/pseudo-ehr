@@ -81,6 +81,33 @@ class Patient < Resource
 
   #-----------------------------------------------------------------------------
 
+  def compositions
+    compositions = []
+
+    search_param =  { search: 
+      { parameters: 
+        { 
+          subject: ["Patient", @id].join('/') 
+        } 
+      } 
+    }
+
+    fhir_bundle = @fhir_client.search(FHIR::Composition, search_param).resource
+    unless fhir_bundle.nil?
+      fhir_compositions = filter(fhir_bundle.entry&.map(&:resource), 'Composition')
+
+      fhir_compositions&.compact&.each do |composition|
+       compositions << Composition.new(composition, fhir_bundle)
+     end
+    end
+
+    return compositions
+
+  end
+  
+
+  #-----------------------------------------------------------------------------
+
   def bundled_functional_statuses
     bundled_functional_statuses = []
 
@@ -186,7 +213,7 @@ class Patient < Resource
   #-----------------------------------------------------------------------------
 
   def filter(fhir_resources, type)
-    fhir_resources.select do |resource| 
+    fhir_resources&.select do |resource| 
     	resource.resourceType == type
     end
   end

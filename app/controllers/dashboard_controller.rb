@@ -24,6 +24,8 @@ class DashboardController < ApplicationController
       @medications          = @patient.medications
       @functional_statuses  = @patient.bundled_functional_statuses
       @cognitive_statuses   = @patient.bundled_cognitive_statuses
+      @compositions         = @patient.compositions
+      #byebug
     else
       redirect_to :root
     end

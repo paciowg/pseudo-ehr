@@ -4,6 +4,10 @@
   </div>
   <div class='card-body'>
     <table class='table table-striped table-dark status'>
+       <tr>
+        <td>Total cognitive statuses: </td>
+        <td><%= @cognitive_statuses.count %></td>
+      </tr>
       <% @cognitive_statuses.each do |cognitive_status| %>
         <tr>
           <td><%= display_date(cognitive_status.effective) %></td>
