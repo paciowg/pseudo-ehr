@@ -1,16 +1,21 @@
 class PatientsController < ApplicationController
   # before_action :set_patient, only: [:show, :edit, :update, :destroy]
+  before_action :setup_fhir_client
 
   # GET /patients
   # GET /patients.json
   def index
-    @patients = Patient.all
+    fhir_bundle = params[:name] ? @fhir_client.search(FHIR::Patient, search: {parameters: {name: params[:name]}}).resource 
+                                : @fhir_client.search(FHIR::Patient).resource
+    @patients = fhir_bundle.entry.collect{ |singleEntry| singleEntry.resource }.compact unless fhir_bundle.nil?
+    # @patients = fhir_patients.map{ |patient| Patient.new(patient, @fhir_client) } unless fhir_patients.nil?
+    render 'home/index'
   end
 
   # GET /patients/1
   # GET /patients/1.json
   def show
-    redirect_to :controller => 'dashboard', :action => 'index'
+    redirect_to :controller => 'dashboard', :action => 'index', patient: params[:id]
   end
 
   # GET /patients/new
@@ -66,6 +71,10 @@ class PatientsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_patient
       @patient = Patient.find(params[:id])
+    end
+
+    def setup_fhir_client
+      @fhir_client ||= SessionHandler.fhir_client(session.id)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
