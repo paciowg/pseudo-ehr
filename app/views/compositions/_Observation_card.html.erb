@@ -2,12 +2,9 @@
   <div class='col table-responsive-sm'>
     <table class='table table-striped table-dark status'>
       <tr>
-        <td class='col-3'>Observation Status: </td>
-        <td class='col-3'><%= sanitize(object.status) || "unavailable" %></td>
-      </tr>
-      <tr>
+        <% code = object.code.coding.first.code%>
         <td class='col-3'>Category: </td>
-        <td class='col-3'><%= object.code&.coding&.first&.display || "unavailable" %></td>
+        <td class='col-3'><%= "#{object.code&.coding&.first&.display} (#{code})" || "unavailable" %></td>
       </tr>
       <tr>
         
@@ -15,7 +12,7 @@
           <% index = object.valueString.rindex(":") %>
           <td class='col-3' colspan="2">
             <%= object.valueString.from(0).to(index) %> 
-            <span style="color:brown;"><%= object.valueString.from(index + 1) %></span>
+            <span style="font-weight:bold;"><%= object.valueString.from(index + 1) %></span>
           </td>
           <% else %>
           <td class='col-3' colspan="2"><%= object.valueString %></td>

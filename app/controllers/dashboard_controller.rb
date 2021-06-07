@@ -16,15 +16,20 @@ class DashboardController < ApplicationController
         bundle = FHIR.from_contents(Rails.cache.read("$document_bundle"))
         fhir_patient = get_object_from_bundle('Patient/' + patient_id, bundle)
       end
+      
       if fhir_patient.nil?
-        fhir_patient = SessionHandler.fhir_client(session.id).
-                                read(FHIR::Patient, patient_id).resource
+        fhir_response = SessionHandler.fhir_client(session.id).read(FHIR::Patient, patient_id)
+        fhir_patient = fhir_response.resource
+
+        # Display the fhir query being run on the UI to help implementers
+        @fhir_query           = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
       end
       @patient              = Patient.new(fhir_patient, SessionHandler.fhir_client(session.id))
       @medications          = @patient.medications
       @functional_statuses  = @patient.bundled_functional_statuses
       @cognitive_statuses   = @patient.bundled_cognitive_statuses
       @compositions         = @patient.compositions
+      
       #byebug
     else
       redirect_to :root

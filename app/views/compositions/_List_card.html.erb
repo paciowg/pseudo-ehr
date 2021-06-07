@@ -16,7 +16,7 @@
             <% index = referenced_object[0].description.text.rindex(":") %>
             <td>
               <%= referenced_object[0].description.text.from(0).to(index) %>
-              <span style="color:brown;"><%= referenced_object[0].description.text.from(index + 1) %></span>
+              <span style="font-weight:bold;"><%= referenced_object[0].description.text.from(index + 1) %></span>
             </td>
             <% else %>
             <td><%= referenced_object[0].description.text %></td>

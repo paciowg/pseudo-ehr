@@ -12,19 +12,24 @@ class CompositionsController < ApplicationController
       redirect_to :action => "show", :id => composition_id
     end
     fhir_client = SessionHandler.fhir_client(session.id)
-    bundle = fhir_client.read_feed(FHIR::Composition).resource
+    fhir_response = fhir_client.read_feed(FHIR::Composition)
+    bundle = fhir_response.resource
     @compositions = []
     bundle.entry.each do |entry|
       fhir_composition = entry.resource
       @compositions << Composition.new(fhir_composition, nil)
     end
+
+     # Display the fhir query being run on the UI to help implementers
+     @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
   end
 
   # GET /compositions/1
   # GET /compositions/1.json
   def show
     fhir_client = SessionHandler.fhir_client(session.id)
-    bundle = fhir_client.read(FHIR::Composition, params[:id] + "/$document").resource
+    fhir_response = fhir_client.read(FHIR::Composition, params[:id] + "/$document")
+    bundle = fhir_response.resource
     Rails.cache.write("$document_bundle", bundle.to_json,  { expires_in: 30.minutes })
     fhir_composition = bundle.entry.map(&:resource).first
     # puts "baaaarrrrrrrd\n\n\n"
@@ -32,6 +37,9 @@ class CompositionsController < ApplicationController
     @composition = Composition.new(fhir_composition, bundle) unless fhir_composition.nil?
     @patient = Patient.new(@composition.subject, fhir_client)
     @bundle_objects = bundle.entry.map(&:resource)
+
+    # Display the fhir query being run on the UI to help implementers
+    @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
   end
 
   # GET /compositions/new

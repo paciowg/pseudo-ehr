@@ -58,12 +58,14 @@ class HomeController < ApplicationController
       # status in the default server.
       if SessionHandler.from_storage(session.id, "connection").base_server_url == DEFAULT_SERVER
         searchParam = { search: { parameters: { _id: 'cms-patient-01' } } }
-        bundle = SessionHandler.fhir_client(session.id).search(FHIR::Patient, searchParam).resource
+        fhir_response = SessionHandler.fhir_client(session.id).search(FHIR::Patient, searchParam)
       else
-        bundle = SessionHandler.fhir_client(session.id).search(FHIR::Patient).resource
+        fhir_response = SessionHandler.fhir_client(session.id).search(FHIR::Patient)
       end
-
+      bundle = fhir_response.resource
       @patients = bundle.entry.collect{ |singleEntry| singleEntry.resource } unless bundle.nil?
+      # Display the fhir query being run on the UI to help implementers
+      @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
       if @patients.nil?
         SessionHandler.disconnect(session.id)
 

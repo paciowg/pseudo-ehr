@@ -5,10 +5,17 @@ class PatientsController < ApplicationController
   # GET /patients
   # GET /patients.json
   def index
-    fhir_bundle = params[:name] ? @fhir_client.search(FHIR::Patient, search: {parameters: {name: params[:name]}}).resource 
-                                : @fhir_client.search(FHIR::Patient).resource
+    if params[:name]
+      fhir_response = @fhir_client.search(FHIR::Patient, search: {parameters: {name: params[:name]}})
+    else
+      fhir_response = @fhir_client.search(FHIR::Patient)
+    end
+    fhir_bundle = fhir_response.resource
     @patients = fhir_bundle.entry.collect{ |singleEntry| singleEntry.resource }.compact unless fhir_bundle.nil?
-    # @patients = fhir_patients.map{ |patient| Patient.new(patient, @fhir_client) } unless fhir_patients.nil?
+    
+    # Display the fhir query being run on the UI to help implementers
+    @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+
     render 'home/index'
   end
 
