@@ -8,7 +8,7 @@
       </tr>
       <tr>
         
-        <% if object.valueString.include?(":") %>
+        <% if object.valueString&.include?(":") %>
           <% index = object.valueString.rindex(":") %>
           <td class='col-3' colspan="2">
             <%= object.valueString.from(0).to(index) %> 
