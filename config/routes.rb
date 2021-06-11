@@ -17,8 +17,11 @@ Rails.application.routes.draw do
   resources :advance_directives,  only: [:index, :show]
   resources :functional_status,   only: [:index, :show]
   resources :cognitive_status, 	  only: [:index, :show]
+  resources :encounters,          only: [:show]
   resources	:practitioners,       only: [:show]
-  resources :patients
+  resources :patients do
+    resources :encounters, only: [:index]
+  end
   resources :observations
   resources :practitioner_roles
   resources :contracts

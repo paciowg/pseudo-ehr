@@ -108,6 +108,31 @@ class Patient < Resource
 
   #-----------------------------------------------------------------------------
 
+  def encounters
+    encounters = []
+
+    search_param =  { search: 
+      { parameters: 
+        { 
+          subject: ["Patient", @id].join('/') 
+        } 
+      } 
+    }
+    fhir_bundle = @fhir_client.search(FHIR::Encounter, search_param).resource
+    
+    unless fhir_bundle.nil?
+      fhir_bundle.entry&.each do |entry|
+        fhir_encounter = entry.resource
+        encounters << Encounter.new(fhir_encounter, @fhir_client)
+      end 
+     
+    end
+
+    return encounters
+  end
+  
+  #-----------------------------------------------------------------------------
+
   def bundled_functional_statuses
     bundled_functional_statuses = []
 

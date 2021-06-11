@@ -1,0 +1,34 @@
+<section class='container'>
+  <section class='dashboard-header-text'>
+    <%= render partial: 'patient-info' %>
+    <br>
+  </section >
+
+  <section class='row'>
+    <table class='table table-striped table-dark status caption-top'>
+      <caption><h2>Encounters list</h2></caption>
+      <thead>
+        <tr>
+          <th>Encounter Date</th>
+          <th>Encounter Type</th>
+          <%# <th>Service Type</th> %>
+          <th>Provider</th>
+          <th>Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <% @encounters.each do |encounter| %>
+          <tr>
+            <td><%= display_date(encounter.period&.start&.to_date) %></td>
+            <td><%= encounter.type&.first&.text %></td>
+            <td><%=  encounter.participant&.first&.individual&.display%></td>
+            <td><%= link_to "View", encounter_path(encounter.id) %></td>
+          </tr>
+        <% end %>
+        
+      </tbody>
+    </table>
+  </section>
+ 
+</section>

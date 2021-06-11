@@ -1,0 +1,33 @@
+<section class='container'>
+  <section class='dashboard-header-text'>
+    <%= render partial: 'patient-info' %>
+    <br>
+  </section >
+  <section class='row'>
+    <h2>Encounter Details</h2>
+    <div class='card bg-dark'>
+        <div class='card-body'>
+            <table class='table table-striped table-dark status'>
+                <tr>
+                    <td>Start Date: <%= display_date(@encounter.period&.start&.to_date) %></td>
+                    <td>End Date: <%= display_date(@encounter.period&.end&.to_date) %></td>
+                    <td>Status: <%= @encounter.status %></td>
+                </tr>
+                <tr>
+                    <td>Encounter Type: <%= @encounter.type&.first&.text %></td>
+                    <td>Reason: <%= "#{@encounter.reason_code&.display} (#{@encounter.reason_code&.code})"%></td>
+                    <td>Service Type: <%= @encounter.service_type %></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+  </section>
+  <section class='row' id='cards'>
+    <div class='col-lg-6 card-container'>
+        <%= render partial: 'providers-card' %>
+    </div>
+    <div class='col-lg-6 card-container'>
+        <%= render partial: 'assessments-card' %>
+    </div>
+  </section>
+</section>
