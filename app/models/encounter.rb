@@ -12,7 +12,7 @@ class Encounter < Resource
 
     attr_reader :id, :identifier, :status, :status_history, :class, :class_history, :type, :service_type, :priority,
                 :subject, :episode_of_care, :based_on, :participant, :appointment, :period, :length, :reason_code,
-                :diagnosis, :hospitalization, :location, :service_provider, :part_of
+                :reason_reference, :diagnosis, :hospitalization, :location, :service_provider, :part_of
 
     #-----------------------------------------------------------------------------
 
@@ -33,6 +33,7 @@ class Encounter < Resource
         @period              = fhir_encounter.period
         @length              = fhir_encounter.length
         @reason_code         = fhir_encounter.reasonCode&.first&.coding&.first
+        @reason_reference    = fhir_encounter.reasonReference
         @diagnosis           = fhir_encounter.diagnosis      # condition resource, use, rank
         @hospitalization     = fhir_encounter.hospitalization
         @location            = fhir_encounter.location        # list of locations the patient has been to
@@ -47,6 +48,11 @@ class Encounter < Resource
 
     def observations
         assessments = []
+        # get observations from reason reference
+        # @reason_reference.each do |reference|
+        #     assessments << @fhir_client.read(nil, reference.reference).resource
+        # end
+        
         search_param = { search: { parameters: { encounter: "Encounter/#{@id }"} } }
         fhir_observations = @fhir_client.search(FHIR::Observation, search_param ).resource&.entry&.map(&:resource)
 
