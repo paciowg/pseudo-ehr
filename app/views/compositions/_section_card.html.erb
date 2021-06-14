@@ -1,5 +1,5 @@
 <div class='card bg-dark text-white'>
-  <div class='card-header' id="sectionHeader-<%= index %>">
+  <div class='card-header' id="sectionHeader-<%= index %>" data-bs-toggle="tooltip" title="<%= strip_tags(section["text"]) %>">
     <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#sectionBody-<%= index %>" aria-expanded="false" aria-controls="sectionHeader-<%= index %>">
         <%= section["title"] %>
     </button>

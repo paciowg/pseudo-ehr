@@ -37,6 +37,7 @@ class Composition < Resource
     @section = []
     section_list.each do |section| 
       section_objects = {}
+      section_objects["text"] = section.text.div
       section_objects["title"] = section.title
       section_objects["objects"] = []
       section.entry.each do |fhir_reference|
