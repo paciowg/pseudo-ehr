@@ -13,7 +13,7 @@
                         type="submit" name="patient" value="<%= patient.id %>">
                         <% patient_name = [patient.name.first&.family, patient.name.first&.given&.join(" ")].compact %>
                         <% if  patient_name.present? %>
-                          <%= "#{patient_name.join(", ")}, DOB: #{display_date(patient.birthDate.to_date)}, ID: #{patient.id}" %>
+                          <%= "#{patient_name.join(", ")}, DOB: #{display_date(patient.birthDate.to_date) if patient.birthDate}, ID: #{patient.id}" %>
                         <% else %>
                           No name provided
                         <% end %>

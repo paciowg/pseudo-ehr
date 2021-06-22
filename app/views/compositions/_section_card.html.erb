@@ -1,8 +1,17 @@
+
 <div class='card bg-dark text-white'>
-  <div class='card-header' id="sectionHeader-<%= index %>" data-bs-toggle="tooltip" title="<%= strip_tags(section["text"]) %>">
+  <div class='card-header' id="sectionHeader-<%= index %>" >
     <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#sectionBody-<%= index %>" aria-expanded="false" aria-controls="sectionHeader-<%= index %>">
         <%= section["title"] %>
     </button>
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-default view" data-bs-toggle="modal" data-bs-target="#sectionNarrative-<%= index %>" aria-label="view">
+      <span class="view" data-bs-toggle="tooltip" title="View directive">🔗</span>
+    </button>
+
+    <!-- Modal -->
+    <%= render 'section_narrative', section: section, index: index %>
   </div>
   <div id="sectionBody-<%= index %>" class="collapse" aria-labelledby="sectionHeader-<%= index %>" data-bs-parent="#sections">
     <div class='card-body'>
@@ -14,3 +23,4 @@
     </div>
   </div>
 </div>
+

@@ -1,5 +1,10 @@
 <div class='row patient-info justify-content-center'>
   <div class='col table-responsive-sm'>
+    <div class=" mytooltip">
+      View narrative
+      <span class="mytooltiptext"><%= sanitize(object.text.div) %></span>
+    </div>
+    <br> <br>
     <table class='table table-striped table-dark status'>
       <tr>
         <% code = object.code.coding.first.code%>
