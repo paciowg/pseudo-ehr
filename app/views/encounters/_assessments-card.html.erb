@@ -1,7 +1,7 @@
 <div class='card bg-dark text-white'>
   <div class='card-header' id="assessmentHeader">
     <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#assessmentBody" aria-expanded="false" aria-controls="assessmentBody">
-        Assessments
+        Assessments (<%= @encounter.observations.count %>)
     </button>
   </div>
   <div id="assessmentBody" class="collapse" aria-labelledby="assessmentHeader" data-bs-parent="#cards">
@@ -18,10 +18,11 @@
                 <td><%= display_datetime(observation.effective) %></td>
             </tr>
             <tr>
-                <td><%= observation.code&.text %></td>
-                <td><%= observation.value&.text %></td>
+                <td><%= display_code(observation.code) %></td>
+                <td><%= display_code(observation.value) %></td>
             </tr>
         </table> 
+        <br>
       <% end %>
       
     </div>

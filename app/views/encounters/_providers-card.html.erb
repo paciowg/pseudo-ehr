@@ -1,7 +1,7 @@
 <div class='card bg-dark text-white'>
   <div class='card-header' id="providerHeader">
     <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#providerBody" aria-expanded="false" aria-controls="providerBody">
-        Providers
+        Providers (<%= @encounter.providers.count %>)
     </button>
   </div>
   <div id="providerBody" class="collapse" aria-labelledby="providerHeader" data-bs-parent="#cards">
@@ -11,9 +11,16 @@
         
         <% @encounter.providers&.each do |provider| %>
             <tr>
-                <td>Name: <%= provider[:name] %></td>
-                <td>Role: <%= provider[:role] %></td>
-                <td>Care Period: <%= "#{display_date(@provider[:period]&.start&.to_date)} - #{display_date(@provider[:period]&.end&.to_date)}" %></td>
+                <td>Name: </td>
+                <td><%= provider[:name].class == Array ? display_human_name(provider[:name].first) : provider[:name] %></td>
+            </tr>
+            <tr>
+              <td>Role: </td>
+              <td><%= provider[:role] %></td>
+            </tr>
+            <tr>
+              <td>Care Period: </td>
+              <td><%= "#{display_date(provider[:period]&.start&.to_date)} - #{display_date(provider[:period]&.end&.to_date)}" %></td>
             </tr>
         <% end %>
         

@@ -27,17 +27,17 @@ class Encounter < Resource
         @service_type        = fhir_encounter.serviceType
         @priority            = fhir_encounter.priority
         @episode_of_care     = fhir_encounter.episodeOfCare  
-        @based_on            = fhir_encounter.basedOn        
+        @based_on            = fhir_encounter.basedOn        # reference clinicalImpression
         @participant         = fhir_encounter.participant    
         @appointment         = fhir_encounter.appointment
         @period              = fhir_encounter.period
         @length              = fhir_encounter.length
-        @reason_code         = fhir_encounter.reasonCode&.first&.coding&.first
+        @reason_code         = fhir_encounter.reasonCode&.first
         @reason_reference    = fhir_encounter.reasonReference
         @diagnosis           = fhir_encounter.diagnosis      # condition resource, use, rank
         @hospitalization     = fhir_encounter.hospitalization
         @location            = fhir_encounter.location        # list of locations the patient has been to
-        @service_provider    = fhir_encounter.serviceProvider
+        @service_provider    = fhir_encounter.serviceProvider&.display || @fhir_client.try(:read, nil, fhir_encounter.serviceProvider&.reference)&.resource&.name
         @part_of             = fhir_encounter.partOf
         
         @fhir_client         = fhir_client
@@ -99,10 +99,11 @@ class Encounter < Resource
         participants = []
         
         @participant&.each do |participant|
+            fhir_provider = @fhir_client.read(nil, participant.individual.reference).resource
             provider = {}
             provider[:role] = participant.type&.first&.text
             provider[:period] = participant.period
-            provider[:name] = participant.individual&.display
+            provider[:name] =  fhir_provider ? Practitioner.new(fhir_provider).name : participant.individual&.display
             participants << provider
         end
         

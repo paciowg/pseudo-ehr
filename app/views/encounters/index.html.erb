@@ -21,7 +21,7 @@
         <% @encounters.each do |encounter| %>
           <tr>
             <td><%= display_date(encounter.period&.start&.to_date) %></td>
-            <td><%= encounter.type&.first&.text %></td>
+            <td><%= display_code(encounter.type&.first) %></td>
             <td><%=  encounter.participant&.first&.individual&.display%></td>
             <td><%= link_to "View", encounter_path(encounter.id) %></td>
           </tr>

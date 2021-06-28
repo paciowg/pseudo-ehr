@@ -5,7 +5,7 @@
       <% @functional_statuses.each do |functional_status| %>
         <th><%= display_date(functional_status[:bundle].effective) %></th>
       <% end %>
-      <% assessment_count = @functional_statuses&.first&[:assessments]&.count || 0 %>
+      <% assessment_count = @functional_statuses.first.try(:[], :assessments).try(:count) || 0 %>
       <% i = 0 %>
       <% while i < assessment_count %>
         <tr>
