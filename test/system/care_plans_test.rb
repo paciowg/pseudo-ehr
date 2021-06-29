@@ -7,8 +7,10 @@ class CarePlansTest < ApplicationSystemTestCase
     fill_in("server_url", with: "http://hapi.fhir.org/baseR4/")
     click_on "Connect"
     
-    fhir_care_plan = FHIR::CarePlan.all.entry.first.resource
+    file = File.read('app/controllers/careplan1.json')
+    fhir_care_plan = FHIR.from_contents(file) 
     @care_plan = CarePlan.new(fhir_care_plan, nil)
+   
   end
 
   test "visiting the index" do

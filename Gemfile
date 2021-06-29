@@ -22,6 +22,7 @@ gem 'jbuilder', '~> 2.5'        # Build JSON APIs with ease. Read more: https://
 gem 'bootsnap', '>= 1.1.0', require: false  # Reduces boot times through caching; required in config/boot.rb
 gem 'bootstrap'                 # bootstrap
 gem 'jquery-rails'              # jQuery
+gem 'jquery-datatables'
 gem 'bootstrap-toggle-rails'    # bootstrap toggle
 gem 'fhir_client', git: 'https://github.com/paciowg/fhir_client.git'		# FHIR client that supports fullUrl for transaction entries
 #gem 'fhir_client', git: 'https://github.com/fhir-crucible/fhir_client.git'  # FHIR client from MITRE's crucible project

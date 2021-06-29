@@ -4,7 +4,7 @@ class CarePlansControllerTest < ActionDispatch::IntegrationTest
   setup do
     get home_url, params: { server_url: "https://api.interop.community/PacioSandbox/open/" }
     file = File.read('app/controllers/careplan1.json')
-    fhir_care_plan = JSON.parse(file, object_class: OpenStruct) # Use OpenStruct to enable dot synthax
+    fhir_care_plan = FHIR.from_contents(file) 
     @care_plan = CarePlan.new(fhir_care_plan, nil)
   end
 
