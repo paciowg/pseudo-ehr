@@ -11,7 +11,7 @@ class Condition < Resource
   include ActiveModel::Model
 
   attr_reader :id, :text, :clinicalStatus, :verificationStatus, :category,
-                :code, :subject
+                :code, :subject, :onsetDate, :asserter
 
   #-----------------------------------------------------------------------------
 
@@ -23,9 +23,9 @@ class Condition < Resource
     @category             = fhir_condition.category
     @code                 = fhir_condition.code
     @subject              = fhir_condition.subject
+    @onsetDate            = fhir_condition.onsetDateTime&.to_date
+    @asserter             = fhir_condition.asserter&.display
     
-    puts "CLINICAL STATUS"
-    puts @clinicalStatus
   end
 
 end

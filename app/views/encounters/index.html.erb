@@ -32,7 +32,7 @@
           <tr>
             <td><%= display_date(encounter.period&.start&.to_date) %></td>
             <td><%= display_code(encounter.type&.first) %></td>
-            <td><%=  encounter.participant&.first&.individual&.display%></td>
+            <td><%=  display_human_name(encounter.providers.first[:individual].name.first) %></td>
             <td><%= link_to "View", encounter_path(encounter.id) %></td>
           </tr>
         <% end %>

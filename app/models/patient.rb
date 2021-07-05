@@ -114,7 +114,8 @@ class Patient < Resource
     search_param =  { search: 
       { parameters: 
         { 
-          subject: ["Patient", @id].join('/') 
+          subject: ["Patient", @id].join('/'),
+          _profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter" 
         } 
       } 
     }

@@ -8,9 +8,10 @@
 		  <% address.line.each do |line| %>
 		    <%= sanitize(line) %><br />
 		  <% end %>
-		  <%= sanitize(address.city) %>, 
-		  <%= sanitize(address.state) %> 
-		  <%= display_postal_code(address.postalCode) %>
+		  <%= 
+		  	address.text ||
+			"#{sanitize(address.city)}, #{sanitize(address.state)} #{display_postal_code(address.postalCode)}" 
+		  %> 
 		<% end %>
 	</td>
 </tr>

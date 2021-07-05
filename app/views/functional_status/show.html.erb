@@ -1,5 +1,8 @@
 <section class='container'>
   <section class='row'>
+	<div class='card-header'>
+		<h5><%= link_to "Previous Page", request.referer %></h5>
+	</div>
   	<p>
   		Context: <%= display_categories(@bundled_functional_status.category) %><br />
   		Date/Time: <%= display_datetime(@bundled_functional_status.effective) %>

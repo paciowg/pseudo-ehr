@@ -5,19 +5,19 @@
         <%= render 'patient-card' %>
       </div>
       <div class='col-lg-6 card-container'>
+        <%= render 'encounters-card' %>
+      </div>
+      <div class='col-lg-6 card-container'>
         <%= render 'medications-card' %>
+      </div>
+      <div class='col-lg-6 card-container'>
+        <%= render 'compositions-card' %>
       </div>
       <div class='col-lg-6 card-container'>
         <%= render 'functional-status-card' %>
       </div>
       <div class='col-lg-6 card-container'>
         <%= render 'cognitive-status-card' %>
-      </div>
-      <div class='col-lg-6 card-container'>
-        <%= render 'compositions-card' %>
-      </div>
-      <div class='col-lg-6 card-container'>
-        <%= render 'encounters-card' %>
       </div>
     <% else %>
       Not available
