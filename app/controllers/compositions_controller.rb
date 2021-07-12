@@ -27,8 +27,6 @@ class CompositionsController < ApplicationController
     bundle = fhir_client.read(FHIR::Composition, params[:id] + "/$document").resource
     Rails.cache.write("$document_bundle", bundle.to_json,  { expires_in: 30.minutes })
     fhir_composition = bundle.entry.map(&:resource).first
-    puts "baaaarrrrrrrd\n\n\n"
-    puts fhir_composition.section[0].entry[0].reference
     @composition = Composition.new(fhir_composition, bundle) unless fhir_composition.nil?
     @patient = Patient.new(@composition.subject, fhir_client)
     @bundle_objects = bundle.entry.map(&:resource)
