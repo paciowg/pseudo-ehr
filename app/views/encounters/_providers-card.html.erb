@@ -11,7 +11,7 @@
             </thead>
             <tbody>
                 
-                <% @encounter.providers.each do |provider| %>
+                <% encounter.providers.each do |provider| %>
                     <tr>
                       <td><%= display_code(provider[:role].code.first) %></td>
                         <td><%= display_human_name(provider[:individual].name.first) %></td>
@@ -27,5 +27,15 @@
                 
             </tbody>
         </table>
+    </div>
+    <div class="card-footer text-muted" style="font-size: 12px;">
+        <p><small>FHIR Queries:</small></p>
+        <ol class='list-group'>
+                
+            <% encounter.fhir_queries.each do |query| %>
+                <li class='list-group-item'><small><%= query %></small></li>
+            <% end %>
+                
+        </ol>
     </div>
 </div>

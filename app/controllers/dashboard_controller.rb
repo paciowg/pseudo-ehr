@@ -20,16 +20,16 @@ class DashboardController < ApplicationController
       if fhir_patient.nil?
         fhir_response = SessionHandler.fhir_client(session.id).read(FHIR::Patient, patient_id)
         fhir_patient = fhir_response.resource
-
-        # Display the fhir query being run on the UI to help implementers
-        @fhir_query           = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
       end
       @patient              = Patient.new(fhir_patient, SessionHandler.fhir_client(session.id))
       @medications          = @patient.medications
       @functional_statuses  = @patient.bundled_functional_statuses
       @cognitive_statuses   = @patient.bundled_cognitive_statuses
       @compositions         = @patient.compositions
+      @encounters           = @patient.encounters
       
+      # Display the fhir query being run on the UI to help implementers
+      @fhir_queries        = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @patient.fhir_queries
       #byebug
     else
       redirect_to :root

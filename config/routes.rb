@@ -22,7 +22,7 @@ Rails.application.routes.draw do
   resources :patients do
     resources :encounters, only: [:index]
   end
-  resources :re_assessment_timepoints, only: [:show]
+  resources :re_assessment_timepoints, only: [:new, :create, :show]
   resources :observations
   resources :practitioner_roles
   resources :contracts

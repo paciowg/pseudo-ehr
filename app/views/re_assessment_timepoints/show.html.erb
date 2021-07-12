@@ -41,7 +41,7 @@
   </section>
   <section class='row' id='cards'>
     <div class='col-lg-6 card-container'>
-        <%= render partial: 'providers-card' %>
+        <%= render partial: 'encounters/providers-card', locals: { encounter: @reassessment_timepoint } %>
     </div>
     <div class='col-lg-6 card-container'>
         <%= render partial: 'assessments-card' %>

@@ -30,7 +30,7 @@
   </section>
   <section class='row' id='cards'>
     <div class='col-lg-6 card-container'>
-      <%= render partial: 'providers-card' %>
+      <%= render partial: 'providers-card', locals: { encounter: @encounter } %>
     </div>
     <div class='col-lg-6 card-container'>
       <%= render partial: 'diagnosis-card' %>

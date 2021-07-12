@@ -26,4 +26,14 @@
             </tbody>
         </table>
     </div>
+    <div class="card-footer text-muted" style="font-size: 12px;">
+        <p><small>FHIR Queries:</small></p>
+        <ol class='list-group'>
+                
+            <% @encounter.fhir_queries.each do |query| %>
+                <li class='list-group-item'><small><%= query %></small></li>
+            <% end %>
+                
+        </ol>
+    </div>
 </div>

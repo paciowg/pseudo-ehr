@@ -14,9 +14,12 @@ class EncountersController < ApplicationController
         patient_id = params[:patient_id]
         redirect_to root_path && return if patient_id.blank?
         
-        fhir_patient = @fhir_client.read(FHIR::Patient, patient_id).resource
+        fhir_response = @fhir_client.read(FHIR::Patient, patient_id)
+        fhir_patient = fhir_response.resource
         @patient = Patient.new(fhir_patient, @fhir_client)
         @encounters = @patient.encounters
+
+        @fhir_queries = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @patient.fhir_queries
         # byebug
     end
     
@@ -27,7 +30,7 @@ class EncountersController < ApplicationController
         @patient = Patient.new(@encounter.subject, @fhir_client)
         # byebug
         # Display the fhir query being run on the UI to help implementers
-        @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+        @fhir_queries = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @encounter.fhir_queries
     end
     
     private

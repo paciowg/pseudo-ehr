@@ -13,6 +13,7 @@ class ReAssessmentTimepoint < Resource
                 :subject, :episode_of_care, :based_on, :participant, :period, :reason_code,
                 :reason_reference, :diagnosis, :hospitalization, :location, :service_provider, :part_of
 
+    attr_accessor :fhir_queries
     #-----------------------------------------------------------------------------
 
     def initialize(fhir_encounter, fhir_client)
@@ -35,15 +36,22 @@ class ReAssessmentTimepoint < Resource
         @service_provider    = @fhir_client.read(nil, fhir_encounter.serviceProvider&.reference)&.resource
         @part_of             = @fhir_client.read(nil, fhir_encounter.partOf.reference).resource
         
-        @subject             = @fhir_client.read(nil, fhir_encounter.subject.reference).resource
+        fhir_response        = @fhir_client.read(nil, fhir_encounter.subject.reference)
+        @subject             = fhir_response.resource
+        # To display the fhir queries
+        @fhir_queries        = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"]
     end
     
     #-----------------------------------------------------------------------------
 
     def assessments
         observations = []
+        @fhir_queries = []
         @reason_reference.each do |reference|
-            observation = @fhir_client.read(nil, reference.reference).resource
+            fhir_response = @fhir_client.read(nil, reference.reference)
+            @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+            
+            observation =fhir_response.resource
             observations << BundledFunctionalStatus.new(observation, @fhir_client)
         end
         
@@ -68,9 +76,13 @@ class ReAssessmentTimepoint < Resource
     
     def providers
         participants = []
+        @fhir_queries = []
         
         @participant&.each do |participant|
-            fhir_practitioner = @fhir_client.read(nil, participant.individual.reference).resource
+            fhir_response = @fhir_client.read(nil, participant.individual.reference)
+            @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+
+            fhir_practitioner = fhir_response.resource
             practitioner = Practitioner.new(fhir_practitioner)
             search_param = {search: {
                 parameters: {
@@ -78,7 +90,11 @@ class ReAssessmentTimepoint < Resource
                     }
                 }
             }
-            fhir_role = @fhir_client.search(FHIR::PractitionerRole, search_param).resource.entry.first.resource
+            fhir_response = @fhir_client.search(FHIR::PractitionerRole, search_param)
+             # To display the fhir queries
+            @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+
+            fhir_role = fhir_response.resource.entry.first.resource
             role = PractitionerRole.new(fhir_role)
 
             provider = {}

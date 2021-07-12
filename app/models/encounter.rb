@@ -12,6 +12,7 @@ class Encounter < Resource
 
     attr_reader :id, :status, :category, :type, :subject, :episode_of_care, :based_on, :participant, :period,
                 :conditions, :hospitalization, :location, :service_provider
+    attr_accessor :fhir_queries
 
     #-----------------------------------------------------------------------------
 
@@ -30,8 +31,10 @@ class Encounter < Resource
         @location            = fhir_encounter.location        # list of locations the patient has been to
         @service_provider    = @fhir_client.try(:read, nil, fhir_encounter.serviceProvider&.reference)&.resource&.name
         
-       
-        @subject             = @fhir_client.read(nil, fhir_encounter.subject.reference).resource
+        fhir_response        = @fhir_client.read(nil, fhir_encounter.subject.reference)
+        @subject             = fhir_response.resource
+        # To display the fhir queries
+        @fhir_queries        = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"]
     end
     
     #-----------------------------------------------------------------------------
@@ -45,13 +48,17 @@ class Encounter < Resource
               } 
             } 
           }
-        fhir_bundle = @fhir_client.search(FHIR::Encounter, search_param).resource
+        fhir_response = @fhir_client.search(FHIR::Encounter, search_param)
+        fhir_bundle = fhir_response.resource
         unless fhir_bundle.nil?
             fhir_bundle.entry.each do |encounter|
                 timepoints <<  ReAssessmentTimepoint.new(encounter.resource, @fhir_client)
             end
             
         end
+        # To display the fhir queries
+        @fhir_queries = []
+        @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
 
         return timepoints
     end
@@ -60,17 +67,26 @@ class Encounter < Resource
     
     def providers
         participants = []
+        @fhir_queries = []
         
         @participant&.each do |participant|
-            fhir_practitioner = @fhir_client.read(nil, participant.individual.reference).resource
+            fhir_response = @fhir_client.read(nil, participant.individual.reference)
+            @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+
+            fhir_practitioner = fhir_response.resource
             practitioner = Practitioner.new(fhir_practitioner)
+
             search_param = {search: {
                 parameters: {
                     practitioner: participant.individual.reference 
                     }
                 }
             }
-            fhir_role = @fhir_client.search(FHIR::PractitionerRole, search_param).resource.entry.first.resource
+            fhir_response = @fhir_client.search(FHIR::PractitionerRole, search_param)
+             # To display the fhir queries
+            @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+
+            fhir_role = fhir_response.resource.entry.first.resource
             role = PractitionerRole.new(fhir_role)
 
             provider = {}
@@ -78,7 +94,7 @@ class Encounter < Resource
             provider[:individual] =  practitioner
             participants << provider
         end
-        
+
         return participants.compact
     end
     
@@ -89,7 +105,12 @@ class Encounter < Resource
         
         @conditions.each do |condition|
             diagnosis = {}
-            fhir_condition = @fhir_client.read(nil, condition.condition.reference).resource
+            fhir_response = @fhir_client.read(nil, condition.condition.reference)
+             # To display the fhir queries
+            @fhir_queries = []
+            @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+
+            fhir_condition = fhir_response.resource
             diagnosis[:condition] = Condition.new(fhir_condition)
             diagnosis[:use] = condition.use.coding.map {|code| "#{code.display} (#{code.code})"}.join(", ")
 

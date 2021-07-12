@@ -13,6 +13,7 @@ class Patient < Resource
   attr_reader :id, :names, :telecoms, :addresses, :birth_date, :gender, 
   								:marital_status, :photo
 
+  attr_accessor :fhir_queries
   #-----------------------------------------------------------------------------
 
   def initialize(fhir_patient, fhir_client)
@@ -27,6 +28,7 @@ class Patient < Resource
     @resource_type    = fhir_patient&.resourceType
 
   	@fhir_client			= fhir_client
+    @fhir_queries      = []
   end
 
   #-----------------------------------------------------------------------------
@@ -42,7 +44,8 @@ class Patient < Resource
     									} 
     								}
 
-    fhir_bundle = @fhir_client.search(FHIR::Medication, search_param).resource
+    fhir_response = @fhir_client.search(FHIR::Medication, search_param)
+    fhir_bundle = fhir_response.resource
     unless fhir_bundle.nil?
       fhir_medications = filter(fhir_bundle.entry.map(&:resource), 'Medication')
 
@@ -50,6 +53,8 @@ class Patient < Resource
     	  medications << Medication.new(fhir_medication)
       end
     end
+
+    # @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
     return medications
   end
 
@@ -66,7 +71,8 @@ class Patient < Resource
                       } 
                     }
 
-    fhir_bundle = @fhir_client.search(FHIR::MedicationStatement, search_param).resource
+    fhir_response = @fhir_client.search(FHIR::MedicationStatement, search_param)
+    fhir_bundle = fhir_response.resource
     unless fhir_bundle.nil?
       fhir_medication_statements = filter(fhir_bundle.entry.map(&:resource), 
                                               'MedicationStatement')
@@ -75,6 +81,8 @@ class Patient < Resource
        medication_statements << MedicationStatement.new(fhir_medication_statement, @fhir_client)
      end
     end
+
+    # @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
 
     return medication_statements
   end
@@ -92,7 +100,8 @@ class Patient < Resource
       } 
     }
 
-    fhir_bundle = @fhir_client.search(FHIR::Composition, search_param).resource
+    fhir_response = @fhir_client.search(FHIR::Composition, search_param)
+    fhir_bundle = fhir_response.resource
     unless fhir_bundle.nil?
       fhir_compositions = filter(fhir_bundle.entry&.map(&:resource), 'Composition')
 
@@ -100,6 +109,8 @@ class Patient < Resource
        compositions << Composition.new(composition, fhir_bundle)
      end
     end
+
+    # @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
 
     return compositions
 
@@ -119,7 +130,8 @@ class Patient < Resource
         } 
       } 
     }
-    fhir_bundle = @fhir_client.search(FHIR::Encounter, search_param).resource
+    fhir_response = @fhir_client.search(FHIR::Encounter, search_param)
+    fhir_bundle = fhir_response.resource
     
     unless fhir_bundle.nil?
       fhir_bundle.entry&.each do |entry|
@@ -128,6 +140,8 @@ class Patient < Resource
       end 
      
     end
+
+    @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
 
     return encounters
   end
@@ -146,7 +160,8 @@ class Patient < Resource
                       }
                     }
 
-    fhir_bundle = @fhir_client.search(FHIR::Observation, search_param).resource
+    fhir_response = @fhir_client.search(FHIR::Observation, search_param)
+    fhir_bundle = fhir_response.resource
     unless fhir_bundle.nil?
       fhir_functional_statuses = filter(fhir_bundle.entry.map(&:resource), 'Observation')
     
@@ -154,6 +169,8 @@ class Patient < Resource
       bundled_functional_statuses << BundledFunctionalStatus.new(fhir_functional_status, @fhir_client) 
     end
     end
+
+    # @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
 
     return bundled_functional_statuses
   end
@@ -172,7 +189,8 @@ class Patient < Resource
                       }
                     }
 
-    fhir_bundle = @fhir_client.search(FHIR::Observation, search_param).resource
+    fhir_response = @fhir_client.search(FHIR::Observation, search_param)
+    fhir_bundle = fhir_response.resource
     unless fhir_bundle.nil?
       fhir_cognitive_statuses = filter(fhir_bundle.entry.map(&:resource), 'Observation')
 
@@ -180,6 +198,8 @@ class Patient < Resource
         bundled_cognitive_statuses << BundledCognitiveStatus.new(fhir_cognitive_status, @fhir_client)
       end
     end
+
+    # @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
 
     return bundled_cognitive_statuses
   end
@@ -256,7 +276,11 @@ class Patient < Resource
                       }
                     }
 
-    fhir_bundle = @fhir_client.search(FHIR::Observation, search_param).resource
+    fhir_response = @fhir_client.search(FHIR::Observation, search_param)
+    fhir_bundle = fhir_response.resource
+
+    # @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+
     fhir_statuses = fhir_bundle&.entry&.map(&:resource)
   end
 

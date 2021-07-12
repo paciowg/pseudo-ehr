@@ -8,6 +8,14 @@
 
 class ReAssessmentTimepointsController < ApplicationController
     
+    def new
+        
+    end
+
+    def create
+        
+    end
+    
     def show
         fhir_client = SessionHandler.fhir_client(session.id)
         fhir_response = fhir_client.read(FHIR::Encounter, params[:id])
@@ -15,7 +23,7 @@ class ReAssessmentTimepointsController < ApplicationController
         @patient = Patient.new(@reassessment_timepoint.subject, fhir_client)
 
         #Display the fhir query being run on the UI
-        @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+        @fhir_queries = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @reassessment_timepoint.fhir_queries
     end
     
 end
