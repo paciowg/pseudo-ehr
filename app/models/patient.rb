@@ -126,7 +126,8 @@ class Patient < Resource
       { parameters: 
         { 
           subject: ["Patient", @id].join('/'),
-          _profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter" 
+          _profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter",
+          "_sort:desc": "date"
         } 
       } 
     }

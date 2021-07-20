@@ -44,7 +44,8 @@ class Encounter < Resource
         search_param =  { search: 
             { parameters: 
               { 
-                "part-of": ["Encounter", @id].join('/') 
+                "part-of": ["Encounter", @id].join('/'),
+                 "_sort:desc": "date"
               } 
             } 
           }

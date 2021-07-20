@@ -26,7 +26,7 @@
                 <tr>
                     <td>Period: &nbsp;<%= "#{display_date(@reassessment_timepoint.period&.start&.to_date)} - #{display_date(@reassessment_timepoint.period&.end&.to_date)}" %></td>
                     <td>Identifier: &nbsp;<%= @reassessment_timepoint.identifier.value %></td>
-                    <td>Status: &nbsp;<%= @reassessment_timepoint.status.upcase %></td>
+                    <td>Status: &nbsp;<%= @reassessment_timepoint.status&.capitalize %></td>
                 </tr>
                 <tr>
                     <td>Encounter Type: &nbsp;
