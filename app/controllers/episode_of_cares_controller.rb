@@ -1,5 +1,5 @@
 class EpisodeOfCaresController < ApplicationController
-  before_action :set_episode_of_care, only: [:show, :edit, :update, :destroy]
+  before_action :set_fhir_client
 
   # GET /episode_of_cares
   # GET /episode_of_cares.json
@@ -10,6 +10,16 @@ class EpisodeOfCaresController < ApplicationController
   # GET /episode_of_cares/1
   # GET /episode_of_cares/1.json
   def show
+    fhir_response = @fhir_client.read(FHIR::EpisodeOfCare, params[:id])
+    @episode_of_care = EpisodeOfCare.new(fhir_response.resource, @fhir_client)
+    #To display fhir query
+    @fhir_queries = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @episode_of_care.fhir_queries
+
+    @encounters = @episode_of_care.encounters
+    @patient = Patient.new(@episode_of_care.patient, @fhir_client)
+    fhir_response = @fhir_client.read(nil, @episode_of_care.care_manager.practitioner.reference)
+    @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+    @practitioner = Practitioner.new(fhir_response.resource)
   end
 
   # GET /episode_of_cares/new
@@ -62,9 +72,9 @@ class EpisodeOfCaresController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_episode_of_care
-      @episode_of_care = EpisodeOfCare.find(params[:id])
+    # Use callbacks to share common setup or constraints between actions. This is repetitive, should be under applicationController
+    def set_fhir_client
+      @fhir_client = SessionHandler.fhir_client(session.id)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

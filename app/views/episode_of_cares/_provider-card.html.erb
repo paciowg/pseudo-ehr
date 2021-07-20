@@ -1,0 +1,45 @@
+<div class='card bg-dark text-white h-100'>
+  <div class='card-header'>
+    Care Manager: 
+    <% @practitioner.name&.each do |name| %>
+      <%= display_human_name(name) %><br />
+    <% end %>
+  </div>
+  <div class='card-body'>
+    <div class='row practitioner-info'>
+      <div class='col-5'>
+        <%= display_photo(@practitioner.photo, @practitioner.gender, class: 'profile-photo') %>
+      </div>
+      <div class='col-6'>
+        <table class='table table-striped table-dark status'>
+          <tr>
+            <td>Gender</td>
+            <td><%= sanitize(@practitioner.gender)&.capitalize %></td>
+          </tr>
+          <tr>
+            <td>Specialty</td>
+            <td><%= display_code(@episode_of_care.care_manager.specialty&.first) %></td>
+          </tr>
+          <tr>
+            <td>contact info</td>
+            <td>
+                <% @practitioner.telecoms&.each do |telecom| %>
+                    <%= display_telecom(telecom) %><br />
+                <% end %>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class='row address'>
+      <p>
+        <%= 'Address'.pluralize(@practitioner.addresses&.count) %>
+      </p>
+      <table class='table table-striped table-dark status'>
+        <% @practitioner.addresses&.each do |address| %>
+          <%= render partial: 'partials/address', locals: { address: address } %>
+        <% end %>
+       </table>
+    </div>
+  </div>
+</div>

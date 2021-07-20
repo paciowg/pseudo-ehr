@@ -1,56 +1,24 @@
-<p id="notice"><%= notice %></p>
+<!-- <p id="notice"><%= notice %></p> -->
 
-<%= link_to 'Edit', edit_episode_of_care_path(@episode_of_care) %> |
-<%= link_to 'Back', episode_of_cares_path %>
+<!-- <%= link_to 'Edit', edit_episode_of_care_path(@episode_of_care.id) %> |-->
 
 
 <section class='container'>
+  <div class='card-header'><%= link_to 'Previous page', request.referer %></div>
+  <section class='dashboard-header-text'>
+    <%= render partial: 'encounters/patient-info' %>
+    <br>
+  </section >
   <section class='row'>
     <% unless @episode_of_care.nil? %>
-      <div class='col-12'>
-        <h2><%= display_human_name(@episode_of_care.name.first) %></h2>
-      </div>
-      <div class='col-6'>
-        <%= display_photo(@practitioner.photo, @practitioner.gender, 
-                    class: 'profile-photo') %>
-      </div>
-      <div class='col-6'>
-        <table class='table table-dark'>
-          <tr>
-            <td>Phone/Fax:</td>
-            <td>
-              <% @practitioner.telecoms.each do |telecom| %>
-                <%= display_telecom(telecom) %><br />
-              <% end %>
-            </td>
-          </tr>
-          <tr>
-            <td>Locations:</td>
-            <td>
-              <% @practitioner.addresses.each do |address| %>
-                <%= render partial: 'partials/address', 
-                            locals: { address: address } %>
-              <% end %>
-            </td>
-          </tr>
-          <tr>
-            <td>Gender:</td>
-            <td><%= @practitioner.gender %></td>
-          </tr>
-          <tr>
-            <td>Licenses:</td>
-            <td>           
-              <% @practitioner.qualifications.each do |qualification| %>
-                <%= render partial: 'qualification', 
-                          locals: { qualification: qualification } %>
-                Period: <%= display_period(qualification.period) %><br />
-                Issuer: <%= display_issuer(qualification.issuer) %><br />
-                <br />
-              <% end %>
-            </td>
-          </tr>
-        </table>
-      </div>
+      <h2 class='text-center'>Managing organization: <%= @episode_of_care.managing_organization.name.titlecase %></h2>
+     <div class='col-lg-6 card-container'>
+      <%= render partial: 'details-card' %>
+     </div>
+    <div class='col-lg-6 card-container'>
+      <%= render partial: 'provider-card' %>
+    </div>
+    <%= render partial: 'dashboard/encounters-card' %>
     <% else %>
       Not available
     <% end %>

@@ -15,21 +15,32 @@
                     <h2>Timepoint Details</h2>
                     <span class='text-end'>
                         <b>Part Of</b>: &nbsp;
-                        <%= link_to "Encounter-#{@reassessment_timepoint.part_of.id}", encounter_path(@reassessment_timepoint.part_of.id) %>
+                        <%= link_to "Encounter / #{@reassessment_timepoint.part_of.id}", encounter_path(@reassessment_timepoint.part_of.id) %>
+                        &nbsp;
+                        <% @reassessment_timepoint.episodes_of_care.each do |episode| %>
+                            |&nbsp;<%= link_to "Episode 0f care / #{episode.id}", episode_of_care_path(episode.id) %>&nbsp;
+                        <% end %>
+                        
                     </span>
                 </caption>
                 <tr>
                     <td>Period: &nbsp;<%= "#{display_date(@reassessment_timepoint.period&.start&.to_date)} - #{display_date(@reassessment_timepoint.period&.end&.to_date)}" %></td>
                     <td>Identifier: &nbsp;<%= @reassessment_timepoint.identifier.value %></td>
-                    <td>Status: &nbsp;<%= @reassessment_timepoint.status %></td>
+                    <td>Status: &nbsp;<%= @reassessment_timepoint.status.upcase %></td>
                 </tr>
                 <tr>
-                    <td>Encounter Type: &nbsp;<%= display_code(@reassessment_timepoint.type&.first) %></td>
+                    <td>Encounter Type: &nbsp;
+                        
+                        <% @reassessment_timepoint.type&.each do |code| %>
+                            <%= display_code(code) %> |
+                        <% end %>
+                        
+                    </td>
                     <td>
                         Reason: &nbsp;
                         
                         <% @reassessment_timepoint.reason_code.each do |reason| %>
-                            <%= display_code(reason) %>
+                            <%= display_code(reason) %> | 
                         <% end %>
                         
                     </td>

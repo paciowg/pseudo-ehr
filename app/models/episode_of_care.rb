@@ -21,13 +21,20 @@ class EpisodeOfCare < Resource
     @type                   = fhir_episodeOfCare.type
     @care_manager           = @fhir_client.read(nil, fhir_episodeOfCare.careManager.reference).resource
     @managing_organization  = @fhir_client.read(nil, fhir_episodeOfCare.managingOrganization.reference).resource
-    @patient                = @fhir_client.read(nil, fhir_episodeOfCare.patient.reference).resource
+
+    fhir_response        = @fhir_client.read(nil, fhir_episodeOfCare.patient.reference)
+    @patient                = fhir_response.resource
+    # To display the fhir queries
+    @fhir_queries        = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"]
   end
 
   #-----------------------------------------------------------------------------
 
   def encounters
-    reassessment_timepoints.map { |timepoint| timepoint.part_of }.uniq!
+    part_of = reassessment_timepoints.map { |timepoint| timepoint.part_of }
+    part_of.uniq!
+    encounters = part_of.map {|encounter| Encounter.new(encounter, @fhir_client)}
+    return encounters
   end
   
   #-----------------------------------------------------------------------------
@@ -37,12 +44,13 @@ class EpisodeOfCare < Resource
     search_param =  { search: 
             { parameters: 
               { 
-                "episodeOfCare": ["EpisodeOfCare", @id].join('/') 
+                "episode-of-care": ["EpisodeOfCare", @id].join('/') 
               } 
             } 
         }
     fhir_response = @fhir_client.search(FHIR::Encounter, search_param)
     fhir_bundle = fhir_response.resource
+
     unless fhir_bundle.nil?
       fhir_bundle.entry.each do |encounter|
         timepoints <<  ReAssessmentTimepoint.new(encounter.resource, @fhir_client)
@@ -52,7 +60,7 @@ class EpisodeOfCare < Resource
     # To display the fhir queries
     @fhir_queries = []
     @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
-
+    
     return timepoints
   end
         
