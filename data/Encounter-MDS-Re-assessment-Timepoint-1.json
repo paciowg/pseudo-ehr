@@ -1,0 +1,103 @@
+{
+  "resourceType": "Encounter",
+  "id": "MDS-Re-assessment-Timepoint-1",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/pacio-rat/StructureDefinition/prat-encounter"
+    ]
+  },
+  "identifier": [
+    {
+      "system": "http://hl7.org/fhir/us/pacio-rat",
+      "value": "MDS-Re-assessment-Timepoint-1001"
+    }
+  ],
+  "status": "finished",
+  "class": {
+    "code": "SNF",
+    "system": "http://hl7.org/fhir/us/pacio-rat/CodeSystem/prat-class-cs"
+  },
+  "type": [
+    {
+      "coding": [
+        {
+          "code": "payer",
+          "system": "http://hl7.org/fhir/us/pacio-rat/CodeSystem/prat-entity-cs"
+        }
+      ]
+    }
+  ],
+  "serviceType": {
+    "coding": [
+      {
+        "code": "mds",
+        "system": "http://hl7.org/fhir/us/pacio-rat/CodeSystem/prat-service-type-cs"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/patientBSJ1"
+  },
+  "episodeOfCare": [
+    {
+      "reference": "EpisodeOfCare/Episodecare-1-SNF-Stay"
+    }
+  ],
+  "reasonReference": [
+    {
+      "reference": "Observation/SNF-PF-MDS-5-Day-NC-1A"
+    },
+    {
+      "reference": "Observation/SNF-SC-AP-MDS-5-Day-NC-1B"
+    },
+    {
+      "reference": "Observation/SNF-SC-DG-MDS-5-Day-NC-1C"
+    },
+    {
+      "reference": "Observation/SNF-MOB-AP-MDS-5-Day-NC-1A"
+    },
+    {
+      "reference": "Observation/SNF-MOB-DG-MDS-5-Day-NC-1B"
+    }
+  ],
+  "participant": [
+    {
+      "individual": {
+        "reference": "Practitioner/Practitioner-SummerJohnson"
+      }
+    },
+    {
+      "individual": {
+        "reference": "Practitioner/Practitioner-JenCadbury"
+      }
+    }
+  ],
+  "period": {
+    "start": "2020-01-01",
+    "end": "2020-01-13"
+  },
+  "reasonCode": [
+    {
+      "coding": [
+        {
+          "code": "I63.411",
+          "system": "http://hl7.org/fhir/sid/icd-10-cm",
+          "display": "Cerebral infarction due to embolism of right middle cerebral artery"
+        }
+      ]
+    }
+  ],
+  "location": [
+    {
+      "location": {
+        "reference": "Location/Provider-Org-Loc-1"
+      }
+    }
+  ],
+  "serviceProvider": {
+    "reference": "Organization/Provider-Org-1"
+  },
+  "partOf": {
+    "reference": "Encounter/Encounter-1-SNF-Stay"
+  }
+}
