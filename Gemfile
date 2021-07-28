@@ -48,6 +48,7 @@ group :test do
   gem 'selenium-webdriver'      # WebDriver JavaScript bindings from the Selenium project
   gem 'webdrivers'              # Easy installation and use of chromedriver to run system tests with Chrome
   gem 'minitest-spec-rails'
+  gem 'rails-controller-testing'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]    # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
