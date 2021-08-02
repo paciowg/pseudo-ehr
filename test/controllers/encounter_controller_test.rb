@@ -3,12 +3,12 @@ require 'test_helper'
 class EncounterControllerTest < ActionDispatch::IntegrationTest
     before do
         # mitre_server = 'http://34.226.8.102:8080/fhir/'
-        get home_url, params: { server_url: 'http://hapi.fhir.org/baseR4/' }
+        get home_url, params: { server_url: 'https://api.interop.community/PacioSandbox/open/' }
     end
     
     file = File.read('data/Encounter-Encounter-1-SNF-Stay.json')
     let(:fhir_encounter) { FHIR.from_contents(file) }
-    let(:client) { FHIR::Client.new('http://hapi.fhir.org/baseR4/')}
+    let(:client) { FHIR::Client.new('https://api.interop.community/PacioSandbox/open/')}
     let(:encounter) { Encounter.new(fhir_encounter, client) }
 
    describe "Index action" do

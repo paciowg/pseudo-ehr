@@ -3,7 +3,7 @@ require 'test_helper'
 class EncounterTest < ActiveSupport::TestCase
     file = File.read('data/Encounter-Encounter-1-SNF-Stay.json')
     let(:fhir_encounter) { FHIR.from_contents(file) }
-    let(:client) { FHIR::Client.new('http://hapi.fhir.org/baseR4/')}
+    let(:client) { FHIR::Client.new('https://api.interop.community/PacioSandbox/open/')}
     let(:encounter) { described_class.new(fhir_encounter, client) }
 
     describe "#initialize" do
