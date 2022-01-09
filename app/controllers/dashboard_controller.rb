@@ -19,6 +19,11 @@ class DashboardController < ApplicationController
       @medications          = @patient.medications
       @functional_statuses  = @patient.bundled_functional_statuses
       @cognitive_statuses   = @patient.bundled_cognitive_statuses
+      @splasch_observations = @patient.splasch_observations
+      # @spoken_language_comprehension_observations = @patient.spoken_language_comprehension_observations
+      # @spoken_language_expression_observations = @patient.spoken_language_expression_observations
+      # @swallowing_observations = @patient.swallowing_observations
+      #@splasch_collections  = @patient.splasch_collections
     else
       redirect_to :root
     end

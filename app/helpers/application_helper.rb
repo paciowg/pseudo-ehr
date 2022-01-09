@@ -42,6 +42,27 @@ module ApplicationHelper
 
 	#-----------------------------------------------------------------------------
 
+	def display_marital_status(marital_status)
+		marital_status_values = {
+			A: 'Annulled Marriage',
+			D: 'Divorced',
+			I: 'Interlocutory Subject',
+			L: 'Legally Separated',
+			M: 'Married',
+			C: 'Common Law',
+			P: 'Polygamous',
+			T: 'Domestic Partner',
+			U: 'Unmarried',
+			S: 'Never Married',
+			W: 'Widowed'
+		}
+
+		marital_status_values[marital_status.coding.first.code.to_sym] ||
+										sanitize(marital_status.coding.first.code)
+	end
+
+	#-----------------------------------------------------------------------------
+
 	def display_identifier(identifier)
 	  sanitize("#{identifier.assigner.display}: ( #{identifier.type.text}, #{identifier.value})")
 	#    sanitize([identifier.type.text, identifier.value, identifier.assigner.display].join(', '))
@@ -143,7 +164,7 @@ module ApplicationHelper
 	#-----------------------------------------------------------------------------
 
 	def display_datetime(datetime)
-		datetime.present? ? sanitize(datetime.strftime('%m/%d/%Y')) : "No date/time"
+		datetime.present? ? sanitize(datetime.strftime('%m/%d/%Y %I:%M%p')) : "No date/time"
 	end
 
 	#-----------------------------------------------------------------------------

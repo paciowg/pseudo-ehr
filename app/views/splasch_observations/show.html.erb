@@ -1,0 +1,19 @@
+<section class='container'>
+  <section class='row'>
+    <p>
+      Observation: <%= display_code(@splasch_observation.code) %><br />
+      Date/Time: <%= display_datetime(@splasch_observation.effective_datetime) %>
+    </p>
+    <table class='table table-striped table-dark full-status'>
+      <tr>
+        <th>Assessment</th>
+        <th>Observation</th>
+      </tr>
+      <tr>
+        <td><%= @splasch_observation.code.coding[0].display %></td>
+        <td><%= @splasch_observation.value.coding[0].display %></td>
+      </tr>
+    </table>
+    <%= display_div(@splasch_observation.div) %>
+  </section>
+</section>

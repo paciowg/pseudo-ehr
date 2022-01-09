@@ -1,0 +1,23 @@
+<section class='container'>
+  <section class='row'>
+    <table class='table table-striped table-dark compare'>
+      <th>Assessment</th>
+      <% @splasch_collections.each do |splasch_collection| %>
+        <th><%= display_date(splasch_collection[:bundle].effective) %></th>
+      <% end %>
+      <% assessment_count = @splasch_collections.first[:assessments].count %>
+      <% i = 0 %>
+      <% while i < assessment_count %>
+        <tr>
+          <td><%= @splasch_collections.first[:assessments][i].code.text %></td>
+          <% @splasch_collections.each do |splasch_collection| %>
+            <td>
+              <%= splasch_collection[:assessments][i].value.text %>
+            </td>
+          <% end %>
+        </tr>
+        <% i += 1 %>
+      <% end %>
+    </table>
+  </section>
+</section>
