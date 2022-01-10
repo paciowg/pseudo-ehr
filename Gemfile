@@ -20,7 +20,7 @@ gem 'jbuilder', '~> 2.5'        # Build JSON APIs with ease. Read more: https://
 # gem 'mini_magick', '~> 4.8'   # Use ActiveStorage variant
 
 gem 'bootsnap', '>= 1.1.0', require: false  # Reduces boot times through caching; required in config/boot.rb
-gem 'bootstrap'                 # bootstrap
+gem 'bootstrap', '~> 4.4'       # bootstrap
 gem 'jquery-rails'              # jQuery
 gem 'bootstrap-toggle-rails'    # bootstrap toggle
 gem 'fhir_client', git: 'https://github.com/paciowg/fhir_client.git'		# FHIR client that supports fullUrl for transaction entries
