@@ -168,9 +168,9 @@ class Patient < Resource
   def splasch_observations
     splasch_observations = []
 
-    search_param =  { #search:
+    search_param =  { search: _count=200
                       # { parameters:
-                      #   { 
+                      #  { 
                       #     subject: ["Patient", @id].join('/'),
                       #     _profile: '???' 
                       #   }
