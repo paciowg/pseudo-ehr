@@ -12,6 +12,7 @@
           <td><%= display_datetime(observation.effective_datetime) %></td>
           <td><%= link_to display_code(observation.code), 
                         splasch_observation_path(id: observation.id) %></td>
+          <td><%= observation.value.coding[0].display %></td>
         </tr>
       <% end %>
     </table>
