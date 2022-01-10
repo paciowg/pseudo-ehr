@@ -187,7 +187,7 @@ class Patient < Resource
       end
     end
 
-    return splasch_observations.sort_by(&:effective_datetime)
+    return splasch_observations.sort_by(&:effective_datetime).reverse
   end
 
   #-----------------------------------------------------------------------------

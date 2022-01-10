@@ -4,18 +4,26 @@
       <div class='col-6 card-container'>
         <%= render 'patient-card' %>
       </div>
-      <div class='col-6 card-container'>
-        <%= render 'medications-card' %>
-      </div>
-      <div class='col-6 card-container'>
-        <%= render 'functional-status-card' %>
-      </div>
-      <div class='col-6 card-container'>
-        <%= render 'cognitive-status-card' %>
-      </div>
-      <div class='col-6 card-container'>
-        <%= render 'splasch-observations-card' %>
-      </div>
+      <% if @medications.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'medications-card' %>
+        </div>
+      <% end %>
+      <% if @functional_statuses.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'functional-status-card' %>
+        </div>
+      <% end %>
+      <% if @cognitive_statuses.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'cognitive-status-card' %>
+        </div>
+      <% end %>
+      <% if @splasch_observations.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'splasch-observations-card' %>
+        </div>
+      <% end %>
     <% else %>
       Not available
     <% end %>

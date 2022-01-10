@@ -36,6 +36,19 @@ module ApplicationHelper
 
 	#-----------------------------------------------------------------------------
 
+	def display_photo(photo, gender, options)
+    options[:class] = 'img-fluid'
+ 		if photo.present?
+			result = image_tag(photo, options)
+		else
+			result = image_tag(gender == "female" ? "woman.svg" : "man-user.svg", options)
+		end
+
+		return result
+	end
+
+	#-----------------------------------------------------------------------------
+
 	def display_telecom(telecom)
 	  sanitize(telecom.system + ': ' + number_to_phone(telecom.value, area_code: true))
 	end
@@ -75,6 +88,17 @@ module ApplicationHelper
 	def display_list(list)
 	  sanitize(list.empty? ? 'None' : list.map(&:display).join(', '))
 	end
+
+  #-----------------------------------------------------------------------------
+
+  def display_categories(categories)
+  	result = []
+  	categories.each do |category|
+  		result << display_coding_list(category.coding)
+  	end
+
+    result = sanitize(result.join('<br />'))
+  end
 
   #-----------------------------------------------------------------------------
 
@@ -209,6 +233,12 @@ module ApplicationHelper
 
 	#-----------------------------------------------------------------------------
 
+	def display_subject(subject)
+		display_reference(subject)
+	end
+
+	#-----------------------------------------------------------------------------
+
 	def display_performers(performers)
 		list = []
 
@@ -216,7 +246,13 @@ module ApplicationHelper
 			list << display_reference(performer)
 		end
 
-		raw(list.join(', '))
+		raw(list.join('<br />'))
+	end
+
+	#-----------------------------------------------------------------------------
+
+	def display_div(div)
+		sanitize(div)
 	end
 
   #-----------------------------------------------------------------------------

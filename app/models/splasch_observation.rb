@@ -12,17 +12,23 @@ class SplaschObservation < Resource
 
 	include ActiveModel::Model
 
-	attr_reader :id, :text, :div, :status, :code, :subject, :effective_datetime, :value
+	attr_reader		:id, :div
+	attr_accessor :categories, :text, :status, :code, :subject, :performer, 
+									:effective_datetime, :value
 
   #-----------------------------------------------------------------------------
 
 	def initialize(fhir_splasch_observation)
 		@id 									= fhir_splasch_observation.id
 		@text									= fhir_splasch_observation.text
-		@div 									= fhir_splasch_observation.text.div
+		if @text.present?
+			@div 								= fhir_splasch_observation.text.div
+		end
 		@status 							= fhir_splasch_observation.status
+		@categories						= fhir_splasch_observation.category
 		@code									= fhir_splasch_observation.code
 		@subject							= fhir_splasch_observation.subject
+		@performer						= fhir_splasch_observation.performer
 		@effective_datetime		= DateTime.parse(fhir_splasch_observation.effectiveDateTime)
 		@value								= fhir_splasch_observation.valueCodeableConcept
 	end

@@ -10,7 +10,10 @@ class PatientsController < ApplicationController
   # GET /patients/1
   # GET /patients/1.json
   def show
-    redirect_to :controller => 'dashboard', :action => 'index'
+    fhir_client = SessionHandler.fhir_client(session.id)
+    fhir_patient = fhir_client.read(FHIR::Patient, params[:id]).resource
+
+    @patient = Patient.new(fhir_patient, fhir_client) unless fhir_patient.nil?
   end
 
   # GET /patients/new
