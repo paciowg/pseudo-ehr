@@ -116,7 +116,12 @@ class SplaschObservationsController < ApplicationController
 		"LA10066-1": "Rarely",
 		"LA10082-8": "Sometimes",
 		"LA10044-8": "Often",
-		"LA9933-8": "Always"
+		"LA9933-8": "Always",
+		"0-25-percent": "0-25% of the time",
+		"26-49-percent": "26-49% of the time",
+		"50-75-percent": "50-75% of the time",
+		"76-90-percent": "76-90% of the time",
+		"91-100-percent": "91-100% of the time"
 	}
 
 	#-----------------------------------------------------------------------------
