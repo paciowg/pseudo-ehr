@@ -36,12 +36,9 @@ class SplaschObservation < Resource
 	#-----------------------------------------------------------------------------
 
 	NARRATIVE_HEADER = "<div xmlns='http://www.w3.org/1999/xhtml'>"\
-							"<p><b>Generated Narrative</b></p>"\
-							"<div style='display: inline-block; background-color: #d9e0e7; "\
-							"padding: 6px; margin: 4px; border: 1px solid #8da1b4; "\
-							"border-radius: 5px; line-height: 60%'>"
+													"<p><b>Generated Narrative</b></p>"
 
-	NARRATIVE_FOOTER = "</div></div>"
+	NARRATIVE_FOOTER = "</div>"
 
 	def self.generate_narrative(fhir_observation)
 		# Narrative templates
@@ -62,9 +59,11 @@ class SplaschObservation < Resource
 	#-----------------------------------------------------------------------------
 
 	def self.narrative_title(fhir_observation)
-		narrative = "<p style='margin-bottom: 0px'>SPLASCH Observation"
+		narrative = "<div style='display: inline-block; background-color: #d9e0e7; "\
+							"padding: 6px; margin: 4px; border: 1px solid #8da1b4; "\
+							"border-radius: 5px; line-height: 60%'><p style='margin-bottom: 0px'>SPLASCH Observation"
 		narrative += " (#{fhir_observation.id})" if fhir_observation.id.present?
-		narrative += "</p>"
+		narrative += "</p></div>"
 	end
 
 	#-----------------------------------------------------------------------------
