@@ -197,7 +197,13 @@ class SplaschObservationsController < ApplicationController
 		fhir_observation.performer						= FHIR::Reference.new 
 		fhir_observation.performer.reference 	= [ "Practitioner", Rails::Html::LinkSanitizer.new.sanitize(new_observation[:performer]) ].join('/')
 
+		fhir_observation.text 								= FHIR::Narrative.new
+		fhir_observation.text.status 					= "generated"
+		fhir_observation.text.div 						= SplaschObservation::generate_narrative(fhir_observation)
+
+		byebug
 		result = @fhir_client.create(fhir_observation)
+		byebug
 
     respond_to do |format|
       if result.response[:code] == "201"
