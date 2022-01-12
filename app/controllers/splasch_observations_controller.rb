@@ -201,9 +201,7 @@ class SplaschObservationsController < ApplicationController
 		fhir_observation.text.status 					= "generated"
 		fhir_observation.text.div 						= SplaschObservation::generate_narrative(fhir_observation)
 
-		byebug
 		result = @fhir_client.create(fhir_observation)
-		byebug
 
     respond_to do |format|
       if result.response[:code] == "201"
