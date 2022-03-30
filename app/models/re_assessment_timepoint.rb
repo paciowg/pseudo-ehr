@@ -9,11 +9,10 @@
 class ReAssessmentTimepoint < Resource
     include ActiveModel::Model
 
-    attr_reader :id, :identifier, :status, :category, :type, :service_type,
+    attr_accessor :id, :identifier, :status, :category, :type, :service_type,
                 :subject, :episode_of_care, :based_on, :participant, :period, :reason_code,
-                :reason_reference, :diagnosis, :hospitalization, :location, :service_provider, :part_of
-
-    attr_accessor :fhir_queries
+                :reason_reference, :diagnosis, :hospitalization, :location, :fhir_queries, 
+                :part_of, :service_provider
     #-----------------------------------------------------------------------------
 
     def initialize(fhir_encounter, fhir_client)
@@ -34,12 +33,14 @@ class ReAssessmentTimepoint < Resource
         @hospitalization     = fhir_encounter.hospitalization
         @location            = fhir_encounter.location        # list of locations the patient has been to
         @service_provider    = @fhir_client.read(nil, fhir_encounter.serviceProvider&.reference)&.resource
-        @part_of             = @fhir_client.read(nil, fhir_encounter.partOf.reference).resource
+        @part_of             = @fhir_client.read(nil, fhir_encounter.partOf&.reference).resource
         
-        fhir_response        = @fhir_client.read(nil, fhir_encounter.subject.reference)
+        fhir_response        = @fhir_client.read(nil, fhir_encounter.subject&.reference)
         @subject             = fhir_response.resource
+        unless @subject.nil?
         # To display the fhir queries
-        @fhir_queries        = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"]
+            @fhir_queries        = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"]
+        end
     end
     
     #-----------------------------------------------------------------------------
@@ -115,4 +116,36 @@ class ReAssessmentTimepoint < Resource
     end
     
     #-----------------------------------------------------------------------------
+
+    def save
+    end
+
+
+	def makeFHIREncounter
+		encounter = FHIR::Encounter.new
+		
+        encounter.id             = @id
+        encounter.status         = @status
+        encounter.identifier     = [@identifier]
+        encounter.local_class    = @category
+        encounter.type           = @type
+        encounter.serviceType    = @service_type
+        encounter.subject        = @subject
+        encounter.period         = @period
+        encounter.author         = @author
+		encounter.addresses      = @conditions
+        encounter.supportingInfo = @supportingInfo
+        encounter.goal           = @goal
+        encounter.contributor    = @contributor
+        encounter.activity       = @activity
+        encounter.title          = @title
+        encounter.description    = @description
+		begin # try to set
+		encounter.text           = @text
+		rescue # otherwise ignore this field.
+		end
+
+		encounter
+	end
+	
 end

@@ -2,7 +2,7 @@
     
     <div class='card-header'>
         <h4>Re-assessment Timepoints</h4>
-        <%= link_to "Add Timepoint", new_re_assessment_timepoint_path, class: 'card-link d-flex justify-content-end' %>
+        <%= link_to "Add Timepoint", new_re_assessment_timepoint_path(:encounter_id => @encounter.id), class: 'card-link d-flex justify-content-end' %>
     </div>
     
     <div class='card-body'>

@@ -41,6 +41,8 @@ class Composition < Resource
       section_objects["title"] = section.title
       section_objects["objects"] = []
       section.entry.each do |fhir_reference|
+        if fhir_reference.reference.split('/')[0] == "Consent"
+        end
         referenced_object = get_object_from_bundle(fhir_reference, fhir_bundle)
         section_objects["objects"].push(referenced_object)
       end

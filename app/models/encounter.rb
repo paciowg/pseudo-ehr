@@ -121,4 +121,15 @@ class Encounter < Resource
     end
     
     #-----------------------------------------------------------------------------
+
+    def self.getById(fhir_client, encounter_id)
+		obj = fhir_client.read(FHIR::Encounter, encounter_id)
+		raise "unable to read encounter resource" unless obj.code == 200
+		fhir_encounter = obj.resource
+		
+		return Encounter.new(fhir_encounter, fhir_client)
+	end
+
+    #-----------------------------------------------------------------------------
+
 end

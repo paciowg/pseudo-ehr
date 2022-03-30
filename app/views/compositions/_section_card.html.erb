@@ -1,7 +1,7 @@
 
 <div class='card bg-dark text-white'>
   <div class='card-header' id="sectionHeader-<%= index %>" >
-    <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#sectionBody-<%= index %>" aria-expanded="false" aria-controls="sectionHeader-<%= index %>">
+    <button class="btn btn-link" type="button" data-bs-toggle="modal" data-bs-target="#sectionNarrative-<%= index %>" aria-label="view">
         <%= section["title"] %>
     </button>
 
@@ -13,14 +13,16 @@
     <!-- Modal -->
     <%= render 'section_narrative', section: section, index: index %>
   </div>
-  <div id="sectionBody-<%= index %>" class="collapse" aria-labelledby="sectionHeader-<%= index %>" data-bs-parent="#sections">
+ <!-- <div id="sectionBody-<%= index %>" class="collapse" aria-labelledby="sectionHeader-<%= index %>" data-bs-parent="#sections">
     <div class='card-body'>
       <br>
       <% section["objects"].each do |object| %>
-        <%= render object.resourceType + "_card", object: object %>
+        <% if File.exist?("_" + object.resourceType + "_card.html.erb") %>
+          <%= render object.resourceType + "_card", object: object %>
+        <% end %>
         <br>
       <% end %>
     </div>
-  </div>
+  </div> -->
 </div>
 

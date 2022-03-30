@@ -28,7 +28,14 @@ class CompositionsController < ApplicationController
   # GET /compositions/1.json
   def show
     fhir_client = SessionHandler.fhir_client(session.id)
-    fhir_response = fhir_client.read(FHIR::Composition, params[:id] + "/$document")
+    # fhir_response = fhir_client.read(nil, "Bundle/"+params[:id])
+    # fhir_response = fhir_client.read(nil, "Bundle/26672")
+    fhir_response = fhir_client.search(FHIR::DocumentReference, search: {parameters: { patient: "Example-Smith-Johnson-Patient1"} })
+    byebug
+    fhir_client.begin_transaction
+      fhir_response.resource.entry.map(&:resource).each do |resource|
+        fhir_client.add_transaction_request('GET', resource.)
+      end
     bundle = fhir_response.resource
     Rails.cache.write("$document_bundle", bundle.to_json,  { expires_in: 30.minutes })
     fhir_composition = bundle.entry.map(&:resource).first

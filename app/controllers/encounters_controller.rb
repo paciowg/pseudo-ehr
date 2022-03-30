@@ -20,7 +20,6 @@ class EncountersController < ApplicationController
         @encounters = @patient.encounters
 
         @fhir_queries = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @patient.fhir_queries
-        # byebug
     end
     
     def show
@@ -28,7 +27,6 @@ class EncountersController < ApplicationController
         fhir_encounter = fhir_response.resource
         @encounter = Encounter.new(fhir_encounter, @fhir_client) unless fhir_encounter.nil?
         @patient = Patient.new(@encounter.subject, @fhir_client)
-        # byebug
         # Display the fhir query being run on the UI to help implementers
         @fhir_queries = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @encounter.fhir_queries
     end

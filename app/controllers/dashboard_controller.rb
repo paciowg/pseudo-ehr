@@ -15,6 +15,7 @@ class DashboardController < ApplicationController
       if !Rails.cache.read("$document_bundle").nil?
         bundle = FHIR.from_contents(Rails.cache.read("$document_bundle"))
         fhir_patient = get_object_from_bundle('Patient/' + patient_id, bundle)
+        puts Rails.cache.read("$document_bundle")
       end
       
       if fhir_patient.nil?
@@ -30,7 +31,6 @@ class DashboardController < ApplicationController
       
       # Display the fhir query being run on the UI to help implementers
       @fhir_queries        = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @patient.fhir_queries
-      #byebug
     else
       redirect_to :root
     end
