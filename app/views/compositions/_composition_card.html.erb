@@ -1,0 +1,17 @@
+<div class='card bg-dark text-white'>
+  <div class='card-header'>
+    Patient and Demographic info
+  </div>
+  <div class='card-body'>
+    <div class='row patient-info'>
+      <div class='col-6'>
+        <table class='table table-striped table-dark status'>
+          <tr>
+            <td>Author</td>
+            <td><%= link_to display_human_name(@composition.author.name[0]), dashboard_path(patient: @composition.author.id) %></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

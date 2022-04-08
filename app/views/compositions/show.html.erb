@@ -1,0 +1,25 @@
+<section class='container'>
+  <section class='row'>
+    <% if @composition.present? %>
+      <div class='col-6 card-container'>
+        <%= sanitize(@composition.title) %>
+      </div>
+    <% else %>
+      Not available
+    <% end %>
+  </section>
+  <section class='row'>
+    <div class='col-6 card-container'>
+      <%= render partial: 'dashboard/patient-card'%>
+    </div>
+    <div class='col-6 card-container accordion' id="sections">
+      <% @composition.section.each_with_index do |section, index| %>
+       <div class='row'>
+        <%= render 'section_card', section: section, index: index %>
+       </div>
+       <br>
+      <% end %>
+    </div>
+  </section>
+</section>
+

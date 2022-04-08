@@ -12,9 +12,14 @@ class DashboardController < ApplicationController
     patient_id = params[:patient]
 
     if patient_id.present?
-      fhir_patient = SessionHandler.fhir_client(session.id).
-                              read(FHIR::Patient, patient_id).resource
-
+      if !Rails.cache.read("$document_bundle").nil?
+        bundle = FHIR.from_contents(Rails.cache.read("$document_bundle"))
+        fhir_patient = get_object_from_bundle('Patient/' + patient_id, bundle)
+      end
+      if fhir_patient.nil?
+        fhir_patient = SessionHandler.fhir_client(session.id).
+                                read(FHIR::Patient, patient_id).resource
+      end
       @patient              = Patient.new(fhir_patient, SessionHandler.fhir_client(session.id))
       #@medications          = @patient.medications
       #@functional_statuses  = @patient.bundled_functional_statuses
@@ -27,6 +32,14 @@ class DashboardController < ApplicationController
     else
       redirect_to :root
     end
+  end
+
+  def get_object_from_bundle(fhir_reference, fhir_bundle)
+    referenced_object = fhir_bundle.entry.map(&:resource).select do |resource| 
+      resource.resourceType == fhir_reference.split('/')[0]
+      resource.id == fhir_reference.split('/')[1]
+    end
+    referenced_object[0]
   end
 
 end

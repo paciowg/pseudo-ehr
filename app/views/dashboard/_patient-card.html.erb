@@ -7,7 +7,7 @@
   </div>
   <div class='card-body'>
     <div class='row patient-info'>
-      <div class='col-6'>
+      <div class='col-5'>
         <%= display_photo(@patient.photo, @patient.gender, class: 'profile-photo') %>
       </div>
       <div class='col-6'>
@@ -29,7 +29,7 @@
             <td><%= display_marital_status(@patient.marital_status) %></td>
           </tr>
           <tr>
-            <td>Phone</td>
+            <td>contact info</td>
             <td>
               <% @patient.telecoms.each do |telecom| %>
                 <%= display_telecom(telecom) %><br />
