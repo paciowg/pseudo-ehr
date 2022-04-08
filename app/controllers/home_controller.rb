@@ -41,8 +41,8 @@ class HomeController < ApplicationController
           redirect_to @authorize_url
           return
         end
-        @client.set_basic_auth("interop_pit", "d6H33sCXII69oGW3uvuwEh2fxiMfuSkobEMq")
-        @client.security_headers["Authorization"] = @client.security_headers["Authorization"].gsub("\n", "")
+        # @client.set_basic_auth("interop_pit", "d6H33sCXII69oGW3uvuwEh2fxiMfuSkobEMq")
+        # @client.security_headers["Authorization"] = @client.security_headers["Authorization"].gsub("\n", "")
       end
     end
     @SessionHandler = SessionHandler.establish(session.id, Rails.cache.read("base_server_url"), params[:client_id], params[:client_secret], @client)

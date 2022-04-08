@@ -1,0 +1,24 @@
+
+<%= form_with(model: @reassessment_timepoint, local: true) do |form| %>
+  <% if @reassessment_timepoint.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@reassessment_timepoint.errors.count, "error") %> prohibited this reassessment timepoint from being saved:</h2>
+
+      <ul>
+      <% @reassessment_timepoint.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <%= form.hidden_field(:encounter_id, :value => @encounter.id )%>
+  <%= render 'reassessment-timepoint-card-form' %>
+
+
+  <div class="actions">
+    <%= form.submit "Save Reassessment Timepoint" %>
+	<%= link_to 'Back', "/dashboard?patient=#{@patient.id}" %>
+  </div>
+  
+  <br><br>
+<% end %>
