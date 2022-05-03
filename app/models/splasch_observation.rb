@@ -29,7 +29,7 @@ class SplaschObservation < Resource
 		@code									= fhir_splasch_observation.code
 		@subject							= fhir_splasch_observation.subject
 		@performer						= fhir_splasch_observation.performer
-		@effective_datetime		= DateTime.parse(fhir_splasch_observation.effectiveDateTime)
+		@effective_datetime		= DateTime.parse(fhir_splasch_observation.effectiveDateTime) unless fhir_splasch_observation.effectiveDateTime.nil?
 		@value								= fhir_splasch_observation.valueCodeableConcept
 	end
 

@@ -71,6 +71,10 @@ class HomeController < ApplicationController
         err += " that holds at least one patient"
         redirect_to root_path, flash: { error: err }
       else
+        @patients.each do |patient|
+          puts patient.id
+          puts patient.name.first
+        end
         # Cache the results so we don't burden the server.
         Rails.cache.write("patients", @patients, expires_in: 1.hour)
       end

@@ -23,12 +23,12 @@ class CompositionsController < ApplicationController
   # GET /compositions/1
   # GET /compositions/1.json
   def show
-    fhir_client = SessionHandler.fhir_client(session.id)
-    bundle = fhir_client.read(FHIR::Composition, params[:id] + "/$document").resource
+    @fhir_client = SessionHandler.fhir_client(session.id)
+    bundle = @fhir_client.read(FHIR::Composition, params[:id] + "/$document").resource
     Rails.cache.write("$document_bundle", bundle.to_json,  { expires_in: 30.minutes })
     fhir_composition = bundle.entry.map(&:resource).first
     @composition = Composition.new(fhir_composition, bundle) unless fhir_composition.nil?
-    @patient = Patient.new(@composition.subject, fhir_client)
+    @patient = Patient.new(@composition.subject, @fhir_client)
     @bundle_objects = bundle.entry.map(&:resource)
   end
 

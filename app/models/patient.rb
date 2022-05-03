@@ -170,7 +170,8 @@ class Patient < Resource
     search_param =  { search:
                       { parameters:
                         { 
-                          _count: 200
+                          _count: 200,
+                          subject: ["Patient", @id].join('/')
                         }
                       }
                     }

@@ -7,12 +7,14 @@
       <div class="patient-list-container">
         <ul class="patient-list">
           <% @patients.each do |patient| %>
-            <li>
-              <button class="btn btn-primary btn-lg btn-block patient-option collapse show" 
-                      type="submit" name="patient" value="<%= patient.id %>">
-                  <%= patient.name.first.family + ", " + patient.name.first.given.join(' ') %>
-              </button>
-            </li>
+            <% unless patient.name.first.nil? %>
+              <li>
+                <button class="btn btn-primary btn-lg btn-block patient-option collapse show" 
+                        type="submit" name="patient" value="<%= patient.id %>">
+                   <%= patient.name.first.family + ", " + patient.name.first.given.join(' ') %>
+               </button>
+              </li>
+            <% end %>
           <% end %>
         </ul>
       </div>
