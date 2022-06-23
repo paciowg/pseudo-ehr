@@ -69,9 +69,11 @@ module ApplicationHelper
 			S: 'Never Married',
 			W: 'Widowed'
 		}
-
-		marital_status_values[marital_status.coding.first.code.to_sym] ||
-										sanitize(marital_status.coding.first.code)
+		unless marital_status.nil?
+			marital_status_values[marital_status.coding.first.code.to_sym] ||
+				sanitize(marital_status.coding.first.code)
+		end
+		return nil
 	end
 
 	#-----------------------------------------------------------------------------

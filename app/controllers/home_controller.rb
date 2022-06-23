@@ -45,6 +45,8 @@ class HomeController < ApplicationController
         # @client.security_headers["Authorization"] = @client.security_headers["Authorization"].gsub("\n", "")
       end
     end
+    puts "server url: "
+    puts Rails.cache.read("base_server_url")
     @SessionHandler = SessionHandler.establish(session.id, Rails.cache.read("base_server_url"), params[:client_id], params[:client_secret], @client)
 
     # Get list of patients from cached results from server

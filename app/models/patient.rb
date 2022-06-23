@@ -20,7 +20,10 @@ class Patient < Resource
   	@names 						= fhir_patient.name
   	@telecoms 				= fhir_patient.telecom
   	@addresses 				= fhir_patient.address
-  	@birth_date 			= fhir_patient.birthDate.to_date
+    @birth_date = nil
+    unless fhir_patient.birthDate.nil?
+  	  @birth_date 			= fhir_patient.birthDate.to_date
+    end
   	@gender 					= fhir_patient.gender
   	@marital_status 	= fhir_patient.maritalStatus
   	@photo						= nil
@@ -185,8 +188,12 @@ class Patient < Resource
                                                               fhir_splasch_observation.nil?
       end
     end
-
-    return splasch_observations.sort_by(&:effective_datetime).reverse
+    puts splasch_observations
+    unless splasch_observations.empty?
+      return splasch_observations
+      # return splasch_observations.sort_by(&:effective_datetime).reverse
+    end
+    return []
   end
 
   #-----------------------------------------------------------------------------
@@ -330,6 +337,9 @@ class Patient < Resource
   #-----------------------------------------------------------------------------
 
   def age
+    if @birth_date.nil?
+      return "unknown"
+    end
     now = Time.now.to_date
     age = now.year - @birth_date.year
 

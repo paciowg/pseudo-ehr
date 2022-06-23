@@ -30,7 +30,20 @@ class SplaschObservation < Resource
 		@subject							= fhir_splasch_observation.subject
 		@performer						= fhir_splasch_observation.performer
 		@effective_datetime		= DateTime.parse(fhir_splasch_observation.effectiveDateTime) unless fhir_splasch_observation.effectiveDateTime.nil?
-		@value								= fhir_splasch_observation.valueCodeableConcept
+		@value								= observation_value(fhir_splasch_observation)
+	end
+
+	def observation_value(fhir_splasch_observation)
+		unless fhir_splasch_observation.valueCodeableConcept.nil?
+			return fhir_splasch_observation.valueCodeableConcept.coding[0].display
+		end
+		unless fhir_splasch_observation.valueString.nil?
+			return fhir_splasch_observation.valueString
+		end
+		unless fhir_splasch_observation.valueQuantity.nil?
+			return fhir_splasch_observation.valueQuantity.value.to_s + ( fhir_splasch_observation.valueQuantity.unit.nil? ? "" : fhir_splasch_observation.valueQuantity.unit )
+		end
+		return nil
 	end
 
 end
