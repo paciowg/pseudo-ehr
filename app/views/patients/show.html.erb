@@ -4,9 +4,19 @@
       <div class='col-6 card-container'>
         <%= render 'dashboard/patient-card' %>
       </div>
+      <% if @encounters.present? %>
+        <div class='col-lg-6 card-container'>
+          <%= render 'dashboard/encounters-card' %>
+        </div>
+      <% end %>
       <% if @medications.present? %>
         <div class='col-6 card-container'>
           <%= render 'dashboard/medications-card' %>
+        </div>
+      <% end %>
+      <% if @compositions.present? %>
+        <div class='col-lg-6 card-container'>
+          <%= render 'dashboard/compositions-card' %>
         </div>
       <% end %>
       <% if @functional_statuses.present? %>

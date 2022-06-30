@@ -22,6 +22,7 @@ gem 'jbuilder', '~> 2.5'        # Build JSON APIs with ease. Read more: https://
 gem 'bootsnap', '>= 1.1.0', require: false  # Reduces boot times through caching; required in config/boot.rb
 gem 'bootstrap', '~> 4.4'       # bootstrap
 gem 'jquery-rails'              # jQuery
+gem 'jquery-datatables'
 gem 'bootstrap-toggle-rails'    # bootstrap toggle
 gem 'fhir_client', git: 'https://github.com/paciowg/fhir_client.git'		# FHIR client that supports fullUrl for transaction entries
 #gem 'fhir_client', git: 'https://github.com/fhir-crucible/fhir_client.git'  # FHIR client from MITRE's crucible project
@@ -45,7 +46,7 @@ end
 group :test do
   gem 'capybara', '>= 2.15'     # Adds support for Capybara system testing and selenium driver
   gem 'selenium-webdriver'      # WebDriver JavaScript bindings from the Selenium project
-  gem 'chromedriver-helper'     # Easy installation and use of chromedriver to run system tests with Chrome
+  gem 'webdrivers'              # Easy installation and use of chromedriver to run system tests with Chrome
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]    # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

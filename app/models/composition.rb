@@ -37,9 +37,12 @@ class Composition < Resource
     @section = []
     section_list.each do |section| 
       section_objects = {}
+      section_objects["text"] = section.text.div
       section_objects["title"] = section.title
       section_objects["objects"] = []
       section.entry.each do |fhir_reference|
+        if fhir_reference.reference.split('/')[0] == "Consent"
+        end
         referenced_object = get_object_from_bundle(fhir_reference, fhir_bundle)
         section_objects["objects"].push(referenced_object)
       end
@@ -49,9 +52,12 @@ class Composition < Resource
 
   def get_object_from_bundle(fhir_reference, fhir_bundle)
     referenced_object = fhir_bundle.entry.map(&:resource).select do |resource| 
-      resource.resourceType == fhir_reference.reference.split('/')[0]
-      # puts resource.resourceType
-      resource.id == fhir_reference.reference.split('/')[1]
+      if fhir_reference
+        resource.resourceType == fhir_reference.reference.split('/')[0]
+        # puts resource.resourceType
+        resource.id == fhir_reference.reference.split('/')[1]
+      end
+      
     end
     referenced_object[0]
   end

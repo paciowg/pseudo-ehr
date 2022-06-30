@@ -10,7 +10,7 @@
             <li>
               <button class="btn btn-primary btn-lg btn-block patient-option collapse show" 
                       type="submit" name="composition" value="<%= composition.id %>">
-                  Composition for Patient <%= composition.subject.reference.split('/')[1] %>
+                  Composition for Patient <%= composition.subject&.reference&.split('/')&.last %>
               </button>
             </li>
           <% end %>

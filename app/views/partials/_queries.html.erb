@@ -1,0 +1,19 @@
+
+<% if @fhir_query %>
+    <div class="center border border-3 border-dark mt-5"
+        style="margin-bottom: -5rem;">
+        <p class="text-wrap  text-responsive m-3">FHIR Query: <%= @fhir_query %></p>
+    </div>
+<% elsif @fhir_queries %>
+    <div class="center border border-3 border-dark"
+        style="margin-bottom: -5rem; margin-top: 4rem">
+        <p class="text-wrap  text-responsive m-3">FHIR Queries:</p>
+        <ol class=''>
+            
+            <% @fhir_queries.each do |query| %>
+                <li><small><%= query %></small></li>
+            <% end %>
+            
+        </ol>
+    </div>
+<% end %>

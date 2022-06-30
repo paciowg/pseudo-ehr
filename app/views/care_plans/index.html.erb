@@ -12,7 +12,9 @@
   <tbody>
     <% @care_plans.each do |carePlan| %>
       <tr>
-        <td><%= link_to carePlan.id, care_plan_path(carePlan.id) %></td>
+        <td><%= link_to 'Show', care_plan_path(care_plan.id) %></td>
+        <td><%= link_to 'Edit', edit_care_plan_path(care_plan.id) %></td>
+        <td><%= link_to 'Destroy', care_plan_path(care_plan.id), method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>

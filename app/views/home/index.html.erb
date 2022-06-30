@@ -7,14 +7,19 @@
       <div class="patient-list-container">
         <ul class="patient-list">
           <% @patients.each do |patient| %>
-            <% unless patient.name.first.nil? %>
-              <li>
-                <button class="btn btn-primary btn-lg btn-block patient-option collapse show" 
+            
+            <li>
+              <button class="btn btn-primary btn-lg btn-block patient-option collapse show" 
                         type="submit" name="patient" value="<%= patient.id %>">
-                   <%= patient.name.first.family + ", " + patient.name.first.given.join(' ') %>
-               </button>
-              </li>
-            <% end %>
+                        <% patient_name = [patient.name.first&.family, patient.name.first&.given&.join(" ")].compact %>
+                        <% if  patient_name.present? %>
+                          <%= "#{patient_name.join(", ")}, DOB: #{display_date(patient.birthDate.to_date) if patient.birthDate}, ID: #{patient.id}" %>
+                        <% else %>
+                          No name provided
+                        <% end %>
+                        
+              </button>
+            </li>
           <% end %>
         </ul>
       </div>

@@ -19,8 +19,12 @@ Rails.application.routes.draw do
   resources :cognitive_status, 	  only: [:index, :show]
   resources :splasch_collections, only: [:index, :show]
   resources :splasch_observations, only: [:show, :new, :create]
+  resources :encounters,          only: [:show]
   resources	:practitioners,       only: [:show]
-  resources :patients
+  resources :patients do
+    resources :encounters, only: [:index]
+  end
+  resources :re_assessment_timepoints, only: [:new, :create, :show]
   resources :observations
   resources :practitioner_roles
   resources :contracts

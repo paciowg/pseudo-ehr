@@ -29,9 +29,12 @@ module ApplicationHelper
 	#-----------------------------------------------------------------------------
 
 	def display_human_name(name)
-	  human_name = [name.prefix.join(', '), name.given.join(' '), name.family].join(' ')
-	  human_name += ', ' + name.suffix.join(', ') if name.suffix.present?
-	  sanitize(human_name)
+	  if name
+		human_name = [name.prefix.join(', '), name.given.join(' '), name.family].join(' ')
+		human_name += ', ' + name.suffix.join(', ') if name.suffix.present?
+		sanitize(human_name) 
+	  end
+	  
 	end
 
 	#-----------------------------------------------------------------------------
@@ -105,7 +108,7 @@ module ApplicationHelper
   #-----------------------------------------------------------------------------
 
   def display_code(code)
-    sanitize(code.coding[0].display) unless code.nil?
+    sanitize("#{code.coding[0].display} (#{code.coding[0].code})") if code
   end
 
 	#-----------------------------------------------------------------------------
@@ -260,17 +263,32 @@ module ApplicationHelper
   #-----------------------------------------------------------------------------
 
 	def get_id(url)
-		components = url.split('/')
-		sanitize(components.last)
-		# max_index = components.length - 1
-		# sanitize([components[max_index-1], components[max_index]].join('/'))
+		if url
+			components = url.split('/')
+			sanitize(components.last)
+		end
+		
 	end
 
   #-----------------------------------------------------------------------------
 
 	def get_type(url)
-		components = url.split('/')
-		sanitize(components[components.length-2])
+		if url
+			components = url.split('/')
+			sanitize(components[components.length-2])
+		end
+		
+	end
+
+  #-----------------------------------------------------------------------------
+
+	def get_type_and_id(url)
+		if url
+		  components = url.split('/')
+		  max_index = components.length - 1
+		  return [components[max_index-1], components[max_index]].join('/')
+	  end
+	  
 	end
 
   #-----------------------------------------------------------------------------
@@ -290,7 +308,7 @@ module ApplicationHelper
 		fhir_object = fhir_client.read(nil, reference).resource
 
     # WARN: constantize may not be safe
-    class_string = get_type(reference).constantize
+    	class_string = get_type(reference)&.constantize
 
 		return class_string.new(fhir_object)
 	end
@@ -298,13 +316,12 @@ module ApplicationHelper
   #-----------------------------------------------------------------------------
 
 	def get_object_from_url(reference_string, fhir_client)
-		fhir_object = fhir_client.read(nil, [get_type(reference_string), 
-                              get_id(reference_string)].join('/')).resource
+		fhir_object = fhir_client.read(nil, get_type_and_id(reference_string)).resource
 
     # WARN: constantize may not be safe
-    class_string = get_type(reference_string).constantize
+    	class_string = get_type(reference_string)&.constantize
     
-		return class_string.new(fhir_object)
+		return class_string.new(fhir_object) if fhir_object
 	end
 
   #-----------------------------------------------------------------------------
