@@ -258,6 +258,7 @@ class Patient < Resource
       end
     end
     puts splasch_observations
+    splasch_observations = splasch_observations.find_all {|splasch_observation| splasch_observation.is_splasch_observation}
     unless splasch_observations.empty?
       return splasch_observations
       # return splasch_observations.sort_by(&:effective_datetime).reverse
