@@ -54,6 +54,11 @@ Rails.application.routes.draw do
   get '/convert',       to: 'convert#index'
   put '/convert/:id',   to: 'convert#update'
 
+  get 'oauth2/start'
+  get 'oauth2/restart'
+  get 'oauth2/redirect'
+  post 'oauth2/register'
+
   root 'welcome#index'
 
   # Define 'FHIR' API for retrieving patients and converting questionnaire 

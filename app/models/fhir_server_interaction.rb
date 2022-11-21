@@ -39,7 +39,7 @@ class FhirServerInteraction
         @client.set_oauth2_auth(@oauth2_id, @oauth2_secret, options[:authorize_url], 
           options[:token_url], options[:site])
         client = OAuth2::Client.new(@oauth2_id, @oauth2_secret, options)
-        client.auth_code.authorize_url(:redirect_uri => 'http://localhost:3000/home')
+        client.auth_code.authorize_url(:redirect_uri => 'http://localhost:8080/oauth2/redirect')
       end
     end
     FHIR::Model.client = @client

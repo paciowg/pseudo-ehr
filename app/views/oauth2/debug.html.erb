@@ -1,0 +1,28 @@
+<h1>Debugging OAuth2</h1>
+
+<h2>Params</h2>
+<div>
+  <code>
+    <%= params.to_s %>
+  </code>
+</div>
+
+<h2>Session</h2>
+<div>
+  <code>
+    <%= session.to_hash.to_s %>
+  </code>
+</div>
+
+<h2>Env</h2>
+<div>
+  <code class="fhir">
+    <%= ENV.to_hash.to_json %>
+  </code>
+</div>
+
+<h2>Links</h2>
+<ul>
+  <li>GET <%= link_to root_url %></li>
+  <li>GET <%= link_to oauth2_start_url %></li>
+</ul>
