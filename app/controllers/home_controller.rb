@@ -20,26 +20,28 @@ class HomeController < ApplicationController
     else
       @code = params[:code]
       if @code.present?
-        puts "in here!"
-        @token_params = {:grant_type => 'authorization_code', :code => @code, :redirect_uri => ENV["REDIRECT_URI"]}
-        @token_url = Rails.cache.read("token_url")
-        @post_url = URI(@token_url)
-        @post_url.user = ENV["CLIENT_ID"]
-        @post_url.password = ENV["CLIENT_SECRET"]
-        @response = Net::HTTP.post_form @post_url, @token_params
-        
-        @token = JSON.parse(@response.body)["access_token"]
-        @base_server_url = Rails.cache.read("base_server_url")
-        @client = FHIR::Client.new(@base_server_url)
-        @client.set_bearer_token(@token)
+        unless params[:state] != Rails.cache.read("state")?
+          puts "in here!"
+          @token_params = {:grant_type => 'authorization_code', :code => @code, :redirect_uri => ENV["REDIRECT_URI"]}
+          @token_url = Rails.cache.read("token_url")
+          @post_url = URI(@token_url)
+          @post_url.user = ENV["CLIENT_ID"]
+          @post_url.password = ENV["CLIENT_SECRET"]
+          @response = Net::HTTP.post_form @post_url, @token_params
+          
+          @token = JSON.parse(@response.body)["access_token"]
+          @base_server_url = Rails.cache.read("base_server_url")
+          @client = FHIR::Client.new(@base_server_url)
+          @client.set_bearer_token(@token)
+        end
       else
         @base_server_url = params[:server_url]
         @client = FHIR::Client.new(@base_server_url)
         Rails.cache.write("base_server_url", params[:server_url], { expires_in: 30.minutes })
         options = @client.get_oauth2_metadata_from_conformance
-        puts options
         unless options.blank?
-          @params = {:response_type => 'code', :client_id => ENV["CLIENT_ID"], :redirect_uri => ENV["REDIRECT_URI"], :scope => ENV["SCOPE"], :state => SecureRandom.uuid, :aud => @base_server_url }
+          Rails.cache.write("state", SecureRandom.uuid, { expires_in: 10.minutes })
+          @params = {:response_type => 'code', :client_id => ENV["CLIENT_ID"], :redirect_uri => ENV["REDIRECT_URI"], :scope => ENV["SCOPE"], :state => Rails.cache.read("state"), :aud => @base_server_url }
           @authorize_url = options[:authorize_url] + "?" + @params.to_query
           Rails.cache.write("token_url", options[:token_url], { expires_in: 30.minutes })
           Rails.cache.write("authorize_url", options[:authorize_url], { expires_in: 30.minutes })
