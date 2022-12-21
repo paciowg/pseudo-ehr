@@ -1,23 +1,8 @@
-
-<div class='card bg-dark text-white'>
-  <div class='card-header' id="sectionHeader-<%= index %>" >
-    <button class="btn btn-link" type="button" data-bs-toggle="modal" data-bs-target="#sectionNarrative-<%= index %>" aria-label="view">
-        <%= section["title"] %>
-        <%= section["date"] %>
-    </button>
-    <div>
-        Placeholder <%= index %>
-        <!--<%= section["code.coding[0].display"] %>-->
-    </div>
-
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-default view" data-bs-toggle="modal" data-bs-target="#sectionNarrative-<%= index %>" aria-label="view">
-      <span class="view" data-bs-toggle="tooltip" title="View directive">🔗</span>
-    </button>
-
-    <!-- Modal -->
-    <%= render 'section_narrative', section: section, index: index %>
-  </div>
-
-</div>
-
+<tr>
+  <td>
+    Category: <%= index %>
+  </td>
+  <td>
+    <%= @composition.section[index]["title"] %>
+  </td>
+</tr>
