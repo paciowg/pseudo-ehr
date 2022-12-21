@@ -28,22 +28,20 @@ class CompositionsController < ApplicationController
   # GET /compositions/1.json
   def show
     fhir_client = SessionHandler.fhir_client(session.id)
-    # fhir_response = fhir_client.read(nil, "Bundle/"+params[:id])
-    # fhir_response = fhir_client.read(nil, "Bundle/26672")
-    fhir_response = fhir_client.search(FHIR::DocumentReference, search: {parameters: { patient: "Example-Smith-Johnson-Patient1"} })
-    byebug
+    fhir_composition = fhir_client.read(FHIR::Composition, params[:id]).resource
+
+    #todo: replaceß hard coded string
+    fhir_response = fhir_client.search(FHIR::Composition, search: {parameters: { patient: "Example-Smith-Johnson-Patient1"} })
     fhir_client.begin_transaction
-      fhir_response.resource.entry.map(&:resource).each do |resource|
-        fhir_client.add_transaction_request('GET', resource.)
-      end
     bundle = fhir_response.resource
     Rails.cache.write("$document_bundle", bundle.to_json,  { expires_in: 30.minutes })
-    fhir_composition = bundle.entry.map(&:resource).first
-    # puts "baaaarrrrrrrd\n\n\n"
-    # puts fhir_composition.section[0].entry[0].reference
+
     @composition = Composition.new(fhir_composition, bundle) unless fhir_composition.nil?
-    @patient = Patient.new(@composition.subject, @fhir_client)
-    @bundle_objects = bundle.entry.map(&:resource)
+
+    fhir_patient = fhir_client.read(FHIR::Patient, "Example-Smith-Johnson-Patient1")
+    @patient = Patient.new(fhir_patient.resource, @fhir_client) unless fhir_patient.nil?
+
+    ##@bundle_objects = bundle.entry.map(&:resource)
 
     # Display the fhir query being run on the UI to help implementers
     @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"

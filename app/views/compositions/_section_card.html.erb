@@ -3,7 +3,12 @@
   <div class='card-header' id="sectionHeader-<%= index %>" >
     <button class="btn btn-link" type="button" data-bs-toggle="modal" data-bs-target="#sectionNarrative-<%= index %>" aria-label="view">
         <%= section["title"] %>
+        <%= section["date"] %>
     </button>
+    <div>
+        Placeholder <%= index %>
+        <!--<%= section["code.coding[0].display"] %>-->
+    </div>
 
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-default view" data-bs-toggle="modal" data-bs-target="#sectionNarrative-<%= index %>" aria-label="view">
@@ -13,16 +18,6 @@
     <!-- Modal -->
     <%= render 'section_narrative', section: section, index: index %>
   </div>
- <!-- <div id="sectionBody-<%= index %>" class="collapse" aria-labelledby="sectionHeader-<%= index %>" data-bs-parent="#sections">
-    <div class='card-body'>
-      <br>
-      <% section["objects"].each do |object| %>
-        <% if File.exist?("_" + object.resourceType + "_card.html.erb") %>
-          <%= render object.resourceType + "_card", object: object %>
-        <% end %>
-        <br>
-      <% end %>
-    </div>
-  </div> -->
+
 </div>
 
