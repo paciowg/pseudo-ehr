@@ -22,14 +22,29 @@
               <td>
                 Preference
               </td>
-            <% end %>
-            
+            <% end %>          
           </tr>
+
           <% composition.section[index]["objects"].each do |current_object| %>
           <tr>
-            <td>
-              <%= current_object %>
-            </td>
+            <% if current_object[:resource_type] == "ServiceRequest" %>
+              <td>
+                <%= current_object[:category] %>
+              </td>
+              <td>
+                <%= current_object[:request] %>
+              </td>
+              <td>
+                <%= current_object[:status] %>
+              </td>
+            <% else %>
+              <td>
+                <%= current_object[:type] %>
+              </td>
+              <td>
+                <%= current_object[:preference] %>
+              </td>
+            <% end %>
           </tr>
           <% end %>
         </table>
