@@ -68,8 +68,8 @@ class Composition < Resource
               my_hash[:request] = temp_resource.resource.code.coding[0].display
               my_hash[:status] = temp_resource.resource.status
             when "Goal"
-              my_hash[:type] = "typ"
-              my_hash[:preference] = "pref"
+              my_hash[:type] = temp_resource.resource.category[1].coding[0].display
+              my_hash[:preference] = temp_resource.resource.description.text
             when "Observation"
               my_hash[:type] = temp_resource.resource.code.coding[0].display
               if temp_resource.resource.valueCodeableConcept.nil?
