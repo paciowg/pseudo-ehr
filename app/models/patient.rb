@@ -103,8 +103,11 @@ class Patient < Resource
       } 
     }
 
-    fhir_response = @fhir_client.search(FHIR::Composition, search_param)
+    # fhir_response = @fhir_client.search(FHIR::Composition, search_param)
+    # fhir_bundle = fhir_response.resource
+    fhir_response = @fhir_client.read(FHIR::Bundle, "Example-Smith-Johnson-PMOBundle1")
     fhir_bundle = fhir_response.resource
+
     unless fhir_bundle.nil?
       fhir_compositions = filter(fhir_bundle.entry&.map(&:resource), 'Composition')
 

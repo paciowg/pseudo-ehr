@@ -28,8 +28,8 @@ class Composition < Resource
     @subject              = fhir_composition.subject
     @section              = fhir_composition.section
     unless fhir_bundle.nil?
-      @subject = get_object_from_bundle(fhir_composition.subject, fhir_bundle)
-      fill_sections(fhir_composition.section, fhir_bundle)
+       @subject = get_object_from_bundle(fhir_composition.subject, fhir_bundle)
+       fill_sections(fhir_composition.section, fhir_bundle)
     end
   end
   
@@ -40,15 +40,24 @@ class Composition < Resource
       section_objects["text"] = section.text.div
       section_objects["title"] = section.title
       section_objects["objects"] = []
-      section.entry.each do |fhir_reference|
-        if fhir_reference.reference.split('/')[0] == "Consent"
-        end
-        referenced_object = get_object_from_bundle(fhir_reference, fhir_bundle)
-        section_objects["objects"].push(referenced_object)
+      section.entry.each do |current_entry|
+        #if current_entry.reference.split('/')[0] == "Consent"
+        #end
+
+        # temp_entry = fhir_bundle.entry.select {|e| (e.resource.id  == current_entry.reference.split('/')[1])} 
+        # unless temp_entry[0].nil?
+        #   section_objects["objects"].push(temp_entry[0].resource.id)
+        # end
+
+        section_objects["objects"].push("asdf")
+
+
       end
       @section.push(section_objects)
     end
   end
+
+
 
   def get_object_from_bundle(fhir_reference, fhir_bundle)
     referenced_object = fhir_bundle.entry.map(&:resource).select do |resource| 

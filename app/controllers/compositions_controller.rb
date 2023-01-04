@@ -30,7 +30,7 @@ class CompositionsController < ApplicationController
     fhir_client = SessionHandler.fhir_client(session.id)
     fhir_composition = fhir_client.read(FHIR::Composition, params[:id]).resource
 
-    #todo: replaceß hard coded string
+    #todo: replace hard coded string
     fhir_response = fhir_client.search(FHIR::Composition, search: {parameters: { patient: "Example-Smith-Johnson-Patient1"} })
     fhir_client.begin_transaction
     bundle = fhir_response.resource
