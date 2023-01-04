@@ -41,14 +41,47 @@ class Composition < Resource
       section_objects["title"] = section.title
       section_objects["objects"] = []
       section.entry.each do |current_entry|
-        #if current_entry.reference.split('/')[0] == "Consent"
-        #end
-
-        #temp_entry = fhir_bundle.entry.select {|e| (e.resource.id  == current_entry.reference.split('/')[1])} 
-        if (current_entry.reference.split('/')[1]).nil?
-          section_objects["objects"].push("beep")
+        
+        #check that current_entry.reference exists and is formatted correctly
+        if current_entry.reference.nil?
+          puts "error: current_entry.reference is nil"
+        elsif (current_entry.reference.split('/')[0]).nil?  
+          puts "error: current_entry.reference.split('/')[0] is nil"
+        elsif (current_entry.reference.split('/')[1]).nil?
+          puts "error: current_entry.reference.split('/')[1] is nil"
         else
-          section_objects["objects"].push(current_entry.reference.split('/')[1])
+          #passed error check. Now get the correct data from bundle
+          my_hash = {resource_type: current_entry.reference.split('/')[0]}
+          temp_resource_id = current_entry.reference.split('/')[1]
+          temp_resource = {}
+
+          fhir_bundle.entry.each do |temp_bundle_entry|
+            if temp_bundle_entry.resource.id == temp_resource_id
+              temp_resource = temp_bundle_entry
+            end
+          end
+            
+
+          case my_hash[:resource_type]
+          when "ServiceRequest"
+            my_hash[:category] = temp_resource.resource.category[0].coding[0].display
+            my_hash[:request] = temp_resource.resource.code.coding[0].display
+            my_hash[:status] = temp_resource.resource.status
+          when "Goal"
+            my_hash[:type] = "typ"
+            my_hash[:preference] = "pref"
+          when "Observation"
+            my_hash[:type] = temp_resource.resource.code.coding[0].display
+            if temp_resource.resource.valueCodeableConcept.nil?
+              my_hash[:preference] = "placeholder"
+            else
+              my_hash[:preference] = temp_resource.resource.valueCodeableConcept.coding[0].display
+            end
+          else
+            puts "error unexpected type: #{current_entry.reference.split('/')[1]}"
+          end
+
+          section_objects["objects"].push(my_hash)
         end
 
         # if (fhir_bundle.entry.select {|e| (e.resource.id  == current_entry.reference.split('/')[1])})[0].nil?

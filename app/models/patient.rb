@@ -105,6 +105,8 @@ class Patient < Resource
 
     # fhir_response = @fhir_client.search(FHIR::Composition, search_param)
     # fhir_bundle = fhir_response.resource
+
+    # todo: hard coded ID for bundle
     fhir_response = @fhir_client.read(FHIR::Bundle, "Example-Smith-Johnson-PMOBundle1")
     fhir_bundle = fhir_response.resource
 
