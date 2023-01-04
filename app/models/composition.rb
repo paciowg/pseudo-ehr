@@ -44,12 +44,20 @@ class Composition < Resource
         #if current_entry.reference.split('/')[0] == "Consent"
         #end
 
-        # temp_entry = fhir_bundle.entry.select {|e| (e.resource.id  == current_entry.reference.split('/')[1])} 
-        # unless temp_entry[0].nil?
-        #   section_objects["objects"].push(temp_entry[0].resource.id)
+        #temp_entry = fhir_bundle.entry.select {|e| (e.resource.id  == current_entry.reference.split('/')[1])} 
+        if (current_entry.reference.split('/')[1]).nil?
+          section_objects["objects"].push("beep")
+        else
+          section_objects["objects"].push(current_entry.reference.split('/')[1])
+        end
+
+        # if (fhir_bundle.entry.select {|e| (e.resource.id  == current_entry.reference.split('/')[1])})[0].nil?
+        #   section_objects["objects"].push("qwerty")
+        # else
+        #   section_objects["objects"].push((fhir_bundle.entry.select {|e| (e.resource.id  == current_entry.reference.split('/')[1])})[0])
         # end
 
-        section_objects["objects"].push("asdf")
+        # section_objects["objects"].push("asdf")
 
 
       end
