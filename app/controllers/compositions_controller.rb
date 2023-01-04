@@ -31,12 +31,11 @@ class CompositionsController < ApplicationController
     fhir_composition = fhir_client.read(FHIR::Composition, params[:id]).resource
 
     #todo: replace hard coded string
-    fhir_response = fhir_client.search(FHIR::Composition, search: {parameters: { patient: "Example-Smith-Johnson-Patient1"} })
-    fhir_client.begin_transaction
-    bundle = fhir_response.resource
-    Rails.cache.write("$document_bundle", bundle.to_json,  { expires_in: 30.minutes })
+    fhir_response = fhir_client.read(FHIR::Bundle, "Example-Smith-Johnson-PMOBundle1")
+    fhir_bundle = fhir_response.resource
+    #Rails.cache.write("$document_bundle", bundle.to_json,  { expires_in: 30.minutes })
 
-    @composition = Composition.new(fhir_composition, bundle) unless fhir_composition.nil?
+    @composition = Composition.new(fhir_composition, fhir_bundle) unless fhir_composition.nil?
 
     fhir_patient = fhir_client.read(FHIR::Patient, "Example-Smith-Johnson-Patient1")
     @patient = Patient.new(fhir_patient.resource, @fhir_client) unless fhir_patient.nil?

@@ -61,27 +61,29 @@ class Composition < Resource
             end
           end
             
-
-          case my_hash[:resource_type]
-          when "ServiceRequest"
-            my_hash[:category] = temp_resource.resource.category[0].coding[0].display
-            my_hash[:request] = temp_resource.resource.code.coding[0].display
-            my_hash[:status] = temp_resource.resource.status
-          when "Goal"
-            my_hash[:type] = "typ"
-            my_hash[:preference] = "pref"
-          when "Observation"
-            my_hash[:type] = temp_resource.resource.code.coding[0].display
-            if temp_resource.resource.valueCodeableConcept.nil?
-              my_hash[:preference] = "placeholder"
+          begin
+            case my_hash[:resource_type]
+            when "ServiceRequest"
+              my_hash[:category] = temp_resource.resource.category[0].coding[0].display
+              my_hash[:request] = temp_resource.resource.code.coding[0].display
+              my_hash[:status] = temp_resource.resource.status
+            when "Goal"
+              my_hash[:type] = "typ"
+              my_hash[:preference] = "pref"
+            when "Observation"
+              my_hash[:type] = temp_resource.resource.code.coding[0].display
+              if temp_resource.resource.valueCodeableConcept.nil?
+                my_hash[:preference] = "placeholder"
+              else
+                my_hash[:preference] = temp_resource.resource.valueCodeableConcept.coding[0].display
+              end
             else
-              my_hash[:preference] = temp_resource.resource.valueCodeableConcept.coding[0].display
+              puts "error unexpected type: #{current_entry.reference.split('/')[1]}"
             end
-          else
-            puts "error unexpected type: #{current_entry.reference.split('/')[1]}"
+            section_objects["objects"].push(my_hash)
+          rescue
+            puts "oops"
           end
-
-          section_objects["objects"].push(my_hash)
         end
 
         # if (fhir_bundle.entry.select {|e| (e.resource.id  == current_entry.reference.split('/')[1])})[0].nil?
