@@ -92,30 +92,57 @@ class Patient < Resource
 
   #-----------------------------------------------------------------------------
 
+  def document_references
+    document_references = []
+
+    search_param =  { search: 
+                      { parameters: 
+                        { 
+                          subject: ["Patient", @id].join('/') 
+                        } 
+                      } 
+                    }
+
+    fhir_response = @fhir_client.search(FHIR::DocumentReference, search_param)
+    fhir_bundle = fhir_response.resource
+
+    unless fhir_bundle.nil?
+      fhir_document_references = filter(fhir_bundle.entry.map(&:resource), 'DocumentReference')
+
+      fhir_document_references.compact.each do |document_reference|
+        document_references << DocumentReference.new(document_reference)
+      end
+    end
+
+    return document_references
+  end
+
+  #-----------------------------------------------------------------------------
+
   def compositions
     compositions = []
 
     search_param =  { search: 
-      { parameters: 
-        { 
-          subject: ["Patient", @id].join('/') 
-        } 
-      } 
-    }
+                      { parameters: 
+                        { 
+                          subject: ["Patient", @id].join('/') 
+                        } 
+                      } 
+                    }
 
-    # fhir_response = @fhir_client.search(FHIR::Composition, search_param)
-    # fhir_bundle = fhir_response.resource
-
-    # todo: hard coded ID for bundle
-    fhir_response = @fhir_client.read(FHIR::Bundle, "Example-Smith-Johnson-PMOBundle1")
+    fhir_response = @fhir_client.search(FHIR::Composition, search_param)
     fhir_bundle = fhir_response.resource
 
-    unless fhir_bundle.nil?
-      fhir_compositions = filter(fhir_bundle.entry&.map(&:resource), 'Composition')
+    # todo: hard coded ID for bundle
+    #fhir_response = @fhir_client.read(FHIR::Bundle, "Example-Smith-Johnson-PMOBundle1")
+    #fhir_bundle = fhir_response.resource
 
-      fhir_compositions&.compact&.each do |composition|
-       compositions << Composition.new(composition, fhir_bundle)
-     end
+    unless fhir_bundle.nil?
+      fhir_compositions = filter(fhir_bundle.entry.map(&:resource), 'Composition')
+
+      fhir_compositions.compact.each do |composition|
+        compositions << Composition.new(composition, fhir_bundle)
+      end
     end
 
     # @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
@@ -142,7 +169,7 @@ class Patient < Resource
     fhir_bundle = fhir_response.resource
     
     unless fhir_bundle.nil?
-      fhir_bundle.entry&.each do |entry|
+      fhir_bundle.entry.each do |entry|
         fhir_encounter = entry.resource
         encounters << Encounter.new(fhir_encounter, @fhir_client)
       end 
@@ -154,6 +181,56 @@ class Patient < Resource
     return encounters
   end
   
+  #-----------------------------------------------------------------------------
+
+  def advance_directives
+    advance_directives = []
+
+    search_param =  { search: 
+                      { parameters: 
+                        { 
+                          subject: ["Patient", @id].join('/') 
+                        } 
+                      } 
+                    }
+
+    # Find all of the document references related to the patient
+    fhir_response = @fhir_client.search(FHIR::DocumentReference, search_param)
+    fhir_bundle = fhir_response.resource
+
+    unless fhir_bundle.nil?
+      fhir_document_references = filter(fhir_bundle.entry.map(&:resource), 'DocumentReference')
+
+      fhir_document_references.compact.each do |document_reference|
+        # REVIEW - Ignore document references that don't have a type for now...
+        unless document_reference.type.nil?
+          document_reference.content.each do |content|
+            # REVIEW - Only pay attention to content that is application/json for now...
+            if content.attachment.contentType == "application/json"
+              id = content.attachment.url.split('/').last
+              binary_attachment_bundle = @fhir_client.read(FHIR::Binary, id)
+
+              # fhir_attachment_bundle = JSON(Base64.decode64(binary_attachment_bundle.resource.data))
+              # fhir_attachment = fhir_attachment_bundle.entries.last
+              # fhir_composition = FHIR::Composition.new(fhir_attachment.last.first["resource"])
+
+              fhir_attachment_json = JSON(Base64.decode64(binary_attachment_bundle.resource.data))
+              fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
+              fhir_compositions = filter(fhir_attachment_bundle.entry.map(&:resource), 'Composition')
+              fhir_compositions.compact.each do |composition|
+                advance_directives << Composition.new(composition, fhir_attachment_bundle)
+              end
+
+              # advance_directives << Composition.new(fhir_composition, fhir_attachment_bundle)
+            end
+          end
+        end
+      end
+    end
+
+    return advance_directives
+  end
+
   #-----------------------------------------------------------------------------
 
   def bundled_functional_statuses

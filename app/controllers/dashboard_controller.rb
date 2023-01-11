@@ -31,7 +31,9 @@ class DashboardController < ApplicationController
       # @spoken_language_expression_observations = @patient.spoken_language_expression_observations
       # @swallowing_observations = @patient.swallowing_observations
       # @splasch_collections  = @patient.splasch_collections
-      @compositions         = @patient.compositions
+      # @document_references  = @patient.document_references
+      # @compositions         = @patient.compositions
+      @advance_directives   = @patient.advance_directives
       @encounters           = @patient.encounters
       
       # Display the fhir query being run on the UI to help implementers
@@ -40,6 +42,10 @@ class DashboardController < ApplicationController
       redirect_to :root
     end
   end
+
+  #-----------------------------------------------------------------------------
+  private
+  #-----------------------------------------------------------------------------
 
   def get_object_from_bundle(fhir_reference, fhir_bundle)
     referenced_object = fhir_bundle.entry.map(&:resource).select do |resource| 

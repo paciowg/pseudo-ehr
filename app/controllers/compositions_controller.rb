@@ -28,19 +28,28 @@ class CompositionsController < ApplicationController
   # GET /compositions/1.json
   def show
     fhir_client = SessionHandler.fhir_client(session.id)
-    fhir_composition = fhir_client.read(FHIR::Composition, params[:id]).resource
+    fhir_binary = fhir_client.read(FHIR::Binary, params[:id]).resource
 
-    #todo: replace hard coded string
-    fhir_response = fhir_client.read(FHIR::Bundle, "Example-Smith-Johnson-PMOBundle1")
-    fhir_bundle = fhir_response.resource
-    #Rails.cache.write("$document_bundle", bundle.to_json,  { expires_in: 30.minutes })
+    fhir_attachment_json = JSON(Base64.decode64(binary_attachment_bundle.resource.data))
+    fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
+    fhir_compositions = filter(fhir_attachment_bundle.entry.map(&:resource), 'Composition')
+    fhir_compositions.compact.each do |composition|
+      advance_directives << Composition.new(composition, fhir_attachment_bundle)
+    end
 
-    @composition = Composition.new(fhir_composition, fhir_bundle) unless fhir_composition.nil?
 
-    fhir_patient = fhir_client.read(FHIR::Patient, "Example-Smith-Johnson-Patient1")
-    @patient = Patient.new(fhir_patient.resource, @fhir_client) unless fhir_patient.nil?
+    # #todo: replace hard coded string
+    # #fhir_response = fhir_client.read(FHIR::Bundle, "Example-Smith-Johnson-PMOBundle1")
+    # fhir_response = fhir_client.read(FHIR::Binary, "26819")
+    # fhir_binary = fhir_response.resource
+    # #Rails.cache.write("$document_bundle", bundle.to_json,  { expires_in: 30.minutes })
 
-    ##@bundle_objects = bundle.entry.map(&:resource)
+    # @composition = Composition.new(fhir_composition, fhir_bundle) unless fhir_composition.nil?
+
+    # fhir_patient = fhir_client.read(FHIR::Patient, "Example-Smith-Johnson-Patient1")
+    # @patient = Patient.new(fhir_patient.resource, @fhir_client) unless fhir_patient.nil?
+
+    # ##@bundle_objects = bundle.entry.map(&:resource)
 
     # Display the fhir query being run on the UI to help implementers
     @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"

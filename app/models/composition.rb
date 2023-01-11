@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Advanced Directive Composition Model
+# Composition Model
 #
 # Copyright (c) 2021 The MITRE Corporation.  All rights reserved.
 #
@@ -9,8 +9,10 @@
 class Composition < Resource
 
   include ActiveModel::Model
+  include ActiveModel::Serializers::JSON
 
-  attr_reader :id, :language, :identifier, :status, :type, :category, :date, :author, :title, :custodian, :subject, :section
+  attr_reader :id, :language, :identifier, :status, :type, :category, :date, 
+                :author, :title, :custodian, :subject, :section
 
   #-----------------------------------------------------------------------------
 
@@ -27,14 +29,19 @@ class Composition < Resource
     @custodian            = fhir_composition.custodian
     @subject              = fhir_composition.subject
     @section              = fhir_composition.section
-    unless fhir_bundle.nil?
-       @subject = get_object_from_bundle(fhir_composition.subject, fhir_bundle)
-       fill_sections(fhir_composition.section, fhir_bundle)
-    end
+    @subject              = fhir_composition.subject
+
+    byebug
+    fill_sections(@section, fhir_bundle) unless fhir_bundle.nil?
   end
   
+  #-----------------------------------------------------------------------------
+  protected
+  #-----------------------------------------------------------------------------
+
   def fill_sections(section_list, fhir_bundle)
     @section = []
+
     section_list.each do |section| 
       section_objects = {}
       section_objects["text"] = section.text.div
@@ -93,14 +100,13 @@ class Composition < Resource
         # end
 
         # section_objects["objects"].push("asdf")
-
-
       end
+
       @section.push(section_objects)
     end
   end
 
-
+  #-----------------------------------------------------------------------------
 
   def get_object_from_bundle(fhir_reference, fhir_bundle)
     referenced_object = fhir_bundle.entry.map(&:resource).select do |resource| 
