@@ -209,17 +209,25 @@ class Patient < Resource
             if content.attachment.contentType == "application/json"
               id = content.attachment.url.split('/').last
               binary_attachment_bundle = @fhir_client.read(FHIR::Binary, id)
+              
 
               # fhir_attachment_bundle = JSON(Base64.decode64(binary_attachment_bundle.resource.data))
               # fhir_attachment = fhir_attachment_bundle.entries.last
               # fhir_composition = FHIR::Composition.new(fhir_attachment.last.first["resource"])
 
               fhir_attachment_json = JSON(Base64.decode64(binary_attachment_bundle.resource.data))
+              
               fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
+              
+              
               fhir_compositions = filter(fhir_attachment_bundle.entry.map(&:resource), 'Composition')
               fhir_compositions.compact.each do |composition|
+                #puts "!!!!!!!!!!!!!! Composition !!!!!!!!!!!!!!!!!"
+                #puts composition.to_json
                 advance_directives << Composition.new(composition, fhir_attachment_bundle)
               end
+              #CAS Put Advance Directives into a global variable
+              $advance_directives = advance_directives
 
               # advance_directives << Composition.new(fhir_composition, fhir_attachment_bundle)
             end

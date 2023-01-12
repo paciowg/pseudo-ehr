@@ -15,10 +15,13 @@ class CompositionsController < ApplicationController
     fhir_response = fhir_client.read_feed(FHIR::Composition)
     bundle = fhir_response.resource
     @compositions = []
+
     bundle.entry.each do |entry|
       fhir_composition = entry.resource
       @compositions << Composition.new(fhir_composition, nil)
     end
+
+    #@compositions = $advance_directives
 
      # Display the fhir query being run on the UI to help implementers
      @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
@@ -27,16 +30,20 @@ class CompositionsController < ApplicationController
   # GET /compositions/1
   # GET /compositions/1.json
   def show
+
     fhir_client = SessionHandler.fhir_client(session.id)
-    fhir_binary = fhir_client.read(FHIR::Binary, params[:id]).resource
+    #CAS Remove query for Composition and use the one loaded into the global done in patient.rb
+    #fhir_binary = fhir_client.read(FHIR::Binary, params[:id]).resource
 
-    fhir_attachment_json = JSON(Base64.decode64(binary_attachment_bundle.resource.data))
-    fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
-    fhir_compositions = filter(fhir_attachment_bundle.entry.map(&:resource), 'Composition')
-    fhir_compositions.compact.each do |composition|
-      advance_directives << Composition.new(composition, fhir_attachment_bundle)
-    end
-
+    #fhir_attachment_json = JSON(Base64.decode64(binary_attachment_bundle.resource.data))
+    #fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
+    #fhir_compositions = filter(fhir_attachment_bundle.entry.map(&:resource), 'Composition')
+    #fhir_compositions.compact.each do |composition|
+    #  advance_directives << Composition.new(composition, fhir_attachment_bundle)
+    #end
+    advance_directives = $advance_directives
+    @compositions = $advance_directives
+    @composition = $advance_directives[0]
 
     # #todo: replace hard coded string
     # #fhir_response = fhir_client.read(FHIR::Bundle, "Example-Smith-Johnson-PMOBundle1")
@@ -48,11 +55,13 @@ class CompositionsController < ApplicationController
 
     # fhir_patient = fhir_client.read(FHIR::Patient, "Example-Smith-Johnson-Patient1")
     # @patient = Patient.new(fhir_patient.resource, @fhir_client) unless fhir_patient.nil?
-
+    #CAS Load patient from global patient
+    @patient = $patient
     # ##@bundle_objects = bundle.entry.map(&:resource)
 
     # Display the fhir query being run on the UI to help implementers
-    @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+    #CAS query was already done in the patient controller
+    #@fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
   end
 
   # GET /compositions/new

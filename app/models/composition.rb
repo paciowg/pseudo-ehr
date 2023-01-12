@@ -31,7 +31,8 @@ class Composition < Resource
     @section              = fhir_composition.section
     @subject              = fhir_composition.subject
 
-    byebug
+    #CAS Comment out byebug
+    #byebug
     fill_sections(@section, fhir_bundle) unless fhir_bundle.nil?
   end
   

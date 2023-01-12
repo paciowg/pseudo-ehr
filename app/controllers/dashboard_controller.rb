@@ -23,6 +23,8 @@ class DashboardController < ApplicationController
         fhir_patient = fhir_response.resource
       end
       @patient              = Patient.new(fhir_patient, SessionHandler.fhir_client(session.id))
+      #CAS Set global patient variable
+      $patient              = @patient
       @medications          = @patient.medications
       @functional_statuses  = @patient.bundled_functional_statuses
       @cognitive_statuses   = @patient.bundled_cognitive_statuses
