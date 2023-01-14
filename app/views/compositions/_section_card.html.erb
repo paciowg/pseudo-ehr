@@ -37,6 +37,15 @@
               <td>
                 <%= current_object[:status] %>
               </td>
+            <% elsif current_object[:resource_type] == "Observation" && current_object[:type] == "Additional portable medical orders or instructions" %>
+              <td>
+                <%= current_object[:type] %>
+              </td>
+              <td>
+                <%= current_object[:preference] %>
+              </td>
+              <td>
+              </td>
             <% else %>
               <td>
                 <%= current_object[:type] %>

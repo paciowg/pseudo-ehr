@@ -73,7 +73,7 @@ class Composition < Resource
             when "Observation"
               my_hash[:type] = temp_resource.resource.code.coding[0].display
               if temp_resource.resource.valueCodeableConcept.nil?
-                my_hash[:preference] = "placeholder"
+                my_hash[:preference] = ""
               else
                 my_hash[:preference] = temp_resource.resource.valueCodeableConcept.coding[0].display
               end
