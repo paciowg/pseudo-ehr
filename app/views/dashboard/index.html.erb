@@ -18,6 +18,10 @@
         <div class='col-lg-6 card-container'>
           <%= render 'compositions-card' %>
         </div>
+      <% else %>
+        <div class='col-lg-6 card-container'>
+          <%= render 'no-compositions-card' %>
+        </div>
       <% end %>
       <% if @functional_statuses.present? %>
         <div class='col-6 card-container'>
