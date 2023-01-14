@@ -1,10 +1,4 @@
 <div class='card-header'>
-  <%= @composition.title %>
-</div>
-<div class='card-body'>
-  <div class='row patient-info'>
-    <div class='col-12'>
-      <%= @composition.date %>
-    </div>
-  </div>
+  <%= @composition.title %><br />
+  <%= @composition.date.to_datetime.strftime("%m/%d/%Y at %I:%M%p") %>
 </div>

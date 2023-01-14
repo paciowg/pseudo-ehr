@@ -74,16 +74,21 @@ class Composition < Resource
             when "ServiceRequest"
               my_hash[:category] = temp_resource.resource.category[0].coding[0].display
               my_hash[:request] = temp_resource.resource.code.coding[0].display
+              my_hash[:request_text] = temp_resource.resource.code.text
+                                          
               my_hash[:status] = temp_resource.resource.status
             when "Goal"
               my_hash[:type] = temp_resource.resource.category[1].coding[0].display
               my_hash[:preference] = temp_resource.resource.description.text
             when "Observation"
-              my_hash[:type] = temp_resource.resource.code.coding[0].display
+              my_hash[:type] =  temp_resource.resource.code.coding[0].display
+              my_hash[:type_text] = temp_resource.resource.code.text
               if temp_resource.resource.valueCodeableConcept.nil?
                 my_hash[:preference] = "placeholder"
+                my_hash[:preference_text] = "placeholder"
               else
                 my_hash[:preference] = temp_resource.resource.valueCodeableConcept.coding[0].display
+                my_hash[:preference_text] = temp_resource.resource.code.text
               end
             else
               puts "error unexpected type: #{current_entry.reference.split('/')[1]}"
