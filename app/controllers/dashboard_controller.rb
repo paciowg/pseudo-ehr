@@ -35,7 +35,7 @@ class DashboardController < ApplicationController
       @encounters           = @patient.encounters
       
       # Display the fhir query being run on the UI to help implementers
-      @fhir_queries        = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @patient.fhir_queries
+      #@fhir_queries        = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @patient.fhir_queries
     else
       redirect_to :root
     end
