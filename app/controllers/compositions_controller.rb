@@ -24,21 +24,44 @@ class CompositionsController < ApplicationController
      @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
   end
 
-  # GET /compositions/1
+  # GET /compositions/1 
   # GET /compositions/1.json
   def show
     fhir_client = SessionHandler.fhir_client(session.id)
-    fhir_composition = fhir_client.read(FHIR::Composition, params[:id]).resource
 
-    #todo: replace hard coded string
-    fhir_response = fhir_client.read(FHIR::Bundle, "Example-Smith-Johnson-PMOBundle1")
+    #get patient
+    patient_id = params[:id].split('#')[1]
+    fhir_patient = fhir_client.read(FHIR::Patient, patient_id) unless patient_id.nil?
+    @patient = Patient.new(fhir_patient.resource, fhir_client) unless fhir_patient.nil?
+
+    #used to search for DocumentReference
+    search_param =  { search: 
+      { parameters: 
+        { 
+          subject: ["Patient", patient_id].join('/'), 
+          type: "#93037-0" #LOINC code for Portable Medical Order (PMO) Form
+        }
+      } 
+    }
+    
+    #get DocumentReference of type PMO form with subject equal to this patient
+    fhir_response = fhir_client.search(FHIR::DocumentReference, search_param)
+    fhir_document_reference = fhir_response.resource.entry.first.resource
+
+    #use the PMO document reference to get the list of compositions
+    bundle_id = fhir_document_reference.content.first.attachment.url.split('/')[1]
+    fhir_response = fhir_client.read(FHIR::Bundle, bundle_id)
     fhir_bundle = fhir_response.resource
-    #Rails.cache.write("$document_bundle", bundle.to_json,  { expires_in: 30.minutes })
+    fhir_bundle.entry.each do |current_entry|
+      if current_entry.resource.id == params[:id].split('#')[0]
+        #fhir_composition = current_entry.resource
+        @composition = Composition.new(current_entry.resource, fhir_bundle)
+      end
+    end
 
-    @composition = Composition.new(fhir_composition, fhir_bundle) unless fhir_composition.nil?
+    #@composition = Composition.new(fhir_composition, fhir_bundle) unless fhir_composition.nil?
 
-    fhir_patient = fhir_client.read(FHIR::Patient, "Example-Smith-Johnson-Patient1")
-    @patient = Patient.new(fhir_patient.resource, @fhir_client) unless fhir_patient.nil?
+    
 
     ##@bundle_objects = bundle.entry.map(&:resource)
 

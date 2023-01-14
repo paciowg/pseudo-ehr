@@ -13,7 +13,7 @@
       </tr>
       <% @compositions.each do |composition| %>
         <tr>
-          <td><%= link_to composition.title, composition_path(composition.id) %></td>
+          <td><%= link_to composition.title, composition_path(composition.id + "#" + @patient.id) %></td>
           <td><%= composition.type&.coding&.first&.display%></td>
           <td><%= display_date(composition.date&.to_date) %></td>
           <td><%= composition.status %></td>

@@ -95,19 +95,23 @@ class Patient < Resource
   def compositions
     compositions = []
 
+    #used to search for DocumentReference
     search_param =  { search: 
       { parameters: 
         { 
-          subject: ["Patient", @id].join('/') 
-        } 
+          subject: ["Patient", @id].join('/'), 
+          type: "#93037-0" #LOINC code for Portable Medical Order (PMO) Form
+        }
       } 
     }
+    
+    #get DocumentReference of type PMO form with subject equal to this patient
+    fhir_response = @fhir_client.search(FHIR::DocumentReference, search_param)
+    fhir_document_reference = fhir_response.resource.entry.first.resource
 
-    # fhir_response = @fhir_client.search(FHIR::Composition, search_param)
-    # fhir_bundle = fhir_response.resource
-
-    # todo: hard coded ID for bundle
-    fhir_response = @fhir_client.read(FHIR::Bundle, "Example-Smith-Johnson-PMOBundle1")
+    #use the PMO document reference to get the list of compositions
+    bundle_id = fhir_document_reference.content.first.attachment.url.split('/')[1]
+    fhir_response = @fhir_client.read(FHIR::Bundle, bundle_id)
     fhir_bundle = fhir_response.resource
 
     unless fhir_bundle.nil?
