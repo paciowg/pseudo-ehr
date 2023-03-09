@@ -31,8 +31,6 @@ class Composition < Resource
     @section              = fhir_composition.section
     @subject              = fhir_composition.subject
 
-    #CAS Comment out byebug
-    #byebug
     fill_sections(@section, fhir_bundle) unless fhir_bundle.nil?
   end
   
@@ -72,22 +70,21 @@ class Composition < Resource
           begin
             case my_hash[:resource_type]
             when "ServiceRequest"
-              my_hash[:category] = temp_resource.resource.category[0].coding[0].display
-              my_hash[:request] = temp_resource.resource.code.coding[0].display
+              my_hash[:category] = category_string(temp_resource.resource.category)
+              my_hash[:request] = coding_string(temp_resource.resource.code.coding)
               my_hash[:request_text] = temp_resource.resource.code.text
-                                          
               my_hash[:status] = temp_resource.resource.status
             when "Goal"
               my_hash[:type] = temp_resource.resource.category[1].coding[0].display
               my_hash[:preference] = temp_resource.resource.description.text
             when "Observation"
-              my_hash[:type] =  temp_resource.resource.code.coding[0].display
+              my_hash[:type] =  coding_string(temp_resource.resource.code.coding)
               my_hash[:type_text] = temp_resource.resource.code.text
               if temp_resource.resource.valueCodeableConcept.nil?
                 my_hash[:preference] = "placeholder"
                 my_hash[:preference_text] = "placeholder"
               else
-                my_hash[:preference] = temp_resource.resource.valueCodeableConcept.coding[0].display
+                my_hash[:preference] = coding_string(temp_resource.resource.valueCodeableConcept.coding)
                 my_hash[:preference_text] = temp_resource.resource.code.text
               end
             else
@@ -126,4 +123,28 @@ class Composition < Resource
     referenced_object[0]
   end
 
+  #-----------------------------------------------------------------------------
+
+  def category_string(category_list)
+    text = []
+
+    category_list.each do |category|
+      text << coding_string(category.coding)
+    end
+
+    text.join(', ')
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def coding_string(coding_list)
+    text = []
+
+    coding_list.each do |coding|
+      text << coding.display
+    end
+
+    text.join(', ')
+  end
+  
 end

@@ -189,7 +189,8 @@ class Patient < Resource
     search_param =  { search: 
                       { parameters: 
                         { 
-                          subject: ["Patient", @id].join('/') 
+                          subject: ["Patient", @id].join('/'),
+                          status: "current" 
                         } 
                       } 
                     }
