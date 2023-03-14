@@ -1,0 +1,19 @@
+<div class='card bg-dark text-white'>
+  <div class='card-header'>
+    SPLASCH Observations
+    <%= link_to("Add", new_splasch_observation_path(patient: params[:patient]),
+                    method: :get, id: "add-splash-observation",
+                    class: "btn btn-primary", role: "button") %>
+  </div>
+  <div class='card-body'>
+    <table class='table table-striped table-dark status'>
+      <% @splasch_observations.each do |observation| %>
+        <tr>
+          <td><%= display_datetime(observation.effective_datetime) %></td>
+          <td><%= link_to display_code(observation.code), 
+                        splasch_observation_path(id: observation.id) %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+</div>

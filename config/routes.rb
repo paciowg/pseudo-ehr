@@ -17,8 +17,14 @@ Rails.application.routes.draw do
   resources :advance_directives,  only: [:index, :show]
   resources :functional_status,   only: [:index, :show]
   resources :cognitive_status, 	  only: [:index, :show]
+  resources :splasch_collections, only: [:index, :show]
+  resources :splasch_observations, only: [:show, :new, :create]
+  resources :encounters,          only: [:show]
   resources	:practitioners,       only: [:show]
-  resources :patients
+  resources :patients do
+    resources :encounters, only: [:index]
+  end
+  resources :re_assessment_timepoints, only: [:new, :create, :show]
   resources :observations
   resources :practitioner_roles
   resources :contracts
@@ -33,6 +39,7 @@ Rails.application.routes.draw do
   resources :organizations
   resources :conditions
   resources :care_plans
+  resources :compositions
   resources :questionnaire_responses
 
   get 'questionnaire_responses/index'
@@ -46,6 +53,11 @@ Rails.application.routes.draw do
   get '/env',           to: 'env#index'
   get '/convert',       to: 'convert#index'
   put '/convert/:id',   to: 'convert#update'
+
+  get 'oauth2/start'
+  get 'oauth2/restart'
+  get 'oauth2/redirect'
+  post 'oauth2/register'
 
   root 'welcome#index'
 

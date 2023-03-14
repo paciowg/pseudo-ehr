@@ -1,0 +1,9 @@
+<h1>OAuth2...</h1>
+
+<p class="">Base URL: <%= @base_server_url %></p>
+<p class="">Bearer Token: <%= ENV.fetch('BEARER_TOKEN', 'No Token') %></p>
+<p class="">Client Id: <%= ENV.fetch('CLIENT_ID', 'No Client Id') %></p>
+<p class="">Client Secret: <%= ENV.fetch('CLIENT_SECRET', 'No Secret') %></p>
+
+<%= link_to "Sign In via OAuth2", oauth2_restart_url, class: "btn btn-primary" %>
+<%= link_to "Register for OAuth2", oauth2_register_url, class: "btn btn-primary", method: :post %>

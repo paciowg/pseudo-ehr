@@ -1,16 +1,54 @@
 class PatientsController < ApplicationController
   # before_action :set_patient, only: [:show, :edit, :update, :destroy]
+  before_action :setup_fhir_client
 
   # GET /patients
   # GET /patients.json
   def index
-    @patients = Patient.all
+    if params[:name]
+      fhir_response = @fhir_client.search(FHIR::Patient, search: {parameters: {name: params[:name]}})
+    else
+      fhir_response = @fhir_client.search(FHIR::Patient)
+    end
+    fhir_bundle = fhir_response.resource
+    @patients = fhir_bundle.entry.collect{ |singleEntry| singleEntry.resource }.compact unless fhir_bundle.nil?
+    
+    # Display the fhir query being run on the UI to help implementers
+    @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+
+    render 'home/index'
   end
 
   # GET /patients/1
   # GET /patients/1.json
   def show
-    redirect_to :controller => 'dashboard', :action => 'index'
+    patient_id = params[:id]
+    if !Rails.cache.read("$document_bundle").nil?
+      bundle = FHIR.from_contents(Rails.cache.read("$document_bundle"))
+      fhir_patient = get_object_from_bundle('Patient/' + patient_id, bundle)
+      puts Rails.cache.read("$document_bundle")
+    end
+    
+    if fhir_patient.nil?
+      fhir_response = SessionHandler.fhir_client(session.id).read(FHIR::Patient, patient_id)
+      fhir_patient = fhir_response.resource
+    end
+    @patient              = Patient.new(fhir_patient, SessionHandler.fhir_client(session.id))
+    #CAS set global patient variable
+    $patient              = @patient
+    @medications          = @patient.medications
+    @functional_statuses  = @patient.bundled_functional_statuses
+    @cognitive_statuses   = @patient.bundled_cognitive_statuses
+    @splasch_observations = @patient.splasch_observations
+    # @spoken_language_comprehension_observations = @patient.spoken_language_comprehension_observations
+    # @spoken_language_expression_observations = @patient.spoken_language_expression_observations
+    # @swallowing_observations = @patient.swallowing_observations
+    # @splasch_collections  = @patient.splasch_collections
+    @compositions         = @patient.compositions
+    @encounters           = @patient.encounters
+    
+    # Display the fhir query being run on the UI to help implementers
+    @fhir_queries        = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @patient.fhir_queries
   end
 
   # GET /patients/new
@@ -66,6 +104,10 @@ class PatientsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_patient
       @patient = Patient.find(params[:id])
+    end
+
+    def setup_fhir_client
+      @fhir_client ||= SessionHandler.fhir_client(session.id)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

@@ -1,0 +1,217 @@
+
+                <tr>
+                    <td>Encounter Type: &nbsp;<%= display_code(@reassessment_timepoint.type&.first) %></td>
+                    <td>
+                        Reason: &nbsp;
+                        
+                        <% @reassessment_timepoint.reason_code.each do |reason| %>
+                            <%= display_code(reason) %>
+                        <% end %>
+                        
+                    </td>
+                    <td>Service Type: &nbsp;<%= display_code(@reassessment_timepoint.service_type) %></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+  </section>
+  <section class='row' id='cards'>
+    <div class='col-lg-6 card-container'>
+        <%= render partial: 'encounters/providers-card', locals: { encounter: @reassessment_timepoint } %>
+    </div>
+    <div class='col-lg-6 card-container'>
+        <%= render partial: 'assessments-card' %>
+    </div>
+  </section>
+</section>
+
+
+<div class='card bg-dark text-white'>
+  <div class='card-header'>
+   <%= sanitize(@reassessment_timepoint.title) %>
+  </div>
+  <div class='card-body'>
+    <div class='row patient-info'>
+      <div class='col-6'>
+        <table class='table table-striped table-dark status'>
+          <tr>
+            <td>Patient</td>
+            <td><%= link_to @patient.name.first.text, dashboard_path(patient: get_id(@patient.id)) %></td>
+          </tr>
+          <tr>
+            <td>Patient id</td>
+			<td> <input name="patient_id" type="text" size=60 readonly value="<%= sanitize(@patient.id) %>"></input> </td>
+          </tr>
+          <tr>
+            <td>Care Plan id</td>
+			<td> <input name="id" type="text" size=60 readonly value="<%= @care_plan.id || "" %>"></input> </td>
+          </tr>
+          <tr>
+            <td>Title</td>
+            <td> <input name="title" type="text" size=60 value="<%= sanitize(@care_plan.title) %>"></input> </td>
+          </tr>
+          <tr>
+            <td>Description</td>
+            <td> <textarea name="description" rows=5 cols=60><%= sanitize(@care_plan.description) %></textarea> </td>
+          </tr>
+          <tr>
+            <td>Time Period</td>
+            <td><%= display_raw_date(@care_plan.try(:period).try(:start)) %> - <%= display_raw_date(@care_plan.try(:period).try(:end))%></td>
+          </tr>
+          <tr>
+            <td>Status</td>
+            <td>
+			<%= select_tag(:status, options_for_select([
+															['draft'],
+															['active'],
+															['on-hold'],
+															['revoked'],
+															['completed'],
+															['entered-in-error'],
+															['unknown'],
+														], @care_plan.status))
+			%>			
+			</td>
+          </tr>
+          <tr>
+            <td>Goals</td>
+            <td>
+			<table>
+			<tr> <th>In Care Plan Scope<th>Goal Reference</th><th>Text</th><th>Priority</th><th>Status</th> </tr>
+			<% 
+				i = 0
+				
+				currentgoals = @care_plan.goals
+				
+				@care_plan.allgoals.each do |goal| 
+					strikeout = (goal.lifecycleStatus ==  "entered-in-error")
+					checked = (currentgoals.index {|g| g.id == goal.id });
+					checked = ! checked.nil?
+			%>		
+				<tr>
+					
+					<td><input type="checkbox" name="check_<%= goal.id %>" <%= ( checked ) ? "checked" : "" %> enabled=<%= !strikeout %> ></input>
+					<td><% if ( strikeout ) %> <s> <% end %>
+					<%= link_to "Edit #{goal.id}", "/care_plans/#{@care_plan.id}/goals/#{goal.id}/edit" 
+					%><%if strikeout %> </s><% end %></td>
+					<td><% if ( strikeout ) %> <s> <% end %><%= goal.description&.text || "empty" %>     <%if strikeout %> </s><% end %></td>
+					<td><% if ( strikeout ) %> <s> <% end %><%= goal.priority&.text || "empty" %>        <%if strikeout %> </s><% end %></td>
+					<td><% if ( strikeout ) %> <s> <% end %><%= goal.lifecycleStatus || "empty"  %>  <% if ( strikeout ) %> </s> <% end %></td>
+					
+				</tr>
+			<% 	i+=1
+				end %>
+			</table>
+			<br/><%= link_to "Add a New Goal", "/patients/#{@patient.id}/care_plans/#{@care_plan.id}/goals/new" unless @care_plan.id.nil? %><br/>
+			
+			</td>
+          </tr>
+          <tr>
+            <td>Intent</td>
+			<td>
+			<%= select_tag(:intent, options_for_select([
+															['proposal'],
+															['plan'],
+															['order'],
+															['option'],
+														], @care_plan.intent))
+			%>	</td>		
+
+
+          </tr>
+          <tr>
+		  <% category = @care_plan.category # cache result. %>
+            <td>Categories (<%= category.length %>) </td>
+			
+			<td><table>
+			<tr><th>Coding System</th><th>Code</th></tr>
+			<% category.each do |category| 
+					category.coding.each do |coding|
+			%>
+				<tr>
+					<td><%= coding.system %></td>
+					<td><%= coding.code %></td>
+				</tr>
+			<%      
+					end
+			   end 
+			%>
+			</table></td>
+			
+          </tr>
+          <tr>
+            <td>Subject</td>
+            <td><%= begin @care_plan.subject.reference rescue "no subject recorded" end %></td>
+          </tr>
+          <tr>
+            <td>Author</td>
+            <td><%= begin @care_plan.author.reference rescue "no author recorded" end %></td>
+          </tr>
+          <tr>
+		  <% addresses = @care_plan.addresses  # cache result. %>
+            <td>Conditions (<%= addresses.length %>)</td>
+            <td>
+			<table>
+			<tr> <th>Condition #</th> <th>Coding System</th> <th>Code</th><th>Display</th> <th>Clinical Status</th> <th>Condition Text</th></tr>
+			<% 
+				i = 0
+				addresses.each do |condition| 
+					id = i + 1 # condition.reference.split("/")[1]
+			%>		
+				<tr>
+					<td><%= id %></td>
+					<td><%= condition.clinicalStatus.coding.map do |c| c.system end . join(',') %></td>
+					<td><%= condition.clinicalStatus.coding.map do |c| c.code end . join(',') %></td>
+					<td><%= condition.clinicalStatus.coding.display %></td>
+					<td><%= condition.clinicalStatus.text %></td>
+					<td><%= condition.text.div.html_safe %></td>
+				</tr>
+			<% 	i+=1
+				end %>
+			</table>
+			
+			</td>
+          </tr>
+          <tr>
+            <td>Activities (<%= @care_plan.activity.length %>)</td>
+		
+			<td><table>
+				<tr><th>Activity # </th><th>Reference</th><th>Description</th></tr>
+
+				<%
+					reference = description = ""
+					i = 0
+					@care_plan.activity.each do |activity| 
+						i = i + 1
+						if activity.reference.nil? then
+							reference = "N/A"
+						else
+							reference = activity.reference.reference
+						end
+						
+						if activity.detail.nil? then
+							description = "N/A"
+						else
+							description = activity.detail.description
+						end	
+					
+				%>
+				
+						<tr><td> <%= i %> </td><td><%= reference %> </td><td><%= description %></td></tr>
+			
+			    <%  
+					end
+				%>
+				
+			
+			</table></td>
+          </tr>
+          <tr>
+            <td>Contributors (<%= @care_plan.contributor.length %>)</td>
+            <td><%= @care_plan.contributor.length == 0 ? "none" : "not shown" %></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

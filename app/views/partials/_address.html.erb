@@ -5,12 +5,16 @@
   </td>
 	<td>
 		<%= link_to google_maps(address), target: '_blank' do %>
-		  <% address.line.each do |line| %>
-		    <%= sanitize(line) %><br />
-		  <% end %>
-		  <%= sanitize(address.city) %>, 
-		  <%= sanitize(address.state) %> 
-		  <%= display_postal_code(address.postalCode) %>
+			<% if address.line.present? %>
+			  <% address.line.each do |line| %>
+			    <%= sanitize(line) %><br />
+			  <% end %>
+			  <%= sanitize(address.city) %>, 
+			  <%= sanitize(address.state) %> 
+			  <%= display_postal_code(address.postalCode) %>
+			<% else %>
+				<%= address.text %>
+			<% end %>
 		<% end %>
 	</td>
 </tr>

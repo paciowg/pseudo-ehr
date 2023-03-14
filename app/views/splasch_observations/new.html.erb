@@ -1,0 +1,22 @@
+<section class='container'>
+  <section class='row'>
+    <h3 class='text-white'>New SPLASCH Observation</h3>
+  </section>
+  <section class='row'>
+    <%= form_for :splasch_observation, url: splasch_observations_path(patient: params[:patient]) do |f| %>
+      <%= f.label :performer %><br />
+      <%= f.select :performer, @practitioners, { include_blank: true },
+              { class: 'custom-select bg-dark text-white' } %>
+      <%= f.label :category %><br />
+      <%= f.select :category, @categories, { include_blank: true }, 
+              { class: 'custom-select bg-dark text-white' } %>
+      <%= f.label :code %><br />
+      <%= f.select :code, grouped_options_for_select(@codes), { include_blank: true },
+              { class: 'custom-select bg-dark text-white' } %>
+      <%= f.label :value %><br />
+      <%= f.select :value, @values, { include_blank: true },
+              { class: 'custom-select bg-dark text-white' } %>
+      <%= f.submit 'Submit', class: 'btn btn-outline-success', id: 'healthcare-service-search-button' %>
+    <% end %>
+  </section>
+</section>

@@ -1,4 +1,41 @@
-<p id="notice"><%= notice %></p>
-
-<%= link_to 'Edit', edit_patient_path(@patient) %> |
-<%= link_to 'Back', patients_path %>
+<section class='container'>
+  <section class='row'>
+    <% if @patient.present? %>
+      <div class='col-6 card-container'>
+        <%= render 'dashboard/patient-card' %>
+      </div>
+      <% if @encounters.present? %>
+        <div class='col-lg-6 card-container'>
+          <%= render 'dashboard/encounters-card' %>
+        </div>
+      <% end %>
+      <% if @medications.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'dashboard/medications-card' %>
+        </div>
+      <% end %>
+      <% if @compositions.present? %>
+        <div class='col-lg-6 card-container'>
+          <%= render 'dashboard/compositions-card' %>
+        </div>
+      <% end %>
+      <% if @functional_statuses.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'dashboard/functional-status-card' %>
+        </div>
+      <% end %>
+      <% if @cognitive_statuses.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'dashboard/cognitive-status-card' %>
+        </div>
+      <% end %>
+      <% if @splasch_observations.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'dashboard/splasch-observations-card' %>
+        </div>
+      <% end %>
+    <% else %>
+      Not available
+    <% end %>
+  </section>
+</section>

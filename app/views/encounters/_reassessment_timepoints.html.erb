@@ -1,0 +1,39 @@
+<div class='card bg-dark text-center'>
+    
+    <div class='card-header'>
+        <h4>Re-assessment Timepoints</h4>
+        <%= link_to "Add Timepoint", new_re_assessment_timepoint_path(:encounter_id => @encounter.id), class: 'card-link d-flex justify-content-end' %>
+    </div>
+    
+    <div class='card-body'>
+        <table class='table table-striped table-dark status'>
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Identifier</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <% @encounter.reassessment_timepoints.each do |timepoint| %>
+                    <tr>
+                        <td><%= " #{display_date(timepoint.period&.start&.to_date)} - #{display_date(timepoint.period&.end&.to_date)}" %></td>
+                        <td><%= link_to timepoint.identifier.value, re_assessment_timepoint_path(timepoint.id) %></td>
+                    </tr>
+                <% end %>
+                
+            </tbody>
+        </table>
+
+    </div>
+    <div class="card-footer text-muted fs-6">
+        <p><small>FHIR Queries:</small></p>
+        <ol class='list-group'>
+                
+            <% @encounter.fhir_queries.each do |query| %>
+                <li class='list-group-item'><small><%= query %></small></li>
+            <% end %>
+                
+        </ol>
+    </div>
+</div>

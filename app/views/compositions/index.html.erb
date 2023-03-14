@@ -1,0 +1,21 @@
+<section class='container'>
+  <div class="select-patient-container">
+    <h2 class="select-patient-header">Advanced Directive Compositions</h2>
+    <form class="select-patient-form" action="/compositions" accept-charset="UTF-8" method="get"> 
+      <%= text_field_tag nil, nil, class: "form-control patient-filter", 
+              placeholder: "Filter compositions by patient ID" %>
+      <div class="patient-list-container">
+        <ul class="patient-list">
+          <% @compositions.each do |composition| %>
+            <li>
+              <button class="btn btn-primary btn-lg btn-block patient-option collapse show" 
+                      type="submit" name="composition" value="<%= composition.id %>">
+                  Composition for Patient <%= composition.subject&.reference&.split('/')&.last %>
+              </button>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </form>
+  </div>
+</section>

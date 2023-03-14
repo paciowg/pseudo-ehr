@@ -7,8 +7,12 @@
       <% @care_plan.supportingInfo.each do |supportingInfoReference| %>
         <% supportingInfoObject = get_object_from_url(supportingInfoReference.reference, @care_plan.fhir_client) %>
           <tr>
-            <%= render :partial => [get_type(supportingInfoReference.reference), "-card"].join, 
-                        :locals => {:supportingInfoObject => get_object_from_url(supportingInfoReference.reference, @care_plan.fhir_client)} %>
+            
+            <% if supportingInfoReference.reference && supportingInfoObject %>
+              <%= render :partial => [get_type(supportingInfoReference.reference), "-card"].join, 
+                        :locals => {:supportingInfoObject => supportingInfoObject} %>
+            <% end %>
+            
          </tr>
         <% end %>
     </table>

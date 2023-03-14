@@ -1,0 +1,25 @@
+<section class='container'>
+  <section class='row'>
+    <h2>SPLASCH Observation (<%= @splasch_observation.id %>)</h2>
+    <dl>
+      <dt>Category</dt>
+      <dd><%= display_categories(@splasch_observation.categories) %></dd>
+      <dt>Date/Time:</dt>
+      <dd><%= display_datetime(@splasch_observation.effective_datetime) %></dd>
+      <dt>Patient:</dt>
+      <dd><%= display_subject(@splasch_observation.subject) %></dd>
+      <dt>Performer:</dt>
+      <dd><%= display_performers(@splasch_observation.performer) %></dd>
+    </dl>
+    <table class='table table-striped table-dark full-status'>
+      <tr>
+        <th>Assessment</th>
+        <th>Observation</th>
+      </tr>
+      <tr>
+        <td><%= @splasch_observation.code.coding[0].display %></td>
+        <td><%= @splasch_observation.value %></td>
+      </tr>
+    </table>
+  </section>
+</section>

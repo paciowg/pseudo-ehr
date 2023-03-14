@@ -4,18 +4,48 @@
       <div class='col-6 card-container'>
         <%= render 'patient-card' %>
       </div>
-      <div class='col-6 card-container'>
-        <%= render 'medications-card' %>
-      </div>
-      <div class='col-6 card-container'>
-        <%= render 'functional-status-card' %>
-      </div>
-      <div class='col-6 card-container'>
-        <%= render 'cognitive-status-card' %>
-      </div>
+      <% if @encounters.present? %>
+        <div class='col-lg-6 card-container'>
+          <%= render 'encounters-card' %>
+        </div>
+      <% end %>
+      <% if @medications.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'medications-card' %>
+        </div>
+      <% end %>
+      <% if @document_references.present? %>
+        <div class='col-lg-6 card-container'>
+          <%= render 'document-references-card' %>
+        </div>
+      <% end %>
+      <% if @compositions.present? %>
+        <div class='col-lg-6 card-container'>
+          <%= render 'compositions-card' %>
+        </div>
+      <% end %>
+      <% if @advance_directives.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'advance-directives-card' %>
+        </div>
+      <% end %>
+      <% if @functional_statuses.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'functional-status-card' %>
+        </div>
+      <% end %>
+      <% if @cognitive_statuses.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'cognitive-status-card' %>
+        </div>
+      <% end %>
+      <% if @splasch_observations.present? %>
+        <div class='col-6 card-container'>
+          <%= render 'splasch-observations-card' %>
+        </div>
+      <% end %>
     <% else %>
       Not available
     <% end %>
   </section>
 </section>
-

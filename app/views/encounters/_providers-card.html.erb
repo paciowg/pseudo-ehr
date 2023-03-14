@@ -1,0 +1,41 @@
+<div class='card bg-dark text-center h-100'>
+    <h4 class='card-header'>Providers</h4>
+    <div class='card-body'>
+        <table class='table table-striped table-dark status'>
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Name</th>
+                    <th>Contact</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <% encounter.providers.each do |provider| %>
+                    <tr>
+                      <td><%= display_code(provider[:role].code.first) %></td>
+                        <td><%= display_human_name(provider[:individual].name.first) %></td>
+                        <td>
+                        
+                        <% provider[:individual].telecoms.each do |telecom| %>
+                          <%= display_telecom(telecom) %>
+                        <% end %>
+                        
+                        </td>
+                    </tr>
+                <% end %>
+                
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer text-muted" style="font-size: 12px;">
+        <p><small>FHIR Queries:</small></p>
+        <ol class='list-group'>
+                
+            <% encounter.fhir_queries.each do |query| %>
+                <li class='list-group-item'><small><%= query %></small></li>
+            <% end %>
+                
+        </ol>
+    </div>
+</div>

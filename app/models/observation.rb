@@ -10,7 +10,7 @@ class Observation < Resource
 
   include ActiveModel::Model
   
-  attr_reader :id, :status, :code, :subject, :text, :resourceType, :value
+  attr_reader :id, :status, :code, :subject, :text, :resourceType, :value, :category, :effective
 
   def initialize(fhir_observation)
     @id             = fhir_observation.id
@@ -20,6 +20,8 @@ class Observation < Resource
     @value          = fhir_observation.value
     @subject        = fhir_observation.subject
     @text           = fhir_observation.text
+    @category				= fhir_observation.category
+    @effective			= DateTime.parse(fhir_observation.effective)
   end
 
 end
