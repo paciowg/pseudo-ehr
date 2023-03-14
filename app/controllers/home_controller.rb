@@ -36,8 +36,16 @@ class HomeController < ApplicationController
         @base_server_url = params[:server_url]
         @client = FHIR::Client.new(@base_server_url)
         Rails.cache.write("base_server_url", params[:server_url], { expires_in: 30.minutes })
-        options = @client.get_oauth2_metadata_from_conformance
-        puts options
+
+        begin
+          options = @client.get_oauth2_metadata_from_conformance(false) # seems hapi fhir can't pass strict=true
+        rescue Exception => e
+          options = {}
+        else
+        ensure
+          puts "capability statement oauth2 options: ", options
+        end
+
         unless options.blank?
           @params = {:response_type => 'code', :client_id => ENV["CLIENT_ID"], :redirect_uri => ENV["REDIRECT_URI"], :scope => ENV["SCOPE"], :state => SecureRandom.uuid, :aud => @base_server_url }
           @authorize_url = options[:authorize_url] + "?" + @params.to_query
@@ -51,8 +59,8 @@ class HomeController < ApplicationController
         # @client.security_headers["Authorization"] = @client.security_headers["Authorization"].gsub("\n", "")
       end
     end
-    puts "server url: "
-    puts Rails.cache.read("base_server_url")
+
+    puts "server url: ", Rails.cache.read("base_server_url")
     @SessionHandler = SessionHandler.establish(session.id, Rails.cache.read("base_server_url"), params[:client_id], params[:client_secret], @client)
 
     # Get list of patients from cached results from server
@@ -62,14 +70,7 @@ class HomeController < ApplicationController
       # No cached patients, either because it's the first time or the cache
       # has expired.  Make a call to the FHIR server to get the patient list.
 
-      # Temporary code to pull only the patient that has cognitive and functional
-      # status in the default server.
-      if SessionHandler.from_storage(session.id, "connection").base_server_url == DEFAULT_SERVER
-        searchParam = { search: { parameters: { _id: 'cms-patient-01' } } }
-        fhir_response = SessionHandler.fhir_client(session.id).search(FHIR::Patient, searchParam)
-      else
-        fhir_response = SessionHandler.fhir_client(session.id).search(FHIR::Patient)
-      end
+      fhir_response = SessionHandler.fhir_client(session.id).search(FHIR::Patient)
       bundle = fhir_response.resource
       @patients = bundle.entry.collect{ |singleEntry| singleEntry.resource } unless bundle.nil?
       # Display the fhir query being run on the UI to help implementers
