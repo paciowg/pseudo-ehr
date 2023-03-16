@@ -3,18 +3,48 @@ class PatientsController < ApplicationController
   before_action :setup_fhir_client
 
   # GET /patients
-  # GET /patients.json
+  # GET /patients?name=   (preform FHIR search with name param)
+  # GET /patients?page=   (directly fetch a pagination url from Bundle.link[i].url)
   def index
     if params[:name]
       fhir_response = @fhir_client.search(FHIR::Patient, search: {parameters: {name: params[:name]}})
+      fhir_bundle = fhir_response.resource
+    elsif params[:page]
+      begin
+        rest_response = RestClient.get(params[:page]) # TODO: @fhir_client doesn't support pagination, either hack pagination into fhir_client or add oauth2 into RestClient
+      rescue RestClient::ExceptionWithResponse => err
+        flash[ :alert ] = "RestClient failed to get pagination url #{params[:page]}"
+        logger.error "RestClient failed to get pagination url #{params[:page]}"
+        logger.error err
+        redirect_to root_url
+        return
+      else
+        logger.debug "Restclient successfully recieved pagination url #{params[:page]}"
+      end
+      fhir_bundle = FHIR.from_contents(rest_response.body)
     else
       fhir_response = @fhir_client.search(FHIR::Patient)
+      fhir_bundle = fhir_response.resource
     end
-    fhir_bundle = fhir_response.resource
     @patients = fhir_bundle.entry.collect{ |singleEntry| singleEntry.resource }.compact unless fhir_bundle.nil?
     
     # Display the fhir query being run on the UI to help implementers
-    @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+    if fhir_response
+        @fhir_query = "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+    else # pagination case
+        @fhir_query = "GET #{params[:page]}"
+    end
+
+    # Do pagination if bundle supports it
+    if fhir_bundle.link
+      logger.debug "Parsing bundle pagination!!"
+      if fhir_bundle.link.any? { |x| x.relation == "next" }
+        @next_url = patients_url + '?page=' + CGI.escape( fhir_bundle.link.select{ |x| x.relation == "next" }.fetch(0).url )
+      end
+      if fhir_bundle.link.any? { |x| x.relation == "previous" }
+        @prev_url = patients_url + '?page=' + CGI.escape( fhir_bundle.link.select{ |x| x.relation == "previous" }.fetch(0).url )
+      end
+    end
 
     render 'home/index'
   end

@@ -7,7 +7,6 @@
       <div class="patient-list-container">
         <ul class="patient-list">
           <% @patients.each do |patient| %>
-            
             <li>
               <button class="btn btn-primary btn-lg btn-block patient-option collapse show" 
                         type="submit" name="patient" value="<%= patient.id %>">
@@ -17,12 +16,17 @@
                         <% else %>
                           No name provided
                         <% end %>
-                        
               </button>
             </li>
           <% end %>
         </ul>
       </div>
     </form>
+    <% if @next_url || @prev_url %>
+      <div class="row justify-content-around my-2">
+        <% if @prev_url %><%= link_to 'Previous', @prev_url, class: "btn btn-outline-success" %><% end %>
+        <% if @next_url %><%= link_to 'Next', @next_url, class: "btn btn-outline-success" %><% end %>
+      </div>
+    <% end %>
   </div>
 </section>
