@@ -8,6 +8,7 @@
 
 class ApplicationController < ActionController::Base
   
+  before_action :wakeup_session
 
   protected
 
@@ -18,10 +19,13 @@ class ApplicationController < ActionController::Base
   #   @patient_server ||= PatientServer.last
   #   redirect_to(root_url, {alert: "Please set a server to query."}) and return unless @patient_server
   # end
+
+  def wakeup_session
+      session[:wakeupsession] ||= "ok" # using session hash prompts rails session to load
+  end
   
   def establish_session_handler
     if params[:server_url].present?
-      session[:wakeupsession] = "ok" # using session hash prompts rails session to load
       SessionHandler.establish(session.id, params[:server_url])
     else
       err = "Please enter a FHIR server address."
@@ -29,5 +33,9 @@ class ApplicationController < ActionController::Base
     end
   end
 
+
+  def ensure_session_handler
+    establish_session_handler unless SessionHandler.fhir_client(session.id)
+  end
   
 end

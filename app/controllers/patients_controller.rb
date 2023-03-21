@@ -1,6 +1,6 @@
 class PatientsController < ApplicationController
 
-  before_action :establish_session_handler
+  before_action :ensure_session_handler
   # before_action :set_patient, only: [:show, :edit, :update, :destroy]
   before_action :setup_fhir_client
 
