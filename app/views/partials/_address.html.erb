@@ -1,7 +1,7 @@
 <tr>
-	<td>
-		<%= display_raw_date(address.try(:period).try(:start)) %> - 
-		<%= display_raw_date(address.try(:period).try(:end)) %>  
+  <td>
+		<%= display_raw_date(address.try(:period).try(:start)) %> -
+		<%= display_raw_date(address.try(:period).try(:end)) %>
   </td>
 	<td>
 		<%= link_to google_maps(address), target: '_blank' do %>
@@ -9,8 +9,8 @@
 			  <% address.line.each do |line| %>
 			    <%= sanitize(line) %><br />
 			  <% end %>
-			  <%= sanitize(address.city) %>, 
-			  <%= sanitize(address.state) %> 
+			  <%= sanitize(address.city) %>,
+			  <%= sanitize(address.state) %>
 			  <%= display_postal_code(address.postalCode) %>
 			<% else %>
 				<%= address.text %>
