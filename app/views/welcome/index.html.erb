@@ -3,11 +3,11 @@
 	<div class='row'>
 		<%= form_tag patients_path, method: 'get', class: 'form-inline welcome-form d-flex', id: 'server-form' do %>
 			<div class='col'></div>
-			<div class='form-group col-md-7 last'>
-				<%= text_field_tag :server_url, nil, class: 'form-control',
-							placeholder: 'http://hapi.fhir.org/baseR4' %>
+			<div class='form-group col-auto last'>
+				<%= text_field_tag :server_url, nil, class: 'form-control form-control-lg',
+							       placeholder: 'http://hapi.fhir.org/baseR4' %>
 			</div>
-			<%= button_tag 'Connect', class: 'btn btn-primary col-md-2', id: 'server-url' %>
+			<%= button_tag 'Connect', class: 'btn btn-primary col-md-2 mx-3', id: 'server-url' %>
 			<div class='col'></div>
 		<% end %>
 	</div>

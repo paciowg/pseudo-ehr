@@ -59,7 +59,9 @@ Rails.application.routes.draw do
   get 'oauth2/redirect'
   post 'oauth2/register'
 
+  get 'restart',        to: 'welcome#restart'
   root 'welcome#index'
+
 
   # Define 'FHIR' API for retrieving patients and converting questionnaire 
   # response resources posts to PACIO resources
