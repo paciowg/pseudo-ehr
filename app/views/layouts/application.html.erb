@@ -6,10 +6,8 @@
     <%= render 'partials/messages' %>
     <div id='content'>
       <main role='main'>
-        <div class="body-padding center flex-column" style="margin: 1% auto;">
-          <%= render 'partials/queries' %>
-          <%= yield %>
-        </div>
+        <%= render 'partials/queries' %>
+        <%= yield %>
       </main>
       <%= render 'partials/footer' %>
     </div>
