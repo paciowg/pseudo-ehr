@@ -49,7 +49,8 @@ class PatientsController < ApplicationController
       end
     end
 
-    render 'home/index'
+    # renders patient/index instead
+    # render 'home/index'
   end
 
   # GET /patients/1

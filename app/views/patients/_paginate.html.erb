@@ -1,0 +1,21 @@
+<%# _paginate.html.erb %>
+<%# param @next_url: string, such as /patients/index?page=<next request> %>
+<%# param @prev_url: string, such as /patients/index?page=<prev request> %>
+<%# param row_class: string, classes appended to div.row (param from local hash) %>
+<%# expects to render within .container %>
+
+<!-- pagination -->
+<% if @next_url || @prev_url %>
+  <div class="row justify-content-around <%= row_class %>">
+    <% if @prev_url %>
+      <div class="col-3 text-center">
+        <%= link_to 'Previous', @prev_url, class: "btn btn-outline-success" %>
+      </div>
+    <% end %>
+    <% if @next_url %>
+      <div class="col-3 text-center">
+        <%= link_to 'Next', @next_url, class: "btn btn-outline-success" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
