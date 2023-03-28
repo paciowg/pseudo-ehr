@@ -12,11 +12,10 @@
       <p><%= @fhir_query %></p>
     </div>
   <% elsif @fhir_queries %>
-    <ol class=''>
+    <ol class="">
       <% @fhir_queries.each do |query| %>
         <li><p><%= query %></p></li>
       <% end %>
     </ol>
   <% end %>
-  </div>
 </div>
