@@ -14,16 +14,16 @@
         </tr>
       </thead>
       <tbody>
-        
+
         <% @encounters.each do |encounter| %>
           <tr>
             <td><%= display_date(encounter.period&.start&.to_date) %></td>
-            <td><%= "#{encounter.category.display} (#{encounter.category.code})" %></td>
-            <td><%=  display_human_name(encounter.providers.first[:individual].name.first) %></td>
+            <td><%= "#{encounter&.category&.display} (#{encounter&.category&.code})" %></td>
+            <td><%=  display_human_name(encounter&.providers&.first&.fetch(:individual)&.name&.first) %></td>
             <td><%= link_to "View", encounter_path(encounter.id) %></td>
           </tr>
         <% end %>
-        
+
       </tbody>
     </table>
   </div>

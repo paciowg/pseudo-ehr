@@ -5,6 +5,11 @@
   </div>
 
   <%= render "paginate", row_class: "mx-5 mt-3" %>
+  <% if @patients.length == 0 %>
+    <div class="row">
+      <h4 class="text-center">No patients found.</h4>
+    </div>
+  <% end %>
 
   <div class="row justify-content-center">
     <div class="col-12 col-md-10 table-responsive-md my-0">
@@ -13,6 +18,7 @@
           <th>ID</th>
           <th>Name</th>
           <th>DOB</th>
+          <th>Actions</th>
         </tr>
         <% @patients.each do |patient| %>
           <% patient_name = [patient.name.first&.family, patient.name.first&.given&.join(" ")].compact %>
@@ -21,6 +27,7 @@
               <td><%= patient.id %></td>
               <td><%= patient_name.present? ? patient_name.join(", ") : "(n/a)" %></td>
               <td><%= patient.birthDate ? display_date(patient.birthDate.to_date) : "(n/a)" %></td>
+              <td><%= link_to 'Open Profile', patient_path(patient.id) %></td>
             </a>
           </tr>
         <% end %>

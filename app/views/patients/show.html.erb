@@ -4,6 +4,7 @@
       <div class='col-6 card-container'>
         <%= render 'dashboard/patient-card' %>
       </div>
+
       <% if @encounters.present? %>
         <div class='col-lg-6 card-container'>
           <%= render 'dashboard/encounters-card' %>
@@ -35,7 +36,7 @@
         </div>
       <% end %>
     <% else %>
-      Not available
+      <h4>Not available</h4>
     <% end %>
   </section>
 </section>

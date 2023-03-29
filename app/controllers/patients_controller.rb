@@ -53,21 +53,25 @@ class PatientsController < ApplicationController
     # render 'home/index'
   end
 
-  # GET /patients/1
-  # GET /patients/1.json
+  # GET /patients/pat1
   def show
     patient_id = params[:id]
+
     if !Rails.cache.read("$document_bundle").nil?
       bundle = FHIR.from_contents(Rails.cache.read("$document_bundle"))
       fhir_patient = get_object_from_bundle('Patient/' + patient_id, bundle)
-      puts Rails.cache.read("$document_bundle")
+      # puts Rails.cache.read("$document_bundle")
+      logger.debug "Read patient from document bundle"
     end
     
     if fhir_patient.nil?
       fhir_response = SessionHandler.fhir_client(session.id).read(FHIR::Patient, patient_id)
       fhir_patient = fhir_response.resource
+      logger.debug "Read patient from fhir client"
     end
+
     @patient              = Patient.new(fhir_patient, SessionHandler.fhir_client(session.id))
+
     #CAS set global patient variable
     $patient              = @patient
     @medications          = @patient.medications
@@ -82,7 +86,7 @@ class PatientsController < ApplicationController
     @encounters           = @patient.encounters
     
     # Display the fhir query being run on the UI to help implementers
-    @fhir_queries        = ["#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"] + @patient.fhir_queries
+    @fhir_queries        = ["#{fhir_response.request[:method].upcase} #{fhir_response.request[:url]}"] + @patient.fhir_queries
   end
 
   # GET /patients/new
