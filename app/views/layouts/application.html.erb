@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html>
-  <%= render 'partials/head' %>
+  <%= render "partials/head" %>
   <body>
-    <%= render 'partials/header' %>
-    <%= render 'partials/messages' %>
-    <div id='content'>
-      <main role='main'>
-        <%= render 'partials/queries' %>
-        <%= yield %>
-      </main>
-      <%= render 'partials/footer' %>
+    <div id="page-wrapper" class="position-relative" style="min-height:100vh;">
+      <div id="content-wrapper" style="padding-bottom:80px;"><%# bottom padding must equal footer height %>
+        <%= render "partials/header" %>
+        <%= render "partials/messages" %>
+        <div id="content">
+          <main role="main">
+            <%= render "partials/queries" %>
+            <%= yield %>
+          </main>
+        </div>
+      </div>
+      <%= render "partials/footer" %>
     </div>
     <%= yield :scripts %>
   </body>

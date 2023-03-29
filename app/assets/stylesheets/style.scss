@@ -32,7 +32,7 @@ main > .container {
 footer {
   background-color: #222;
   height: 80px;
-  // position: fixed;
+  position: absolute;
   bottom: 0px;
   width: 100%;
   z-index: 2;
