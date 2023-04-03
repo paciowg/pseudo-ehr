@@ -10,6 +10,7 @@
 # http://guides.rubyonrails.org/routing.html
 
 Rails.application.routes.draw do
+  get 'capability_statement/index'
 
   # Define 'EHR' web app routes
 
@@ -42,6 +43,9 @@ Rails.application.routes.draw do
   resources :compositions
   resources :questionnaire_responses
 
+  # Show capability statement of FHIR server its connected ti
+  get 'capability_statement', to: 'capability_statement#index'
+
   get 'questionnaire_responses/index'
   get 'questionnaire_responses/show'
 
@@ -61,7 +65,6 @@ Rails.application.routes.draw do
 
   get 'restart',        to: 'welcome#restart'
   root 'welcome#index'
-
 
   # Define 'FHIR' API for retrieving patients and converting questionnaire 
   # response resources posts to PACIO resources
