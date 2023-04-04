@@ -4,7 +4,7 @@
     <br>
   </section >
   <section class='row'>
-    <h2 class='text-center'>Organization: <%= @encounter.reassessment_timepoints.first&.service_provider.name %></h2>
+    <h2 class='text-center'>Organization: <%= @encounter.reassessment_timepoints.first&.service_provider&.name %></h2>
     <% @encounter.reassessment_timepoints.first&.locations&.each do |location| %>
         <p class='text-center'><%= location.address.text %></p>
      <% end %>
