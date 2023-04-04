@@ -1,36 +1,33 @@
 <header>
-  <nav class='navbar fixed-top navbar-expand-lg bg-dark navbar-dark justify-content-between'>
-    <div class='navbar-brand'>
+  <nav class="navbar navbar-expand-lg bg-dark navbar-dark justify-content-between">
+    <div class="navbar-brand mx-2">
       <%= link_to root_path do %>
-        <%= image_tag 'logo.svg', id: 'logo', alt: '' %>
+        <%= image_tag "logo.svg", id: "logo", alt: "(logo)" %>
         <div class="header-title">Pseudo EHR</div>
       <% end %>
     </div>
 
-    <button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
-      <span class='navbar-toggler-icon'></span>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
     </button>
-
-    <div class='collapse navbar-collapse' id='navbarSupportedContent'>
-      <ul class='navbar-nav mr-auto'>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
         <li>
-          <%= link_to 'Assessments', assessments_path, class: 'nav-link' %>
+          <%= link_to "Restart", restart_path, class: "nav-link text-danger" %>
         </li>
         <li>
-          <%= link_to 'eLTSS Care Plan', care_plans_path, class: 'nav-link' %>
+          <%= link_to "Capability Statement", capability_statement_index_path, class: "nav-link" %>
         </li>
         <li>
-          <%= link_to 'Advance Directive Compositions', compositions_path, class: 'nav-link' %>
+          <%= link_to "Patients", patients_path, class: "nav-link" %>
         </li>
       </ul>
-      <form action="/patients" method="get" class='d-flex'>
-        <input type='search' name='name' id='name' class='form-control me-2' placeholder='Search patient by name' aria-lable='Search'>
-        <button type='submit' class='btn btn-outline-success'>Search</button>
+
+      <form action="/patients" method="get" class="d-flex ms-auto">
+        <input type="search" name="name" id="name" class="form-control" placeholder="Search patient by name" aria-lable="Search">
+        <button type="submit" class="btn btn-outline-success mx-2">Search</button>
       </form>
     </div>
 
-    <div>
-    	<%= image_tag 'pacio-logo.png', id: 'logo', alt: '' %> 
-    </div>
   </nav>
 </header>

@@ -1,25 +1,40 @@
-<p id="notice"><%= notice %></p>
 
-<h1>Patients</h1>
+<section class="container-fluid my-5">
+  <div class="row justify-content-center my-2">
+    <h2 class="text-center">Patients</h2>
+  </div>
 
-<table>
-  <thead>
-    <tr>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+  <%= render "paginate", row_class: "mx-5 mt-3" %>
+  <% if @patients.length == 0 %>
+    <div class="row">
+      <h4 class="text-center">No patients found.</h4>
+    </div>
+  <% end %>
 
-  <tbody>
-    <% @patients.each do |patient| %>
-      <tr>
-        <td><%= link_to 'Show', patient %></td>
-        <td><%= link_to 'Edit', edit_patient_path(patient) %></td>
-        <td><%= link_to 'Destroy', patient, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 table-responsive-md my-0">
+      <table class="table table-dark table-hover my-1">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>DOB</th>
+          <th>Actions</th>
+        </tr>
+        <% @patients.each do |patient| %>
+          <% patient_name = [patient.name.first&.family, patient.name.first&.given&.join(" ")].compact %>
+          <tr>
+            <a href="<%= patient_path(patient) %>">
+              <td><%= patient.id %></td>
+              <td><%= patient_name.present? ? patient_name.join(", ") : "(n/a)" %></td>
+              <td><%= patient.birthDate ? display_date(patient.birthDate.to_date) : "(n/a)" %></td>
+              <td><%= link_to 'Open Profile', patient_path(patient.id) %></td>
+            </a>
+          </tr>
+        <% end %>
+        </table>
+    </div><!-- /.col -->
+  </div><!-- /.row -->
 
-<br>
+  <%= render "paginate", row_class: "mx-5 mb-3" %>
 
-<%= link_to 'New Patient', new_patient_path %>
+</section>

@@ -84,16 +84,16 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
-    autoprefixer-rails (10.4.7.0)
+    autoprefixer-rails (10.4.13.0)
       execjs (~> 2)
     bcp47 (0.3.3)
       i18n
     bindex (0.8.1)
     bootsnap (1.15.0)
       msgpack (~> 1.2)
-    bootstrap (4.6.2)
+    bootstrap (5.2.3)
       autoprefixer-rails (>= 9.1.0)
-      popper_js (>= 1.16.1, < 2)
+      popper_js (>= 2.11.6, < 3)
       sassc-rails (>= 2.0.0)
     bootstrap-toggle-rails (2.2.1.0)
     builder (3.2.4)
@@ -214,7 +214,7 @@ GEM
       multi_xml (~> 0.5)
       rack (>= 1.2, < 4)
     pg (1.4.5)
-    popper_js (1.16.1)
+    popper_js (2.11.6)
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -287,10 +287,6 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    spring (2.1.1)
-    spring-watcher-listen (2.0.1)
-      listen (>= 2.7, < 4.0)
-      spring (>= 1.2, < 3.0)
     sprockets (4.2.0)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -335,7 +331,7 @@ PLATFORMS
 
 DEPENDENCIES
   bootsnap (>= 1.1.0)
-  bootstrap (~> 4.4)
+  bootstrap (~> 5.2)
   bootstrap-toggle-rails
   byebug
   capybara (>= 2.15)
@@ -356,8 +352,6 @@ DEPENDENCIES
   responders
   sass-rails (>= 5.0)
   selenium-webdriver
-  spring
-  spring-watcher-listen (~> 2.0.0)
   turbolinks (~> 5)
   tzinfo-data
   uglifier (>= 1.3.0)

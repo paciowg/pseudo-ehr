@@ -20,7 +20,7 @@ gem 'jbuilder', '~> 2.5'        # Build JSON APIs with ease. Read more: https://
 # gem 'mini_magick', '~> 4.8'   # Use ActiveStorage variant
 
 gem 'bootsnap', '>= 1.1.0', require: false  # Reduces boot times through caching; required in config/boot.rb
-gem 'bootstrap', '~> 4.4'       # bootstrap
+gem 'bootstrap', '~> 5.2'       # bootstrap
 gem 'jquery-rails'              # jQuery
 gem 'jquery-datatables'
 gem 'bootstrap-toggle-rails'    # bootstrap toggle
@@ -38,8 +38,8 @@ end
 group :development do
   gem 'web-console', '>= 3.3.0'       # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'listen', '>= 3.0.5'   # Listens to file modifications and notifies you about the changes
-  gem 'spring'                        # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring-watcher-listen', '~> 2.0.0'
+  # gem 'spring'                        # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
+  # gem 'spring-watcher-listen', '~> 2.0.0'
   # gem 'capistrano-rails'            # Use Capistrano for deployment
 end
 

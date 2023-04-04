@@ -27,18 +27,18 @@
         </tr>
       </thead>
       <tbody>
-        
+
         <% @encounters.each do |encounter| %>
           <tr>
             <td><%= display_date(encounter.period&.start&.to_date) %></td>
             <td><%= display_code(encounter.type&.first) %></td>
-            <td><%=  display_human_name(encounter.providers.first[:individual].name.first) %></td>
+            <td><%=  display_human_name(encounter.providers&.first&.fetch(:individual)&.name&.first) %></td>
             <td><%= link_to "View", encounter_path(encounter.id) %></td>
           </tr>
         <% end %>
-        
+
       </tbody>
     </table>
   </section>
- 
+
 </section>

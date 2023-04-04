@@ -1,7 +1,7 @@
 body {
   background-color: black;
   color: #eee;
-  padding-bottom: 20px;
+  // padding-bottom: 20px;
 }
 
 main > .container {
@@ -32,7 +32,7 @@ main > .container {
 footer {
   background-color: #222;
   height: 80px;
-  position: fixed;
+  position: absolute;
   bottom: 0px;
   width: 100%;
   z-index: 2;
@@ -173,6 +173,6 @@ pre {
     .col-md-3 { // restores bootstrap class to original state
       padding-left: 15px;
     }
- 
+
   }
 }

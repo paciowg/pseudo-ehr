@@ -1,0 +1,51 @@
+<div class='card bg-dark text-white'>
+  <div class='card-header'>
+    Server Capability Statement
+  </div>
+  <div class='card-body'>
+    <div class='row patient-info'>
+      <div class='col-5'>
+        <%= image_tag 'server-image.png', class: "d-flex mx-auto" %>
+      </div>
+      <div class='col-6'>
+        <table class='table table-striped table-dark status my-auto'>
+          <tr>
+            <td>Title</td>
+            <td><%= @metadata.title %></td>
+          </tr>
+          <tr>
+            <td>URL</td>
+            <td><%= @metadata.url %></td>
+          </tr>
+          <tr>
+            <td>FHIR Version</td>
+            <td><%= @metadata.fhirVersion %></td>
+          </tr>
+          <tr>
+            <td>Status</td>
+            <td><%= @metadata.status %></td>
+          </tr>
+          <tr>
+            <td>Software</td>
+            <td>
+              <%= @metadata.software&.name %><br />
+              <%= @metadata.software&.version %><br />
+              <%= @metadata.software&.releaseDate&.strftime('%x') %>
+            </td>
+          </tr>
+          <tr>
+            <td>Formats Supported:</td>
+            <td>
+              <% @metadata.format&.each do |t| %>
+                <%= t.to_s.downcase %><br />
+              <% end %>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="row">
+      <!-- TODO list security and resources/interactions -->
+    </div>
+  </div>
+</div>
