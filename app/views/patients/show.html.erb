@@ -2,14 +2,16 @@
   <section class='row'>
     <% if @patient.present? %>
       <div class='col-6 card-container'>
-        <%= render 'dashboard/patient-card' %>
+        <%= render 'patient/patient-card' %>
       </div>
 
       <% if @encounters.present? %>
         <div class='col-lg-6 card-container'>
-          <%= render 'dashboard/encounters-card' %>
+          <%= render 'patient/encounters-card' %>
         </div>
       <% end %>
+
+      <!--
       <% if @medications.present? %>
         <div class='col-6 card-container'>
           <%= render 'dashboard/medications-card' %>
@@ -35,6 +37,8 @@
           <%= render 'dashboard/splasch-observations-card' %>
         </div>
       <% end %>
+      -->
+
     <% else %>
       <h4>Not available</h4>
     <% end %>
