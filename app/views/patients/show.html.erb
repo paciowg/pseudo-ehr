@@ -2,12 +2,12 @@
   <section class='row'>
     <% if @patient.present? %>
       <div class='col-6 card-container'>
-        <%= render 'patient/patient-card' %>
+        <%= render 'patient-card' %>
       </div>
 
       <% if @encounters.present? %>
         <div class='col-lg-6 card-container'>
-          <%= render 'patient/encounters-card' %>
+          <%= render 'encounters-card' %>
         </div>
       <% end %>
 
