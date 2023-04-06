@@ -176,7 +176,7 @@ class Patient < Resource
      
     end
 
-    @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+    @fhir_queries << "#{fhir_response.request[:method].upcase} #{fhir_response.request[:url]}"
 
     return encounters
   end

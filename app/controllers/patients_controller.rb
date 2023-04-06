@@ -55,38 +55,49 @@ class PatientsController < ApplicationController
 
   # GET /patients/pat1
   def show
+    # Display the fhir query being run on the UI to help implementers
+    # @fhir_queries        = @patient.fhir_queries
+    @fhir_queries         = []
+
+
     patient_id = params[:id]
 
-    if !Rails.cache.read("$document_bundle").nil?
-      bundle = FHIR.from_contents(Rails.cache.read("$document_bundle"))
-      fhir_patient = get_object_from_bundle('Patient/' + patient_id, bundle)
-      # puts Rails.cache.read("$document_bundle")
-      logger.debug "Read patient from document bundle"
+    # read patient
+    fhir_response        = @fhir_client.read(FHIR::Patient, patient_id)
+    @fhir_queries        << "#{fhir_response.request[:method].upcase} #{fhir_response.request[:url]}"
+    fhir_patient         = fhir_response.resource
+    @patient             = Patient.new(fhir_patient, @fhir_client)
+
+    # $everything patient
+    @base_server_url     = SessionHandler.from_storage(session.id, 'connection').base_server_url
+
+    rest_response        = @fhir_client.client.get(File.join(@base_server_url, "Patient/#{patient_id}/$everything"))
+    @fhir_queries        << "#{rest_response.request.method.upcase} #{rest_response.request.url}"
+    everything_bundle    = FHIR.from_contents( rest_response.body )
+    
+    @questionnaire_responses = []
+    @encounters              = []
+    @specimens               = []
+    # @care_plans              = []
+    @conditions              = []
+    @locations               = []
+    
+
+    everything_bundle.entry.each do |entry|
+      case entry.resource.resourceType.to_s
+      when "QuestionnaireResponse"
+        @questionnaire_responses << entry.resource
+      when "Specimen"
+        @specimens << entry.resource
+      when "Encounter"
+        @encounters << entry.resource
+      when "Condition"
+        @conditions << entry.resource
+      when "Location"
+        @locations << entry.resource
+      end
     end
     
-    if fhir_patient.nil?
-      fhir_response = SessionHandler.fhir_client(session.id).read(FHIR::Patient, patient_id)
-      fhir_patient = fhir_response.resource
-      logger.debug "Read patient from fhir client"
-    end
-
-    @patient              = Patient.new(fhir_patient, SessionHandler.fhir_client(session.id))
-
-    #CAS set global patient variable
-    $patient              = @patient
-    @medications          = @patient.medications
-    @functional_statuses  = @patient.bundled_functional_statuses
-    @cognitive_statuses   = @patient.bundled_cognitive_statuses
-    @splasch_observations = @patient.splasch_observations
-    # @spoken_language_comprehension_observations = @patient.spoken_language_comprehension_observations
-    # @spoken_language_expression_observations = @patient.spoken_language_expression_observations
-    # @swallowing_observations = @patient.swallowing_observations
-    # @splasch_collections  = @patient.splasch_collections
-    @compositions         = @patient.compositions
-    @encounters           = @patient.encounters
-    
-    # Display the fhir query being run on the UI to help implementers
-    @fhir_queries        = ["#{fhir_response.request[:method].upcase} #{fhir_response.request[:url]}"] + @patient.fhir_queries
   end
 
   # GET /patients/new

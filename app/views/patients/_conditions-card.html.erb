@@ -1,0 +1,36 @@
+<div class='card bg-dark text-white h-100'>
+  <div class='card-header'>
+    <%# link_to "Conditions (#{@conditions.count})", patient_conditions_path(@patient.id) TODO build %>
+    <%= "Conditions (#{@conditions.count})" %>
+  </div>
+  <div class='card-body'>
+    <table class='table table-striped table-dark status'>
+      <thead>
+        <tr>
+          <th>Condition (code)</th>
+          <th>Clinical Status</th>
+          <th>Verified</th>
+          <th>Assert Date</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <% @conditions.each do |condition| %>
+          <tr>
+            <td><%= sanitize( condition.code&.text ) %> (<%= sanitize( condition.code&.coding&.first&.system ) %>/<%= sanitize( condition.code&.coding&.first&.code ) %>)</td>
+            <td><%= sanitize( condition.clinicalStatus&.text ) %></td>
+            <td><%= sanitize( condition.verificationStatus&.text ) %></td>
+            <td>
+                <% condition.extension.each do |extension| %>
+                    <% if extension.url == "http://hl7.org/fhir/StructureDefinition/condition-assertedDate" %>
+                        <%= display_date( extension.valueDateTime.to_date ) %>
+                    <% end %>
+                <% end %>
+            </td>
+          </tr>
+        <% end %>
+
+      </tbody>
+    </table>
+  </div>
+</div>
