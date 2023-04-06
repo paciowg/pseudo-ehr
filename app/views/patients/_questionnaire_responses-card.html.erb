@@ -1,0 +1,31 @@
+<div class='card bg-dark text-white h-100'>
+  <div class='card-header'>
+    Questionnaire Responses
+    <% if @questionnaire_responses.last&.status == "completed" %>
+      <span class="badge text-bg-success">completed</span>
+    <% elsif @questionnaire_responses.last&.status %>
+      <span class="badge text-bg-warning"><%= sanitize(@questionnaire_response.last&.status) %></span>
+    <% end %>
+  </div>
+  <div class='card-body'>
+    <% if @questionnaire_responses.count > 1 %>
+      <p>This patient has taken multiple questionnaires, only the latest is displayed here.</p>
+    <% end %>
+    <table class='table table-striped table-dark status'>
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Response</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @questionnaire_responses.last&.item&.each do |item| %>
+          <tr>
+            <td><%= sanitize(item.text) %></td>
+            <td><%= sanitize(item.answer&.first&.valueCoding&.display) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
