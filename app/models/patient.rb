@@ -11,7 +11,7 @@ class Patient < Resource
 	include ActiveModel::Model
 
   attr_reader :id, :names, :telecoms, :addresses, :birth_date, :gender, 
-  								:marital_status, :photo
+  								:marital_status, :photo, :extension
 
   attr_accessor :fhir_queries
   #-----------------------------------------------------------------------------
@@ -29,6 +29,7 @@ class Patient < Resource
   	@marital_status 	= fhir_patient.maritalStatus
   	@photo						= nil
     @resource_type    = fhir_patient&.resourceType
+    @extension        = fhir_patient.extension
 
   	@fhir_client			= fhir_client
     @fhir_queries      = []

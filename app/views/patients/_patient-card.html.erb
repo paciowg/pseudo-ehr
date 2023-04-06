@@ -1,6 +1,6 @@
 <div class='card bg-dark text-white'>
   <div class='card-header'>
-    Patient: 
+    Patient:
     <% @patient.names&.each do |name| %>
       <%= display_human_name(name) %><br />
     <% end %>
@@ -12,10 +12,35 @@
       </div>
       <div class='col-6'>
         <table class='table table-striped table-dark status'>
-          <tr>
-            <td>Gender</td>
-            <td><%= sanitize(@patient.gender) %></td>
-          </tr>
+          <% @patient.extension&.each do |extension| %>
+            <% if extension.url == "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex" %>
+              <tr>
+                <td>Sex</td>
+                <td><%= extension.valueCoding&.display %></td>
+              </tr>
+            <% elsif extension.url == "http://hl7.org/fhir/us/core/StructureDefinition/us-core-genderIdentity" %>
+              <tr>
+                <td>Gender Identity</td>
+                <td><%= extension.valueCoding&.display %></td>
+              </tr>
+            <% elsif extension.url == "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity" %>
+              <tr>
+                <td>Ethnicity</td>
+                <td><%= extension.extension&.last&.valueString %></td>
+              </tr>
+            <% elsif extension.url == "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race" %>
+              <tr>
+                <td>Race</td>
+                <td><%= extension.extension&.last&.valueString %></td>
+              </tr>
+            <% end %>
+          <% end %>
+          <% if @patient.extension.nil? %>
+            <tr>
+              <td>Gender</td>
+              <td><%= @patient.gender&.capitalize %></td>
+            </tr>
+          <% end %>
           <tr>
             <td>Age</td>
             <td><%= sanitize(@patient.age) %> years old</td>
