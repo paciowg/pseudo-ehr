@@ -137,10 +137,15 @@ class Composition < Resource
   #-----------------------------------------------------------------------------
 
   def coding_string(coding_list)
+    code = {
+      "100826-7" => "Portable medical order &or advance directive review",
+      "100827-5" => "Portable medical order discussion participants"
+    }
     text = []
 
     coding_list.each do |coding|
-      text << coding.display
+      display = code[coding.code]
+      text << (coding.display || display)
     end
 
     text.join(", ")
