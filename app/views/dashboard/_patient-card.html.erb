@@ -1,9 +1,6 @@
 <div class='card bg-dark text-white'>
   <div class='card-header'>
-    Patient: 
-    <% @patient.names&.each do |name| %>
-      <%= display_human_name(name) %><br />
-    <% end %>
+    Patient: <%= link_to display_human_name(@patient.names&.first), dashboard_path(patient: @patient.id) %>
   </div>
   <div class='card-body'>
     <div class='row patient-info'>
