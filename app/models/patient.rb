@@ -10,7 +10,7 @@ class Patient < Resource
 
 	include ActiveModel::Model
 
-  attr_reader :id, :names, :telecoms, :addresses, :birth_date, :gender, 
+  attr_reader :id, :names, :telecoms, :addresses, :birth_date, :gender,
   								:marital_status, :photo
 
   attr_accessor :fhir_queries
@@ -39,12 +39,12 @@ class Patient < Resource
   def medications
   	medications = []
 
-    search_param = 	{ search: 
-    									{ parameters: 
-    										{ 
-                          patient: ["Patient", @id].join('/') 
-    										} 
-    									} 
+    search_param = 	{ search:
+    									{ parameters:
+    										{
+                          patient: ["Patient", @id].join('/')
+    										}
+    									}
     								}
 
     fhir_response = @fhir_client.search(FHIR::Medication, search_param)
@@ -66,18 +66,18 @@ class Patient < Resource
   def medication_statements
     medication_statements = []
 
-    search_param =  { search: 
-                      { parameters: 
-                        { 
-                          subject: ["Patient", @id].join('/') 
-                        } 
-                      } 
+    search_param =  { search:
+                      { parameters:
+                        {
+                          subject: ["Patient", @id].join('/')
+                        }
+                      }
                     }
 
     fhir_response = @fhir_client.search(FHIR::MedicationStatement, search_param)
     fhir_bundle = fhir_response.resource
     unless fhir_bundle.nil?
-      fhir_medication_statements = filter(fhir_bundle.entry.map(&:resource), 
+      fhir_medication_statements = filter(fhir_bundle.entry.map(&:resource),
                                               'MedicationStatement')
 
       fhir_medication_statements.compact.each do |fhir_medication_statement|
@@ -95,12 +95,12 @@ class Patient < Resource
   def document_references
     document_references = []
 
-    search_param =  { search: 
-                      { parameters: 
-                        { 
-                          subject: ["Patient", @id].join('/') 
-                        } 
-                      } 
+    search_param =  { search:
+                      { parameters:
+                        {
+                          subject: ["Patient", @id].join('/')
+                        }
+                      }
                     }
 
     fhir_response = @fhir_client.search(FHIR::DocumentReference, search_param)
@@ -122,12 +122,12 @@ class Patient < Resource
   def compositions
     compositions = []
 
-    search_param =  { search: 
-                      { parameters: 
-                        { 
-                          subject: ["Patient", @id].join('/') 
-                        } 
-                      } 
+    search_param =  { search:
+                      { parameters:
+                        {
+                          subject: ["Patient", @id].join('/')
+                        }
+                      }
                     }
 
     fhir_response = @fhir_client.search(FHIR::Composition, search_param)
@@ -150,49 +150,49 @@ class Patient < Resource
     return compositions
 
   end
-  
+
 
   #-----------------------------------------------------------------------------
 
   def encounters
     encounters = []
 
-    search_param =  { search: 
-      { parameters: 
-        { 
+    search_param =  { search:
+      { parameters:
+        {
           subject: ["Patient", @id].join('/'),
-          _profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter" 
-        } 
-      } 
+          _profile: "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
+        }
+      }
     }
     fhir_response = @fhir_client.search(FHIR::Encounter, search_param)
     fhir_bundle = fhir_response.resource
-    
+
     unless fhir_bundle.nil?
       fhir_bundle.entry.each do |entry|
         fhir_encounter = entry.resource
         encounters << Encounter.new(fhir_encounter, @fhir_client)
-      end 
-     
+      end
+
     end
 
-    @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+    # @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
 
     return encounters
   end
-  
+
   #-----------------------------------------------------------------------------
 
   def advance_directives
     advance_directives = []
 
-    search_param =  { search: 
-                      { parameters: 
-                        { 
+    search_param =  { search:
+                      { parameters:
+                        {
                           subject: ["Patient", @id].join('/'),
-                          status: "current" 
-                        } 
-                      } 
+                          status: "current"
+                        }
+                      }
                     }
 
     # Find all of the document references related to the patient
@@ -208,27 +208,29 @@ class Patient < Resource
           document_reference.content.each do |content|
             # REVIEW - Only pay attention to content that is application/json for now...
             if content.attachment.contentType == "application/json"
-              id = content.attachment.url.split('/').last
-              binary_attachment_bundle = @fhir_client.read(FHIR::Binary, id)
-              
+              id = content.attachment&.url&.split('/')&.last
+              if id.present?
+                binary_attachment_bundle = @fhir_client.read(FHIR::Binary, id)
 
-              # fhir_attachment_bundle = JSON(Base64.decode64(binary_attachment_bundle.resource.data))
-              # fhir_attachment = fhir_attachment_bundle.entries.last
-              # fhir_composition = FHIR::Composition.new(fhir_attachment.last.first["resource"])
+                # fhir_attachment_bundle = JSON(Base64.decode64(binary_attachment_bundle.resource.data))
+                # fhir_attachment = fhir_attachment_bundle.entries.last
+                # fhir_composition = FHIR::Composition.new(fhir_attachment.last.first["resource"])
 
-              fhir_attachment_json = JSON(Base64.decode64(binary_attachment_bundle.resource.data))
-              
-              fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
-              
-              
-              fhir_compositions = filter(fhir_attachment_bundle.entry.map(&:resource), 'Composition')
-              fhir_compositions.compact.each do |composition|
-                #puts "!!!!!!!!!!!!!! Composition !!!!!!!!!!!!!!!!!"
-                #puts composition.to_json
-                advance_directives << Composition.new(composition, fhir_attachment_bundle)
+                fhir_attachment_json = JSON(Base64.decode64(binary_attachment_bundle.resource.data))
+
+                fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
+
+
+                fhir_compositions = filter(fhir_attachment_bundle.entry.map(&:resource), 'Composition')
+                fhir_compositions.compact.each do |composition|
+                  #puts "!!!!!!!!!!!!!! Composition !!!!!!!!!!!!!!!!!"
+                  #puts composition.to_json
+                  advance_directives << Composition.new(composition, fhir_attachment_bundle)
+                end
               end
-              #CAS Put Advance Directives into a global variable
-              $advance_directives = advance_directives
+
+            elsif content.attachment.contentType == "application/pdf"
+              # TODO: read and display pdf file
 
               # advance_directives << Composition.new(fhir_composition, fhir_attachment_bundle)
             end
@@ -236,7 +238,9 @@ class Patient < Resource
         end
       end
     end
-
+    @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
+    #CAS Put Advance Directives into a global variable
+    $advance_directives = advance_directives
     return advance_directives
   end
 
@@ -247,9 +251,9 @@ class Patient < Resource
 
     search_param =  { search:
                       { parameters:
-                        { 
+                        {
                           subject: ["Patient", @id].join('/'),
-                          _profile: 'http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs' 
+                          _profile: 'http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs'
                         }
                       }
                     }
@@ -258,9 +262,9 @@ class Patient < Resource
     fhir_bundle = fhir_response.resource
     unless fhir_bundle.nil?
       fhir_functional_statuses = filter(fhir_bundle.entry.map(&:resource), 'Observation')
-    
+
       fhir_functional_statuses.compact.each do |fhir_functional_status|
-        bundled_functional_statuses << BundledFunctionalStatus.new(fhir_functional_status, @fhir_client) 
+        bundled_functional_statuses << BundledFunctionalStatus.new(fhir_functional_status, @fhir_client)
       end
     end
 
@@ -276,9 +280,9 @@ class Patient < Resource
 
     search_param =  { search:
                       { parameters:
-                        { 
+                        {
                           subject: ["Patient", @id].join('/'),
-                          _profile: 'http://paciowg.github.io/cognitive-status-ig/StructureDefinition/pacio-bcs' 
+                          _profile: 'http://paciowg.github.io/cognitive-status-ig/StructureDefinition/pacio-bcs'
                         }
                       }
                     }
@@ -305,9 +309,9 @@ class Patient < Resource
 
     search_param =  { search:
                       { parameters:
-                        { 
+                        {
                           subject: ["Patient", @id].join('/'),
-                          _profile: '???' 
+                          _profile: '???'
                         }
                       }
                     }
@@ -332,7 +336,7 @@ class Patient < Resource
 
     search_param =  { search:
                       { parameters:
-                        { 
+                        {
                           _count: 200,
                           subject: ["Patient", @id].join('/')
                         }
@@ -364,9 +368,9 @@ class Patient < Resource
 
     search_param =  { search:
                       { parameters:
-                        { 
+                        {
                           subject: ["Patient", @id].join('/'),
-                          _profile: 'http://paciowg.github.io/splasch-ig/StructureDefinition/splasch-SpokenLanguageComprehensionObservation' 
+                          _profile: 'http://paciowg.github.io/splasch-ig/StructureDefinition/splasch-SpokenLanguageComprehensionObservation'
                         }
                       }
                     }
@@ -391,9 +395,9 @@ class Patient < Resource
 
     search_param =  { search:
                       { parameters:
-                        { 
+                        {
                           subject: ["Patient", @id].join('/'),
-                          _profile: 'http://paciowg.github.io/splasch-ig/StructureDefinition/splasch-SpokenLanguageExpressionObservation' 
+                          _profile: 'http://paciowg.github.io/splasch-ig/StructureDefinition/splasch-SpokenLanguageExpressionObservation'
                         }
                       }
                     }
@@ -418,9 +422,9 @@ class Patient < Resource
 
     search_param =  { search:
                       { parameters:
-                        { 
+                        {
                           subject: ["Patient", @id].join('/'),
-                          _profile: 'http://paciowg.github.io/splasch-ig/StructureDefinition/splasch-SwallowingObservation' 
+                          _profile: 'http://paciowg.github.io/splasch-ig/StructureDefinition/splasch-SwallowingObservation'
                         }
                       }
                     }
@@ -482,7 +486,7 @@ class Patient < Resource
     fhir_splasch_collections.each do |fhir_splasch_collection|
       splasch_collections = {}
       splasch_collections[:bundle] =
-                SplaschCollection.new(fhir_splasch_collection, @fhir_client) unless 
+                SplaschCollection.new(fhir_splasch_collection, @fhir_client) unless
                                                           fhir_splasch_collection.nil?
       splasch_collections[:assessments] = splasch_collections[:bundle].splasch_observations
       all_splasch_collections << splasch_collections
@@ -512,7 +516,7 @@ class Patient < Resource
   #-----------------------------------------------------------------------------
 
   def filter(fhir_resources, type)
-    fhir_resources&.select do |resource| 
+    fhir_resources&.select do |resource|
     	resource.resourceType == type
     end
   end
@@ -522,9 +526,9 @@ class Patient < Resource
   def get_fhir_statuses_with_profile(profile)
     search_param =  { search:
                       { parameters:
-                        { 
+                        {
                           subject: ["Patient", @id].join('/'),
-                          _profile: profile 
+                          _profile: profile
                         }
                       }
                     }
