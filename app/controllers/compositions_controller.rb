@@ -41,10 +41,14 @@ class CompositionsController < ApplicationController
     #fhir_compositions.compact.each do |composition|
     #  advance_directives << Composition.new(composition, fhir_attachment_bundle)
     #end
-    advance_directives = $advance_directives
+    @patient = $patient
+    # advance_directives = $advance_directives
     @compositions = $advance_directives
-    @composition = $advance_directives[0]
-
+    @composition = @compositions.find { |composition| composition.id == params[:id] }
+    if @composition.nil?
+      flash[:error] = "Composition/ADI not found"
+      redirect_to dashboard_path(patient: @patient.id)
+    end
     # #todo: replace hard coded string
     # #fhir_response = fhir_client.read(FHIR::Bundle, "Example-Smith-Johnson-PMOBundle1")
     # fhir_response = fhir_client.read(FHIR::Binary, "26819")
@@ -56,7 +60,7 @@ class CompositionsController < ApplicationController
     # fhir_patient = fhir_client.read(FHIR::Patient, "Example-Smith-Johnson-Patient1")
     # @patient = Patient.new(fhir_patient.resource, @fhir_client) unless fhir_patient.nil?
     #CAS Load patient from global patient
-    @patient = $patient
+    # @patient = $patient
     # ##@bundle_objects = bundle.entry.map(&:resource)
 
     # Display the fhir query being run on the UI to help implementers
