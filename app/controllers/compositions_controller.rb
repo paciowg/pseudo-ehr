@@ -1,4 +1,5 @@
 class CompositionsController < ApplicationController
+  include CompositionsHelper
 
   COMPOSITION_TYPES = {
     Goal: ""
@@ -100,14 +101,73 @@ class CompositionsController < ApplicationController
   # PATCH/PUT /compositions/1
   # PATCH/PUT /compositions/1.json
   def update
-    respond_to do |format|
-      if @care_plan.update(care_plan_params)
-        format.html { redirect_to @care_plan, notice: 'Care plan was successfully updated.' }
-        format.json { render :show, status: :ok, location: @care_plan }
-      else
-        format.html { render :edit }
-        format.json { render json: @care_plan.errors, status: :unprocessable_entity }
+    fhir_client = SessionHandler.fhir_client(session.id)
+    @patient = $patient
+    @composition = $advance_directives.find { |composition| composition.id == params[:id] }
+    fhir_res = $fhir_res_dict[params[:id]]
+    bundle = fhir_res["bundle"]
+    doc_ref = fhir_res["doc_ref"]
+
+    begin
+      # create new bundle
+      new_bundle = bundle.dup
+      new_bundle.entry.each do |entry|
+        resource = entry.resource
+        if resource.resourceType == "ServiceRequest"
+          case resource.category&.first&.coding&.first&.display
+          when "Additional portable medical orders or instructions"
+            resource.code.text = service_request_params["Additional portable medical orders or instructions"]["text"]
+          when "Medically assisted nutrition orders"
+            code = service_request_params["Medically assisted nutrition orders"]["code"]
+            text = service_request_params["Medically assisted nutrition orders"]["text"]
+            resource.code = set_service_request_code(loinc_polst_med_assist_nutr_vs, code, text)
+          when  "Initial portable medical treatment orders"
+            code = service_request_params["Initial portable medical treatment orders"]["code"]
+            text = service_request_params["Initial portable medical treatment orders"]["text"]
+            resource.code = set_service_request_code(loinc_polst_initial_tx_vs, code, text)
+          when "Cardiopulmonary resuscitation orders"
+            code = service_request_params["Cardiopulmonary resuscitation orders"]["code"]
+            text = service_request_params["Cardiopulmonary resuscitation orders"]["text"]
+            resource.code = set_service_request_code(loinc_polst_cpr_vs, code, text)
+          end
+        elsif resource.resourceType == "Composition"
+          resource.date = Time.now.utc.strftime("%Y-%m-%dT%H:%M:%S%:z")
+          resource.attester.each { |attester| attester.time = Time.now.utc.strftime("%Y-%m-%dT%H:%M:%S%:z") }
+          resource.section.each do |section|
+            if section.title == "ePOLST Portable Medical Orders"
+              section_entries = @composition.section.select { |s| s["title"] == section.title }.map { |s| s["objects"] }.flatten
+              section_entries.each do |object|
+                text = service_request_params[object[:category]]["text"].to_s
+                section.text&.div = section.text&.div&.gsub(object[:request_text].to_s, text)
+              end
+            end
+          end
+        end
       end
+
+      new_bundle = fhir_client.create(new_bundle).resource
+      # create Binary resouce
+      fhir_binary = FHIR::Binary.new(
+        contentType: "application/fhir+json",
+        data: Base64.encode64(new_bundle.to_json)
+      )
+      fhir_binary = fhir_client.create(fhir_binary).resource
+      # create new DocumentReference
+      new_doc_ref = doc_ref.dup
+      new_doc_ref.status = "current"
+      new_doc_ref.relatesTo = set_document_ref_relates_to(doc_ref)
+      new_doc_ref.content = set_document_ref_content(fhir_binary.id, new_bundle.id)
+      new_doc_ref = fhir_client.create(new_doc_ref)
+      # Update the old DocumentReference status to superseded
+      doc_ref.status = "superseded"
+      fhir_client.update(doc_ref, doc_ref.id)
+
+      flash[:success] = "Successfully updated PMO"
+      redirect_to dashboard_path(patient: @patient.id)
+    rescue => e
+      puts "Error updating PMO: #{e.message}"
+      flash[:error] = "An error has occurred while updating the PMO"
+      redirect_to composition_path(@composition.id)
     end
   end
 
@@ -122,13 +182,66 @@ class CompositionsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_care_plan
-      @care_plan = CarePlan.find(params[:id])
+    # Update service request parameters
+    def service_request_params
+      params.require(:service_request).permit!
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def care_plan_params
-      params.fetch(:care_plan, {})
+    # Get Loinc code display
+    def get_loinc_code_display(loinc_code_list, code)
+      loinc_code_list.find { |loinc_code| loinc_code[:code] == code}&.dig(:display)
+    end
+
+    # ServiceRequest.code
+    def set_service_request_code(loinc_code_list, code, text)
+      {
+        coding: [
+          {
+            system: "http://loinc.org",
+            code: code,
+            display: get_loinc_code_display(loinc_code_list, code)
+          }
+        ],
+        text: text
+      }
+    end
+
+    # set DocumentReference.relatesTo
+    def set_document_ref_relates_to(doc_ref)
+      [
+        {
+          code: "replaces",
+          target: {
+            reference: "DocumentReference/#{doc_ref.id}"
+          }
+        }
+      ]
+    end
+
+    # set DocumentReference.content
+    def set_document_ref_content(binary_id, bundle_id)
+      [
+        {
+          attachment: {
+            contentType: "application/json",
+            url: "Binary/#{binary_id}"
+          },
+          format: {
+            system: "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
+            code: "urn:hl7-org:sdwg:ccda-on-fhir-json:1.0",
+            display: "FHIR Document Bundle"
+          }
+        },
+        {
+          attachment: {
+            url: "Bundle/#{bundle_id}"
+          },
+          format: {
+            system: "http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem",
+            code: "urn:hl7-org:sdwg:ccda-on-fhir-json:1.0",
+            display: "FHIR Document Bundle"
+          }
+        }
+      ]
     end
 end

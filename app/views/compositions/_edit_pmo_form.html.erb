@@ -1,0 +1,30 @@
+<%= form_with(url: composition_path(composition.id), method: :put, local: true, html: { id: 'edit_form', class: 'text-secondary w-100 font-weight-bold' }) do |form| %>
+
+  <% composition.section[index]["objects"].each do |object| %>
+    <h5>Categoty: <%= object[:category] %></h5>
+    <hr>
+    <!-- ServiceRequest.code.coding -->
+    <div class="md-form mb-5">
+
+      <% if object[:category] != "Additional portable medical orders or instructions" %>
+        <label class="">Request:</label>
+      <% end %>
+
+      <% if object[:category] == "Cardiopulmonary resuscitation orders" %>
+        <%= form.select "service_request[#{object[:category]}][code]", loinc_polst_cpr_vs.map { |vs| [vs[:display], vs[:code]] }, { selected: object[:request_code] }, { class: 'md-select form-control' } %>
+      <% elsif object[:category] == "Initial portable medical treatment orders" %>
+        <%= form.select "service_request[#{object[:category]}][code]", loinc_polst_initial_tx_vs.map { |vs| [vs[:display], vs[:code]] }, { selected: object[:request_code] }, { class: 'md-select form-control' } %>
+      <% elsif object[:category] == "Medically assisted nutrition orders" %>
+        <%= form.select "service_request[#{object[:category]}][code]", loinc_polst_med_assist_nutr_vs.map { |vs| [vs[:display], vs[:code]] }, { selected: object[:request_code] }, { class: 'md-select form-control' } %>
+      <% end %>
+    </div>
+
+    <!-- ServiceRequest.code.text -->
+    <div class="md-form mb-5">
+      <label class="">Description:</label>
+      <%= form.text_area nil, name: "service_request[#{object[:category]}][text]", value: object[:request_text], class: 'md-textarea form-control', rows: '4' %>
+    </div>
+    <hr>
+  <% end %>
+  <!-- Add more fields as necessary -->
+<% end %>

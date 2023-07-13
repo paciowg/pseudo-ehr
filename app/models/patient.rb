@@ -185,7 +185,7 @@ class Patient < Resource
 
   def advance_directives
     advance_directives = []
-
+    $fhir_res_dict = {} # This will be used if need to update ADI
     search_param =  { search:
                       { parameters:
                         {
@@ -226,6 +226,7 @@ class Patient < Resource
                   #puts "!!!!!!!!!!!!!! Composition !!!!!!!!!!!!!!!!!"
                   #puts composition.to_json
                   advance_directives << Composition.new(composition, fhir_attachment_bundle)
+                  $fhir_res_dict[composition.id] = {"doc_ref" => document_reference, "bundle" => fhir_attachment_bundle }
                 end
               end
 

@@ -59,6 +59,7 @@ class Composition < Resource
             case my_hash[:resource_type]
             when "ServiceRequest"
               my_hash[:category] = category_string(temp_resource&.category)
+              my_hash[:request_code] = temp_resource&.code&.coding&.first&.code
               my_hash[:request] = coding_string(temp_resource&.code&.coding)
               my_hash[:request_text] = temp_resource&.code&.text
               my_hash[:status] = temp_resource.status
