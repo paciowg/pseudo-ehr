@@ -10,8 +10,9 @@ class Composition < Resource
   include ActiveModel::Model
   include ActiveModel::Serializers::JSON
 
-  attr_reader :id, :language, :identifier, :status, :type, :category, :date,
-              :author, :title, :custodian, :subject, :section
+  attr_reader :id, :language, :identifier, :status, :type, :category, :date, :author, :title, :custodian,
+              :subject, :section, :doc_ref_id, :doc_ref_status, :doc_ref_relatesTo_code, :doc_ref_relatesTo_target
+  attr_accessor :related_composition
 
   #-----------------------------------------------------------------------------
 
@@ -23,12 +24,16 @@ class Composition < Resource
     @type = fhir_composition.type
     @category = fhir_composition.category
     @date = fhir_composition.date
-    @author = fhir_composition.author
+    @author = fhir_composition.author&.first&.display
     @title = fhir_composition.title
     @custodian = fhir_composition.custodian
     @subject = fhir_composition.subject
     @section = fhir_composition.section
-
+    doc_ref = $fhir_res_dict&.dig(fhir_composition.id)&.dig("doc_ref")
+    @doc_ref_id = doc_ref&.id
+    @doc_ref_status = doc_ref&.status
+    @doc_ref_relatesTo_code = doc_ref&.relatesTo&.first&.code
+    @doc_ref_relatesTo_target = doc_ref&.relatesTo&.first&.target&.reference&.split("/")&.last
     fill_sections(@section, fhir_bundle) unless fhir_bundle.nil?
   end
 

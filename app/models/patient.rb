@@ -196,8 +196,9 @@ class Patient < Resource
                 fhir_compositions.compact.each do |composition|
                   #puts "!!!!!!!!!!!!!! Composition !!!!!!!!!!!!!!!!!"
                   #puts composition.to_json
-                  advance_directives << Composition.new(composition, fhir_attachment_bundle)
                   $fhir_res_dict[composition.id] = { "doc_ref" => document_reference, "bundle" => fhir_attachment_bundle }
+                  advance_directives << Composition.new(composition, fhir_attachment_bundle)
+
                 end
               end
             elsif content.attachment.contentType == "application/pdf"
@@ -211,6 +212,9 @@ class Patient < Resource
     end
     @fhir_queries << "#{fhir_response.request[:method].capitalize} #{fhir_response.request[:url]}"
     #CAS Put Advance Directives into a global variable
+    advance_directives.each do |adi|
+      adi.related_composition = advance_directives.find { |comp| comp.doc_ref_id == adi.doc_ref_relatesTo_target}
+    end
     $advance_directives = advance_directives.sort { |a, b| DateTime.parse(b.date) <=> DateTime.parse(a.date) }
     return $advance_directives
   end
