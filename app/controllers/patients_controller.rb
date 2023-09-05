@@ -1,75 +1,78 @@
+# frozen_string_literal: true
+
+# app/controllers/patients_controller.rb
 class PatientsController < ApplicationController
-  # before_action :set_patient, only: [:show, :edit, :update, :destroy]
+  before_action :require_server
 
-  # GET /patients
-  # GET /patients.json
   def index
-    @patients = Patient.all
+    @pagy, @patients = pagy_array(fetch_and_cache_patients, items: 10)
+    render layout: false # For optimization!
+  rescue StandardError => e
+    flash.now[:danger] = e.message
+    @patients = []
+    render layout: false # For optimization!
   end
 
-  # GET /patients/1
-  # GET /patients/1.json
   def show
-    redirect_to :controller => 'dashboard', :action => 'index'
-  end
-
-  # GET /patients/new
-  def new
-    @patient = Patient.new
-  end
-
-  # GET /patients/1/edit
-  def edit
-  end
-
-  # POST /patients
-  # POST /patients.json
-  def create
-    @patient = Patient.new(patient_params)
-
-    respond_to do |format|
-      if @patient.save
-        format.html { redirect_to @patient, notice: 'Patient was successfully created.' }
-        format.json { render :show, status: :created, location: @patient }
-      else
-        format.html { render :new }
-        format.json { render json: @patient.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PATCH/PUT /patients/1
-  # PATCH/PUT /patients/1.json
-  def update
-    respond_to do |format|
-      if @patient.update(patient_params)
-        format.html { redirect_to @patient, notice: 'Patient was successfully updated.' }
-        format.json { render :show, status: :ok, location: @patient }
-      else
-        format.html { render :edit }
-        format.json { render json: @patient.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /patients/1
-  # DELETE /patients/1.json
-  def destroy
-    @patient.destroy
-    respond_to do |format|
-      format.html { redirect_to patients_url, notice: 'Patient was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    @patient = fetch_and_cache_patient(params[:id])
+    session[:patient_id] = @patient.id
+  rescue StandardError => e
+    flash[:danger] = e.message
+    redirect_to pages_patients_path
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_patient
-      @patient = Patient.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def patient_params
-      params.fetch(:patient, {})
+  def fetch_and_cache_patients
+    clear_cache_if_query_changed
+    session[:previous_query] = params[:query].present?
+
+    Rails.cache.fetch(cache_key_for_patients, expires_in: 5.minutes) do
+      response = fetch_patients_by_name
+      entries = response.resource.entry.map(&:resource)
+
+      entries.map { |entry| Patient.new(entry) }
+    rescue StandardError
+      raise "Error fetching patients from FHIR server. Status code: #{response&.response&.dig(:code)}"
     end
+  end
+
+  def fetch_and_cache_patient(patient_id)
+    Rails.cache.fetch(cache_key_for_patient(patient_id), expires_in: 5.minutes) do
+      patients = Rails.cache.read(cache_key_for_patients)
+      patient = patients&.find do |p|
+        p.id == patient_id
+      end || Patient.new(@client.read(FHIR::Patient, patient_id)&.resource)
+      raise "Unable to fetch patient with id #{patient_id} from FHIR server." if patient.nil?
+
+      patient
+    rescue StandardError
+      raise "Unable to fetch patient with id #{patient_id} from FHIR server."
+    end
+  end
+
+  def clear_cache_if_query_changed
+    return unless params[:query].present? || session[:previous_query]
+
+    Rails.cache.delete(cache_key_for_patients)
+  end
+
+  def cache_key_for_patients
+    "patients_#{session_id}"
+  end
+
+  def cache_key_for_patient(patient_id)
+    "fhir_patient_#{patient_id}_#{session_id}"
+  end
+
+  def fetch_patients_by_id
+    @client.search(FHIR::Patient, search: { parameters: { _id: params[:query] } })
+  end
+
+  def fetch_patients_by_name
+    response = fetch_patients_by_id
+    return response if response&.resource&.entry&.size.to_i.positive?
+
+    @client.search(FHIR::Patient, search: { parameters: { name: params[:query] } })
+  end
 end

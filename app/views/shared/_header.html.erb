@@ -1,0 +1,37 @@
+<!-- app/views/shared/_header.html.erb -->
+
+<div class="fixed top-0 left-0 z-50 w-full h-16 bg-gray-700 border-b border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+  <div class="flex flex-row items-center justify-between mx-auto font-medium">
+    <a href="/" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-800 dark:hover:bg-gray-800 group">
+      <%= image_tag "logo.svg", alt: "EHR Logo", class: "w-5 h-5 my-2 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" %>
+      <span class="text-sm text-gray-400 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Pseudo EHR</span>
+    </a>
+
+    <a href="/pages/fhir_servers" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-800 dark:hover:bg-gray-800 group">
+      <svg class="w-5 h-5 my-2 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M1 5h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 1 0 0-2H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2Zm18 4h-1.424a3.228 3.228 0 0 0-6.152 0H1a1 1 0 1 0 0 2h10.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Zm0 6H8.576a3.228 3.228 0 0 0-6.152 0H1a1 1 0 0 0 0 2h1.424a3.228 3.228 0 0 0 6.152 0H19a1 1 0 0 0 0-2Z"/>
+      </svg>
+      <span class="text-sm text-gray-400 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">FHIR Servers</span>
+    </a>
+
+    <% if @fhir_server %>
+      <div class="flex flex-row justify-end">
+        <a href="/pages/patients" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-800 dark:hover:bg-gray-800 group">
+          <svg class="w-5 h-5 my-2 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4H1m3 4H1m3 4H1m3 4H1m6.071.286a3.429 3.429 0 1 1 6.858 0M4 1h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1Zm9 6.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"/>
+          </svg>
+          <span class="text-sm text-gray-400 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Patients</span>
+        </a>
+      </div>
+
+      <a href="/disconnect" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-800 dark:hover:bg-gray-800 group">
+        <svg class="w-5 h-5 my-2 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
+          <path d="M17 0h-5.768a1 1 0 1 0 0 2h3.354L8.4 8.182A1.003 1.003 0 1 0 9.818 9.6L16 3.414v3.354a1 1 0 0 0 2 0V1a1 1 0 0 0-1-1Z"/>
+          <path d="m14.258 7.985-3.025 3.025A3 3 0 1 1 6.99 6.768l3.026-3.026A3.01 3.01 0 0 1 8.411 2H2.167A2.169 2.169 0 0 0 0 4.167v11.666A2.169 2.169 0 0 0 2.167 18h11.666A2.169 2.169 0 0 0 16 15.833V9.589a3.011 3.011 0 0 1-1.742-1.604Z"/>
+        </svg>
+        <span class="text-sm text-gray-400 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Disconnect</span>
+      </a>
+    <% end %>
+
+  </div>
+</div>

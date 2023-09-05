@@ -1,209 +1,73 @@
-################################################################################
-#
+# frozen_string_literal: true
+
 # Patient Model
-#
-# Copyright (c) 2019 The MITRE Corporation.  All rights reserved.
-#
-################################################################################
-
 class Patient < Resource
+  attr_reader :id, :fhir_resource, :name, :dob, :medical_record_number, :gender, :address,
+              :phone, :email, :race, :ethnicity, :marital_status, :birthsex
 
-	include ActiveModel::Model
+  def initialize(fhir_patient)
+    @fhir_resource = fhir_patient
 
-  attr_reader :id, :names, :telecoms, :addresses, :birth_date, :gender, 
-  								:marital_status, :photo
-
-  #-----------------------------------------------------------------------------
-
-  def initialize(fhir_patient, fhir_client)
-    @id               = fhir_patient.id
-  	@names 						= fhir_patient.name
-  	@telecoms 				= fhir_patient.telecom
-  	@addresses 				= fhir_patient.address
-  	@birth_date 			= fhir_patient.birthDate.to_date
-  	@gender 					= fhir_patient.gender
-  	@marital_status 	= fhir_patient.maritalStatus
-  	@photo						= nil
-    @resource_type    = fhir_patient.resourceType
-
-  	@fhir_client			= fhir_client
+    extract_basic_attributes(fhir_patient)
+    extract_contact_info(fhir_patient)
+    extract_characteristics(fhir_patient)
   end
 
-  #-----------------------------------------------------------------------------
-
-  def medications
-  	medications = []
-
-    search_param = 	{ search: 
-    									{ parameters: 
-    										{ 
-                          patient: ["Patient", @id].join('/') 
-    										} 
-    									} 
-    								}
-
-    fhir_bundle = @fhir_client.search(FHIR::Medication, search_param).resource
-    fhir_medications = filter(fhir_bundle.entry.map(&:resource), 'Medication')
-
-    fhir_medications.each do |fhir_medication|
-    	medications << Medication.new(fhir_medication) unless fhir_medication.nil?
-    end
-
-    return medications
-  end
-
-  #-----------------------------------------------------------------------------
-
-  def medication_statements
-    medication_statements = []
-
-    search_param =  { search: 
-                      { parameters: 
-                        { 
-                          subject: ["Patient", @id].join('/') 
-                        } 
-                      } 
-                    }
-
-    fhir_bundle = @fhir_client.search(FHIR::MedicationStatement, search_param).resource
-    fhir_medication_statements = filter(fhir_bundle.entry.map(&:resource), 
-                                              'MedicationStatement')
-
-    fhir_medication_statements.each do |fhir_medication_statement|
-      medication_statements << 
-              MedicationStatement.new(fhir_medication_statement, @fhir_client) unless 
-                                    fhir_medication_statement.nil?
-    end
-
-    return medication_statements
-  end
-
-  #-----------------------------------------------------------------------------
-
-  def bundled_functional_statuses
-    bundled_functional_statuses = []
-
-    search_param =  { search:
-                      { parameters:
-                        { 
-                          subject: ["Patient", @id].join('/'),
-                          _profile: 'http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs' 
-                        }
-                      }
-                    }
-
-    fhir_bundle = @fhir_client.search(FHIR::Observation, search_param).resource
-    fhir_functional_statuses = filter(fhir_bundle.entry.map(&:resource), 'Observation')
-    # puts fhir_functional_statuses
-    fhir_functional_statuses.each do |fhir_functional_status|
-      bundled_functional_statuses << BundledFunctionalStatus.new(fhir_functional_status, @fhir_client) unless 
-                                                          fhir_functional_status.nil?
-    end
-
-    return bundled_functional_statuses
-  end
-
-  #-----------------------------------------------------------------------------
-
-  def bundled_cognitive_statuses
-    bundled_cognitive_statuses = []
-
-    search_param =  { search:
-                      { parameters:
-                        { 
-                          subject: ["Patient", @id].join('/'),
-                          _profile: 'http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bcs' 
-                        }
-                      }
-                    }
-
-    fhir_bundle = @fhir_client.search(FHIR::Observation, search_param).resource
-    fhir_cognitive_statuses = filter(fhir_bundle.entry.map(&:resource), 'Observation')
-
-    fhir_cognitive_statuses.each do |fhir_cognitive_status|
-      bundled_cognitive_statuses << BundledCognitiveStatus.new(fhir_cognitive_status, @fhir_client) unless
-                                                            fhir_cognitive_status.nil?
-    end
-
-    return bundled_cognitive_statuses
-  end
-
-  #-----------------------------------------------------------------------------
-
-  def all_functional_statuses
-    all_functional_statuses = []
-
-    fhir_functional_statuses = get_fhir_statuses_with_profile(
-                        'http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bfs')
-    fhir_functional_statuses.each do |fhir_functional_status|
-      functional_statuses = {}
-      functional_statuses[:bundle] = 
-                BundledFunctionalStatus.new(fhir_functional_status, @fhir_client) unless 
-                                                          fhir_functional_status.nil?
-      functional_statuses[:assessments] = functional_statuses[:bundle].functional_statuses
-      all_functional_statuses << functional_statuses
-    end
-
-    return all_functional_statuses
-  end
-
-  #-----------------------------------------------------------------------------
-
-  def all_cognitive_statuses
-    all_cognitive_statuses = []
-
-    fhir_cognitive_statuses = get_fhir_statuses_with_profile(
-                        'http://paciowg.github.io/functional-status-ig/StructureDefinition/pacio-bcs')
-    fhir_cognitive_statuses.each do |fhir_cognitive_status|
-      cognitive_statuses = {}
-      cognitive_statuses[:bundle] =
-                BundledCognitiveStatus.new(fhir_cognitive_status, @fhir_client) unless 
-                                                          fhir_cognitive_status.nil?
-      cognitive_statuses[:assessments] = cognitive_statuses[:bundle].cognitive_statuses
-      all_cognitive_statuses << cognitive_statuses
-    end
-
-    return all_cognitive_statuses
-  end
-
-  #-----------------------------------------------------------------------------
-
-  def age
-    now = Time.now.to_date
-    age = now.year - @birth_date.year
-
-    if now.month < @birth_date.month || 
-                  (now.month == @birth_date.month && now.day < @birth_date.day)
-      age -= 1
-    end
-
-    age.to_s
-  end
-
-  #-----------------------------------------------------------------------------
   private
-  #-----------------------------------------------------------------------------
 
-  def filter(fhir_resources, type)
-    fhir_resources.select do |resource| 
-    	resource.resourceType == type
+  def extract_basic_attributes(fhir_patient)
+    @id = fhir_patient.id
+    @name = format_name(fhir_patient.name)
+    @dob = fhir_patient.birthDate
+    @gender = fhir_patient.gender
+    @medical_record_number = extract_med_rec_num(fhir_patient.identifier)
+    @marital_status = fhir_patient.maritalStatus&.coding&.first&.display
+  end
+
+  def extract_contact_info(fhir_patient)
+    @address = format_address(fhir_patient.address)
+    @phone = format_phone(fhir_patient.telecom)
+    @email = format_email(fhir_patient.telecom)
+  end
+
+  def extract_characteristics(fhir_patient)
+    characteristics = read_characteristics(fhir_patient.extension)
+    @race = characteristics[:race]
+    @ethnicity = characteristics[:ethnicity]
+    @birthsex = characteristics[:birthsex]
+  end
+
+  def extract_med_rec_num(identifiers)
+    identifiers.each do |id_obj|
+      next unless id_obj.type&.coding
+
+      id_obj.type.coding.each do |coding|
+        return id_obj.value if coding.code == 'MR'
+      end
     end
+    nil
   end
 
-  #-----------------------------------------------------------------------------
+  def read_characteristics(extensions)
+    characteristics = { race: '', ethnicity: '', birthsex: nil }
 
-  def get_fhir_statuses_with_profile(profile)
-    search_param =  { search:
-                      { parameters:
-                        { 
-                          subject: ["Patient", @id].join('/'),
-                          _profile: profile 
-                        }
-                      }
-                    }
+    extensions.each do |ext|
+      case ext.url
+      when 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race'
+        characteristics[:race] = extract_display_values(ext)
+      when 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity'
+        characteristics[:ethnicity] = extract_display_values(ext)
+      when 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex'
+        characteristics[:birthsex] = ext.valueCode
+      end
+    end
 
-    fhir_bundle = @fhir_client.search(FHIR::Observation, search_param).resource
-    fhir_statuses = fhir_bundle.entry.map(&:resource)
+    characteristics
   end
 
+  def extract_display_values(extension)
+    extension.extension.map do |sub_ext|
+      sub_ext.valueCoding.display if sub_ext.url == 'ombCategory' && sub_ext.valueCoding
+    end.compact.join(', ')
+  end
 end

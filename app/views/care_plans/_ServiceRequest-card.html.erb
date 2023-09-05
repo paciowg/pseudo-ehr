@@ -1,8 +1,0 @@
-<% if activity.quantity.respond_to? :value %>
-    <td><%= activity.quantity.unit %> <%= activity.quantity.value %></td>
-<% end %>
-<% if activity.quantity.respond_to? :numerator %>
-    <td><%= activity.quantity.numerator.value %> <%= activity.quantity.numerator.unit%> per <%= activity.quantity.denominator.value %> <%= activity.quantity.denominator.unit%></td>
-<% end %>
-<td><%= activity.code.text %></td>
-<td><%= display_performers(activity.performer) %></td>

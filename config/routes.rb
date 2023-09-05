@@ -1,69 +1,18 @@
-################################################################################
-#
-# Application Routes Configuration
-#
-# Copyright (c) 2019 The MITRE Corporation.  All rights reserved.
-#
-################################################################################
-
-# For details on the DSL available within this file, see 
-# http://guides.rubyonrails.org/routing.html
+# frozen_string_literal: true
 
 Rails.application.routes.draw do
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Define 'EHR' web app routes
-
-  resources :assessments,         only: [:index, :create]
-  resources :advance_directives,  only: [:index, :show]
-  resources :functional_status,   only: [:index, :show]
-  resources :cognitive_status, 	  only: [:index, :show]
-  resources	:practitioners,       only: [:show]
-  resources :patients
-  resources :observations
-  resources :practitioner_roles
-  resources :contracts
-  resources :eltss_questionnaires
-  resources :risk_assessments
-  resources :observation_eltsses
-  resources :related_people
-  resources :claims
-  resources :service_requests
-  resources :goals
-  resources :episode_of_cares
-  resources :organizations
-  resources :conditions
-  resources :care_plans
-  resources :questionnaire_responses
-
-  get 'questionnaire_responses/index'
-  get 'questionnaire_responses/show'
-
-  get '/home',          to: 'home#index'
-  get '/dashboard',     to: 'dashboard#index'
-  get '/patients/show', to: 'dashboard#index'
-  get '/login',         to: 'home#index'
-  get '/auth/token',    to: 'home#index'
-  get '/env',           to: 'env#index'
-  get '/convert',       to: 'convert#index'
-  put '/convert/:id',   to: 'convert#update'
-
+  # Defines the root path route ("/")
   root 'welcome#index'
+  resources :sessions, only: [:new]
+  resources :patients, only: %i[show index]
+  resources :fhir_servers, only: %i[index destroy]
 
-  # Define 'FHIR' API for retrieving patients and converting questionnaire 
-  # response resources posts to PACIO resources
-
-  namespace :api do
-    namespace :v1 do
-      # resources :patients,                  only: [:index, :show]
-      # resources :questionnaire_responses,   only: [:create]
-
-      # Make this compatible with the way other FHIR servers handle resources
-      get 'Patient',      to: 'patients#index',   as: :patients
-      get 'Patient/:id',  to: 'patients#show',    as: :patient
-
-      post 'QuestionnaireResponse', to: 'questionnaire_responses#create', 
-                    as: :questionnaire_responses
-    end
-  end
-  
+  get 'welcome/index'
+  get 'pages/patients'
+  get 'pages/fhir_servers'
+  get '/login', to: 'sessions#login'
+  post '/launch', to: 'sessions#launch_server'
+  get '/disconnect', to: 'sessions#disconnect_server'
 end

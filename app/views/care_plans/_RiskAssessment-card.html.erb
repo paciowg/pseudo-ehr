@@ -1,9 +1,0 @@
-<td><%= supportingInfoObject.resourceType %></td>
-<td>
-<% supportingInfoObject.prediction.each_with_index do |prediction, index| %>
-    <%= prediction.outcome.text %>
-    <% if index != supportingInfoObject.prediction.size - 1 %>, 
-    <% end %>
-<% end %>
-</td>
-<td colspan="2"><%= supportingInfoObject.mitigation %></td>

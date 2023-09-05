@@ -1,0 +1,57 @@
+<!-- app/views/fhir_servers/index.html.erb -->
+
+<%= turbo_frame_tag "fhir_servers" do %>
+  <table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
+    <thead class="text-md text-white uppercase bg-gray-900">
+      <tr>
+        <th scope="col" class="px-6 py-3">
+          Name
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Base URL
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Smart-on-FHIR Auth?
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Client ID
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Authorization URL
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Token URL
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Scope
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Action
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <% @fhir_servers.each do |server| %>
+        <tr class="bg-gray-100 border-b border-gray-300">
+          <td class="px-6 py-4"><%= server.name %></td>
+          <td class="px-6 py-4"><%= server.base_url %></td>
+          <td class="px-6 py-4"><%= server.authenticated_access ? "Yes" : "No" %></td>
+          <td class="px-6 py-4"><%= server.client_id.present? ? server.client_id : "N/A" %></td>
+          <td class="px-6 py-4"><%= server.authorization_url.present? ? server.authorization_url : "N/A" %></td>
+          <td class="px-6 py-4"><%= server.token_url.present? ? server.token_url : "N/A" %></td>
+          <td class="px-6 py-4"><%= server.scope.present? ? server.scope : "N/A" %></td>
+          <td class="px-6 py-4">
+            <%= link_to 'Delete', fhir_server_path(server), data: {turbo_method: :delete, turbo_confirm: "Do you really wish to delete #{server.name}?"}, class: "font-medium text-red-600 dark:text-blue-500 hover:underline" %>
+          </td>
+        </tr>
+      <% end %>
+
+    </tbody>
+  </table>
+  <br />
+  <% if @pagy %>
+    <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
+  <% end %>
+  <br />
+<% end %>

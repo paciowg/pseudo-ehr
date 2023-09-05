@@ -1,0 +1,35 @@
+<!-- app/views/welcome/index.html.erb -->
+
+
+  <div class="container min-h-screen flex items-center justify-center mx-auto px-4">
+    <div class="bg-white shadow-md rounded-lg p-8 flex flex-col md:flex-row">
+      <%= render "shared/app_info" %>
+      <div class="md:w-1/2 md:ml-4">
+        <%= form_with(url: launch_path, method: :post, local: true, class: "space-y-4") do |form| %>
+
+          <h2 class="text-lg font-bold">Add a new FHIR server</h2>
+          <%= form.text_field :name, placeholder: "Server Name", class: "w-full p-2 border border-gray-300 rounded", required: true %>
+          <%= form.text_field :base_url, placeholder: "Base URL", class: "w-full p-2 border border-gray-300 rounded", required: true  %>
+          <div data-controller="showhide" data-showhide-show-if-value=true>
+            <%= form.select :authenticated_access, options_for_select([["yes", true ], ["no", false ]]), {prompt: "Smart-on-Fhir authentication?"}, {class: 'w-full p-2 border border-gray-300 rounded mb-2', required: true, "data-action": "change->showhide#toggle", "data-showhide-target": "authenticatedInput" } %>
+            <p class="text-sm text-gray-600">State whether the server supports Smart-on-Fhir secure access.</p>
+            <div class="mt-6" data-showhide-target="credentialFields" hidden="">
+              <%= form.text_field :authorization_url, placeholder: "Authorization Url", class: "w-full p-2 border border-gray-300 rounded mb-4" %>
+              <%= form.text_field :token_url, placeholder: "Token Url", class: "w-full p-2 border border-gray-300 rounded mb-4" %>
+              <%= form.text_field :scope, placeholder: "Scope", class: "w-full p-2 border border-gray-300 rounded mb-4" %>
+              <%= form.text_field :client_id, placeholder: "Client ID", class: "w-full p-2 border border-gray-300 rounded mb-4", "data-showhide-target": "requiredFields" %>
+              <%= form.text_field :client_secret, placeholder: "Client Secret", class: "w-full p-2 border border-gray-300 rounded", "data-showhide-target": "requiredFields"%>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end mt-4 pt-4">
+            <a href="/" class="mr-4">
+              <button type="button" class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 cursor-pointer">Cancel</button>
+            </a>
+            <%= form.submit "Connect", class: "bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 cursor-pointer", id: 'submit-button' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+

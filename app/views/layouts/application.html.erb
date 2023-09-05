@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <%= render 'partials/head' %>
-  <body>
-    <%= render 'partials/header' %>
-    <div id='content'>
-      <main role='main'>
-        <%= render 'partials/messages' %>
-        <div class="body-padding">
-          <%= yield %>
-        </div>
-      </main>
-      <%= render 'partials/footer' %>
-    </div>
-    <%= yield :scripts %>
+  <head>
+    <title>FhirClientAppTemp</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-100">
+    <%= render "shared/header" %>
+    <%= render "shared/flash_messages" %>
+    <main class="container mx-auto mt-20 px-5 flex flex-col h-full shadow-md">
+      <%= yield %>
+    </main>
   </body>
 </html>

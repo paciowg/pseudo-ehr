@@ -1,56 +1,96 @@
-# Pseudo EHR
+# PSEUDO-EHR
 
-The Pseudo EHR is a component of the architecture used during the PACIO / eLTSS
-connectathon tracks.
+A Rails 7 application styled with Tailwind CSS that interacts with a FHIR server to fetch and display patient information.
 
-The Pseudo EHR system that receives Structure Data Capture-based Post-Acute Care 
-(PAC) assessment data from the PAC Assessment App, extracts the information 
-in the QuestionnaireResponses into PACIO Functional and Cognitive Status 
-resources, and pushes them to the Health Data Manager.
+**PseudoEHR** is a reference implementation client application for the [PACIO Project](https://pacioproject.org/) use cases.
+
+## Table of Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Features
+
+- **FHIR Server Integration**: Connects to FHIR servers to fetch and cache patient details.
+- **Patient Display**: Shows a list of patients and individual patient details.
+- **Server Authentication**: Handles FHIR servers that require [SMART-on-FHIR App Launch for Symmetric Client Auth](https://build.fhir.org/ig/HL7/smart-app-launch/example-app-launch-symmetric-auth.html#step-2-launch).
+
+## Prerequisites
+
+- Ruby version 2.7.5 or higher
+- Rails 7
+- PostgreSQL
+- Memcached
+
+Make sure to start PostgreSQL and Memcached before running the server.
 
 ## Installation
 
-To pull in remote `pseudo-ehr` from github for local development:
+1. **Clone the Repository**
 
-```
-cd ~/path/to/your/workspace/
-git clone https://github.com/paciowg/pseudo-ehr.git
-```
+   ```bash
+    git clone https://github.com/vanessuniq/pseudo-ehr.git
+    cd pseudo-ehr
+   ```
 
-## Running
+2. **Install Dependencies**
 
-Since this app is configured for heroku deployment, running it is slightly 
-more effort than just `rails s`.
-
-1. To start, you must be running `postgres`
-
-    ```
-    pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
-    ```
-    (This gets old. Personally, I made a `pg_start` alias for this command)
-
-2. Next, run the rails app the way you would any other
-
-    ```
-    cd ~/path/to/your/app/
-    rails s
+    ```bash
+     bundle install
     ```
 
-3. Now you should be able to see it up and running at `localhost:3000`
+3. **Database Setup**
 
-4. When done, gracefully stop your `puma` server
-
+    ```bash
+      rails db:create
+      rails db:migrate
     ```
-    Control-C
+
+    >> **Note**: This should only be executed the first time you clone this repository.
+
+## Usage
+
+1. **Starting the Server**
+
+    ```bash
+      ./bin/dev
     ```
 
-5. Finally, stop your `postgres` instance
+    Open your browser and navigate to `http://localhost:3000`.
 
+2. **Connecting to a FHIR Server**
+
+    - Navigate to the root path.
+    - Select a FHIR server from the list of saved servers or enter your FHIR server details and connect.
+    - Once connected, you can view a list of patients or see details of a specific patient.
+
+## Testing
+
+  This application uses RSpec for testing.
+
+1. **Running the Test Suite**
+
+    ```bash
+      bundle exec rspec
     ```
-    pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log stop
-    ```
-    (This also gets old. Personally, I made a `pg_stop` alias for this command)
 
-## Copyright
+2. **Factories**
 
-Copyright 2020 The MITRE Corporation
+    We use `FactoryBot` gem to mock objects for testing. Check the `spec/factories` directory for defined factories.
+
+## Contributing
+
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feature/new-feature`).
+3. Commit your changes (`git commit -am 'Add new feature'`).
+4. Push to the branch (`git push origin feature/new-feature`).
+5. Open a pull request.
+
+## License
+
+  This project is licensed under the Apache License. See the `LICENSE` file for details.

@@ -1,10 +1,4 @@
-################################################################################
-#
-# Environment Configuration
-#
-# Copyright (c) 2019 The MITRE Corporation.  All rights reserved.
-#
-################################################################################
+# frozen_string_literal: true
 
 # Load the Rails application.
 require_relative 'application'

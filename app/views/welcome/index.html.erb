@@ -1,14 +1,28 @@
-<section class='container'>
-	<h2 class="text-light welcome-text">Connect to a FHIR server</h2>
-	<div class='row'>
-		<%= form_tag home_path, method: 'get', class: 'form-inline welcome-form', id: 'server-form' do %>
-			<div class='col'></div>
-			<div class='form-group col-md-7 last'>
-				<%= text_field_tag :server_url, nil, class: 'form-control',
-							placeholder: 'http://hapi.fhir.org/baseR4' %>
-			</div>
-			<%= button_tag 'Connect', class: 'btn btn-primary col-md-2', id: 'server-url' %>
-			<div class='col'></div>
-		<% end %>
-	</div>
-</section>
+<!-- app/views/welcome/index.html.erb -->
+
+<div class="container min-h-screen flex items-center justify-center mx-auto px-4">
+
+  <div class="bg-white shadow-md rounded-lg p-8 flex flex-col md:flex-row">
+    <%= render "shared/app_info" %>
+      <div class="md:w-1/2 md:ml-4">
+        <%= form_with(url: launch_path, method: :post, local: true, class: "space-y-4" ) do |form| %>
+          <h2 class="text-lg font-bold">Select an existing FHIR server</h2>
+          <%= form.collection_select :base_url, FhirServer.all, :base_url, :name, {prompt: 'Select FHIR server' },
+            {class: 'w-full p-2 border border-gray-300 rounded', required: true }
+          %>
+          <div class="flex items-end mb-6">
+            <p class="text-sm font-medium text-gray-900 dark:text-gray-300">
+              Don't see your server?
+              <a href="/sessions/new" class="text-blue-600 hover:underline dark:text-blue-500">Add a new FHIR server.</a>
+            </p>
+          </div>
+          <div class="flex items-center justify-end mt-4 pt-4">
+            <%= form.submit "Connect" ,
+              class: "bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 cursor-pointer", id: 'submit-button'
+            %>
+          </div>
+        <% end %>
+      </div>
+  </div>
+
+</div>

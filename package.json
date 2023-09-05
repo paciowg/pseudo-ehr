@@ -1,5 +1,7 @@
 {
-  "name": "base-fhir-client-rails",
-  "private": true,
-  "dependencies": {}
+  "name": "fhir-client-template-app",
+  "dependencies": {
+    "debounce": "^1.2.1",
+    "flowbite": "^1.8.1"
+  }
 }
