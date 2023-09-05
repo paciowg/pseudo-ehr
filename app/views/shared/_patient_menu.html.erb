@@ -1,0 +1,33 @@
+<!-- app/views/shared/_patient_menu.html.erb -->
+<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
+   <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+      <ul class="space-y-2 font-medium">
+        <li>
+            <a href="<%= patient_path(@patient.id)%>" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <% icon = @patient.gender == "female" ? "woman.svg" : "man-user.svg" %>
+              <%= image_tag icon, alt: "User Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"  %>
+               <span class="flex-1 ml-3 text-lg font-bold whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500"><%= @patient.name %></span>
+            </a>
+         </li>
+         <li class="border-t border-gray-400 dark:border-gray-700">
+            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <%= image_tag "dashboard.svg", alt: "Dashboard Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"  %>
+              <span class="ml-3 group-hover:text-blue-600 dark:group-hover:text-blue-500">Dashboard</span>
+            </a>
+         </li>
+          <li>
+            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <%= image_tag "writing.svg", alt: "Book Pen Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"  %>
+               <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">ADI</span>
+            </a>
+         </li>
+         <li>
+            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+               <%= image_tag "medical-team.svg", alt: "Medical care team Logo", class: "flex-shrink-0 w-5 h-10 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"  %>
+               <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Care Team</span>
+            </a>
+         </li>
+
+      </ul>
+   </div>
+</aside>

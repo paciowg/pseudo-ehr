@@ -13,6 +13,11 @@
 
   <body class="bg-gray-100">
     <%= render "shared/header" %>
+
+    <% if session[:patient_id].present? %>
+      <%= render "shared/patient_menu" %>
+    <% end %>
+
     <%= render "shared/flash_messages" %>
     <main class="container mx-auto mt-20 px-5 flex flex-col h-full shadow-md">
       <%= yield %>
