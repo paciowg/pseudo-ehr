@@ -2,12 +2,12 @@
 
 # Patient Model
 class Patient < Resource
-  attr_reader :id, :fhir_resource, :name, :dob, :medical_record_number, :gender, :address,
+  attr_reader :id, :fhir_resource, :first_name, :last_name, :name, :dob, :medical_record_number, :gender, :address,
               :phone, :email, :race, :ethnicity, :marital_status, :birthsex
 
   def initialize(fhir_patient)
     @fhir_resource = fhir_patient
-
+    extract_name(fhir_patient)
     extract_basic_attributes(fhir_patient)
     extract_contact_info(fhir_patient)
     extract_characteristics(fhir_patient)
@@ -17,11 +17,17 @@ class Patient < Resource
 
   def extract_basic_attributes(fhir_patient)
     @id = fhir_patient.id
-    @name = format_name(fhir_patient.name)
     @dob = fhir_patient.birthDate
     @gender = fhir_patient.gender
     @medical_record_number = extract_med_rec_num(fhir_patient.identifier)
     @marital_status = fhir_patient.maritalStatus&.coding&.first&.display
+  end
+
+  def extract_name(fhir_patient)
+    name_obj = format_name(fhir_patient.name)
+    @first_name = name_obj[:first_name]
+    @last_name = name_obj[:last_name]
+    @name = "#{@first_name} #{@last_name}"
   end
 
   def extract_contact_info(fhir_patient)

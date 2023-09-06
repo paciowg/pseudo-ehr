@@ -23,13 +23,10 @@ module ModelHelper
   def format_name(fhir_name_array)
     # latest_name = latest_start_date_object(fhir_name_array)
     latest_name = fhir_name_array&.first
-    return 'No name provided' if latest_name.nil?
 
-    given_names = latest_name.given.join(' ') if latest_name.given
-    family_name = latest_name.family
-    suffix = latest_name.suffix.join(' ') if latest_name.suffix
-
-    [family_name, given_names, suffix].compact.join(' ')
+    given_names = latest_name&.given&.join(' ') || 'XXXXXX'
+    family_name = latest_name&.family || 'XXXXXX'
+    { first_name: given_names, last_name: family_name }
   end
 
   def format_address(fhir_address_arr)
