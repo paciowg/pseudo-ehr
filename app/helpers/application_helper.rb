@@ -19,7 +19,7 @@ module ApplicationHelper
   end
 
   def calculate_age(date_string)
-    return if date_string.blank?
+    return date_string if date_string == '--'
 
     birthdate = Date.parse(date_string)
     today = Date.current
