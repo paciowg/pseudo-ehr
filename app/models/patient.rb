@@ -3,7 +3,7 @@
 # Patient Model
 class Patient < Resource
   attr_reader :id, :fhir_resource, :first_name, :last_name, :name, :dob, :medical_record_number, :gender, :address,
-              :phone, :email, :race, :ethnicity, :marital_status, :birthsex
+              :phone, :email, :race, :ethnicity, :marital_status, :birthsex, :language
 
   def initialize(fhir_patient)
     @fhir_resource = fhir_patient
@@ -17,10 +17,11 @@ class Patient < Resource
 
   def extract_basic_attributes(fhir_patient)
     @id = fhir_patient.id
-    @dob = fhir_patient.birthDate
-    @gender = fhir_patient.gender
+    @dob = fhir_patient.birthDate || '--'
+    @gender = fhir_patient.gender || '--'
     @medical_record_number = extract_med_rec_num(fhir_patient.identifier)
-    @marital_status = fhir_patient.maritalStatus&.coding&.first&.display
+    @marital_status = fhir_patient.maritalStatus&.coding&.first&.display || '--'
+    @language = fhir_patient.communication.first&.language&.coding&.first&.code&.upcase || '--'
   end
 
   def extract_name(fhir_patient)
@@ -55,7 +56,7 @@ class Patient < Resource
   end
 
   def read_characteristics(extensions)
-    characteristics = { race: '', ethnicity: '', birthsex: nil }
+    characteristics = { race: '--', ethnicity: '--', birthsex: '--' }
 
     extensions.each do |ext|
       case ext.url
