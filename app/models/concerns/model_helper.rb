@@ -9,7 +9,7 @@ module ModelHelper
       telecom.system == 'phone'
     end&.map(&:value)
 
-    phone_numbers&.join(', ').to_s
+    phone_numbers.present? ? phone_numbers.join(', ') : '--'
   end
 
   def format_email(fhir_telecom_arr)
@@ -17,7 +17,7 @@ module ModelHelper
       telecom.system == 'email'
     end&.map(&:value)
 
-    email_addresses&.join(', ').to_s
+    email_addresses.present? ? email_addresses.join(', ') : '--'
   end
 
   def format_name(fhir_name_array)
