@@ -1,0 +1,56 @@
+<div
+  class="block max-w-xl p-6 h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-700 dark:text-white">
+    Personal Identifiable Information
+  </h5>
+  <div class="flex flex-wrap -mx-3 my-6 font-normal text-gray-700 dark:text-gray-400">
+    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+      <label class="block uppercase tracking-wide text-gray-500 text-xs font-bold mb-1" for="grid-first-name">
+        First Name
+      </label>
+      <span class="appearance-none block w-full text-gray-900 mb-3 leading-tigh" id="grid-first-name">
+        <%= @patient.first_name%>
+      </span>
+    </div>
+    <div class="w-full md:w-1/2 px-3">
+      <label class="block uppercase tracking-wide text-gray-500 text-xs font-bold mb-1" for="grid-last-name">
+        Last Name
+      </label>
+      <span class="appearance-none block w-full text-gray-900 mb-3 leading-tigh" id="grid-last-name">
+        <%= @patient.last_name%>
+      </span>
+    </div>
+    <div class="w-full md:w-1/2 px-3">
+      <label class="block uppercase tracking-wide text-gray-500 text-xs font-bold mb-1" for="grid-dob">
+        Date of Birth
+      </label>
+      <span class="appearance-none block w-full text-gray-900 mb-3 leading-tigh" id="grid-dob">
+        <%= @patient.dob%>
+      </span>
+    </div>
+    <div class="w-full md:w-1/2 px-3">
+      <label class="block uppercase tracking-wide text-gray-500 text-xs font-bold mb-1" for="grid-marital-status">
+        Marital Status
+      </label>
+      <span class="appearance-none block w-full text-gray-900 mb-3 leading-tigh" id="grid-marital-status">
+        <%= @patient.marital_status.capitalize %>
+      </span>
+    </div>
+    <div class="w-full md:w-1/2 px-3">
+      <label class="block uppercase tracking-wide text-gray-500 text-xs font-bold mb-1" for="grid-gender">
+        Gender Identity
+      </label>
+      <span class="appearance-none block w-full text-gray-900 mb-3 leading-tigh" id="grid-gender">
+        <%= @patient.gender.capitalize %>
+      </span>
+    </div>
+    <div class="w-full md:w-1/2 px-3">
+      <label class="block uppercase tracking-wide text-gray-500 text-xs font-bold mb-1" for="grid-birthsex">
+        Sex Assigned at Birth
+      </label>
+      <span class="appearance-none block w-full text-gray-900 leading-tigh" id="grid-birthsex">
+        <%= @patient.birthsex.capitalize %>
+      </span>
+    </div>
+  </div>
+</div>

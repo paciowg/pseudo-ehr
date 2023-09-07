@@ -1,3 +1,11 @@
 <!-- app/views/patients/index.html.erb -->
-<h1>This is the Patient page</h1>
-<h1>Patient: <%= @patient.name %></h1>
+<div class="p-2 mb-4 sm:ml-40 lg:ml-44 flex flex-col font-sans justify-items-center">
+  <h1 class="font-semibold text-left text-xl mb-2">Personal Information</h1>
+  <%= turbo_frame_tag "patient", loading: "lazy" do %>
+    <div class="container mx-auto grid sm:grid-cols-1 xl:grid-cols-2 gap-4">
+      <%= render "personal_identifiable_info" %>
+      <%= render "contact_info" %>
+      <%= render "demographics" %>
+    </div>
+  <% end %>
+</div>
