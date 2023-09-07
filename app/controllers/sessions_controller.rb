@@ -18,6 +18,7 @@ class SessionsController < ApplicationController
   # POST /launch
   def launch_server
     # Where to redirect depends on the context of your app. Change as needed to match your logic.
+    flash[:success] = 'Successfully connected' unless @fhir_server.authenticated_access?
     redirect_to pages_patients_path and return unless @fhir_server.authenticated_access?
 
     state = SecureRandom.uuid

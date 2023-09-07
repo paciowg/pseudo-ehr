@@ -29,4 +29,22 @@ class ApplicationController < ActionController::Base
   def session_id
     session[:id] ||= Base64.encode64(SecureRandom.random_number(2**64).to_s).chomp
   end
+
+  def retrieve_patient
+    @patient = Rails.cache.read(cache_key_for_patient(session[:patient_id]))
+    return unless @patient.nil?
+
+    reset_session
+    Rails.cache.clear
+    flash[:danger] = 'Session has expired. Please reconnect!'
+    redirect_to root_path
+  end
+
+  def cache_key_for_patients
+    "patients_#{session_id}"
+  end
+
+  def cache_key_for_patient(patient_id)
+    "fhir_patient_#{patient_id}_#{session_id}"
+  end
 end

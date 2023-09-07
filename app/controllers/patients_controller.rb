@@ -40,7 +40,7 @@ class PatientsController < ApplicationController
   end
 
   def fetch_and_cache_patient(patient_id)
-    Rails.cache.fetch(cache_key_for_patient(patient_id), expires_in: 5.minutes) do
+    Rails.cache.fetch(cache_key_for_patient(patient_id), expires_in: 1.hour) do
       patients = Rails.cache.read(cache_key_for_patients)
       patient = patients&.find do |p|
         p.id == patient_id
@@ -57,14 +57,6 @@ class PatientsController < ApplicationController
     return unless params[:query].present? || session[:previous_query]
 
     Rails.cache.delete(cache_key_for_patients)
-  end
-
-  def cache_key_for_patients
-    "patients_#{session_id}"
-  end
-
-  def cache_key_for_patient(patient_id)
-    "fhir_patient_#{patient_id}_#{session_id}"
   end
 
   def fetch_patients_by_id
