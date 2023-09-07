@@ -1,0 +1,34 @@
+<table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
+    <thead class="text-md text-white uppercase bg-gray-900">
+      <tr>
+        <th scope="col" class="px-6 py-3">
+          Description
+        </th>
+        <th scope="col" class="px-6 py-3">
+          status
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Author
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Date
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <% adis.each do |adi| %>
+        <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50"
+          data-controller="table-row-click"
+          data-table-row-click-url="/advance_directives/<%= adi.id %>"
+          data-action="click->table-row-click#goToLink"
+        >
+          <td class="px-6 py-4 font-semibold"><%= adi.description %></td>
+          <td class="px-6 py-4"><%= adi.status %></td>
+          <td class="px-6 py-4"><%= adi.author %></td>
+          <td class="px-6 py-4"><%= adi.date %></td>
+        </tr>
+      <% end %>
+
+    </tbody>
+  </table>

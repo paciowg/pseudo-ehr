@@ -61,4 +61,49 @@ module ModelHelper
 
     latest_object.nil? ? array.first : latest_object
   end
+
+  # Extract the resourceType and id from FHIR reference
+  def extract_resource_data(entry)
+    return unless entry&.reference.present? && entry.reference&.split('/')&.length == 2
+
+    entry.reference&.split('/')
+  end
+
+  # Extract a FHIR resource from bundle
+  def get_object_from_bundle(fhir_reference, fhir_bundle)
+    resource_type, resource_id = extract_resource_data(fhir_reference)
+    return unless resource_type && resource_id
+
+    fhir_bundle.find do |resource|
+      resource.resourceType == resource_type && resource.id == resource_id
+    end
+  end
+
+  def get_custodian(ref, fhir_bundle)
+    org = get_object_from_bundle(ref, fhir_bundle)
+    org&.name || '--'
+  end
+
+  #-----------------------------------------------------------------------------
+  # TODO: This is temporary. should get api keys to read code values from https://cts.nlm.nih.gov/fhir/login.html
+  def category_string(category_list)
+    text = []
+
+    category_list&.each do |category|
+      text << coding_string(category.coding)
+    end
+
+    text.join(', ')
+  end
+
+  def coding_string(coding_list)
+    text = []
+
+    coding_list&.each do |coding|
+      text << (coding.display || coding.code)
+    end
+
+    text.empty? ? '--' : text.join(', ')
+  end
+  #-----------------------------------------------------------------------------
 end

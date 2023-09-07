@@ -15,4 +15,6 @@ Rails.application.routes.draw do
   get '/login', to: 'sessions#login'
   post '/launch', to: 'sessions#launch_server'
   get '/disconnect', to: 'sessions#disconnect_server'
+  get 'patients/:patient_id/advance_directives', to: 'advance_directives#index'
+  get 'advance_directives/:id', to: 'advance_directives#show'
 end
