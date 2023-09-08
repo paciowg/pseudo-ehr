@@ -38,4 +38,12 @@
       </div>
     <% end %>
 
+
+    <% if @adi.pdf %>
+      <button data-modal-target="pdfModal" data-modal-toggle="pdfModal" class="mb-2 pb-4 border-none text-blue-600  hover:text-red-500 font-medium text-sm px-5 text-center" type="button">
+        View PDF
+      </button>
+      <%= render 'pdf_modal', pdf: @adi.pdf, title: @adi.description %>
+    <% end %>
+
   </div>
