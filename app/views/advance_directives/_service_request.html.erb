@@ -1,0 +1,12 @@
+<div class="mb-4">
+  <h5 class="mb-2 text-md font-bold text-left text-gray-900 dark:text-white">
+      <%= service_request[:category] %>
+  </h5>
+  <p>
+    <% if service_request[:request_text] != '--' %>
+      <%= service_request[:request_text].html_safe %>
+    <% else %>
+      <%= service_request[:request] %>
+    <% end %>
+  </p>
+</div>

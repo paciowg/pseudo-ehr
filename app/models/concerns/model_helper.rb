@@ -97,10 +97,17 @@ module ModelHelper
   end
 
   def coding_string(coding_list)
+    # TODO: Temporary! see above todo
+    code = {
+      '100826-7' => 'Portable medical order &or advance directive review',
+      '100827-5' => 'Portable medical order discussion participants'
+    }
+
     text = []
 
     coding_list&.each do |coding|
-      text << (coding.display || coding.code)
+      display = code[coding.code]
+      text << (coding.display || display || coding.code)
     end
 
     text.empty? ? '--' : text.join(', ')

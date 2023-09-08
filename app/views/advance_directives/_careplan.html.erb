@@ -1,0 +1,10 @@
+<div class="mb-4">
+  <h5 class="mb-2 text-md font-bold text-left text-gray-900 dark:text-white">
+      <%= careplan[:title] %>
+  </h5>
+  <p>This care plan addresses the following goals:</p>
+  <br />
+  <% careplan[:goals].each do |goal| %>
+    <%= render "goal_or_observation", type: goal[:type], description: goal[:preference] %>
+  <% end %>
+</div>

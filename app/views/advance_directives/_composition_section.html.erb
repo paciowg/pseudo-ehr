@@ -1,0 +1,25 @@
+<div class="w-full mb-5 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+  <h5 class="w-full p-5 font-medium text-left text-lg text-gray-500 border border-b-0 border-gray-200 rounded-t-xl dark:border-gray-700 dark:text-gray-400">
+    <%= section['title'] %>
+  </h5>
+  <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+    <% section['objects'].each do |object| %>
+
+      <% if object[:resource_type] == 'Goal' || object[:resource_type] == 'Observation'%>
+        <%= render 'goal_or_observation', type: object[:type], description: object[:preference]  %>
+      <% end %>
+      <% if object[:resource_type] == 'ServiceRequest' %>
+        <%= render 'service_request', service_request: object %>
+      <% end %>
+      <% if object[:resource_type] == 'RelatedPerson' %>
+        <%= render 'related_person', related_person: object %>
+      <% end %>
+      <% if object[:resource_type] == 'Consent' %>
+        <%= render 'consent', consent: object %>
+      <% end %>
+      <% if object[:resource_type] == 'CarePlan' %>
+        <%= render 'careplan', careplan: object %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
