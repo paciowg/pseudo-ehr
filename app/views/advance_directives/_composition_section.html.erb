@@ -1,6 +1,14 @@
 <div class="w-full mb-5 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-  <h5 class="w-full p-5 font-medium text-left text-lg text-gray-500 border border-b-0 border-gray-200 rounded-t-xl dark:border-gray-700 dark:text-gray-400">
+  <h5 class="w-full flex justify-between p-5 font-medium text-left text-lg text-gray-500 border border-b-0 border-gray-200 rounded-t-xl dark:border-gray-700 dark:text-gray-400">
     <%= section['title'] %>
+
+    <% if @adi.status != 'superseded' && section['title'] == 'ePOLST Portable Medical Orders' %>
+      <button data-modal-target="updatePMOModal" data-modal-toggle="updatePMOModal" class="mb-2 pb-4 border-none text-blue-600  hover:text-red-500 font-medium text-sm px-5 text-center" type="button">
+        Edit PMO
+      </button>
+      <%= render 'edit_pmo_modal', section: section %>
+    <% end %>
+
   </h5>
   <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
     <% section['objects'].each do |object| %>

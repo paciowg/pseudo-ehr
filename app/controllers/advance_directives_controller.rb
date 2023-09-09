@@ -3,8 +3,8 @@
 # rubocop:disable Metrics/ClassLength
 # app/controllers/adis_controller.rb
 class AdvanceDirectivesController < ApplicationController
+  include AdvanceDirectivesHelper
   before_action :require_server, :retrieve_patient
-
   # GET /patients/:patient_id/advance_directives
   def index
     @adis = fetch_and_cache_adis(params[:patient_id])
@@ -19,7 +19,31 @@ class AdvanceDirectivesController < ApplicationController
     @adi = fetch_and_cache_adi(params[:id])
   rescue StandardError => e
     flash[:danger] = e.message
-    redirect_to :index, patient_id: @patient.id
+    redirect_to action: 'index', patient_id: @patient.id
+  end
+
+  # TODO: to be reworked once we will implement selecting a provider when connecting to the server
+  # We will use the logged provider data in the update request as opposed to the hardcoded provider.
+  # PUT /advance_directives/:id
+  def update
+    @adi = fetch_and_cache_adi(params[:id])
+    doc_ref = @adi.fhir_doc_ref
+    bundle_entries = get_structured_data_from_contents(doc_ref.content)
+
+    bundle_entries.each do |resource|
+      update_service_request(resource) if resource.resourceType == 'ServiceRequest'
+      update_composition(resource) if resource.resourceType == 'Composition'
+    end
+
+    save_updated_data(bundle_entries, doc_ref)
+
+    flash[:success] = 'Successfully updated PMO'
+    Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
+    redirect_to action: 'index', patient_id: @patient.id
+  rescue StandardError => e
+    Rails.logger.debug "Error updating PMO: #{e.message}"
+    flash[:error] = 'An error has occurred while updating the PMO'
+    redirect_to action: 'show', id: params[:id]
   end
 
   private
@@ -135,6 +159,138 @@ class AdvanceDirectivesController < ApplicationController
 
   def cache_key_for_adi(adi_id)
     "adi_#{adi_id}_#{session_id}"
+  end
+
+  # Update service request parameters
+  def service_request_params
+    params.require(:service_request).permit!
+  end
+
+  # Get Loinc code display
+  def get_loinc_code_display(code)
+    loinc_code_list = loinc_polst_med_assist_nutr_vs + loinc_polst_initial_tx_vs + loinc_polst_cpr_vs
+    loinc_code_list.find { |loinc_code| loinc_code[:code] == code }&.dig(:display)
+  end
+
+  # ServiceRequest.code
+  def set_service_request_code(code, text)
+    {
+      coding: [
+        {
+          system: 'http://loinc.org',
+          code: code,
+          display: get_loinc_code_display(code)
+        }
+      ],
+      text: text
+    }
+  end
+
+  # set DocumentReference.relatesTo
+  def build_document_ref_relates_to(doc_ref)
+    [
+      {
+        code: 'replaces',
+        target: {
+          reference: "DocumentReference/#{doc_ref.id}"
+        }
+      }
+    ]
+  end
+
+  # set DocumentReference.content
+  def set_document_ref_content(binary_id, bundle_id)
+    [
+      {
+        attachment: {
+          contentType: 'application/json',
+          url: "Binary/#{binary_id}"
+        },
+        format: {
+          system: 'http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem',
+          code: 'urn:hl7-org:sdwg:ccda-on-fhir-json:1.0',
+          display: 'FHIR Document Bundle'
+        }
+      },
+      {
+        attachment: {
+          url: "Bundle/#{bundle_id}"
+        },
+        format: {
+          system: 'http://ihe.net/fhir/ValueSet/IHE.FormatCode.codesystem',
+          code: 'urn:hl7-org:sdwg:ccda-on-fhir-json:1.0',
+          display: 'FHIR Document Bundle'
+        }
+      }
+    ]
+  end
+
+  def update_service_request(resource)
+    case resource.category&.first&.coding&.first&.display
+    when 'Additional portable medical orders or instructions'
+      resource.code.text = service_request_params['Additional portable medical orders or instructions']['text']
+      # rubocop:disable Layout/LineLength
+    when 'Medically assisted nutrition orders', 'Initial portable medical treatment orders', 'Cardiopulmonary resuscitation orders'
+      assign_service_request_code_for_resource(resource)
+    end
+    # rubocop:enable Layout/LineLength
+  end
+
+  def update_composition(resource)
+    resource.date = current_time_formatted
+    resource.attester.each { |attester| attester.time = current_time_formatted }
+    resource.section.each do |section|
+      next unless section.title == 'ePOLST Portable Medical Orders'
+
+      update_section_entries(resource, section)
+    end
+  end
+
+  def update_section_entries(_resource, section)
+    # rubocop:disable Style/MultilineBlockChain
+    section_entries = @adi.compositions.first.section.select do |s|
+                        s['title'] == section.title
+                      end.map { |s| s['objects'] }.flatten
+    # rubocop:enable Style/MultilineBlockChain
+    section_entries.each do |object|
+      text = service_request_params[object[:category]]['text'].to_s
+      section.text&.div = section.text&.div&.gsub(object[:request_text].to_s, text)
+    end
+  end
+
+  def assign_service_request_code_for_resource(resource)
+    code = service_request_params[resource.category&.first&.coding&.first&.display]['code']
+    text = service_request_params[resource.category&.first&.coding&.first&.display]['text']
+    resource.code = set_service_request_code(code, text)
+  end
+
+  def current_time_formatted
+    Time.now.utc.strftime('%Y-%m-%dT%H:%M:%S%:z')
+  end
+
+  def save_updated_data(bundle_entries, doc_ref)
+    new_entries = bundle_entries.map { |entry| { resource: entry } }
+    # create new bundle
+    new_bundle = FHIR::Bundle.new
+    new_bundle.type = 'document'
+    new_bundle.entry = new_entries
+    new_bundle = @client.create(new_bundle).resource
+    # create Binary resouce
+    fhir_binary = FHIR::Binary.new(
+      contentType: 'application/fhir+json',
+      data: Base64.encode64(new_bundle.to_json)
+    )
+    fhir_binary = @client.create(fhir_binary).resource
+    # create new DocumentReference
+    new_doc_ref = doc_ref.dup
+    new_doc_ref.status = 'current'
+    new_doc_ref.date = current_time_formatted
+    new_doc_ref.relatesTo = build_document_ref_relates_to(doc_ref)
+    new_doc_ref.content = set_document_ref_content(fhir_binary.id, new_bundle.id)
+    @client.create(new_doc_ref)
+    # Update the old DocumentReference status to superseded
+    doc_ref.status = 'superseded'
+    @client.update(doc_ref, doc_ref.id)
   end
 end
 # rubocop:enable Metrics/ClassLength
