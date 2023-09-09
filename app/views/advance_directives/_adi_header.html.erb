@@ -1,5 +1,13 @@
-  <h1 class="p-5 text-xl font-bold text-center text-gray-900 dark:text-white">
-      <%= @adi.description %>
+  <h1 class="flex justify-center p-5 text-xl font-bold text-center text-gray-900 dark:text-white">
+      <span><%= @adi.description %></span>
+
+      <% if @adi.status != 'superseded' && @adi.type == 'Living Will' %>
+        <button data-modal-target="revokeLivingWollModal" data-modal-toggle="revokeLivingWollModal" class="mb-2 pb-4 border-none text-red-600  hover:text-orange-500 font-medium text-sm px-5 text-center" type="button">
+          Revoke Will
+        </button>
+        <%= render 'revoke_living_will_modal' %>
+      <% end %>
+
   </h1>
   <div class="flex items-center justify-center mx-auto pb-4">
     <div class="flex items-center justify-between mr-6 mb-2 pb-4 text-sm">

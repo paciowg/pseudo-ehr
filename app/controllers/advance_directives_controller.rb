@@ -25,7 +25,7 @@ class AdvanceDirectivesController < ApplicationController
   # TODO: to be reworked once we will implement selecting a provider when connecting to the server
   # We will use the logged provider data in the update request as opposed to the hardcoded provider.
   # PUT /advance_directives/:id
-  def update
+  def update_pmo
     @adi = fetch_and_cache_adi(params[:id])
     doc_ref = @adi.fhir_doc_ref
     bundle_entries = get_structured_data_from_contents(doc_ref.content)
@@ -43,6 +43,26 @@ class AdvanceDirectivesController < ApplicationController
   rescue StandardError => e
     Rails.logger.debug "Error updating PMO: #{e.message}"
     flash[:error] = 'An error has occurred while updating the PMO'
+    redirect_to action: 'show', id: params[:id]
+  end
+
+  # PUT /advance_directives/:id
+  def revoke_living_will
+    @adi = fetch_and_cache_adi(params[:id])
+    doc_ref = @adi.fhir_doc_ref
+    bundle_entries = get_structured_data_from_contents(doc_ref.content)
+    # if revoke_will_params[:living_will].present?
+    # Read pdf file
+    # create binary resource for it that will be passed to the save_updated_data method
+    # end
+    pdf = revoke_will_params[:living_will].present?
+    save_updated_data(bundle_entries, doc_ref, pdf)
+    flash[:success] = 'Successfully revoked Living Will'
+    Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
+    redirect_to action: 'index', patient_id: @patient.id
+  rescue StandardError => e
+    Rails.logger.debug "Error revoking Living Will: #{e.message}"
+    flash[:error] = 'An error has occurred while revoking the living will'
     redirect_to action: 'show', id: params[:id]
   end
 
@@ -166,6 +186,10 @@ class AdvanceDirectivesController < ApplicationController
     params.require(:service_request).permit!
   end
 
+  def revoke_will_params
+    params.permit(:living_will)
+  end
+
   # Get Loinc code display
   def get_loinc_code_display(code)
     loinc_code_list = loinc_polst_med_assist_nutr_vs + loinc_polst_initial_tx_vs + loinc_polst_cpr_vs
@@ -199,7 +223,13 @@ class AdvanceDirectivesController < ApplicationController
   end
 
   # set DocumentReference.content
-  def set_document_ref_content(binary_id, bundle_id)
+  def set_document_ref_content(binary_id, bundle_id, pdf = nil)
+    pdf_content = {
+      attachment: {
+        contentType: 'application/pdf',
+        url: 'Binary/9101087d-583c-4164-8137-2dafa4dbceee'
+      }
+    }
     [
       {
         attachment: {
@@ -221,8 +251,9 @@ class AdvanceDirectivesController < ApplicationController
           code: 'urn:hl7-org:sdwg:ccda-on-fhir-json:1.0',
           display: 'FHIR Document Bundle'
         }
-      }
-    ]
+      },
+      pdf && pdf_content
+    ].compact
   end
 
   def update_service_request(resource)
@@ -268,7 +299,7 @@ class AdvanceDirectivesController < ApplicationController
     Time.now.utc.strftime('%Y-%m-%dT%H:%M:%S%:z')
   end
 
-  def save_updated_data(bundle_entries, doc_ref)
+  def save_updated_data(bundle_entries, doc_ref, pdf = nil)
     new_entries = bundle_entries.map { |entry| { resource: entry } }
     # create new bundle
     new_bundle = FHIR::Bundle.new
@@ -284,9 +315,10 @@ class AdvanceDirectivesController < ApplicationController
     # create new DocumentReference
     new_doc_ref = doc_ref.dup
     new_doc_ref.status = 'current'
+    new_doc_ref.description = "Betsy's Living Will NEW" if pdf
     new_doc_ref.date = current_time_formatted
     new_doc_ref.relatesTo = build_document_ref_relates_to(doc_ref)
-    new_doc_ref.content = set_document_ref_content(fhir_binary.id, new_bundle.id)
+    new_doc_ref.content = set_document_ref_content(fhir_binary.id, new_bundle.id, pdf)
     @client.create(new_doc_ref)
     # Update the old DocumentReference status to superseded
     doc_ref.status = 'superseded'
