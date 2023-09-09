@@ -3,10 +3,9 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "authenticatedInput", "credentialFields", "requiredFields" ]
+  static targets = [ "authenticatedInput", "credentialFields", "requiredFields", "adiStatus", "currentAdis", "supersededAdis" ]
   static values = { showIf: String }
   connect() {
-    this.toggle()
   }
 
   toggle() {
@@ -20,6 +19,31 @@ export default class extends Controller {
       this.requiredFieldsTargets.forEach(el => {
         el.required = true;
       });
+    }
+  }
+
+  toggleAdiStatus() {
+    if (this.adiStatusTarget.value === "All") {
+      this.currentAdisTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.supersededAdisTargets.forEach(el => {
+        el.hidden = false;
+      })
+    } else if ((this.adiStatusTarget.value === "Current")) {
+      this.currentAdisTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.supersededAdisTargets.forEach(el => {
+        el.hidden = true;
+      })
+    } else if ((this.adiStatusTarget.value === "Superseded")){
+      this.currentAdisTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.supersededAdisTargets.forEach(el => {
+        el.hidden = false;
+      })
     }
   }
 }

@@ -18,13 +18,15 @@
     <tbody>
 
       <% adis.each do |adi| %>
+        <% target = adi.status == 'current' ? 'currentAdis' : 'supersededAdis' %>
         <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50"
           data-controller="table-row-click"
           data-table-row-click-url="/advance_directives/<%= adi.id %>"
           data-action="click->table-row-click#goToLink"
+          data-showhide-target="<%= target %>"
         >
           <td class="px-6 py-4 font-semibold"><%= adi.description %></td>
-          <td class="px-6 py-4"><%= adi.status %></td>
+          <td class="px-6 py-4 <%= adi.status == 'entered-in-error' ? 'text-red-500' : '' %>"><%= adi.status == 'entered-in-error' ? 'revoked' : adi.status %></td>
           <td class="px-6 py-4"><%= adi.author %></td>
           <td class="px-6 py-4"><%= adi.date %></td>
         </tr>
