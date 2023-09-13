@@ -2,12 +2,13 @@
 
 # AdvanceDirective Model
 class AdvanceDirective < Resource
-  attr_reader :id, :status, :type, :subject, :author, :date, :custodian, :description,
+  attr_reader :id, :status, :doc_status, :type, :subject, :author, :date, :custodian, :description,
               :compositions, :pdf, :relates_to_ref_id, :relates_to_code, :fhir_doc_ref
 
   def initialize(fhir_doc_ref, compositions, pdf)
     @id = fhir_doc_ref.id
     @status = fhir_doc_ref.status
+    @doc_status = fhir_doc_ref.docStatus
     @type = coding_string(fhir_doc_ref.type&.coding)
     @subject = fhir_doc_ref.subject&.reference
     @author = fhir_doc_ref.author&.first&.display || '--'

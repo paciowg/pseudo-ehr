@@ -18,5 +18,5 @@ Rails.application.routes.draw do
   get 'patients/:patient_id/advance_directives', to: 'advance_directives#index'
   get 'advance_directives/:id', to: 'advance_directives#show'
   put 'advance_directives/:id', to: 'advance_directives#update_pmo'
-  put 'advance_directives/:id/revoke', to: 'advance_directives#revoke_living_will'
+  get 'advance_directives/:id/revoke', to: 'advance_directives#revoke_living_will'
 end

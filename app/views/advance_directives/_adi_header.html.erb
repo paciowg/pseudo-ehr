@@ -1,11 +1,13 @@
   <h1 class="flex justify-center p-5 text-xl font-bold text-center text-gray-900 dark:text-white">
       <span><%= @adi.description %></span>
 
-      <% if @adi.status != 'superseded' && @adi.type == 'Living Will' %>
+      <% if (@adi.status != 'superseded' && @adi.doc_status != 'entered-in-error') && @adi.type == 'Living Will' %>
         <button data-modal-target="revokeLivingWollModal" data-modal-toggle="revokeLivingWollModal" class="mb-2 pb-4 border-none text-red-600  hover:text-orange-500 font-medium text-sm px-5 text-center" type="button">
           Revoke Will
         </button>
         <%= render 'revoke_living_will_modal' %>
+      <% elsif @adi.doc_status == 'entered-in-error' && @adi.type == 'Living Will' %>
+        <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Revoked</span>
       <% end %>
 
   </h1>
@@ -32,6 +34,14 @@
       </label>
       <span class="appearance-none text-gray-900">
         <%= @adi.status %>
+      </span>
+    </div>
+    <div class="flex items-center justify-between mr-6 mb-2 pb-4 text-sm">
+      <label class="uppercase tracking-wide text-gray-500 mr-2 font-bold">
+        Doc Status:
+      </label>
+      <span class="appearance-none <%= @adi.doc_status == 'entered-in-error' ? 'text-red-500' : 'text-gray-900' %>">
+        <%= @adi.doc_status %>
       </span>
     </div>
 

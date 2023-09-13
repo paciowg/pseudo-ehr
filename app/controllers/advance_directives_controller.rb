@@ -39,6 +39,7 @@ class AdvanceDirectivesController < ApplicationController
 
     flash[:success] = 'Successfully updated PMO'
     Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
+    Rails.cache.delete(cache_key_for_adi(params[:id]))
     redirect_to action: 'index', patient_id: @patient.id
   rescue StandardError => e
     Rails.logger.debug "Error updating PMO: #{e.message}"
@@ -50,15 +51,12 @@ class AdvanceDirectivesController < ApplicationController
   def revoke_living_will
     @adi = fetch_and_cache_adi(params[:id])
     doc_ref = @adi.fhir_doc_ref
-    bundle_entries = get_structured_data_from_contents(doc_ref.content)
-    # if revoke_will_params[:living_will].present?
-    # Read pdf file
-    # create binary resource for it that will be passed to the save_updated_data method
-    # end
-    pdf = revoke_will_params[:living_will].present?
-    save_updated_data(bundle_entries, doc_ref, pdf)
+    doc_ref.docStatus = 'entered-in-error'
+    @client.update(doc_ref, doc_ref.id)
+
     flash[:success] = 'Successfully revoked Living Will'
     Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
+    Rails.cache.delete(cache_key_for_adi(params[:id]))
     redirect_to action: 'index', patient_id: @patient.id
   rescue StandardError => e
     Rails.logger.debug "Error revoking Living Will: #{e.message}"
@@ -79,7 +77,7 @@ class AdvanceDirectivesController < ApplicationController
         compositions = build_compositions(attachment_bundle_entries)
         AdvanceDirective.new(doc, compositions, pdf)
       end
-      Rails.logger.debug adis.first
+
       adis.group_by(&:type)
     rescue StandardError => e
       raise "Error fetching patient's (#{patient_id}) ADIs from FHIR server. Status code: #{e.message}"
@@ -88,6 +86,7 @@ class AdvanceDirectivesController < ApplicationController
 
   def fetch_and_cache_adi(adi_id)
     patient_id = @patient.id
+
     Rails.cache.fetch(cache_key_for_adi(adi_id), expires_in: 5.minutes) do
       adis = fetch_and_cache_adis(patient_id)&.values&.flatten
       adi = adis&.find do |a|
@@ -184,10 +183,6 @@ class AdvanceDirectivesController < ApplicationController
   # Update service request parameters
   def service_request_params
     params.require(:service_request).permit!
-  end
-
-  def revoke_will_params
-    params.permit(:living_will)
   end
 
   # Get Loinc code display

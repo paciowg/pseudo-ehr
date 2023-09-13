@@ -5,7 +5,10 @@
           Description
         </th>
         <th scope="col" class="px-6 py-3">
-          status
+          Status
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Doc Status
         </th>
         <th scope="col" class="px-6 py-3">
           Author
@@ -25,8 +28,14 @@
           data-action="click->table-row-click#goToLink"
           data-showhide-target="<%= target %>"
         >
-          <td class="px-6 py-4 font-semibold"><%= adi.description %></td>
-          <td class="px-6 py-4 <%= adi.status == 'entered-in-error' ? 'text-red-500' : '' %>"><%= adi.status == 'entered-in-error' ? 'revoked' : adi.status %></td>
+          <td class="px-6 py-4 font-semibold">
+            <%= adi.description %>
+            <% if adi.doc_status == 'entered-in-error' && adi.type == 'Living Will' %>
+              <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Revoked</span>
+            <% end %>
+          </td>
+          <td class="px-6 py-4"><%= adi.status %></td>
+          <td class="px-6 py-4 <%= adi.doc_status == 'entered-in-error' ? 'text-red-500' : '' %>"><%= adi.doc_status %></td>
           <td class="px-6 py-4"><%= adi.author %></td>
           <td class="px-6 py-4"><%= adi.date %></td>
         </tr>
