@@ -67,6 +67,6 @@ class PatientsController < ApplicationController
     response = fetch_patients_by_id
     return response if response&.resource&.entry&.size.to_i.positive?
 
-    @client.search(FHIR::Patient, search: { parameters: { name: params[:query] } })
+    @client.search(FHIR::Patient, search: { parameters: { name: params[:query], active: true } })
   end
 end
