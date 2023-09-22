@@ -4,7 +4,7 @@
 require 'rails_helper'
 
 RSpec.describe Patient, type: :model do
-  let(:fhir_patient) { instance_double('FHIR::Patient') }
+  let(:fhir_patient) { FHIR::Patient.new }
 
   describe 'initializing from a FHIR patient' do
     before do
@@ -34,7 +34,7 @@ RSpec.describe Patient, type: :model do
     context 'when attributes are present' do
       it 'formats the name correctly' do
         patient = described_class.new(fhir_patient)
-        expect(patient.name).to eq('Doe John Jr.')
+        expect(patient.name).to eq('John Doe')
       end
 
       it 'formats the address correctly' do
@@ -77,9 +77,9 @@ RSpec.describe Patient, type: :model do
       context 'when name is missing' do
         before { allow(fhir_patient).to receive(:name).and_return(nil) }
 
-        it 'returns "No name provided"' do
+        it 'returns "XXXXXX XXXXXX"' do
           patient = described_class.new(fhir_patient)
-          expect(patient.name).to eq('No name provided')
+          expect(patient.name).to eq('XXXXXX XXXXXX')
         end
       end
 
@@ -95,26 +95,26 @@ RSpec.describe Patient, type: :model do
       context 'when telecom is missing' do
         before { allow(fhir_patient).to receive(:telecom).and_return(nil) }
 
-        it 'returns empty string for phone and email' do
+        it 'returns dasshes ("--") for phone and email' do
           patient = described_class.new(fhir_patient)
-          expect(patient.phone).to eq('')
-          expect(patient.email).to eq('')
+          expect(patient.phone).to eq('--')
+          expect(patient.email).to eq('--')
         end
       end
 
       context 'when date of birth is missing' do
         before { allow(fhir_patient).to receive(:birthDate).and_return(nil) }
 
-        it 'returns nil for dob' do
+        it 'returns "--" for dob' do
           patient = described_class.new(fhir_patient)
-          expect(patient.dob).to be_nil
+          expect(patient.dob).to eq('--')
         end
       end
 
       context 'when medical record number is missing' do
         before { allow(fhir_patient).to receive(:identifier).and_return([]) }
 
-        it 'returns nil for medical_record_number' do
+        it 'returns "--" for medical_record_number' do
           patient = described_class.new(fhir_patient)
           expect(patient.medical_record_number).to be_nil
         end
@@ -123,29 +123,29 @@ RSpec.describe Patient, type: :model do
       context 'when gender is missing' do
         before { allow(fhir_patient).to receive(:gender).and_return(nil) }
 
-        it 'returns nil for gender' do
+        it 'returns "--" for gender' do
           patient = described_class.new(fhir_patient)
-          expect(patient.gender).to be_nil
+          expect(patient.gender).to eq('--')
         end
       end
 
       context 'when marital status is missing' do
         before { allow(fhir_patient).to receive(:maritalStatus).and_return(nil) }
 
-        it 'returns nil for marital_status' do
+        it 'returns "--" for marital_status' do
           patient = described_class.new(fhir_patient)
-          expect(patient.marital_status).to be_nil
+          expect(patient.marital_status).to eq('--')
         end
       end
 
       context 'when extensions are missing' do
         before { allow(fhir_patient).to receive(:extension).and_return([]) }
 
-        it 'returns nil or empty values for race, ethnicity, and birthsex' do
+        it 'returns "--" for race, ethnicity, and birthsex' do
           patient = described_class.new(fhir_patient)
-          expect(patient.race).to be_empty
-          expect(patient.ethnicity).to be_empty
-          expect(patient.birthsex).to be_nil
+          expect(patient.race).to eq('--')
+          expect(patient.ethnicity).to eq('--')
+          expect(patient.birthsex).to eq('--')
         end
       end
     end

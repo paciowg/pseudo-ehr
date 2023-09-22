@@ -23,9 +23,9 @@ RSpec.describe ModelHelper, type: :model do
     end
 
     context 'with no phone numbers' do
-      it 'returns empty string' do
+      it 'returns dashes "--"' do
         fhir_telecom_arr = [Telecom.new('email', 'test@example.com')]
-        expect(dummy_instance.format_phone(fhir_telecom_arr)).to eq('')
+        expect(dummy_instance.format_phone(fhir_telecom_arr)).to eq('--')
       end
     end
   end
@@ -40,31 +40,26 @@ RSpec.describe ModelHelper, type: :model do
     end
 
     context 'with no email addresses' do
-      it 'returns empty string' do
+      it 'returns dashes "--"' do
         fhir_telecom_arr = [Telecom.new('phone', '+1234567890')]
-        expect(dummy_instance.format_email(fhir_telecom_arr)).to eq('')
+        expect(dummy_instance.format_email(fhir_telecom_arr)).to eq('--')
       end
     end
   end
 
   describe '#format_name' do
     context 'with valid name' do
-      it 'formats names correctly' do
+      it 'returns a hash with first_name and last_name keys and values' do
         fhir_name_array = [Name.new(%w[John Doe], 'Smith', ['Jr.'])]
-        expect(dummy_instance.format_name(fhir_name_array)).to eq('Smith John Doe Jr.')
+        expect(dummy_instance.format_name(fhir_name_array)[:first_name]).to eq('John Doe')
+        expect(dummy_instance.format_name(fhir_name_array)[:last_name]).to eq('Smith')
       end
     end
 
     context 'with no name provided' do
-      it 'returns "No name provided"' do
-        expect(dummy_instance.format_name([])).to eq('No name provided')
-      end
-    end
-
-    context 'without suffix' do
-      it 'formats names without suffix' do
-        fhir_name_array = [Name.new(%w[John Doe], 'Smith', nil)]
-        expect(dummy_instance.format_name(fhir_name_array)).to eq('Smith John Doe')
+      it 'returns "XXXXXX" for first_name and last_name' do
+        expect(dummy_instance.format_name([])[:first_name]).to eq('XXXXXX')
+        expect(dummy_instance.format_name([])[:last_name]).to eq('XXXXXX')
       end
     end
   end
