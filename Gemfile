@@ -95,3 +95,7 @@ group :test do
 end
 
 gem 'pagy', '~> 6.0'
+
+gem 'bundler-audit', '~> 0.9.1'
+
+gem "brakeman", "~> 5.4"
