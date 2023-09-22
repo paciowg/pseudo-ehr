@@ -27,7 +27,7 @@ jobs:
           --health-retries 5
     env:
       RAILS_ENV: test
-      DATABASE_URL: postgres://postgres:@localhost:5432/test
+      DATABASE_URL: postgres://postgres:@localhost:5432/pseudo-ehr_test
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
