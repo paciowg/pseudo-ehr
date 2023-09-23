@@ -61,9 +61,9 @@ class FhirClientService
       @fhir_server.token_url,
       {
         grant_type: 'authorization_code',
-        code: code,
+        code:,
         redirect_uri: redirect_url,
-        code_verifier: code_verifier
+        code_verifier:
       },
       {
         Authorization: auth

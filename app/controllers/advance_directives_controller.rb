@@ -42,7 +42,7 @@ class AdvanceDirectivesController < ApplicationController
     Rails.cache.delete(cache_key_for_adi(params[:id]))
     redirect_to action: 'index', patient_id: @patient.id
   rescue StandardError => e
-    Rails.logger.debug "Error updating PMO: #{e.message}"
+    Rails.logger.debug { "Error updating PMO: #{e.message}" }
     flash[:error] = 'An error has occurred while updating the PMO'
     redirect_to action: 'show', id: params[:id]
   end
@@ -59,7 +59,7 @@ class AdvanceDirectivesController < ApplicationController
     Rails.cache.delete(cache_key_for_adi(params[:id]))
     redirect_to action: 'index', patient_id: @patient.id
   rescue StandardError => e
-    Rails.logger.debug "Error revoking Living Will: #{e.message}"
+    Rails.logger.debug { "Error revoking Living Will: #{e.message}" }
     flash[:error] = 'An error has occurred while revoking the living will'
     redirect_to action: 'show', id: params[:id]
   end
@@ -197,11 +197,11 @@ class AdvanceDirectivesController < ApplicationController
       coding: [
         {
           system: 'http://loinc.org',
-          code: code,
+          code:,
           display: get_loinc_code_display(code)
         }
       ],
-      text: text
+      text:
     }
   end
 
@@ -273,11 +273,9 @@ class AdvanceDirectivesController < ApplicationController
   end
 
   def update_section_entries(_resource, section)
-    # rubocop:disable Style/MultilineBlockChain
     section_entries = @adi.compositions.first.section.select do |s|
-                        s['title'] == section.title
-                      end.map { |s| s['objects'] }.flatten
-    # rubocop:enable Style/MultilineBlockChain
+      s['title'] == section.title
+    end.pluck('objects').flatten
     section_entries.each do |object|
       text = service_request_params[object[:category]]['text'].to_s
       section.text&.div = section.text&.div&.gsub(object[:request_text].to_s, text)

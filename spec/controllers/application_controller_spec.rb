@@ -4,7 +4,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ApplicationController, type: :controller do
+RSpec.describe ApplicationController do
   let!(:fhir_server) { create(:fhir_server, base_url: 'http://hapi.fhir.org/baseR4') }
 
   controller do

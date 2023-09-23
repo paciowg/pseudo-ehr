@@ -3,32 +3,25 @@
 # spec/models/patient_spec.rb
 require 'rails_helper'
 
-RSpec.describe Patient, type: :model do
+RSpec.describe Patient do
   let(:fhir_patient) { FHIR::Patient.new }
 
   describe 'initializing from a FHIR patient' do
     before do
-      allow(fhir_patient).to receive(:id).and_return('12345')
-      allow(fhir_patient).to receive(:name).and_return([double('Name', given: ['John'], family: 'Doe',
-                                                                       suffix: ['Jr.'])])
-      allow(fhir_patient).to receive(:birthDate).and_return('1985-10-15')
-      allow(fhir_patient).to receive(:gender).and_return('male')
-      allow(fhir_patient).to receive(:address).and_return([double('Address', line: ['123 Elm St'], city: 'Springfield',
-                                                                             state: 'IL', postalCode: '12345',
-                                                                             country: 'USA',
-                                                                             period: double('Period',
-                                                                                            start: '2022-01-01'))])
-      allow(fhir_patient).to receive(:telecom).and_return([double('Telecom', system: 'phone', value: '123-456-7890'),
-                                                           double('Telecom', system: 'email',
-                                                                             value: 'john.doe@example.com')])
-      allow(fhir_patient).to receive(:identifier).and_return([double('Identifier', value: 'MR12345',
-                                                                                   type: double('Type',
-                                                                                                coding: [double(
-                                                                                                  'Coding', code: 'MR'
-                                                                                                )]))])
-      allow(fhir_patient).to receive(:maritalStatus).and_return(double('MaritalStatus',
-                                                                       coding: [double('Coding', display: 'Married')]))
-      allow(fhir_patient).to receive(:extension).and_return([])
+      allow(fhir_patient).to receive_messages(
+        id: '12345', name: [double('Name', given: ['John'],
+                                           family: 'Doe', suffix: ['Jr.'])], birthDate: '1985-10-15',
+        gender: 'male', address: [double('Address', line: ['123 Elm St'],
+                                                    city: 'Springfield', state: 'IL', postalCode: '12345',
+                                                    country: 'USA',
+                                                    period: double('Period', start: '2022-01-01'))],
+        telecom: [double('Telecom', system: 'phone', value: '123-456-7890'),
+                  double('Telecom', system: 'email', value: 'john.doe@example.com')],
+        identifier: [double('Identifier', value: 'MR12345', type: double('Type',
+                                                                         coding: [double('Coding', code: 'MR')]))],
+        maritalStatus: double('MaritalStatus', coding: [double('Coding', display: 'Married')]),
+        extension: []
+      )
     end
 
     context 'when attributes are present' do

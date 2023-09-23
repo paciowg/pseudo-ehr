@@ -3,7 +3,7 @@
 # spec/controllers/sessions_controller_spec.rb
 require 'rails_helper'
 
-RSpec.describe SessionsController, type: :controller do
+RSpec.describe SessionsController do
   let!(:fhir_server) { create(:fhir_server, base_url: 'http://hapi.fhir.org/baseR4', authenticated_access: false) }
 
   describe 'GET #new' do

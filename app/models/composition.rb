@@ -70,11 +70,11 @@ class Composition < Resource
     when 'CarePlan'
       build_careplan_hash(resource)
     else
-      Rails.logger.debug "error unexpected type: #{resource_type}"
+      Rails.logger.debug { "error unexpected type: #{resource_type}" }
       {}
     end
   rescue StandardError => e
-    Rails.logger.debug "oops #{e.message}"
+    Rails.logger.debug { "oops #{e.message}" }
     {}
   end
 

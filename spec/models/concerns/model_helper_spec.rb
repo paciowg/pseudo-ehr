@@ -4,7 +4,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ModelHelper, type: :model do
+RSpec.describe ModelHelper do
   let(:dummy_class) { Class.new { include ModelHelper } }
   let(:dummy_instance) { dummy_class.new }
 

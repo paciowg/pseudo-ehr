@@ -3,9 +3,9 @@
 # spec/controllers/patients_controller_spec.rb
 require 'rails_helper'
 
-RSpec.describe PatientsController, type: :controller do
+RSpec.describe PatientsController do
   let!(:fhir_server) { create(:fhir_server, base_url: 'http://hapi.fhir.org/baseR4', authenticated_access: false) }
-  let!(:client) { FhirClientService.new(fhir_server: fhir_server).client }
+  let!(:client) { FhirClientService.new(fhir_server:).client }
   let!(:patients) { client.read_feed(FHIR::Patient).resource.entry.map(&:resource) }
   let!(:patient_id) { patients.first.id }
 

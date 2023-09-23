@@ -5,7 +5,7 @@
 
 require 'rails_helper'
 
-RSpec.describe FhirServer, type: :model do
+RSpec.describe FhirServer do
   describe 'validations' do
     subject { build(:fhir_server) }
 

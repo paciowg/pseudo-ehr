@@ -3,7 +3,7 @@
 # spec/controllers/welcome_controller_spec.rb
 require 'rails_helper'
 
-RSpec.describe WelcomeController, type: :controller do
+RSpec.describe WelcomeController do
   describe 'GET #index' do
     context 'when server is present' do
       let!(:fhir_server) { create(:fhir_server, base_url: 'http://hapi.fhir.org/baseR4') }
