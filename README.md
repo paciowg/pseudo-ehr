@@ -34,7 +34,7 @@ Make sure to start PostgreSQL and Memcached before running the server.
 1. **Clone the Repository**
 
    ```bash
-    git clone https://github.com/vanessuniq/pseudo-ehr.git
+    git clone https://github.com/paciowg/pseudo-ehr.git
     cd pseudo-ehr
    ```
 
@@ -85,11 +85,7 @@ Make sure to start PostgreSQL and Memcached before running the server.
 
 ## Contributing
 
-1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature/new-feature`).
-3. Commit your changes (`git commit -am 'Add new feature'`).
-4. Push to the branch (`git push origin feature/new-feature`).
-5. Open a pull request.
+Please read the [**Contributing to PseudoEHR**](CONTRIBUTING.md) guide and our [**Style Guidelines**](STYLE_GUIDELINES.md).
 
 ## License
 
