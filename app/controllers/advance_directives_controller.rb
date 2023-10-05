@@ -19,7 +19,7 @@ class AdvanceDirectivesController < ApplicationController
     @adi = fetch_and_cache_adi(params[:id])
   rescue StandardError => e
     flash[:danger] = e.message
-    redirect_to action: 'index', patient_id: @patient.id
+    redirect_to patient_advance_directives_page_path, id: @patient.id
   end
 
   # TODO: to be reworked once we will implement selecting a provider when connecting to the server
@@ -40,11 +40,11 @@ class AdvanceDirectivesController < ApplicationController
     flash[:success] = 'Successfully updated PMO'
     Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
     Rails.cache.delete(cache_key_for_adi(params[:id]))
-    redirect_to action: 'index', patient_id: @patient.id
+    redirect_to patient_advance_directives_page_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error updating PMO: #{e.message}" }
     flash[:error] = 'An error has occurred while updating the PMO'
-    redirect_to action: 'show', id: params[:id]
+    redirect_to advance_directive_page_path, id: params[:id]
   end
 
   # PUT /advance_directives/:id
@@ -57,11 +57,11 @@ class AdvanceDirectivesController < ApplicationController
     flash[:success] = 'Successfully revoked Living Will'
     Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
     Rails.cache.delete(cache_key_for_adi(params[:id]))
-    redirect_to action: 'index', patient_id: @patient.id
+    redirect_to patient_advance_directives_page_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error revoking Living Will: #{e.message}" }
     flash[:error] = 'An error has occurred while revoking the living will'
-    redirect_to action: 'show', id: params[:id]
+    redirect_to advance_directive_page_path, id: params[:id]
   end
 
   private

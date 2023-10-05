@@ -2,9 +2,9 @@
 
 # app/controllers/pages_controller.rb
 class PagesController < ApplicationController
-  before_action :delete_current_patient, except: %i[patient_advance_directives]
+  before_action :delete_current_patient, except: %i[patient_advance_directives advance_directive]
   before_action :require_server, except: %i[fhir_servers]
-  before_action :retrieve_patient, only: %i[patient_advance_directives]
+  before_action :retrieve_patient, only: %i[patient_advance_directives advance_directive]
 
   # GET /pages/patients
   def patients; end
@@ -14,6 +14,11 @@ class PagesController < ApplicationController
 
   # GET /pages/patients/:id/advance_directives
   def patient_advance_directives; end
+
+  # GET /pages/advance_directives/:id
+  def advance_directive
+    @adi_id = params[:id]
+  end
 
   private
 
