@@ -1,4 +1,4 @@
-<!-- app/views/advance_directives/index.html.erb -->
+<!-- app/views/pages/patient_advance_directives.html.erb -->
 <div class="p-2 mb-4 sm:ml-10 lg:ml-10 font-sans w-8/12" data-controller="showhide">
   <div class="flex flex-row items-center justify-around my-1 pb-4 w-full">
     <h1 class="p-5 text-xl font-bold text-left text-gray-900 dark:text-white w-1/2">
@@ -15,12 +15,10 @@
       </select>
     </div>
   </div>
-  <%= turbo_frame_tag "adis" do %>
-    <div id="accordion" data-accordion="open">
-      <% @adis.each do |type, adis| %>
-        <%= render "adis_category", adis: adis, type: type %>
-      <% end %>
+  <%= turbo_frame_tag "adis",  src: patient_advance_directives_path(@patient.id), loading: "lazy" do %>
+    <div class="w-full flex flex-col items-center justify-center my-4 p-6">
+      <i class="fas fa-spinner fa-spin text-8xl mr-2"></i>
+      <span class="text-center mt-4">Loading ADIs...</span>
     </div>
   <% end %>
 </div>
-
