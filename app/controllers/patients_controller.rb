@@ -8,11 +8,9 @@ class PatientsController < ApplicationController
     session.delete(:patient_id)
     @pagy, @patients = pagy_array(fetch_and_cache_patients, items: 10)
     flash.now[:notice] = 'No patient found' if @patients.empty?
-    render layout: false # For optimization!
   rescue StandardError => e
     flash.now[:danger] = e.message
     @patients = []
-    render layout: false # For optimization!
   end
 
   def show

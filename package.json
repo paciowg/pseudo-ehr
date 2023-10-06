@@ -1,5 +1,5 @@
 {
-  "name": "fhir-client-template-app",
+  "name": "pseudo-ehr",
   "dependencies": {
     "debounce": "^1.2.1",
     "flowbite": "^1.8.1"
