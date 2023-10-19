@@ -137,7 +137,7 @@ class Composition < Resource
   def build_careplan_hash(resource)
     careplan_goals_ref = resource&.goal
     careplan_goal_resources = careplan_goals_ref&.map { |ref| get_object_from_bundle(ref, @fhir_bundle) }
-                                      &.map { |res| build_goal_hash(res) }
+                                                &.map { |res| build_goal_hash(res) }
 
     {
       resource_type: 'CarePlan',
