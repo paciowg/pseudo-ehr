@@ -81,7 +81,7 @@ GEM
     base64 (0.2.0)
     bcp47 (0.3.3)
       i18n
-    bcrypt (3.1.19)
+    bcrypt (3.1.20)
     bigdecimal (3.1.4)
     bindex (0.8.1)
     bootsnap (1.17.0)
@@ -386,7 +386,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  bcrypt (~> 3.1.7)
+  bcrypt (~> 3.1.20)
   bootsnap
   brakeman (~> 6.0)
   bundler-audit (~> 0.9.1)
