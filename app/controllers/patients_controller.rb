@@ -38,7 +38,7 @@ class PatientsController < ApplicationController
   end
 
   def fetch_and_cache_patient(patient_id)
-    Rails.cache.fetch(cache_key_for_patient(patient_id), expires_in: 1.hour) do
+    Rails.cache.fetch(cache_key_for_patient(patient_id), expires_in: 5.minutes) do
       patients = Rails.cache.read(cache_key_for_patients)
       patient = patients&.find do |p|
         p.id == patient_id

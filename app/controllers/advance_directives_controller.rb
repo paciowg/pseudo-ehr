@@ -67,7 +67,7 @@ class AdvanceDirectivesController < ApplicationController
   private
 
   def fetch_and_cache_adis(patient_id)
-    Rails.cache.fetch(cache_key_for_patient_adis(patient_id), expires_in: 5.minutes) do
+    Rails.cache.fetch(cache_key_for_patient_adis(patient_id), expires_in: 1.minute) do
       response = fetch_adi_documents_by_patient(patient_id)
       doc_entries = response.resource.entry.map(&:resource)
 
