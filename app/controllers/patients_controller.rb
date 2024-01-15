@@ -25,10 +25,10 @@ class PatientsController < ApplicationController
 
   def fetch_and_cache_patients
     clear_cache_if_query_changed
-    session[:previous_query] = params[:query].present?
+    session[:previous_query] = params[:query_id].present? || params[:query_name].present?
 
-    Rails.cache.fetch(cache_key_for_patients, expires_in: 5.minutes) do
-      response = fetch_patients_by_name
+    Rails.cache.fetch(cache_key_for_patients, expires_in: 1.minute) do
+      response = fetch_patients
       entries = response.resource.entry.map(&:resource)
 
       entries.map { |entry| Patient.new(entry) }
@@ -38,7 +38,7 @@ class PatientsController < ApplicationController
   end
 
   def fetch_and_cache_patient(patient_id)
-    Rails.cache.fetch(cache_key_for_patient(patient_id), expires_in: 1.hour) do
+    Rails.cache.fetch(cache_key_for_patient(patient_id), expires_in: 5.minutes) do
       patients = Rails.cache.read(cache_key_for_patients)
       patient = patients&.find do |p|
         p.id == patient_id
@@ -52,19 +52,26 @@ class PatientsController < ApplicationController
   end
 
   def clear_cache_if_query_changed
-    return unless params[:query].present? || session[:previous_query]
+    return unless params[:query_id].present? || params[:query_name].present? || session[:previous_query]
 
     Rails.cache.delete(cache_key_for_patients)
   end
 
   def fetch_patients_by_id
-    @client.search(FHIR::Patient, search: { parameters: { _id: params[:query] } })
+    @client.search(FHIR::Patient, search: { parameters: { _id: params[:query_id] } })
   end
 
   def fetch_patients_by_name
-    response = fetch_patients_by_id
-    return response if response&.resource&.entry&.size.to_i.positive?
+    @client.search(FHIR::Patient, search: { parameters: { name: params[:query_name], active: true } })
+  end
 
-    @client.search(FHIR::Patient, search: { parameters: { name: params[:query], active: true } })
+  def fetch_patients
+    if params[:query_id].present?
+      fetch_patients_by_id
+    elsif params[:query_name].present?
+      fetch_patients_by_name
+    else
+      @client.read_feed(FHIR::Patient)
+    end
   end
 end
