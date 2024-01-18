@@ -1,0 +1,34 @@
+<table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
+  <thead class="text-md text-white uppercase bg-gray-900">
+    <tr>
+      <th scope="col" class="px-6 py-3">
+        Provider
+      </th>
+      <th scope="col" class="px-6 py-3">
+        Role
+      </th>
+      <th scope="col" class="px-6 py-3">
+        Organization
+      </th>
+      <th scope="col" class="px-6 py-3">
+        Contact
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if providers.empty? %>
+      <div class="m-auto max-w-4xl self-center">
+        <span class="text-center text-2xl w-auto mt-8" tabindex="-1">No providers currently available</span>
+      </div>
+    <% end %>
+    <% providers.each do |provider| %>
+      <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50">
+        <td class="px-6 py-4 font-semibold"><%= provider.name %></td>
+        <td class="px-6 py-4"><%= provider.role %></td>
+        <td class="px-6 py-4"> <%= provider.organization %></td>
+        <td class="px-6 py-4"><%= provider.contact %></td>
+      </tr>
+    <% end %>
+
+  </tbody>
+</table>

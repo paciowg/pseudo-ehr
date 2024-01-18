@@ -1,0 +1,14 @@
+<!-- app/views/pages/patient_care_teams.html.erb -->
+<div class="mb-4 sm:ml-10 lg:ml-0 font-sans w-8/12">
+  <div class="flex flex-row items-center justify-around my-1 w-full h-14 align-bottom">
+    <h1 class="text-xl font-bold text-left whitespace-nowrap text-gray-900 dark:text-white w-1/2">
+      Care Teams
+    </h1>
+  </div>
+  <%= turbo_frame_tag "care_teams",  src: patient_care_teams_path(@patient.id), loading: "lazy" do %>
+    <div class="w-full flex flex-col items-center justify-center my-4 p-6">
+      <i class="fas fa-spinner fa-spin text-8xl mr-2"></i>
+      <span class="text-center mt-4">Loading Providers...</span>
+    </div>
+  <% end %>
+</div>
