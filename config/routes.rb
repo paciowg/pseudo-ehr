@@ -15,8 +15,8 @@ Rails.application.routes.draw do
   get 'pages/patients/:id/advance_directives', to: 'pages#patient_advance_directives',
                                                as: 'patient_advance_directives_page'
 
-  get 'pages/advance_directives/:id', to: 'pages#advance_directive',
-                                      as: 'advance_directive_page'
+  get 'pages/advance_directives/:id', to: 'pages#advance_directive', as: 'advance_directive_page'
+  get 'pages/patients/:id/care_teams', to: 'pages#patient_care_teams', as: 'patient_care_teams_page'
   # GET /pages/patients/:id/advance_directives
   get '/login', to: 'sessions#login'
   post '/launch', to: 'sessions#launch_server'
@@ -25,4 +25,5 @@ Rails.application.routes.draw do
   get 'advance_directives/:id', to: 'advance_directives#show', as: 'advance_directive'
   put 'advance_directives/:id', to: 'advance_directives#update_pmo'
   get 'advance_directives/:id/revoke', to: 'advance_directives#revoke_living_will'
+  get 'patients/:patient_id/care_teams', to: 'care_teams#index', as: 'patient_care_teams'
 end
