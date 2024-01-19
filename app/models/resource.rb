@@ -4,4 +4,5 @@
 # all your application's models that does not inherit from ApplicationRecord.
 class Resource
   include ModelHelper
+  include ModelValueSet
 end
