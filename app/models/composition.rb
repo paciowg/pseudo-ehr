@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 # Composition Model
 class Composition < Resource
   include ActiveModel::Model
