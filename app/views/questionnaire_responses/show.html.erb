@@ -1,0 +1,51 @@
+<!-- app/views/questionnaire_responses/show.html.erb -->
+<div class="mb-4 sm:ml-10 lg:ml-0 font-sans w-8/12">
+  <%= turbo_frame_tag "questionnaire_response" do %>
+    <div class="flex flex-col items-center justify-around my-5 w-full h-14 relative align-bottom">
+      <h1 class="p-3 text-xl font-bold text-left whitespace-nowrap text-gray-900 dark:text-white w-1/2">
+        <%= @questionnaire_response.name %>
+      </h1>
+      <h4 class="px-3 pb-5 text-md font-semibold text-left whitespace-nowrap text-gray-900 dark:text-white w-1/2">
+        <%= @questionnaire_response.description %>
+      </h4>
+    </div>
+    <div class="flex justify-between p-2 bg-white border-b border-gray-200">
+      <div class="flex">
+        <p class="mr-4">Author: <%= @questionnaire_response.author %></p>
+        <p class="mr-4">Status: <%= @questionnaire_response.status %></p>
+        <p class="mr-4">Questionnaire: <a href="<%= @questionnaire_response.questionnaire%>" target="_blank" class="text-blue-600"><%= @questionnaire_response.questionnaire %></a></p>
+        <p>Date: <%= @questionnaire_response.formatted_date %></p>
+      </div>
+    </div>
+    <table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
+      <thead class="text-md text-white uppercase bg-gray-900">
+        <tr>
+          <th scope="col" class="px-6 py-3">
+            Link ID
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Description
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Answer
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <% @questionnaire_response.items.each do |item| %>
+          <tr class="bg-gray-100 border-b border-gray-300 hover:bg-gray-200">
+            <td class="px-6 py-4"><%= item[:link_id] %></td>
+            <td class="px-6 py-4"><%= item[:text] %></td>
+            <td class="px-6 py-4">
+              <% item[:answers].each do |answer| %>
+                <P><%= link_to answer[:code] || answer[:system], answer[:system], class: "font-bold text-blue-500" %>: <%= answer[:display] %></p>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+
+      </tbody>
+    </table>
+  <% end %>
+</div>
