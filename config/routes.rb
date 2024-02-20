@@ -17,6 +17,10 @@ Rails.application.routes.draw do
 
   get 'pages/advance_directives/:id', to: 'pages#advance_directive', as: 'advance_directive_page'
   get 'pages/patients/:id/care_teams', to: 'pages#patient_care_teams', as: 'patient_care_teams_page'
+  get 'pages/patients/:id/questionnaire_responses', to: 'pages#patient_questionnaire_responses',
+                                                    as: 'patient_questionnaire_responses_page'
+  get 'pages/patients/:patient_id/questionnaire_responses/:id', to: 'pages#patient_questionnaire_response',
+                                                                as: 'patient_questionnaire_response_page'
   # GET /pages/patients/:id/advance_directives
   get '/login', to: 'sessions#login'
   post '/launch', to: 'sessions#launch_server'
@@ -26,4 +30,8 @@ Rails.application.routes.draw do
   put 'advance_directives/:id', to: 'advance_directives#update_pmo'
   get 'advance_directives/:id/revoke', to: 'advance_directives#revoke_living_will'
   get 'patients/:patient_id/care_teams', to: 'care_teams#index', as: 'patient_care_teams'
+  get 'patients/:patient_id/questionnaire_responses', to: 'questionnaire_responses#index',
+                                                      as: 'patient_questionnaire_responses'
+  get 'patients/:patient_id/questionnaire_responses/:id', to: 'questionnaire_responses#show',
+                                                          as: 'patient_questionnaire_response'
 end
