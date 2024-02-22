@@ -115,7 +115,7 @@ module ModelHelper
   #-----------------------------------------------------------------------------
 
   def parse_date(date_string)
-    return '--' if date_string.nil?
+    return '--' if date_string.blank?
 
     DateTime.parse(date_string).strftime('%b %d, %Y')
   end

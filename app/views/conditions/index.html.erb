@@ -1,0 +1,41 @@
+<!-- app/views/conditions/index.html.erb -->
+<div class="mb-4 sm:ml-10 lg:ml-0 font-sans w-8/12">
+  <div class="flex flex-row items-center justify-around my-1 w-full h-14 relative align-bottom">
+    <h1 class="p-5 text-xl font-bold text-left whitespace-nowrap text-gray-900 dark:text-white w-1/2">
+      Conditions
+    </h1>
+  </div>
+  <%= turbo_frame_tag "conditions" do %>
+    <table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
+      <thead class="text-md text-white uppercase bg-gray-900">
+        <tr>
+          <th scope="col" class="px-6 py-3">Condition ID</th>
+          <th scope="col" class="px-6 py-3">Category</th>
+          <th scope="col" class="px-6 py-3">Asserter</th>
+          <th scope="col" class="px-6 py-3">Onset/Recorded Date</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <% @conditions.each do |condition| %>
+          <tr class="bg-gray-100 border-b border-gray-300 hover:bg-gray-200"
+            data-controller="table-row-click"
+            data-table-row-click-url="<%= patient_condition_page_path(patient_id: @patient.id, id: condition.id) %>"
+            data-action="click->table-row-click#goToLink"
+          >
+            <td class="px-6 py-4"><%= condition.id %></td>
+            <td class="px-6 py-4"><%= condition.category%></td>
+            <td class="px-6 py-4"><%= condition.asserter %></td>
+            <td class="px-6 py-4"><%= condition.onset != '--' ? condition.onset : condition.recorded %></td>
+          </tr>
+        <% end %>
+
+      </tbody>
+    </table>
+    <br />
+    <% if @pagy %>
+      <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
+    <% end %>
+    <br />
+  <% end %>
+</div>
