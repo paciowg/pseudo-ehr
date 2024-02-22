@@ -8,8 +8,7 @@ class ObservationsController < ApplicationController
   # GET /patients/:patient_id/observations
   def index
     observations = fetch_and_cache_observations(params[:patient_id])
-    puts "OBSERVATION #{observations.size}"
-    # byebug
+
     @grouped_observations = Observation.group_by_category_and_domain(observations)
     @collection_observations = Observation.collections(observations)
     flash.now[:notice] = 'No observations found!' if observations.blank?
