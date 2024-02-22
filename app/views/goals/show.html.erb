@@ -1,0 +1,49 @@
+<!-- app/views/goals/show.html.erb -->
+<div class="relative sm:ml-40 lg:ml-44 overflow-x-auto sm:rounded-lg">
+  <%= turbo_frame_tag "goal" do %>
+     <div class="py-6 mx-0">
+      <h1 class="font-bold text-lg mb-2">Resource Goal: <%= @goal.id%></h1><br>
+      <p><b>Life Cycle Status</b>:  <%= @goal.lifecycle_status %></p><br>
+      <p><b>Achievement Status</b>: <%= @goal.achievement_status %></p><br>
+      <p><b>Category</b>: <%= @goal.category %></p><br>
+      <p><b>Description</b>: <%= @goal.description %></p>
+      <h3 class="mt-6 font-bold">Targets</h3>
+      <table class="text-left">
+        <thead class="text-md">
+          <tr>
+            <th scope="col" class="px-6 py-3">Measure</th>
+            <th scope="col" class="px-6 py-3">Detail</th>
+            <th scope="col" class="px-6 py-3">Due</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @goal.targets.each do |target| %>
+            <tr>
+              <td class="px-6 py-4"><%= target[:measure] %></td>
+              <td class="px-6 py-4"><%= target[:description].presence || target[:detail] %></td>
+              <td class="px-6 py-4"><%= target[:due_date] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <h3 class="mt-6 font-bold">Addresses</h3>
+      <table class="grid">
+        <% @goal.addresses.each do |item| %>
+          <tr
+            data-controller="table-row-click"
+            data-table-row-click-url="<%= item[:path] %>"
+            data-action="click->table-row-click#goToLink"
+          >
+          <td class="px-2 py-3">*</td>
+          <td class="px-2 py-2 text-blue-400">
+            <%= item[:name] %>
+          </td>
+          </tr>
+        <% end %>
+      </table>
+      <p class="mt-6"><b>Note</b>: <%= @goal.note %></p><br>
+      <p><b>Note Recorded Date</b>: <%= @goal.note_time %></p><br>
+      <p><b>Author</b>: <%= @goal.author %></p>
+    </div>
+  <% end %>
+</div>

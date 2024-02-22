@@ -25,6 +25,8 @@ Rails.application.routes.draw do
   get 'pages/patients/:patient_id/observations/:id', to: 'pages#patient_observation', as: 'patient_observation_page'
   get 'pages/patients/:id/conditions', to: 'pages#patient_conditions', as: 'patient_conditions_page'
   get 'pages/patients/:patient_id/conditions/:id', to: 'pages#patient_condition', as: 'patient_condition_page'
+  get 'pages/patients/:id/goals', to: 'pages#patient_goals', as: 'patient_goals_page'
+  get 'pages/patients/:patient_id/goals/:id', to: 'pages#patient_goal', as: 'patient_goal_page'
   # GET /pages/patients/:id/advance_directives
   get '/login', to: 'sessions#login'
   post '/launch', to: 'sessions#launch_server'
@@ -42,4 +44,6 @@ Rails.application.routes.draw do
   get 'patients/:patient_id/observations/:id', to: 'observations#show', as: 'patient_observation'
   get 'patients/:patient_id/conditions', to: 'conditions#index', as: 'patient_conditions'
   get 'patients/:patient_id/conditions/:id', to: 'conditions#show', as: 'patient_condition'
+  get 'patients/:patient_id/goals', to: 'goals#index', as: 'patient_goals'
+  get 'patients/:patient_id/goals/:id', to: 'goals#show', as: 'patient_goal'
 end
