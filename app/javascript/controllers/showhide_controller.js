@@ -3,7 +3,11 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "authenticatedInput", "credentialFields", "requiredFields", "adiStatus", "currentAdis", "supersededAdis" ]
+  static targets = [
+    "authenticatedInput", "credentialFields", "requiredFields",
+    "adiStatus", "currentAdis", "supersededAdis",
+    "obsType", "singleObs", "collectionObs"
+  ]
   static values = { showIf: String }
   connect() {
   }
@@ -42,6 +46,24 @@ export default class extends Controller {
         el.hidden = true;
       })
       this.supersededAdisTargets.forEach(el => {
+        el.hidden = false;
+      })
+    }
+  }
+
+  toggleObservations() {
+    if (this.obsTypeTarget.value === "Single Observations") {
+      this.singleObsTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.collectionObsTargets.forEach(el => {
+        el.hidden = true;
+      })
+    } else if (this.obsTypeTarget.value === "Observation Collection") {
+      this.singleObsTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.collectionObsTargets.forEach(el => {
         el.hidden = false;
       })
     }

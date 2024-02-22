@@ -21,6 +21,8 @@ Rails.application.routes.draw do
                                                     as: 'patient_questionnaire_responses_page'
   get 'pages/patients/:patient_id/questionnaire_responses/:id', to: 'pages#patient_questionnaire_response',
                                                                 as: 'patient_questionnaire_response_page'
+  get 'pages/patients/:id/observations', to: 'pages#patient_observations', as: 'patient_observations_page'
+  get 'pages/patients/:patient_id/observations/:id', to: 'pages#patient_observation', as: 'patient_observation_page'
   # GET /pages/patients/:id/advance_directives
   get '/login', to: 'sessions#login'
   post '/launch', to: 'sessions#launch_server'
@@ -34,4 +36,6 @@ Rails.application.routes.draw do
                                                       as: 'patient_questionnaire_responses'
   get 'patients/:patient_id/questionnaire_responses/:id', to: 'questionnaire_responses#show',
                                                           as: 'patient_questionnaire_response'
+  get 'patients/:patient_id/observations', to: 'observations#index', as: 'patient_observations'
+  get 'patients/:patient_id/observations/:id', to: 'observations#show', as: 'patient_observation'
 end
