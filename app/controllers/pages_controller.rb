@@ -5,12 +5,14 @@ class PagesController < ApplicationController
   before_action :delete_current_patient,
                 except: %i[patient_advance_directives advance_directive patient_care_teams
                            patient_questionnaire_responses patient_questionnaire_response
-                           patient_observations patient_observation patient_conditions patient_condition]
+                           patient_observations patient_observation patient_conditions patient_condition
+                           patient_goals patient_goal]
   before_action :require_server, except: %i[fhir_servers]
   before_action :retrieve_patient,
                 only: %i[patient_advance_directives advance_directive patient_care_teams
                          patient_questionnaire_responses patient_questionnaire_response
-                         patient_observations patient_observation patient_conditions patient_condition]
+                         patient_observations patient_observation patient_conditions patient_condition
+                         patient_goals patient_goal]
 
   # GET /pages/patients
   def patients; end
@@ -51,6 +53,14 @@ class PagesController < ApplicationController
   # GET /pages/patients/:patient_id/conditions/:id
   def patient_condition
     @condition_id = params[:id]
+  end
+
+  # GET /pages/patients/:id/goals
+  def patient_goals; end
+
+  # GET /pages/patients/:patient_id/goals/:id
+  def patient_goal
+    @goal_id = params[:id]
   end
 
   private

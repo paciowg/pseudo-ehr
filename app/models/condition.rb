@@ -41,7 +41,7 @@ class Condition < Resource
       display = cat.coding.first&.display
 
       formatted_cat = "#{display} (#{code})"
-      formatted_cat.strip.start_with?('(') ? formatted_cat.delete_prefix('(').delete_suffix(')') : formatted_cat
+      formatted_cat.strip.start_with?('(') ? formatted_cat.strip.delete_prefix('(').delete_suffix(')') : formatted_cat
     end.join(', ')
   end
 
@@ -51,7 +51,7 @@ class Condition < Resource
     display = coding&.display
 
     formatted_code = "#{display} (#{code})"
-    formatted_code.strip.start_with?('(') ? formatted_code.delete_prefix('(').delete_suffix(')') : formatted_code
+    formatted_code.strip.start_with?('(') ? formatted_code.strip.delete_prefix('(').delete_suffix(')') : formatted_code
   end
 
   def retrieve_asserter(bundle_entries)
