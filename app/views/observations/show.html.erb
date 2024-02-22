@@ -1,0 +1,22 @@
+<!-- app/views/observations/show.html.erb -->
+<div class="relative sm:ml-40 lg:ml-44 overflow-x-auto sm:rounded-lg">
+  <%= turbo_frame_tag "observation" do %>
+     <div class="py-6 mx-0">
+      <h1 class="font-bold text-lg mb-2">Resource Observation: <%= @observation.id%></h1><br>
+      <p><b>Event Location</b>:  <%= @observation.location %></p><br>
+      <p><b>Status</b>: <%= @observation.status%></p><br>
+      <p><b>Category</b>: <%= @observation.category %></p><br>
+      <p><b>Domain</b>: <%= Observation.format_domain(@observation.domain) %></p><br>
+      <p><b>Code</b>: <%= @observation.code %></p><br>
+      <p><b>Effective</b>: <%= @observation.effective %></p><br>
+      <p><b>Performer</b>: <%= @observation.performer %></p><br>
+      <p><b>Value</b>: <%= @observation.measurement %></p><br>
+      <p>
+        <b>Derived From</b>:
+        <% @observation.derived_from.each_with_index do |item, index| %>
+          <%= link_to item[:name], item[:path], class: 'link' %><%if index < @observation.derived_from.length - 1 %>, <% end %>
+        <% end %>
+      </p>
+    </div>
+  <% end %>
+</div>

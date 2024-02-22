@@ -50,10 +50,10 @@ class QuestionnaireResponsesController < ApplicationController
     @questionnaire_response = questionnaire_responses.find { |response| response.id == params[:id] }
     return if @questionnaire_response.present?
 
-    flash.now[:notice] = 'Questionnaire response not found'
+    flash[:notice] = 'Questionnaire response not found'
     redirect_to patient_questionnaire_responses_page_path, id: @patient.id
   rescue StandardError => e
-    flash.now[:danger] = e.message
+    flash[:danger] = e.message
     redirect_to patient_questionnaire_responses_page_path, id: @patient.id
   end
 

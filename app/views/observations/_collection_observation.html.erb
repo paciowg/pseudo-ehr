@@ -1,0 +1,41 @@
+<div class="w-full mb-5 p-6">
+  <table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
+    <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+      Observation Collection: <%= observation_collection.id%>
+      <div class="flex flex-col justify-between">
+        <p class="mt-1 mr-3 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Category</b>: <%= observation_collection.category%></p>
+        <p class="mt-1 mr-3 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Domain</b>: <%= Observation.format_domain(observation_collection.domain) %></p>
+        <p class="mt-1 mr-3 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Code</b>: <%= observation_collection.code%></p>
+        <p class="mt-1 mr-3 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Event Location</b>: <%= observation_collection.location%></p>
+        <p class="mt-1 mr-3 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Performer</b>: <%= observation_collection.performer%></p>
+        <p class="mt-1 mr-3 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Effective</b>: <%= observation_collection.effective%></p>
+        <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
+          <b>Derived From</b>:
+          <% observation_collection.derived_from.each_with_index do |item, index| %>
+            <%= link_to item[:name], item[:path], class: 'link' %><%if index < observation_collection.derived_from.length - 1 %>, <% end %>
+          <% end %>
+        </p>
+      </div>
+    </caption>
+    <thead class="text-md text-white uppercase bg-gray-900">
+      <th scope="col" class="px-6 py-3">Member</th>
+      <th scope="col" class="px-6 py-3">Domain</th>
+      <th scope="col" class="px-6 py-3">Code</th>
+      <th scope="col" class="px-6 py-3">Value</th>
+    </thead>
+    <tbody>
+      <% observation_collection.members.each do |member| %>
+        <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50"
+          data-controller="table-row-click"
+          data-table-row-click-url="<%= patient_observation_page_path(patient_id: @patient.id, id: member.id) %>"
+          data-action="click->table-row-click#goToLink"
+        >
+          <td class="px-6 py-4"><%= member.id %></td>
+          <td class="px-6 py-4"><%= Observation.format_domain(member.domain) %></td>
+          <td class="px-6 py-4"><%= member.code %></td>
+          <td class="px-6 py-4"><%= member.measurement %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
