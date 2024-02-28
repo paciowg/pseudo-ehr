@@ -30,8 +30,8 @@
             <td class="px-6 py-4"><%= goal.category%></td>
             <td class="px-6 py-4"><%= goal.description %></td>
             <% target = goal.targets.first %>
-            <td class="px-6 py-4"><%= target[:description].presence || target[:detail] %></td>
-            <td class="px-6 py-4"><%= target[:due_date] %></td>
+            <td class="px-6 py-4"><%= (target.presence && target[:description].presence) || (target.presence && target[:detail]) || '--'%></td>
+            <td class="px-6 py-4"><%= (target.presence && target[:due_date]) || '--' %></td>
           </tr>
         <% end %>
 
