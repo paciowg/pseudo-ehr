@@ -36,8 +36,15 @@ class Goal < Resource
 
   def retrieve_targets
     @fhir_resource.target.map do |target|
-      measure = target.measure&.coding&.first&.code
-      measure = measure.present? ? "LOINC##{measure}" : '--'
+      measure_code = target.measure&.coding&.first&.code
+      measure_display = target.measure&.coding&.first&.display
+      measure = if measure_display && measure_code
+                  "#{measure_display} (#{measure_code})"
+                elsif measure_code
+                  "LOINC##{measure_code}"
+                else
+                  '--'
+                end
       detail_value = target.detailQuantity&.value
       detail_code = target.detailQuantity&.code
       detail = "#{detail_value} #{detail_code}".presence || '--'
