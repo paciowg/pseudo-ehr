@@ -27,7 +27,7 @@
         </tbody>
       </table>
       <h3 class="mt-6 font-bold">Addresses</h3>
-      <table class="grid">
+      <table class="text-left">
         <% @goal.addresses.each do |item| %>
           <tr
             data-controller="table-row-click"
@@ -41,9 +41,30 @@
           </tr>
         <% end %>
       </table>
-      <p class="mt-6"><b>Note</b>: <%= @goal.note %></p><br>
-      <p><b>Note Recorded Date</b>: <%= @goal.note_time %></p><br>
-      <p><b>Author</b>: <%= @goal.author %></p>
+      <h3 class="mt-6 font-bold">Notes</h3>
+      <table class="text-left">
+        <thead class="text-md">
+          <tr>
+            <th scope="col" class="px-6 py-3">Note</th>
+            <th scope="col" class="px-6 py-3">Recorded Date</th>
+            <th scope="col" class="px-6 py-3">Author</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @goal.notes.each do |note| %>
+            <tr>
+              <td class="px-6 py-4"><%= note[:note] %></td>
+              <td class="px-6 py-4"><%= note[:time]%></td>
+              <td class="px-6 py-4"><%= note[:author] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      <% if @goal.author != '--' %>
+        <p><b>Author</b>: <%= @goal.author %></p>
+      <% end %>
+
     </div>
   <% end %>
 </div>

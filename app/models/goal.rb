@@ -3,23 +3,19 @@
 # Goal Model
 class Goal < Resource
   attr_reader :id, :lifecycle_status, :achievement_status, :category,
-              :description, :targets, :addresses, :note, :author, :fhir_resource
+              :description, :targets, :addresses, :notes, :author, :fhir_resource
 
   def initialize(fhir_goal, bundle_entries)
     @fhir_resource = fhir_goal
     @id = fhir_goal.id
     @lifecycle_status = fhir_goal.lifecycleStatus&.capitalize
-    @achievement_status = fhir_goal.achievementStatus&.coding&.first&.code&.humanize
+    @achievement_status = fhir_goal.achievementStatus&.coding&.first&.code&.gsub('-', ' ')&.titleize
     @category = retrieve_categories
     @description = fhir_goal.try(:description)&.text
     @targets = retrieve_targets
     @addresses = retrieve_addresses(fhir_goal.subject)
-    @note = fhir_goal.try(:note)&.first&.text || '--'
-    @author = retrieve_author(bundle_entries)
-  end
-
-  def note_time
-    parse_date(@fhir_resource.try(:note)&.first&.time)
+    @notes = retrieve_notes(bundle_entries)
+    @author = retrieve_author(bundle_entries, @fhir_resource.try(:expressedBy))
   end
 
   private
@@ -62,8 +58,19 @@ class Goal < Resource
     end
   end
 
-  def retrieve_author(bundle_entries)
-    author_ref = @fhir_resource.try(:note)&.first&.authorReference || @fhir_resource.try(:expressedBy)
+  def retrieve_notes(bundle_entries)
+    fhir_notes = @fhir_resource.try(:note) || []
+    fhir_notes.map do |fhir_note|
+      note = fhir_note.text || '--'
+      time = parse_date(fhir_note.time)
+      author_ref = fhir_note.authorReference.presence
+      author = retrieve_author(bundle_entries, author_ref)
+
+      { note:, time:, author: }
+    end.reverse
+  end
+
+  def retrieve_author(bundle_entries, author_ref)
     return '--' if author_ref.blank?
 
     return author_ref.display if author_ref&.display.present?
