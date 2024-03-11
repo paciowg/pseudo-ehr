@@ -3,7 +3,7 @@
 # Observation Model
 class Observation < Resource
   attr_reader :id, :status, :category, :domain, :code, :effective_date_time,
-              :performer, :derived_from, :measurement, :location, :members, :fhir_resource
+              :performer, :derived_from, :measurement, :measurement_interpretation, :location, :members, :fhir_resource
 
   def initialize(fhir_observation, bundle_entries)
     @fhir_resource = fhir_observation
@@ -17,6 +17,7 @@ class Observation < Resource
     @derived_from = retrieve_derived_from(fhir_observation.derivedFrom, fhir_observation.subject)
     value_quantity = fhir_observation.valueQuantity.presence || fhir_observation.valueCodeableConcept
     @measurement = retrieve_mesearement(value_quantity)
+    @measurement_interpretation = fhir_observation.try(:interpretation)&.map(&:text)&.join(', ').presence || '--'
     @location = retrieve_location(bundle_entries)
     @members = retrieve_members(fhir_observation.hasMember, bundle_entries)
   end

@@ -11,6 +11,7 @@
       <p><b>Effective</b>: <%= @observation.effective %></p><br>
       <p><b>Performer</b>: <%= @observation.performer %></p><br>
       <p><b>Value</b>: <%= @observation.measurement %></p><br>
+      <p><b>Value Interpretation</b>: <%= @observation.measurement_interpretation %></p><br>
       <p>
         <b>Derived From</b>:
         <% @observation.derived_from.each_with_index do |item, index| %>
