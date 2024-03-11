@@ -26,7 +26,10 @@ class ConditionsController < ApplicationController
       entries = response.resource.entry.map(&:resource)
       fhir_conditions = entries.select { |entry| entry.resourceType == 'Condition' }
 
-      fhir_conditions.map { |entry| Condition.new(entry, entries) }
+      conditions = fhir_conditions.map do |entry|
+        Condition.new(entry, entries)
+      end
+      conditions.sort_by { |cond| cond.onset_date_time || cond.recorded_date || '' }.reverse
     rescue StandardError => e
       raise "
             Error fetching patient's (#{patient_id}) conditions from FHIR server. Status code: #{e.message}
