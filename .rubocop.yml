@@ -22,6 +22,9 @@ RSpec/LeakyConstantDeclaration:
 RSpec/SubjectStub:
   Enabled: false
 
+Metrics/ClassLength:
+  Enabled: false
+
 Metrics/BlockLength:
   Enabled: false
 

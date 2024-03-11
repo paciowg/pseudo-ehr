@@ -28,6 +28,30 @@
                <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Care Team</span>
             </a>
          </li>
+          <li>
+            <a href="/pages/patients/<%= @patient.id %>/conditions" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+               <%= image_tag "condition.png", alt: "Medical Condition Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"  %>
+               <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Conditions</span>
+            </a>
+         </li>
+         <li>
+            <a href="/pages/patients/<%= @patient.id %>/goals" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+               <%= image_tag "goal.png", alt: "Medical Goal Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"  %>
+               <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Goals</span>
+            </a>
+         </li>
+         <li>
+            <a href="/pages/patients/<%= @patient.id %>/observations" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+               <%= image_tag "observations.png", alt: "Medical Observation Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"  %>
+               <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Observations</span>
+            </a>
+         </li>
+         <li>
+            <a href="/pages/patients/<%= @patient.id %>/questionnaire_responses" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+               <%= image_tag "questionnaire_response.png", alt: "Questionnaire Response Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"  %>
+               <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Questionnaire Responses</span>
+            </a>
+         </li>
 
       </ul>
    </div>

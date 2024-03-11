@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ClassLength
 # app/controllers/adis_controller.rb
 class AdvanceDirectivesController < ApplicationController
   include AdvanceDirectivesHelper

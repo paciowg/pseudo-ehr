@@ -113,4 +113,10 @@ module ModelHelper
     text.empty? ? '--' : text.join(', ')
   end
   #-----------------------------------------------------------------------------
+
+  def parse_date(date_string)
+    return '--' if date_string.blank?
+
+    DateTime.parse(date_string).strftime('%b %d, %Y')
+  end
 end
