@@ -7,7 +7,9 @@ class ObservationsController < ApplicationController
 
   # GET /patients/:patient_id/observations
   def index
-    observations = fetch_and_cache_observations(params[:patient_id])
+    observations = fetch_and_cache_observations(
+      params[:patient_id]
+    )
 
     @grouped_observations = Observation.group_by_category_and_domain(observations)
     @collection_observations = Observation.collections(observations)
@@ -25,8 +27,11 @@ class ObservationsController < ApplicationController
 
   def fetch_and_cache_observations(patient_id)
     Rails.cache.fetch(cache_key_for_patient_observations(patient_id), expires_in: 1.minute) do
-      response = fetch_observations_by_patient(patient_id)
-      entries = response.resource.entry.map(&:resource)
+      response1 = fetch_observations_by_patient(patient_id)
+      entries1 = response1.resource.entry.map(&:resource)
+      response2 = fetch_observations_by_patient(patient_id, 'survey')
+      entries2 = response2.resource.entry.map(&:resource)
+      entries = entries2 + entries1
       fhir_observations = entries.select { |entry| entry.resourceType == 'Observation' }
 
       fhir_observations.map { |entry| Observation.new(entry, entries) }
@@ -37,11 +42,20 @@ class ObservationsController < ApplicationController
     end
   end
 
-  def fetch_observations_by_patient(patient_id)
-    search_param = { parameters: {
-      patient: patient_id,
-      _include: '*'
-    } }
+  def fetch_observations_by_patient(patient_id, category = nil)
+    search_param = if category
+                     { parameters: {
+                       patient: patient_id,
+                       _include: '*',
+                       category:
+                     } }
+                   else
+                     { parameters: {
+                       patient: patient_id,
+                       _include: '*'
+                     } }
+                   end
+
     response = @client.search(FHIR::Observation, search: search_param)
     raise response&.response&.dig(:code) if response&.resource&.entry.nil?
 
@@ -51,6 +65,10 @@ class ObservationsController < ApplicationController
   def find_observation
     observations = fetch_and_cache_observations(params[:patient_id])
     @observation = observations.find { |response| response.id == params[:id] }
+    return if @observation.present?
+
+    resource = @client.read(FHIR::Observation, params[:id])&.resource
+    @observation = Observation.new(resource, [])
     return if @observation.present?
 
     flash[:notice] = 'Observation not found'
