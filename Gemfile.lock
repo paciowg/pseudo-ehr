@@ -82,7 +82,7 @@ GEM
     bcp47 (0.3.3)
       i18n
     bcrypt (3.1.20)
-    bigdecimal (3.1.6)
+    bigdecimal (3.1.7)
     bindex (0.8.1)
     bootsnap (1.18.3)
       msgpack (~> 1.2)
@@ -193,7 +193,7 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2023.0808)
     mini_mime (1.1.5)
-    minitest (5.22.2)
+    minitest (5.22.3)
     msgpack (1.7.2)
     multi_json (1.15.0)
     multi_xml (0.6.0)
@@ -337,7 +337,7 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    shoulda-matchers (6.1.0)
+    shoulda-matchers (6.2.0)
       activesupport (>= 5.2.0)
     sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
@@ -416,7 +416,7 @@ DEPENDENCIES
   rubocop-rails
   rubocop-rspec
   selenium-webdriver
-  shoulda-matchers (~> 6.1)
+  shoulda-matchers (~> 6.2)
   sprockets-rails
   stimulus-rails
   tailwindcss-rails
