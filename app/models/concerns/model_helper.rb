@@ -100,7 +100,12 @@ module ModelHelper
     # TODO: Temporary! see above todo
     code = {
       '100826-7' => 'Portable medical order &or advance directive review',
-      '100827-5' => 'Portable medical order discussion participants'
+      '100827-5' => 'Portable medical order discussion participants',
+      '104144-1' => 'Mental Health Directive',
+      '81334-5' => 'Personal advance care plan',
+      '42348-3' => 'Advance directives',
+      '93037-0' => 'Portable Medical Order',
+      '92664-2' => 'Combined Living Will and Medical Power of Attorney'
     }
 
     text = []
@@ -110,7 +115,7 @@ module ModelHelper
       text << (coding.display || display || coding.code)
     end
 
-    text.empty? ? '--' : text.join(', ')
+    text.compact.empty? ? '--' : text.compact.join(', ')
   end
   #-----------------------------------------------------------------------------
 
