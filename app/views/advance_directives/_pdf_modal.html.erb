@@ -20,7 +20,13 @@
       </div>
       <!-- Modal body -->
       <div class="p-6 space-y-6">
-        <embed src="data:application/pdf;base64,<%= pdf %>" type="application/pdf" width="100%" height="600px">
+        <% if pdf %>
+          <embed src="data:application/pdf;base64,<%= pdf %>" type="application/pdf" width="100%" height="600px">
+        <% elsif binary_id %>
+          <iframe src="<%= pdf_path(binary_id: binary_id) %>" width="100%" height="600px">
+            This browser does not support PDFs. Please download the PDF to view it: <a href="<%= pdf_path(binary_id: binary_id) %>">Download PDF</a>.
+          </iframe>
+        <% end %>
       </div>
       <!-- Modal footer -->
       <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">

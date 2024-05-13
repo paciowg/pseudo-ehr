@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :fhir_servers, only: %i[index destroy]
 
   get 'welcome/index'
+  get 'pdf/:binary_id', to: 'pdfs#show', as: :pdf
   get 'pages/patients'
   get 'pages/fhir_servers'
   get 'pages/patients/:id/advance_directives', to: 'pages#patient_advance_directives',

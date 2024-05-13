@@ -71,10 +71,10 @@ class AdvanceDirectivesController < ApplicationController
     doc_entries = response.resource.entry.map(&:resource)
 
     adis = doc_entries.map do |doc|
-      pdf = get_pdf_from_contents(doc.content)
+      get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
       attachment_bundle_entries = get_structured_data_from_contents(doc.content)
       compositions = build_compositions(attachment_bundle_entries)
-      AdvanceDirective.new(doc, compositions, pdf)
+      AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
     end
 
     adis.group_by(&:type)
@@ -98,10 +98,13 @@ class AdvanceDirectivesController < ApplicationController
   end
 
   def fetch_adi(adi_id)
-    adi = @client.read(FHIR::DocumentReference, adi_id).try(:resource)
-    raise "Unable to fetch ADI with id #{adi_id} from FHIR server." if adi.nil?
+    doc = @client.read(FHIR::DocumentReference, adi_id).try(:resource)
+    raise "Unable to fetch ADI with id #{adi_id} from FHIR server." if doc.nil?
 
-    adi
+    get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
+    attachment_bundle_entries = get_structured_data_from_contents(doc.content)
+    compositions = build_compositions(attachment_bundle_entries)
+    AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
   rescue Net::ReadTimeout, Net::OpenTimeout
     raise "Unable to fetch DocumentReference/#{adi_id}: Request timed out."
   rescue StandardError
@@ -151,29 +154,39 @@ class AdvanceDirectivesController < ApplicationController
   end
 
   def get_pdf_from_contents(contents)
-    pdf = nil
+    pdf_data = { pdf: nil, pdf_binary_id: nil }
     pdf_content = contents.find { |content| check_content_attachment_resource(content) == 'pdf' }
     if pdf_content
       ref = pdf_content.attachment&.url
       binary_id = extract_id_from_ref(ref)
-      pdf = retrieve_bundle_from_binary(binary_id, 'pdf')
+      pdf_data = retrieve_bundle_from_binary(binary_id, 'pdf')
     end
-    pdf
+    pdf_data
   end
 
   def retrieve_bundle_from_binary(binary_id, content_type)
-    attachment = @client.read(FHIR::Binary, binary_id)
-    # byebug if binary_id == '341199ac-8e3c-4ec6-bd8a-d42ecaea4491'
-    return attachment.resource.data if content_type == 'pdf'
+    begin
+      response = @client.read(FHIR::Binary, binary_id)
+      data = response.try(:resource)&.data
+      return { pdf: data, pdf_binary_id: binary_id } if content_type == 'pdf'
+    rescue Net::ReadTimeout, Net::OpenTimeout
+      raise "Unable to read Binary/#{binary_id}: Request timed out."
+    rescue StandardError => e
+      Rails.logger.error "#{response&.response&.dig(:code)} : #{e.message}:" \
+      'Failed to fetch ADI FHIR Binary using fhir_client'
+      return { pdf: nil, pdf_binary_id: binary_id } if content_type == 'pdf'
 
-    fhir_attachment_json = JSON(Base64.decode64(attachment.resource.data))
+      nil
+    end
+
+    return if data.nil?
+
+    fhir_attachment_json = JSON(Base64.decode64(data))
     fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
     fhir_attachment_bundle.entry.map(&:resource)
-  rescue Net::ReadTimeout, Net::OpenTimeout
-    raise "Unable to read Binary/#{binary_id}: Request timed out."
-  rescue StandardError
-    Rails.logger.error "#{attachment&.response&.dig(:code)} : Failed to fetch ADI FHIR Binary"
-    # raise "#{attachment&.response&.dig(:code)} : Failed to fetch ADI FHIR Binary"
+  rescue StandardError => e
+    Rails.logger.error "#{e.message} : Failed to fetch ADI FHIR Binary using Faraday"
+    nil
   end
 
   def fetch_bundle_from_contents(bundle_id)
