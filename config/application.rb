@@ -9,12 +9,15 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 # Disable SSL Verification in Development
-OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE if Rails.env.development?
+# OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE if Rails.env.development?
 
 module PseudoEhr
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
+
+    # Disable SSL Verification in Development
+    config.ssl_options = { verify_ssl: false } if Rails.env.development?
 
     # Configuration for the application, engines, and railties goes here.
     #
