@@ -111,8 +111,9 @@ module ModelHelper
     text = []
 
     coding_list&.each do |coding|
-      display = code[coding.code]
-      text << (coding.display || display || coding.code)
+      display = coding.display || code[coding.code]
+      display = "#{display} (#{coding.code})" if display.present?
+      text << (display.presence || coding.code)
     end
 
     text.compact.empty? ? '--' : text.compact.join(', ')

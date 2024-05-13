@@ -34,10 +34,14 @@ class Composition < Resource
 
     section_list.each do |section|
       section_objects = {
-        'text' => section&.text&.div || '--',
+        'text' => section&.text&.div,
         'title' => section&.title || '--',
         'objects' => []
       }
+      clause_ext = section.extension.find { |ext| ext.url == 'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/padi-clause-extension' }
+      clause = clause_ext&.extension&.find { |ext| ext.url == 'Clause' }&.valueMarkdown
+      section_objects['clause'] = clause
+      section_objects['code'] = coding_string(section.code&.coding) if section.code&.coding.present?
 
       section.entry&.each do |current_entry|
         resource_type, resource_id = extract_resource_data(current_entry)
