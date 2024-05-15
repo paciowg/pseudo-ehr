@@ -72,7 +72,7 @@ class AdvanceDirectivesController < ApplicationController
 
     adis = doc_entries.map do |doc|
       get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
-      attachment_bundle_entries = get_structured_data_from_contents(doc.content)
+      attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
       compositions = build_compositions(attachment_bundle_entries)
       AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
     end
@@ -98,11 +98,14 @@ class AdvanceDirectivesController < ApplicationController
   end
 
   def fetch_adi(adi_id)
-    doc = @client.read(FHIR::DocumentReference, adi_id).try(:resource)
+    response = @client.read(FHIR::DocumentReference, adi_id)
+    doc = response.try(:resource)
+    request = response.request
+    add_query("#{request[:method].upcase} #{request[:url]}")
     raise "Unable to fetch ADI with id #{adi_id} from FHIR server." if doc.nil?
 
     get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
-    attachment_bundle_entries = get_structured_data_from_contents(doc.content)
+    attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
     compositions = build_compositions(attachment_bundle_entries)
     AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
   rescue Net::ReadTimeout, Net::OpenTimeout
@@ -131,10 +134,13 @@ class AdvanceDirectivesController < ApplicationController
   def fetch_adi_documents_by_patient(patient_id)
     search_param = { parameters: {
       patient: patient_id,
-      category: '42348-3'
+      category: '42348-3,75320-2'
     } }
     response = @client.search(FHIR::DocumentReference, search: search_param)
     raise response&.response&.dig(:code) if response&.resource&.entry.nil?
+
+    request = response.request
+    add_query("#{request[:method].upcase} #{request[:url]}")
 
     response
   rescue Net::ReadTimeout, Net::OpenTimeout
@@ -168,6 +174,8 @@ class AdvanceDirectivesController < ApplicationController
     begin
       response = @client.read(FHIR::Binary, binary_id)
       data = response.try(:resource)&.data
+      request = response.request
+      add_query("#{request[:method].upcase} #{request[:url]}")
       return { pdf: data, pdf_binary_id: binary_id } if content_type == 'pdf'
     rescue Net::ReadTimeout, Net::OpenTimeout
       raise "Unable to read Binary/#{binary_id}: Request timed out."
@@ -191,6 +199,8 @@ class AdvanceDirectivesController < ApplicationController
 
   def fetch_bundle_from_contents(bundle_id)
     response = @client.read(FHIR::Bundle, bundle_id)
+    request = response.request
+    add_query("#{request[:method].upcase} #{request[:url]}")
     response.resource.entry.map(&:resource)
   rescue Net::ReadTimeout, Net::OpenTimeout
     raise 'Failed to fetch ADI FHIR Bundle: request timed out'

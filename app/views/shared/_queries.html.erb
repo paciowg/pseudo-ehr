@@ -1,0 +1,15 @@
+<div id="mega-menu-dropdown" class="absolute z-10 hidden w-auto text-md bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
+  <div class="p-4 pb-0 text-left text-gray-900 md:pb-4 dark:text-white">
+
+    <% if queries.empty? %>
+      <%= 'No query to display'%>
+    <% else %>
+      <ol class="mt-4 font-medium max-w-md space-y-1 text-gray-500 list-decimal list-inside dark:text-gray-400">
+        <% queries.each do |query| %>
+          <li><%= query %></li>
+        <% end %>
+      </ol>
+    <% end %>
+
+  </div>
+</div>

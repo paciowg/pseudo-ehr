@@ -30,4 +30,16 @@ module ApplicationHelper
 
     age
   end
+
+  def queries
+    session[:queries] ||= []
+  end
+
+  def add_query(query)
+    queries << query
+  end
+
+  def clear_queries
+    session[:queries] = []
+  end
 end
