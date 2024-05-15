@@ -24,7 +24,7 @@
         <% target = adi.status == 'current' ? 'currentAdis' : 'supersededAdis' %>
         <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50"
           data-controller="table-row-click"
-          data-table-row-click-url="/pages/advance_directives/<%= adi.id %>"
+          data-table-row-click-url="<%= advance_directive_path(adi.id) %>"
           data-action="click->table-row-click#goToLink"
           data-showhide-target="<%= target %>"
         >

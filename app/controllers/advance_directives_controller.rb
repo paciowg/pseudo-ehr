@@ -55,8 +55,6 @@ class AdvanceDirectivesController < ApplicationController
     @client.update(doc_ref, doc_ref.id)
 
     flash[:success] = 'Successfully revoked Living Will'
-    # Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
-    # Rails.cache.delete(cache_key_for_adi(params[:id]))
     redirect_to patient_advance_directives_page_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error revoking Living Will: #{e.message}" }
@@ -80,21 +78,6 @@ class AdvanceDirectivesController < ApplicationController
     adis.group_by(&:type)
   rescue StandardError => e
     raise "Error fetching patient's (#{patient_id}) ADIs from FHIR server. Status code: #{e.message}"
-    # Rails.cache.fetch(cache_key_for_patient_adis(patient_id), expires_in: 1.minute) do
-    #   response = fetch_adi_documents_by_patient(patient_id)
-    #   doc_entries = response.resource.entry.map(&:resource)
-
-    #   adis = doc_entries.map do |doc|
-    #     pdf = get_pdf_from_contents(doc.content)
-    #     attachment_bundle_entries = get_structured_data_from_contents(doc.content)
-    #     compositions = build_compositions(attachment_bundle_entries)
-    #     AdvanceDirective.new(doc, compositions, pdf)
-    #   end
-
-    #   adis.group_by(&:type)
-    # rescue StandardError => e
-    #   raise "Error fetching patient's (#{patient_id}) ADIs from FHIR server. Status code: #{e.message}"
-    # end
   end
 
   def fetch_adi(adi_id)
@@ -112,18 +95,6 @@ class AdvanceDirectivesController < ApplicationController
     raise "Unable to fetch DocumentReference/#{adi_id}: Request timed out."
   rescue StandardError
     raise "Unable to fetch ADI with id #{adi_id} from FHIR server."
-
-    # Rails.cache.fetch(cache_key_for_adi(adi_id), expires_in: 5.minutes) do
-    #   adis = fetch_adis(patient_id)&.values&.flatten
-    #   adi = adis&.find do |a|
-    #     a.id == adi_id
-    #   end
-    #   raise "Unable to fetch ADI with id #{adi_id} from FHIR server." if adi.nil?
-
-    #   adi
-    # rescue StandardError
-    #   raise "Unable to fetch ADI with id #{adi_id} from FHIR server."
-    # end
   end
 
   def build_compositions(attachment_bundle_entries)

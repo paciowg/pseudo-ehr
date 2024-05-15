@@ -16,13 +16,6 @@
     </div>
   </div>
 
-  <% if @adis.nil? %>
-    <div class="w-full flex flex-col items-center justify-center my-4 p-6">
-      <i class="fas fa-spinner fa-spin text-8xl mr-2"></i>
-      <span class="text-center mt-4">Loading ADIs...</span>
-    </div>
-  <% end %>
-
   <%= turbo_frame_tag "adis" do %>
     <div id="accordion" data-accordion="open">
       <% @adis.each do |type, adis| %>
