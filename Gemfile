@@ -98,7 +98,7 @@ group :test do
   gem 'webdrivers'
 end
 
-gem 'pagy', '~> 7.0'
+gem 'pagy', '~> 8.3'
 
 gem 'bundler-audit', '~> 0.9.1'
 
