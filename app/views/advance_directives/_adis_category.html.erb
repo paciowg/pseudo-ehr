@@ -1,5 +1,5 @@
 <div class="w-full mb-5 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-  <% formatted_type = type.downcase.gsub('(', '').gsub(')', '').split(" ").join("-")%>
+  <% formatted_type = type.downcase.gsub(/[(),]/, '').split.join('-')%>
   <% body_id = "accordion-body-#{formatted_type}"%>
   <h5 id="accordion-heading-<%= formatted_type%>">
     <a class="flex items-center justify-between w-full p-5 font-medium text-left text-lg text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-800 dark:border-gray-700 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-gray-800" data-accordion-target="#<%= body_id %>" aria-expanded="true" aria-controls="<%= body_id %>">

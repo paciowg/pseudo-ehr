@@ -30,7 +30,11 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
           </svg>
         </button>
-        <%= render 'shared/queries' %>
+        <div id="mega-menu-dropdown" class="absolute z-10 hidden w-auto text-md bg-white border border-gray-100 rounded-lg shadow-md dark:border-gray-700 md:grid-cols-3 dark:bg-gray-700">
+          <div id="queries" class="p-4 pb-0 text-left text-gray-900 md:pb-4 dark:text-white">
+            <%= render 'shared/queries' %>
+          </div>
+        </div>
       </div>
 
       <a href="/disconnect" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-800 dark:hover:bg-gray-800 group">

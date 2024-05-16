@@ -103,10 +103,13 @@ class AdvanceDirectivesController < ApplicationController
   end
 
   def fetch_adi_documents_by_patient(patient_id)
+    status_map = { 'Superseded' => 'superseded', 'Current' => 'current' }
+    status = status_map[params[:status]]
     search_param = { parameters: {
       patient: patient_id,
-      category: '42348-3,75320-2'
-    } }
+      category: '42348-3,75320-2',
+      status:
+    }.compact }
     response = @client.search(FHIR::DocumentReference, search: search_param)
     raise response&.response&.dig(:code) if response&.resource&.entry.nil?
 

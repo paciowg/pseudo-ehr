@@ -19,7 +19,7 @@
       <%= render "shared/patient_menu" %>
     <% end %>
 
-    <%= render "shared/flash_messages" %>
+    <div id="flash"><%= render "shared/flash_messages" %></div>
     <main class="container mx-auto mt-20 px-5 flex flex-col items-center w-full overflow-auto h-full shadow-md">
       <%= yield %>
     </main>

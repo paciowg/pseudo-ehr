@@ -5,18 +5,31 @@
       Advance Directives (ADIs)
     </h1>
     <div class="w-1/2">
-      <label for="doc-status" class="block mb-2 text-md font-medium text-gray-900 dark:text-white">Filter By Status</label>
-      <select id="doc-status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        data-action="change->showhide#toggleAdiStatus" data-showhide-target="adiStatus"
-      >
-        <option>All</option>
-        <option>Current</option>
-        <option>Superseded</option>
-      </select>
+      <%= form_with(url: patient_advance_directives_path(@patient.id), method: :get, id: "adi_status_form", data: {turbo_frame: "adis",
+      turbo_action: "advance", controller: "form", action: "input->form#submit"}) do %>
+        <div class="flex justify-center items-center space-x-1" data-controller="spinner">
+          <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+          <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+          <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce400"></div>
+        </div>
+
+        <%= label_tag(:status, "Filter By Status:", class: "block mb-2 text-md font-medium text-gray-900 dark:text-white") %>
+        <select id="status" name="status" default="<%= params[:status] %>" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+          <option>Current</option>
+          <option>Superseded</option>
+          <option>All</option>
+        </select>
+      <% end %>
     </div>
   </div>
 
   <%= turbo_frame_tag "adis" do %>
+    <%= turbo_stream.update "queries" do%>
+      <%= render 'shared/queries' %>
+    <% end %>
+    <%= turbo_stream.update "flash" do%>
+      <%= render 'shared/flash_messages' %>
+    <% end %>
     <div id="accordion" data-accordion="open">
       <% @adis.each do |type, adis| %>
         <%= render "adis_category", adis: adis, type: type %>

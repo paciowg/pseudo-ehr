@@ -1,6 +1,13 @@
 <!-- app/views/advance_directives/show.html.erb -->
 <div class="relative sm:ml-40 lg:ml-44 overflow-x-auto sm:rounded-lg">
   <%= turbo_frame_tag "adi" do %>
+    <%= turbo_stream.update "queries" do%>
+      <%= render 'shared/queries' %>
+    <% end %>
+    <%= turbo_stream.update "flash" do%>
+      <%= render 'shared/flash_messages' %>
+    <% end %>
+
     <%= render "adi_header"%>
     <% @adi.compositions.each do |composition| %>
       <% composition.section.each do |section| %>
