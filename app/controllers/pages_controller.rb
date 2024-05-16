@@ -6,13 +6,13 @@ class PagesController < ApplicationController
                 except: %i[patient_advance_directives advance_directive patient_care_teams
                            patient_questionnaire_responses patient_questionnaire_response
                            patient_observations patient_observation patient_conditions patient_condition
-                           patient_goals patient_goal]
+                           patient_goals patient_goal patient_transition_of_care]
   before_action :require_server, except: %i[fhir_servers]
   before_action :retrieve_patient,
                 only: %i[patient_advance_directives advance_directive patient_care_teams
                          patient_questionnaire_responses patient_questionnaire_response
                          patient_observations patient_observation patient_conditions patient_condition
-                         patient_goals patient_goal]
+                         patient_goals patient_goal patient_transition_of_care]
 
   # GET /pages/patients
   def patients; end
@@ -61,6 +61,11 @@ class PagesController < ApplicationController
   # GET /pages/patients/:patient_id/goals/:id
   def patient_goal
     @goal_id = params[:id]
+  end
+
+  # GET /pages/patients/:patient_id/transition_of_cares/:id
+  def patient_transition_of_care
+    @toc_id = params[:id]
   end
 
   private

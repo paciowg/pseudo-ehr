@@ -16,8 +16,8 @@ class Composition < Resource
     @status = fhir_composition.status
     @type = coding_string(fhir_composition.type&.coding)
     @category = category_string(fhir_composition.category)
-    @date = fhir_composition.date
-    @author = fhir_composition.author&.first&.display || '--'
+    @date = parse_date(fhir_composition.date)
+    @author = retrieve_author(fhir_composition.author, fhir_bundle)
     @title = fhir_composition.title
     @custodian = get_custodian(fhir_composition.custodian, fhir_bundle)
     fhir_patient = get_object_from_bundle(fhir_composition.subject, fhir_bundle)
@@ -27,6 +27,35 @@ class Composition < Resource
   end
 
   private
+
+  def retrieve_author(fhir_author, fhir_bundle)
+    author = fhir_author.first
+    return '--' unless author
+    return author.display if author.display
+
+    author_resource =  get_object_from_bundle(author, fhir_bundle)
+    return '--' unless author_resource
+
+    case author_resource.resourceType
+    when 'Practitioner', 'Patient', 'RelatedPerson'
+      format_name(author_resource.name) => { first_name:, last_name: }
+      "#{first_name} #{last_name}"
+    when 'Organization'
+      author_resource.name
+    when 'PractitionerRole'
+      name = author_resource.practitioner.display
+      return name if name
+
+      practioner_id = author_resource.practitioner.reference.split('/').last
+      practitioner = get_object_from_bundle(FHIR::Reference.new(reference: "Practitioner/#{practioner_id}"),
+                                            fhir_bundle)
+
+      return '--' unless practitioner
+
+      format_name(practitioner.name) => { first_name:, last_name: }
+      "#{first_name} #{last_name}"
+    end
+  end
 
   def fill_sections(section_list, fhir_bundle)
     @section = []
@@ -72,6 +101,10 @@ class Composition < Resource
       build_consent_hash(resource)
     when 'CarePlan'
       build_careplan_hash(resource)
+    when 'AllergyIntolerance'
+      build_allergy_intolerance_hash(resource)
+    when 'Condition'
+      build_condition_hash(resource)
     else
       Rails.logger.debug { "error unexpected type: #{resource_type}" }
       {}
@@ -88,7 +121,8 @@ class Composition < Resource
       request_code: resource&.code&.coding&.first&.code || '--',
       request: coding_string(resource&.code&.coding),
       request_text: resource&.code&.text || '--',
-      status: resource.status || '--'
+      status: resource.status || '--',
+      resource: ServiceRequest.new(resource, @fhir_bundle)
     }
   end
 
@@ -106,7 +140,8 @@ class Composition < Resource
       type: coding_string(resource&.code&.coding),
       type_text: resource&.code&.text || '--',
       preference: resource&.valueString || '--',
-      preference_text: '--'
+      preference_text: '--',
+      resource: Observation.new(resource, @fhir_bundle)
     }
     unless resource&.valueCodeableConcept.nil?
       hash[:preference] = coding_string(resource&.valueCodeableConcept&.coding)
@@ -145,7 +180,22 @@ class Composition < Resource
     {
       resource_type: 'CarePlan',
       title: resource&.title,
-      goals: careplan_goal_resources || []
+      goals: careplan_goal_resources || [],
+      resource: CarePlan.new(resource, @fhir_bundle)
+    }
+  end
+
+  def build_allergy_intolerance_hash(resource)
+    {
+      resource_type: resource.resourceType,
+      resource: AllergyIntolerance.new(resource, @fhir_bundle)
+    }
+  end
+
+  def build_condition_hash(resource)
+    {
+      resource_type: resource.resourceType,
+      resource: Condition.new(resource, @fhir_bundle)
     }
   end
 
