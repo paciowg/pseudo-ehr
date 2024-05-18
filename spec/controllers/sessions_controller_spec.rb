@@ -4,7 +4,7 @@
 require 'rails_helper'
 
 RSpec.describe SessionsController do
-  let!(:fhir_server) { create(:fhir_server, base_url: 'http://hapi.fhir.org/baseR4', authenticated_access: false) }
+  let!(:fhir_server) { create(:fhir_server, base_url: 'https://qa-rr-fhir2.maxmddirect.com', authenticated_access: false) }
 
   describe 'GET #new' do
     context 'when server is present' do
@@ -31,7 +31,7 @@ RSpec.describe SessionsController do
   describe 'POST #launch_server' do
     context 'when server does not have authenticated access' do
       before do
-        post :launch_server, params: { base_url: 'http://hapi.fhir.org/baseR4', authenticated_access: false, name: 'Fhir Server' }
+        post :launch_server, params: { base_url: 'https://qa-rr-fhir2.maxmddirect.com', authenticated_access: false, name: 'Fhir Server' }
       end
 
       it 'redirects to pages_patients_path' do

@@ -9,8 +9,32 @@
       <%= render 'edit_pmo_modal', section: section %>
     <% end %>
 
+
   </h5>
   <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+
+    <% if section['code'] %>
+      <h5 class="mb-2 text-md text-left text-gray-900 dark:text-white">
+        <b>Classification</b>: <%= section['code'] %>
+      </h5>
+    <% end %>
+
+    <% if section['clause']%>
+      <div class="mb-4">
+        <h5 class="mb-2 text-md font-bold text-left text-gray-900 dark:text-white">
+            Clause
+        </h5>
+        <%= section['clause'].html_safe %>
+      </div>
+    <% elsif  section['text']%>
+      <div class="mb-4">
+        <h5 class="mb-2 text-md font-bold text-left text-gray-900 dark:text-white">
+            Section summary:
+        </h5>
+        <%= section['text'].html_safe %>
+      </div>
+    <% end %>
+
     <% section['objects'].each do |object| %>
 
       <% if object[:resource_type] == 'Goal' || object[:resource_type] == 'Observation'%>

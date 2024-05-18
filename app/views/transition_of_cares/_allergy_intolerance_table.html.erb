@@ -1,0 +1,45 @@
+<table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
+  <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+    Allergy Intolerance
+  </caption>
+  <thead class="text-md text-white uppercase bg-gray-900">
+    <tr>
+        <th scope="col" class="px-6 py-3">
+          Code
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Category
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Criticality
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Asserter
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Last Occurence
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Reactions
+        </th>
+      </tr>
+  </thead>
+  <tbody>
+    <% allergies.each do |obj| %>
+    <% allergy = obj[:resource]%>
+    <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50">
+      <td class="px-6 py-4 font-semibold text-wrap"><%= allergy.code %></td>
+      <td class="px-6 py-4"><%= allergy.category %></td>
+      <td class="px-6 py-4"><%= allergy.criticality %></td>
+      <td class="px-6 py-4"><%= allergy.asserter %></td>
+      <td class="px-6 py-4"><%= allergy.last_occurence %></td>
+      <td class="px-6 py-4">
+        <% allergy.reactions.each do |reaction| %>
+          <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Substance: </b><%= reaction[:substance]%></p>
+          <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Manifestation: </b><%= reaction[:manifestation] %></p>
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

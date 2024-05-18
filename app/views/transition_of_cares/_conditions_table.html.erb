@@ -1,0 +1,59 @@
+<table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
+  <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+    Conditions
+  </caption>
+  <thead class="text-md text-white uppercase bg-gray-900">
+    <tr>
+        <th scope="col" class="px-6 py-3">
+          Code
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Category
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Onset/Recorded/Asserted Date
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Asserter
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Body Site
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Note
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Evidences
+        </th>
+      </tr>
+  </thead>
+  <tbody>
+    <% conditions.each do |obj| %>
+    <% condition = obj[:resource]%>
+    <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50">
+      <td class="px-6 py-4 font-semibold text-wrap"><%= condition.code %></td>
+      <td class="px-6 py-4"><%= condition.category %></td>
+      <td class="px-6 py-4">
+        <% date = condition.onset.gsub('--', '').presence || condition.recorded.gsub('--', '').presence || condition.asserted.gsub('--', '').presence%>
+        <%= date %>
+      </td>
+      <td class="px-6 py-4"><%= condition.asserter %></td>
+      <td class="px-6 py-4"><%= condition.body_site %></td>
+      <td class="px-6 py-4"><%= condition.note %></td>
+      <td class="px-6 py-4">
+
+        <% if condition.evidences.blank? %>
+          --
+        <% end %>
+
+        <% condition.evidences.each do |evidence| %>
+          <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Details:</b></p>
+          <p class="mt-1 text-sm font-normal text-blue-500 dark:text-gray-400"><a href="<%= evidence[:path] %><">Evidence linked</a></p>
+          <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"><%= evidence[:name] %></p>
+        <% end %>
+
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

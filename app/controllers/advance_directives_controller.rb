@@ -6,16 +6,17 @@ class AdvanceDirectivesController < ApplicationController
   before_action :require_server, :retrieve_patient
   # GET /patients/:patient_id/advance_directives
   def index
-    @adis = fetch_and_cache_adis(params[:patient_id])
+    @adis = fetch_adis(params[:patient_id])
     flash.now[:notice] = 'No ADI found' if @adis.empty?
   rescue StandardError => e
+    Rails.logger.error e
     flash.now[:danger] = e.message
     @adis = []
   end
 
   # GET /advance_directives/:id
   def show
-    @adi = fetch_and_cache_adi(params[:id])
+    @adi = fetch_adi(params[:id])
   rescue StandardError => e
     flash[:danger] = e.message
     redirect_to patient_advance_directives_page_path, id: @patient.id
@@ -25,7 +26,7 @@ class AdvanceDirectivesController < ApplicationController
   # We will use the logged provider data in the update request as opposed to the hardcoded provider.
   # PUT /advance_directives/:id
   def update_pmo
-    @adi = fetch_and_cache_adi(params[:id])
+    @adi = fetch_adi(params[:id])
     doc_ref = @adi.fhir_doc_ref
     bundle_entries = get_structured_data_from_contents(doc_ref.content)
 
@@ -37,8 +38,8 @@ class AdvanceDirectivesController < ApplicationController
     save_updated_data(bundle_entries, doc_ref)
 
     flash[:success] = 'Successfully updated PMO'
-    Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
-    Rails.cache.delete(cache_key_for_adi(params[:id]))
+    # Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
+    # Rails.cache.delete(cache_key_for_adi(params[:id]))
     redirect_to patient_advance_directives_page_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error updating PMO: #{e.message}" }
@@ -48,14 +49,12 @@ class AdvanceDirectivesController < ApplicationController
 
   # PUT /advance_directives/:id
   def revoke_living_will
-    @adi = fetch_and_cache_adi(params[:id])
+    @adi = fetch_adi(params[:id])
     doc_ref = @adi.fhir_doc_ref
     doc_ref.docStatus = 'entered-in-error'
     @client.update(doc_ref, doc_ref.id)
 
     flash[:success] = 'Successfully revoked Living Will'
-    Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
-    Rails.cache.delete(cache_key_for_adi(params[:id]))
     redirect_to patient_advance_directives_page_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error revoking Living Will: #{e.message}" }
@@ -65,38 +64,37 @@ class AdvanceDirectivesController < ApplicationController
 
   private
 
-  def fetch_and_cache_adis(patient_id)
-    Rails.cache.fetch(cache_key_for_patient_adis(patient_id), expires_in: 1.minute) do
-      response = fetch_adi_documents_by_patient(patient_id)
-      doc_entries = response.resource.entry.map(&:resource)
+  def fetch_adis(patient_id)
+    response = fetch_adi_documents_by_patient(patient_id)
+    doc_entries = response.resource.entry.map(&:resource)
 
-      adis = doc_entries.map do |doc|
-        pdf = get_pdf_from_contents(doc.content)
-        attachment_bundle_entries = get_structured_data_from_contents(doc.content)
-        compositions = build_compositions(attachment_bundle_entries)
-        AdvanceDirective.new(doc, compositions, pdf)
-      end
-
-      adis.group_by(&:type)
-    rescue StandardError => e
-      raise "Error fetching patient's (#{patient_id}) ADIs from FHIR server. Status code: #{e.message}"
+    adis = doc_entries.map do |doc|
+      get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
+      attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
+      compositions = build_compositions(attachment_bundle_entries)
+      AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
     end
+
+    adis.group_by(&:type)
+  rescue StandardError => e
+    raise "Error fetching patient's (#{patient_id}) ADIs from FHIR server. Status code: #{e.message}"
   end
 
-  def fetch_and_cache_adi(adi_id)
-    patient_id = @patient.id
+  def fetch_adi(adi_id)
+    response = @client.read(FHIR::DocumentReference, adi_id)
+    doc = response.try(:resource)
+    request = response.request
+    add_query("#{request[:method].upcase} #{request[:url]}")
+    raise "Unable to fetch ADI with id #{adi_id} from FHIR server." if doc.nil?
 
-    Rails.cache.fetch(cache_key_for_adi(adi_id), expires_in: 5.minutes) do
-      adis = fetch_and_cache_adis(patient_id)&.values&.flatten
-      adi = adis&.find do |a|
-        a.id == adi_id
-      end
-      raise "Unable to fetch ADI with id #{adi_id} from FHIR server." if adi.nil?
-
-      adi
-    rescue StandardError
-      raise "Unable to fetch ADI with id #{adi_id} from FHIR server."
-    end
+    get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
+    attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
+    compositions = build_compositions(attachment_bundle_entries)
+    AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
+  rescue Net::ReadTimeout, Net::OpenTimeout
+    raise "Unable to fetch DocumentReference/#{adi_id}: Request timed out."
+  rescue StandardError
+    raise "Unable to fetch ADI with id #{adi_id} from FHIR server."
   end
 
   def build_compositions(attachment_bundle_entries)
@@ -105,14 +103,22 @@ class AdvanceDirectivesController < ApplicationController
   end
 
   def fetch_adi_documents_by_patient(patient_id)
+    status_map = { 'Superseded' => 'superseded', 'Current' => 'current' }
+    status = status_map[params[:status]]
     search_param = { parameters: {
       patient: patient_id,
-      category: '75320-2'
-    } }
+      category: '42348-3,75320-2',
+      status:
+    }.compact }
     response = @client.search(FHIR::DocumentReference, search: search_param)
     raise response&.response&.dig(:code) if response&.resource&.entry.nil?
 
+    request = response.request
+    add_query("#{request[:method].upcase} #{request[:url]}")
+
     response
+  rescue Net::ReadTimeout, Net::OpenTimeout
+    raise "Unable to fetch DocumentReference for patient #{patient_id}: Request timed out."
   end
 
   def get_structured_data_from_contents(contents)
@@ -128,30 +134,50 @@ class AdvanceDirectivesController < ApplicationController
   end
 
   def get_pdf_from_contents(contents)
-    pdf = nil
+    pdf_data = { pdf: nil, pdf_binary_id: nil }
     pdf_content = contents.find { |content| check_content_attachment_resource(content) == 'pdf' }
     if pdf_content
       ref = pdf_content.attachment&.url
       binary_id = extract_id_from_ref(ref)
-      pdf = retrieve_bundle_from_binary(binary_id, 'pdf')
+      pdf_data = retrieve_bundle_from_binary(binary_id, 'pdf')
     end
-    pdf
+    pdf_data
   end
 
   def retrieve_bundle_from_binary(binary_id, content_type)
-    attachment = @client.read(FHIR::Binary, binary_id)
-    return attachment.resource.data if content_type == 'pdf'
+    begin
+      response = @client.read(FHIR::Binary, binary_id)
+      data = response.try(:resource)&.data
+      request = response.request
+      add_query("#{request[:method].upcase} #{request[:url]}")
+      return { pdf: data, pdf_binary_id: binary_id } if content_type == 'pdf'
+    rescue Net::ReadTimeout, Net::OpenTimeout
+      raise "Unable to read Binary/#{binary_id}: Request timed out."
+    rescue StandardError => e
+      Rails.logger.error "#{response&.response&.dig(:code)} : #{e.message}:" \
+      'Failed to fetch ADI FHIR Binary using fhir_client'
+      return { pdf: nil, pdf_binary_id: binary_id } if content_type == 'pdf'
 
-    fhir_attachment_json = JSON(Base64.decode64(attachment.resource.data))
+      nil
+    end
+
+    return if data.nil?
+
+    fhir_attachment_json = JSON(Base64.decode64(data))
     fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
     fhir_attachment_bundle.entry.map(&:resource)
-  rescue StandardError
-    raise "#{attachment&.response&.dig(:code)} : Failed to fetch ADI FHIR Binary"
+  rescue StandardError => e
+    Rails.logger.error "#{e.message} : Failed to fetch ADI FHIR Binary using Faraday"
+    nil
   end
 
   def fetch_bundle_from_contents(bundle_id)
     response = @client.read(FHIR::Bundle, bundle_id)
+    request = response.request
+    add_query("#{request[:method].upcase} #{request[:url]}")
     response.resource.entry.map(&:resource)
+  rescue Net::ReadTimeout, Net::OpenTimeout
+    raise 'Failed to fetch ADI FHIR Bundle: request timed out'
   rescue StandardError
     raise "#{response&.response&.dig(:code)}: Failed to fetch ADI FHIR Bundle"
   end

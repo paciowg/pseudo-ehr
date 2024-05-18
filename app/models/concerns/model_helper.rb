@@ -100,22 +100,30 @@ module ModelHelper
     # TODO: Temporary! see above todo
     code = {
       '100826-7' => 'Portable medical order &or advance directive review',
-      '100827-5' => 'Portable medical order discussion participants'
+      '100827-5' => 'Portable medical order discussion participants',
+      '104144-1' => 'Mental Health Directive',
+      '81334-5' => 'Personal advance care plan',
+      '42348-3' => 'Advance directives',
+      '93037-0' => 'Portable Medical Order',
+      '92664-2' => 'Combined Living Will and Medical Power of Attorney'
     }
 
     text = []
 
     coding_list&.each do |coding|
-      display = code[coding.code]
-      text << (coding.display || display || coding.code)
+      display = coding.display || code[coding.code]
+      display = "#{display} (#{coding.code})" if display.present?
+      text << (display.presence || coding.code)
     end
 
-    text.empty? ? '--' : text.join(', ')
+    text.compact.empty? ? '--' : text.compact.join(', ')
   end
   #-----------------------------------------------------------------------------
 
   def parse_date(date_string)
     return '--' if date_string.blank?
+
+    date_string = "#{date_string}-01" if date_string.split('-').size == 2
 
     DateTime.parse(date_string).strftime('%b %d, %Y')
   end

@@ -1,0 +1,47 @@
+<table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
+  <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+    Service Requests
+  </caption>
+  <thead class="text-md text-white uppercase bg-gray-900">
+      <tr>
+        <th scope="col" class="px-6 py-3">
+          Request
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Status
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Intent
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Category
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Priority
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Occurence
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Authored on
+        </th>
+        <th scope="col" class="px-6 py-3">
+          Requester
+        </th>
+      </tr>
+  </thead>
+  <tbody>
+      <% service_requests.each do |service_req| %>
+        <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50">
+          <td class="px-6 py-4 font-semibold text-wrap"><%= service_req.code %></td>
+          <td class="px-6 py-4"><%= service_req.status %></td>
+          <td class="px-6 py-4"><%= service_req.intent %></td>
+          <td class="px-6 py-4"><%= service_req.category %></td>
+          <td class="px-6 py-4"><%= service_req.priority %></td>
+          <td class="px-6 py-4"><%= service_req.occurence %></td>
+          <td class="px-6 py-4"><%= service_req.authored_on %></td>
+          <td class="px-6 py-4"><%= service_req.requester %></td>
+        </tr>
+      <% end %>
+  </tbody>
+</table>

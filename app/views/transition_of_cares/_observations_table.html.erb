@@ -1,0 +1,45 @@
+<table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
+  <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+    Observations
+  </caption>
+  <thead class="text-md text-white uppercase bg-gray-900">
+    <tr>
+      <th scope="col" class="px-6 py-3">Code</th>
+      <th scope="col" class="px-6 py-3">Effective</th>
+      <th scope="col" class="px-6 py-3">Category</th>
+      <th scope="col" class="px-6 py-3">Domain</th>
+      <th scope="col" class="px-6 py-3">Performer</th>
+      <th scope="col" class="px-6 py-3">Value</th>
+      <th scope="col" class="px-6 py-3">Members</th>
+      <th scope="col" class="px-6 py-3">Event Location</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% observations.each do |obj| %>
+      <% observation = obj[:resource] %>
+      <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50">
+        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-wrap"><%= observation.code %></th>
+        <td class="px-6 py-4"><%= observation.effective %></td>
+        <td class="px-6 py-4"><%= observation.category %></td>
+        <td class="px-6 py-4"><%= observation.domain %></td>
+        <td class="px-6 py-4"><%= observation.performer %></td>
+        <td class="px-6 py-4"><%= observation.measurement %></td>
+        <td class="px-6 py-4">
+
+          <% if observation.collection? %>
+            <% observation.members.each do |member| %>
+              <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
+                <a href="<%= patient_observation_page_path(patient_id: @patient.id, id: member.id) %>">Observation/<%= member.id %></a>
+              </p>
+            <% end %>
+
+          <% else %>
+            No members
+          <% end %>
+
+        </td>
+        <td class="px-6 py-4"><%= observation.location %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

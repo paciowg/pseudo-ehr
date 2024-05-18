@@ -6,7 +6,7 @@ require 'rails_helper'
 RSpec.describe WelcomeController do
   describe 'GET #index' do
     context 'when server is present' do
-      let!(:fhir_server) { create(:fhir_server, base_url: 'http://hapi.fhir.org/baseR4') }
+      let!(:fhir_server) { create(:fhir_server, base_url: 'https://qa-rr-fhir2.maxmddirect.com') }
 
       before do
         session[:fhir_server_url] = fhir_server.base_url

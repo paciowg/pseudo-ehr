@@ -5,6 +5,9 @@
           Description
         </th>
         <th scope="col" class="px-6 py-3">
+          Version
+        </th>
+        <th scope="col" class="px-6 py-3">
           Status
         </th>
         <th scope="col" class="px-6 py-3">
@@ -21,21 +24,22 @@
     <tbody>
 
       <% adis.each do |adi| %>
-        <% target = adi.status == 'current' ? 'currentAdis' : 'supersededAdis' %>
+        <% target = adi.status == "current" ? "currentAdis" : "supersededAdis" %>
         <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50"
           data-controller="table-row-click"
           data-table-row-click-url="/pages/advance_directives/<%= adi.id %>"
           data-action="click->table-row-click#goToLink"
           data-showhide-target="<%= target %>"
         >
-          <td class="px-6 py-4 font-semibold">
+          <td class="px-6 py-4 font-semibold flex col-span-1 flex-shrink-0">
             <%= adi.description %>
-            <% if adi.doc_status == 'entered-in-error' && adi.type == 'Living Will' %>
+            <% if adi.doc_status == "entered-in-error" && adi.status == "current" %>
               <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Revoked</span>
             <% end %>
           </td>
+          <td class="px-6 py-4"><%= adi.version %></td>
           <td class="px-6 py-4"><%= adi.status %></td>
-          <td class="px-6 py-4 <%= adi.doc_status == 'entered-in-error' ? 'text-red-500' : '' %>"><%= adi.doc_status %></td>
+          <td class="px-6 py-4 <%= adi.doc_status == "entered-in-error" ? "text-red-500" : "" %>"><%= adi.doc_status %></td>
           <td class="px-6 py-4"><%= adi.author %></td>
           <td class="px-6 py-4"><%= adi.date %></td>
         </tr>

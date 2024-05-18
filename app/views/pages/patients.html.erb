@@ -15,8 +15,12 @@
           </div>
           <%= f.text_field :query_name,
             class: "block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
-            placeholder: "Search patient by name..."
+            placeholder: "Search patient by name...",
+            list: "name-options"
           %>
+          <datalist id="name-options">
+            <option value="Smith-Johnson"></option>
+          </datalist>
         </div>
 
         <%= f.label :query_id, "Search Fhir Server", class: "sr-only" %>
@@ -26,8 +30,12 @@
           </div>
           <%= f.text_field :query_id,
             class: "block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
-            placeholder: "Search patient by id..."
+            placeholder: "Search patient by id...",
+            list: "id-options"
           %>
+          <datalist id="id-options">
+            <option value="patientBSJ1">patientBSJ1</option>
+          </datalist>
         </div>
       </div>
     <% end %>

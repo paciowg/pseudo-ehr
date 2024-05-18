@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
+  include ApplicationHelper
   include Pagy::Backend
 
-  before_action :current_server
+  before_action :current_server, :clear_queries
 
   def current_server
     @fhir_server = FhirServer.find_by(base_url: session[:fhir_server_url])

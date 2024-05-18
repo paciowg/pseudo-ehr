@@ -4,7 +4,7 @@
 class Condition < Resource
   attr_reader :id, :clinical_status, :verification_status, :category,
               :code, :onset_date_time, :asserted_date, :recorded_date,
-              :asserter, :evidences, :note, :fhir_resource
+              :asserter, :evidences, :note, :body_site, :fhir_resource
 
   def initialize(fhir_condition, bundle_entries)
     @fhir_resource = fhir_condition
@@ -18,6 +18,7 @@ class Condition < Resource
     @recorded_date = fhir_condition.try(:recordedDate)
     @asserter = retrieve_asserter(bundle_entries)
     @evidences = retrieve_evidences(fhir_condition.subject)
+    @body_site = fhir_condition.bodySite&.map { |c| coding_string(c.coding) }&.join(', ')
     @note = fhir_condition.try(:note)&.first&.text || '--'
   end
 

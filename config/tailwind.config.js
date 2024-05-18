@@ -21,5 +21,18 @@ module.exports = {
     require('@tailwindcss/typography'),
     require('@tailwindcss/container-queries'),
     require('flowbite/plugin'),
-  ]
+  ],
+  extend: {
+    animation: {
+      bounce: 'bounce 1s infinite',
+      bounce200: 'bounce 1s infinite 200ms',
+      bounce400: 'bounce 1s infinite 400ms',
+    },
+    keyframes: {
+      bounce: {
+        '0%, 100%': { transform: 'translateY(-25%)', opacity: '0.3' },
+        '50%': { transform: 'none', opacity: '1' },
+      },
+    },
+  }
 }
