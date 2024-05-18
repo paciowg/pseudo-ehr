@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # MedicationRequest Model
 class MedicationRequest < Resource
   attr_reader :id, :fhir_resource, :status, :intent, :medication,

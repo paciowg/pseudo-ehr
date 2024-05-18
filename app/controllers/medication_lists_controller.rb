@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/controllers/medication_lists_controller.rb
 class MedicationListsController < ApplicationController
   before_action :require_server, :retrieve_patient
