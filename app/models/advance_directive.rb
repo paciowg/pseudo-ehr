@@ -3,7 +3,8 @@
 # AdvanceDirective Model
 class AdvanceDirective < Resource
   attr_reader :id, :status, :doc_status, :type, :subject, :author, :date, :custodian, :description,
-              :compositions, :pdf, :pdf_binary_id, :relates_to_ref_id, :relates_to_code, :fhir_doc_ref
+              :compositions, :pdf, :pdf_binary_id, :relates_to_ref_id, :relates_to_code, :fhir_doc_ref,
+              :version
 
   def initialize(fhir_doc_ref, compositions, pdf, pdf_binary_id)
     @id = fhir_doc_ref.id
@@ -22,5 +23,13 @@ class AdvanceDirective < Resource
     @relates_to_ref_id = extract_resource_data(relates_to&.target)&.last
     @relates_to_code = relates_to&.code
     @fhir_doc_ref = fhir_doc_ref
+    @version = read_version_extension
+  end
+
+  private
+
+  def read_version_extension
+    version_ext = @fhir_doc_ref.extension.find { |ext| ext.url == 'http://hl7.org/fhir/us/ccda/StructureDefinition/VersionNumber' }
+    version_ext&.valueInteger
   end
 end
