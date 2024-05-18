@@ -5,7 +5,7 @@
 require 'rails_helper'
 
 RSpec.describe ApplicationController do
-  let!(:fhir_server) { create(:fhir_server, base_url: 'http://hapi.fhir.org/baseR4') }
+  let!(:fhir_server) { create(:fhir_server, base_url: 'https://qa-rr-fhir2.maxmddirect.com') }
 
   controller do
     before_action :require_server
@@ -17,7 +17,7 @@ RSpec.describe ApplicationController do
 
   describe '#current_server' do
     it 'returns the FhirServer instance based on session' do
-      session[:fhir_server_url] = 'http://hapi.fhir.org/baseR4'
+      session[:fhir_server_url] = 'https://qa-rr-fhir2.maxmddirect.com'
       expect(controller.current_server).to eq(fhir_server)
     end
 
@@ -47,7 +47,7 @@ RSpec.describe ApplicationController do
   describe '#require_server' do
     context 'when server is present' do
       it 'does not redirect' do
-        session[:fhir_server_url] = 'http://hapi.fhir.org/baseR4'
+        session[:fhir_server_url] = 'https://qa-rr-fhir2.maxmddirect.com'
         get :index
         expect(response.body).to eq('Hello, World!')
       end
