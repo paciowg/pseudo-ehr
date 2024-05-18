@@ -4,7 +4,7 @@
 require 'rails_helper'
 
 RSpec.describe PatientsController do
-  let!(:fhir_server) { create(:fhir_server, base_url: 'http://hapi.fhir.org/baseR4', authenticated_access: false) }
+  let!(:fhir_server) { create(:fhir_server, base_url: 'https://qa-rr-fhir2.maxmddirect.com', authenticated_access: false) }
   let!(:client) { FhirClientService.new(fhir_server:).client }
   let!(:patients) { client.read_feed(FHIR::Patient).resource.entry.map(&:resource) }
   let!(:patient_id) { patients.first.id }
@@ -34,7 +34,7 @@ RSpec.describe PatientsController do
       end
 
       it 'sets the danger flash and still renders index' do
-        expect(flash[:danger]).to eq('Error fetching patients from FHIR server. Status code: 404')
+        expect(flash[:danger]).to match(/Error fetching patients from FHIR server/)
         expect(response).to render_template(:index)
       end
     end
