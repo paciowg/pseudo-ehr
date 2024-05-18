@@ -18,6 +18,12 @@
           </h5>
         <% end %>
 
+        <% if section['code'] == '52471-0' %>
+          <h5 class="mb-2 text-md text-left text-gray-900 dark:text-white">
+            Add link to Medication list
+          </h5>
+        <% end %>
+
         <% section_group = section['objects'].group_by {|obj| obj[:resource_type]}%>
 
         <% section_group.each do |type, objects| %>

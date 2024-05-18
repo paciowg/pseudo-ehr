@@ -1,0 +1,22 @@
+<!-- app/views/medication_lists/index.html.erb -->
+<div class="mb-4 sm:ml-10 lg:ml-0 font-sans w-8/12">
+  <div class="flex flex-row items-center justify-around my-1 w-full h-14 relative align-bottom">
+    <h1 class="p-5 text-xl font-bold text-left whitespace-nowrap text-gray-900 dark:text-white w-1/2">
+      Medication List
+    </h1>
+  </div>
+  <%= turbo_frame_tag "medication_lists" do %>
+    <%= turbo_stream.update "queries" do%>
+      <%= render 'shared/queries' %>
+    <% end %>
+    <%= turbo_stream.update "flash" do%>
+      <%= render 'shared/flash_messages' %>
+    <% end %>
+
+    <div id="accordion" data-accordion="open">
+      <% @medication_lists.each do |list| %>
+        <%= render 'medication_list', medication_list: list%>
+      <% end %>
+    </div>
+  <% end %>
+</div>
