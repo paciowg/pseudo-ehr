@@ -28,8 +28,10 @@ Rails.application.routes.draw do
   get 'pages/patients/:patient_id/conditions/:id', to: 'pages#patient_condition', as: 'patient_condition_page'
   get 'pages/patients/:id/goals', to: 'pages#patient_goals', as: 'patient_goals_page'
   get 'pages/patients/:patient_id/goals/:id', to: 'pages#patient_goal', as: 'patient_goal_page'
-  get 'pages/patients/:patient_id/transition_of_cares', to: 'pages#patient_transition_of_cares', as: 'patient_transition_of_cares_page'
-  get 'pages/patients/:patient_id/transition_of_cares/:id', to: 'pages#patient_transition_of_care', as: 'patient_transition_of_care_page'
+  get 'pages/patients/:patient_id/transition_of_cares', to: 'pages#patient_transition_of_cares',
+                                                        as: 'patient_transition_of_cares_page'
+  get 'pages/patients/:patient_id/transition_of_cares/:id', to: 'pages#patient_transition_of_care',
+                                                            as: 'patient_transition_of_care_page'
   # GET /pages/patients/:id/advance_directives
   get '/login', to: 'sessions#login'
   post '/launch', to: 'sessions#launch_server'

@@ -122,6 +122,7 @@ module ModelHelper
 
   def parse_date(date_string)
     return '--' if date_string.blank?
+
     date_string = "#{date_string}-01" if date_string.split('-').size == 2
 
     DateTime.parse(date_string).strftime('%b %d, %Y')

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # app/controllers/transition_of_cares_controller.rb
 class TransitionOfCaresController < ApplicationController
   before_action :require_server, :retrieve_patient
@@ -31,7 +33,7 @@ class TransitionOfCaresController < ApplicationController
     raise "Unable to fetch TOC Bundle with id #{toc_id} from FHIR server." if bundle.nil?
 
     bundle_entries = bundle.entry.map(&:resource)
-    composition = bundle_entries.find {|res| res.resourceType == 'Composition'}
+    composition = bundle_entries.find { |res| res.resourceType == 'Composition' }
 
     raise "No TOC Composition for patient #{@patient.id}." if composition.nil?
 

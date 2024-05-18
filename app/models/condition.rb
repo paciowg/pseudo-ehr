@@ -18,7 +18,7 @@ class Condition < Resource
     @recorded_date = fhir_condition.try(:recordedDate)
     @asserter = retrieve_asserter(bundle_entries)
     @evidences = retrieve_evidences(fhir_condition.subject)
-    @body_site = fhir_condition.bodySite&.map {|c| coding_string(c.coding)}&.join(', ')
+    @body_site = fhir_condition.bodySite&.map { |c| coding_string(c.coding) }&.join(', ')
     @note = fhir_condition.try(:note)&.first&.text || '--'
   end
 
