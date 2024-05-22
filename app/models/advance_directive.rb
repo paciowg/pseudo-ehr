@@ -4,7 +4,7 @@
 class AdvanceDirective < Resource
   attr_reader :id, :status, :doc_status, :type, :subject, :author, :date, :custodian, :description,
               :compositions, :pdf, :pdf_binary_id, :relates_to_ref_id, :relates_to_code, :fhir_doc_ref,
-              :version
+              :version, :identifier
 
   def initialize(fhir_doc_ref, compositions, pdf, pdf_binary_id)
     @id = fhir_doc_ref.id
@@ -24,6 +24,7 @@ class AdvanceDirective < Resource
     @relates_to_code = relates_to&.code
     @fhir_doc_ref = fhir_doc_ref
     @version = read_version_extension
+    @identifier = read_identifier
   end
 
   private
@@ -31,5 +32,11 @@ class AdvanceDirective < Resource
   def read_version_extension
     version_ext = @fhir_doc_ref.extension.find { |ext| ext.url == 'http://hl7.org/fhir/us/ccda/StructureDefinition/VersionNumber' }
     version_ext&.valueInteger
+  end
+
+  def read_identifier
+    identifier_obj = @fhir_doc_ref.identifier.find { |id| id.system == 'https://mydirectives.com/standards/terminology/namingSystem/setId' }
+
+    identifier_obj&.value || coding_string(@fhir_doc_ref.type&.coding).downcase
   end
 end
