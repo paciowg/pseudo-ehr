@@ -41,6 +41,7 @@ Make sure to start PostgreSQL and Memcached before running the server.
 2. **Install Dependencies**
 
     ```bash
+     yarn install
      bundle install
     ```
 
