@@ -107,13 +107,19 @@ module ModelHelper
       '93037-0' => 'Portable Medical Order',
       '92664-2' => 'Combined Living Will and Medical Power of Attorney'
     }
+    system = {
+      'http://loinc.org' => 'LOINC',
+      'http://snomed.info/sct' => 'SNOMED'
+    }
 
     text = []
 
     coding_list&.each do |coding|
       display = coding.display || code[coding.code]
-      display = "#{display} (#{coding.code})" if display.present?
-      text << (display.presence || coding.code)
+      coding_system = system[coding.system]
+      coding_code = coding_system.present? ? "#{coding_system} #{coding.code}" : coding.code
+      display = "#{display} (#{coding_code})" if display.present?
+      text << (display.presence || coding_code)
     end
 
     text.compact.empty? ? '--' : text.compact.join(', ')
