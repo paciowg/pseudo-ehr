@@ -40,6 +40,9 @@ Metrics/MethodLength:
 Style/Documentation:
   Enabled: false
 
+Style/FrozenLiteral:
+  Enabled: false
+
 Metrics/CyclomaticComplexity:
   Enabled: false
 
