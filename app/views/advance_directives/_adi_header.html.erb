@@ -1,12 +1,12 @@
   <h1 class="flex justify-center p-5 text-xl font-bold text-center text-gray-900 dark:text-white">
       <span><%= @adi.description %></span>
 
-      <% if (@adi.status != "superseded" && @adi.doc_status != "entered-in-error") %>
+      <% if (@adi.status != "superseded" && !@adi.revoked?) %>
         <button data-modal-target="revokeLivingWollModal" data-modal-toggle="revokeLivingWollModal" class="mb-2 pb-4 border-none text-red-600  hover:text-orange-500 font-medium text-sm px-5 text-center" type="button">
-          Revoke Will
+          Revoke ADI
         </button>
         <%= render "revoke_living_will_modal" %>
-      <% elsif @adi.doc_status == "entered-in-error" && @adi.status == "current" %>
+      <% elsif @adi.revoked? %>
         <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Revoked</span>
       <% end %>
 
@@ -22,7 +22,7 @@
     </div>
     <div class="flex items-center justify-between mr-6 mb-2 pb-4 text-sm">
       <label class="uppercase tracking-wide text-gray-500 mr-2 font-bold">
-        Date:
+        Created:
       </label>
       <span class="appearance-none text-gray-900">
         <%= @adi.date %>
@@ -53,6 +53,18 @@
       </span>
     </div>
 
+    <% if @adi.doc_revoke_status.present? %>
+      <div class="flex items-center justify-between mr-6 mb-2 pb-4 text-sm">
+      <label class="uppercase tracking-wide text-gray-500 mr-2 font-bold">
+          Doc Revoke Status Ext:
+        </label>
+        <span class="appearance-none text-red-500">
+          <%= @adi.doc_revoke_status %>
+        </span>
+      </div>
+    <% end %>
+
+
     <% if @adi.relates_to_code %>
       <div class="flex items-center justify-between mr-6 mb-2 pb-4 text-sm">
         <label class="uppercase tracking-wide text-gray-500 mr-2 font-bold">
@@ -69,7 +81,7 @@
       <button data-modal-target="<%= @adi.id %>" data-modal-toggle="<%= @adi.id %>" class="mb-2 pb-4 border-none text-blue-600  hover:text-red-500 font-medium text-sm px-5 text-center" type="button">
         View PDF
       </button>
-      <%= render "pdf_modal", pdf: @adi.pdf, binary_id: @adi.pdf_binary_id, title: @adi.description, id: @adi.id %>
+      <%= render "pdf_modal", pdf: @adi.pdf, binary_id: @adi.pdf_binary_id, title: @adi.description, id: @adi.id, revoked: @adi.revoked? %>
     <% end %>
 
   </div>

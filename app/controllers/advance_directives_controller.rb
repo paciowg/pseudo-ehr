@@ -51,7 +51,8 @@ class AdvanceDirectivesController < ApplicationController
   def revoke_living_will
     @adi = fetch_adi(params[:id])
     doc_ref = @adi.fhir_doc_ref
-    doc_ref.docStatus = 'entered-in-error'
+    doc_ref.extension ||= []
+    doc_ref.extension << revoke_extension('cancelled')
     @client.update(doc_ref, doc_ref.id)
 
     flash[:success] = 'Successfully revoked Living Will'
@@ -63,6 +64,16 @@ class AdvanceDirectivesController < ApplicationController
   end
 
   private
+
+  def revoke_extension(code)
+    {
+      url:'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-document-revoke-status-extension',
+      valueCoding: {
+        system: 'http://hl7.org/fhir/us/pacio-adi/CodeSystem/ADIRevokeStatusCS',
+        code:
+      }
+    }
+  end
 
   def fetch_adis(patient_id)
     response = fetch_adi_documents_by_patient(patient_id)

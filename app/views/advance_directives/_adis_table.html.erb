@@ -11,17 +11,17 @@
           Status
         </th>
         <th scope="col" class="px-6 py-3">
-          Doc Status
-        </th>
-        <th scope="col" class="px-6 py-3">
           Author
         </th>
         <th scope="col" class="px-6 py-3">
-          Date
+          CREATED
         </th>
         <th>
           Document
         </th>
+        <% if adis.any?(&:doc_revoke_status) %>
+        <th scope="col" class="px-6 py-3">Doc Revoke Status Ext</th>
+      <% end %>
       </tr>
     </thead>
     <tbody>
@@ -38,13 +38,12 @@
             data-showhide-target="<%= target %>"
           >
             <%= adi.description %>
-            <% if adi.doc_status == "entered-in-error" && adi.status == "current" %>
+            <% if adi.revoked? %>
               <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Revoked</span>
             <% end %>
           </td>
           <td class="px-6 py-4"><%= adi.version %></td>
           <td class="px-6 py-4"><%= adi.status %></td>
-          <td class="px-6 py-4 <%= adi.doc_status == "entered-in-error" ? "text-red-500" : "" %>"><%= adi.doc_status %></td>
           <td class="px-6 py-4"><%= adi.author %></td>
           <td class="px-6 py-4"><%= adi.date %></td>
           <td class="px-6 py-4">
@@ -52,9 +51,12 @@
               <button data-modal-target="<%= adi.id %>" data-modal-toggle="<%= adi.id %>" class="mb-2 pb-4 border-none text-blue-600  hover:text-red-500 font-medium text-sm px-5 text-center" type="button">
                 View PDF
               </button>
-              <%= render "pdf_modal", pdf: adi.pdf, binary_id: adi.pdf_binary_id, title: adi.description, id: adi.id %>
+              <%= render "pdf_modal", pdf: adi.pdf, binary_id: adi.pdf_binary_id, title: adi.description, id: adi.id, revoked: adi.revoked? %>
             <% end %>
           </td>
+          <% if adi.doc_revoke_status.present? %>
+          <td class="px-6 py-4 text-red-500"><%= adi.doc_revoke_status %></td>
+        <% end %>
         </tr>
       <% end %>
 
