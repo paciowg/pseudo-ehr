@@ -1,17 +1,17 @@
-<div class="w-full mb-5 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-  <% formatted_identifier = identifier.downcase.gsub(/[(),]/, "").split.join("-") %>
-  <% body_id = "accordion-body-#{formatted_identifier}" %>
-  <h5 id="accordion-heading-<%= formatted_identifier %>">
-    <a class="flex items-center justify-between w-full p-5 font-medium text-left text-lg text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-800 dark:border-gray-700 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-gray-800" data-accordion-target="#<%= body_id %>" aria-expanded="true" aria-controls="<%= body_id %>">
+<div class="w-full mb-5 p-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+  <% body_id = "accordion-body-#{identifier}" %>
+  <h5 id="accordion-heading-<%= identifier %>">
+    <a class="flex items-center justify-between w-full p-4 font-medium text-left text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-800 dark:border-gray-700 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-gray-800" data-accordion-target="#<%= body_id %>" aria-expanded="true" aria-controls="<%= body_id %>">
       <span><%= adis.first.type %></span>
       <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
       </svg>
     </a>
   </h5>
-  <div id="<%= body_id %>" aria-labelledby="accordion-heading-<%= formatted_identifier %>">
-    <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+  <div id="<%= body_id %>" aria-labelledby="accordion-heading-<%= identifier %>">
+    <div class="p-4 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900 overflow-x-auto">
       <%= render "adis_table", adis: adis %>
     </div>
   </div>
 </div>
+

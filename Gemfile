@@ -62,6 +62,10 @@ gem 'dalli'
 # Ruby FHIR client for accessing FHIR servers
 gem 'fhir_client'
 
+# Gem to modify pdf content
+gem 'prawn'
+gem 'prawn-templates'
+
 # rubocop extensions libraries
 gem 'rubocop-capybara'
 gem 'rubocop-factory_bot'

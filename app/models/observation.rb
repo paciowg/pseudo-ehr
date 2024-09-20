@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Observation Model
 class Observation < Resource
   attr_reader :id, :status, :category, :domain, :code, :effective_date_time,
@@ -75,15 +73,21 @@ class Observation < Resource
   private
 
   def retrieve_category
-    list = %w[clinical-test functioning survey activity]
+    list = %w[clinical-test functional-status survey activity laboratory]
     formatted_category = categories.select { |cat| list.include?(cat[:code]) }.map { |cat| cat[:code] }.sort.join(', ')
+
     Observation.internal_category_dict[formatted_category] || 'Other'
   end
 
   def retrieve_domain
-    list = %w[clinical-test functioning survey activity]
+    list = %w[clinical-test functional-status survey activity laboratory]
     domain = @category == 'Other' ? categories.last : categories.find { |cat| !list.include?(cat[:code]) }
-    domain.present? && domain[:display] ? "#{domain[:display]} (#{domain[:code]})" : domain[:code]
+
+    if domain.blank?
+      ''
+    else
+      domain[:display] ? "#{domain[:display]} (#{domain[:code]})" : domain[:code]
+    end
   end
 
   def retrieve_code
