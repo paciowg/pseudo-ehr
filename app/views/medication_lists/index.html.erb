@@ -13,7 +13,7 @@
       <%= render 'shared/flash_messages' %>
     <% end %>
 
-    <div id="accordion" data-accordion="open">
+    <div id="accordion" data-accordion="collapse" data-active-classes="bg-white dark:bg-gray-900 text-gray-900 dark:text-white" data-inactive-classes="text-gray-500 dark:text-gray-400">
       <% @medication_lists.each do |list| %>
         <%= render 'medication_list', medication_list: list%>
       <% end %>
