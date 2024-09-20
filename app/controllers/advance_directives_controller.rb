@@ -86,7 +86,7 @@ class AdvanceDirectivesController < ApplicationController
       AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
     end
 
-    adis.group_by(&:identifier)
+    adis.sort_by {|adi| adi.date}.reverse.group_by(&:identifier)
   rescue StandardError => e
     raise "Error fetching patient's (#{patient_id}) ADIs from FHIR server. Status code: #{e.message}"
   end
