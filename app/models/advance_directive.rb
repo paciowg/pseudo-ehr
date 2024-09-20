@@ -30,7 +30,7 @@ class AdvanceDirective < Resource
     revoke_ext = fhir_doc_ref.extension.find do |ext|
       ext.url == 'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-document-revoke-status-extension'
     end
-    return unless revoke_ext.present?
+    return if revoke_ext.blank?
 
     revoke_ext.valueCoding.code
   end
@@ -42,7 +42,7 @@ class AdvanceDirective < Resource
   private
 
   def read_doc_creation_date
-    doc_creation_date = fhir_doc_ref.content.map {|content| content.attachment.creation}.compact.first
+    doc_creation_date = fhir_doc_ref.content.map { |content| content.attachment.creation }.compact.first
     return '--' if doc_creation_date.blank?
 
     Date.parse(doc_creation_date)
@@ -54,8 +54,6 @@ class AdvanceDirective < Resource
   end
 
   def read_identifier
-    identifier_obj = @fhir_doc_ref.identifier.find { |id| id.system == 'https://mydirectives.com/standards/terminology/namingSystem/setId' }
-
-    identifier_obj&.value || coding_string(@fhir_doc_ref.type&.coding).downcase
+    coding_string(@fhir_doc_ref.type&.coding).downcase.delete('[],().-').split.join('')
   end
 end
