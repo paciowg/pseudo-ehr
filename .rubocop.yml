@@ -13,7 +13,7 @@ RSpec/MultipleExpectations:
 RSpec/VerifiedDoubles:
   Enabled: false
 
-RSpec/ConstantDefinitionInBlock:
+Lint/ConstantDefinitionInBlock:
   Enabled: false
 
 RSpec/LeakyConstantDeclaration:
@@ -38,6 +38,9 @@ Metrics/MethodLength:
   Enabled: false
 
 Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
   Enabled: false
 
 Metrics/CyclomaticComplexity:

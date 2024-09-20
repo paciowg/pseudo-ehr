@@ -1,23 +1,10 @@
-# frozen_string_literal: true
-
 # app/controllers/transition_of_cares_controller.rb
 class TransitionOfCaresController < ApplicationController
   before_action :require_server, :retrieve_patient
 
-  # GET /patients/:patient_id/transition_of_cares
-  # TODO: read Composition?patient=patient_id&_include=*
-  # def index
-  #   @adis = fetch_adis(params[:patient_id])
-  #   flash.now[:notice] = 'No ADI found' if @adis.empty?
-  # rescue StandardError => e
-  #   Rails.logger.error e
-  #   flash.now[:danger] = e.message
-  #   @adis = []
-  # end
-
-  # GET /patients/:patient_id/transition_of_cares/:id
+  # GET /patients/:patient_id/transition_of_care
   def show
-    @toc = fetch_toc(params[:id])
+    @toc = fetch_toc
   rescue StandardError => e
     flash[:danger] = e.message
     redirect_to patients_path
@@ -25,22 +12,33 @@ class TransitionOfCaresController < ApplicationController
 
   private
 
-  def fetch_toc(toc_id)
-    response = @client.read(FHIR::Bundle, toc_id)
-    bundle = response.try(:resource)
-    request = response.request
-    add_query("#{request[:method].upcase} #{request[:url]}")
-    raise "Unable to fetch TOC Bundle with id #{toc_id} from FHIR server." if bundle.nil?
+  def fetch_toc
+    Rails.cache.fetch(cache_key_for_patient_tocs, expires_in: 1.day) do
+      search_param = { parameters: {
+        patient: @patient.id,
+        type: '81218-0',
+        _include: '*'
+      }.compact }
+      response = @client.search(FHIR::Composition, search: search_param)
+      bundle = response.try(:resource)
+      request = response.request
+      add_query("#{request[:method].upcase} #{request[:url]}")
+      raise "Unable to fetch TOC Composition for patient #{@patient.id} from FHIR server." if bundle.nil?
 
-    bundle_entries = bundle.entry.map(&:resource)
-    composition = bundle_entries.find { |res| res.resourceType == 'Composition' }
+      bundle_entries = bundle.entry.map(&:resource)
+      composition = bundle_entries.find { |res| res.resourceType == 'Composition' }
 
-    raise "No TOC Composition for patient #{@patient.id}." if composition.nil?
+      raise "No TOC Composition for patient #{@patient.id}." if composition.nil?
 
-    Composition.new(composition, bundle_entries)
-  rescue Net::ReadTimeout, Net::OpenTimeout
-    raise "Unable to fetch Bundle/#{toc_id}: Request timed out."
-  rescue StandardError => e
-    raise e.message
+      Composition.new(composition, bundle_entries)
+    rescue Net::ReadTimeout, Net::OpenTimeout
+      raise "Unable to fetch patient #{@patient.id} composition: Request timed out."
+    rescue StandardError => e
+      raise e.message
+    end
+  end
+
+  def cache_key_for_patient_tocs
+    "patient_#{params[:patient_id]}_tocs_#{session_id}"
   end
 end
