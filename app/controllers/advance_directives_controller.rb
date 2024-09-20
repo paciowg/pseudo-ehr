@@ -67,7 +67,7 @@ class AdvanceDirectivesController < ApplicationController
 
   def revoke_extension(code)
     {
-      url:'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-document-revoke-status-extension',
+      url: 'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-document-revoke-status-extension',
       valueCoding: {
         system: 'http://hl7.org/fhir/us/pacio-adi/CodeSystem/ADIRevokeStatusCS',
         code:
@@ -86,7 +86,7 @@ class AdvanceDirectivesController < ApplicationController
       AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
     end
 
-    adis.sort_by {|adi| adi.date}.reverse.group_by(&:identifier)
+    adis.sort_by(&:date).reverse.group_by(&:identifier)
   rescue StandardError => e
     raise "Error fetching patient's (#{patient_id}) ADIs from FHIR server. Status code: #{e.message}"
   end
