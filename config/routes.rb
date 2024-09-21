@@ -20,6 +20,10 @@ Rails.application.routes.draw do
                                                     as: 'patient_questionnaire_responses_page'
   get 'pages/patients/:patient_id/questionnaire_responses/:id', to: 'pages#patient_questionnaire_response',
                                                                 as: 'patient_questionnaire_response_page'
+  get 'pages/patients/:id/nutrition_orders', to: 'pages#patient_nutrition_orders',
+                                                    as: 'patient_nutrition_orders_page'
+  get 'pages/patients/:id/service_requests', to: 'pages#patient_service_requests',
+                                                    as: 'patient_service_requests_page'
   get 'pages/patients/:id/observations', to: 'pages#patient_observations', as: 'patient_observations_page'
   get 'pages/patients/:patient_id/observations/:id', to: 'pages#patient_observation', as: 'patient_observation_page'
   get 'pages/patients/:id/conditions', to: 'pages#patient_conditions', as: 'patient_conditions_page'
@@ -43,6 +47,8 @@ Rails.application.routes.draw do
                                                       as: 'patient_questionnaire_responses'
   get 'patients/:patient_id/questionnaire_responses/:id', to: 'questionnaire_responses#show',
                                                           as: 'patient_questionnaire_response'
+  get 'patients/:patient_id/nutrition_orders', to: 'nutrition_orders#index', as: 'patient_nutrition_orders'
+  get 'patients/:patient_id/service_requests', to: 'service_requests#index', as: 'patient_service_requests'
   get 'patients/:patient_id/observations', to: 'observations#index', as: 'patient_observations'
   get 'patients/:patient_id/observations/:id', to: 'observations#show', as: 'patient_observation'
   get 'patients/:patient_id/conditions', to: 'conditions#index', as: 'patient_conditions'

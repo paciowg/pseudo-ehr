@@ -5,12 +5,14 @@ class PagesController < ApplicationController
   before_action :delete_current_patient,
                 except: %i[patient_advance_directives advance_directive patient_care_teams
                            patient_questionnaire_responses patient_questionnaire_response
+                           patient_service_requests patient_nutrition_orders
                            patient_observations patient_observation patient_conditions patient_condition
                            patient_goals patient_goal patient_transition_of_care patient_medication_lists]
   before_action :require_server, except: %i[fhir_servers]
   before_action :retrieve_patient,
                 only: %i[patient_advance_directives advance_directive patient_care_teams
                          patient_questionnaire_responses patient_questionnaire_response
+                         patient_service_requests patient_nutrition_orders
                          patient_observations patient_observation patient_conditions patient_condition
                          patient_goals patient_goal patient_transition_of_care patient_medication_lists]
 
@@ -38,6 +40,12 @@ class PagesController < ApplicationController
   def patient_questionnaire_response
     @questionnaire_response_id = params[:id]
   end
+
+  # GET /pages/patients/:id/nutrition_orders
+  def patient_nutrition_orders; end
+
+  # GET /pages/patients/:id/service_requests
+  def patient_service_requests; end
 
   # GET /pages/patients/:id/observations
   def patient_observations; end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # ServiceRequest Model
 class ServiceRequest < Resource
   attr_reader :id, :status, :intent, :category, :code, :priority, :occurence,

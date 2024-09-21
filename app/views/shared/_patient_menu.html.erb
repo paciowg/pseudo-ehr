@@ -59,6 +59,18 @@
             </a>
          </li>
          <li>
+            <a href="/pages/patients/<%= @patient.id %>/nutrition_orders" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+               <%= image_tag "medical-team.svg", alt: "Medical care team Logo", class: "flex-shrink-0 w-5 h-10 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
+               <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Nutrition Order</span>
+            </a>
+         </li>
+         <li>
+            <a href="/pages/patients/<%= @patient.id %>/service_requests" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+               <%= image_tag "medical-team.svg", alt: "Medical care team Logo", class: "flex-shrink-0 w-5 h-10 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
+               <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">ServiceRequest</span>
+            </a>
+         </li>
+         <li>
             <a href="/pages/patients/<%= @patient.id %>/transition_of_care" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
                <%= image_tag "medical-team.svg", alt: "Medical care team Logo", class: "flex-shrink-0 w-5 h-10 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
                <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">TOC</span>
