@@ -9,8 +9,8 @@
       <select id="obs-type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         data-action="change->showhide#toggleObservations" data-showhide-target="obsType"
       >
-        <option>Single Observations</option>
         <option>Observation Collection</option>
+        <option>Single Observations</option>
       </select>
     </div>
   </div>
@@ -18,14 +18,14 @@
     <% if @grouped_observations.blank? %>
         <h3> No Observations Found!</h3>
     <% end %>
-    <div id="accordion" data-accordion="open" data-showhide-target="singleObs">
+    <div id="accordion" data-accordion="open" data-showhide-target="singleObs" hidden>
       <% index = 0 %>
       <% @grouped_observations.each do |type, sub_group| %>
         <% index += 1 %>
         <%= render "observations_category", observation_sub_group: sub_group, type: type, index: index %>
       <% end %>
     </div>
-    <div  class="" data-showhide-target="collectionObs" hidden>
+    <div  class="" data-showhide-target="collectionObs">
 
       <% if @collection_observations.blank? %>
         <h3> No Collections Found!</h3>
