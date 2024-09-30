@@ -5,7 +5,7 @@ class NutritionOrdersController < ApplicationController
   # GET /patients/:patient_id/nutrition_orders
   def index
     @pagy, @nutrition_orders = pagy_array(fetch_and_cache_nutrition_orders(params[:patient_id]),
-                                                 items: 10)
+                                          items: 10)
     flash.now[:notice] = 'Patient has no Nutrition Order yet' if @nutrition_orders.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
@@ -37,9 +37,5 @@ class NutritionOrdersController < ApplicationController
     raise response&.response&.dig(:code) if response&.resource&.entry.nil?
 
     response
-  end
-
-  def cache_key_for_patient_nutrition_orders(patient_id)
-    "patient_#{patient_id}_nutrition_orders_#{session_id}"
   end
 end

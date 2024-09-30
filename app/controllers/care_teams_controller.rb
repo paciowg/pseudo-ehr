@@ -37,8 +37,4 @@ class CareTeamsController < ApplicationController
 
     response
   end
-
-  def cache_key_for_patient_care_teams(patient_id)
-    "patient_#{patient_id}_care_teams_#{session_id}"
-  end
 end

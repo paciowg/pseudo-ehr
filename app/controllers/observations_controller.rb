@@ -77,8 +77,4 @@ class ObservationsController < ApplicationController
     flash[:danger] = e.message
     redirect_to patient_observations_page_path, id: @patient.id
   end
-
-  def cache_key_for_patient_observations(patient_id)
-    "patient_#{patient_id}_observations_#{session_id}"
-  end
 end

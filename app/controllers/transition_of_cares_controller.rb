@@ -37,8 +37,4 @@ class TransitionOfCaresController < ApplicationController
       raise e.message
     end
   end
-
-  def cache_key_for_patient_tocs
-    "patient_#{params[:patient_id]}_tocs_#{session_id}"
-  end
 end

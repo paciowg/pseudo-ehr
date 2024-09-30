@@ -5,7 +5,7 @@ class ServiceRequestsController < ApplicationController
   # GET /patients/:patient_id/service_requests
   def index
     @pagy, @service_requests = pagy_array(fetch_and_cache_service_requests(params[:patient_id]),
-                                                 items: 10)
+                                          items: 10)
     flash.now[:notice] = 'Patient has no Service Request yet' if @service_requests.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
@@ -37,9 +37,5 @@ class ServiceRequestsController < ApplicationController
     raise response&.response&.dig(:code) if response&.resource&.entry.nil?
 
     response
-  end
-
-  def cache_key_for_patient_service_requests(patient_id)
-    "patient_#{patient_id}_service_requests_#{session_id}"
   end
 end

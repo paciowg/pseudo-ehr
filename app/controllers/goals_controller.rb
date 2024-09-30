@@ -56,8 +56,4 @@ class GoalsController < ApplicationController
     flash[:danger] = e.message
     redirect_to patient_goals_page_path, id: @patient.id
   end
-
-  def cache_key_for_patient_goals(patient_id)
-    "patient_#{patient_id}_goals_#{session_id}"
-  end
 end

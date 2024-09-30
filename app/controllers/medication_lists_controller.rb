@@ -34,10 +34,6 @@ class MedicationListsController < ApplicationController
     end
   end
 
-  def cache_key_for_patient_medication_lists(patient_id)
-    "patient_#{patient_id}_medication_lists_#{session_id}"
-  end
-
   def medication_lists_search_param
     {
       parameters: {

@@ -56,8 +56,4 @@ class QuestionnaireResponsesController < ApplicationController
     flash[:danger] = e.message
     redirect_to patient_questionnaire_responses_page_path, id: @patient.id
   end
-
-  def cache_key_for_patient_questionnaire_responses(patient_id)
-    "patient_#{patient_id}_questionnaire_responses_#{session_id}"
-  end
 end

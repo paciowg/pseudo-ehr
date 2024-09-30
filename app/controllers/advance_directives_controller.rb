@@ -208,14 +208,6 @@ class AdvanceDirectivesController < ApplicationController
     ref&.split('/')&.last
   end
 
-  def cache_key_for_patient_adis(patient_id)
-    "patient_#{patient_id}_adis_#{session_id}"
-  end
-
-  def cache_key_for_adi(adi_id)
-    "adi_#{adi_id}_#{session_id}"
-  end
-
   # Update service request parameters
   def service_request_params
     params.require(:service_request).permit!
