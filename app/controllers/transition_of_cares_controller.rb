@@ -13,7 +13,7 @@ class TransitionOfCaresController < ApplicationController
   private
 
   def fetch_toc
-    Rails.cache.fetch(cache_key_for_patient_tocs, expires_in: 1.day) do
+    Rails.cache.fetch(cache_key_for_patient_tocs(params[:patient_id]), expires_in: 1.day) do
       search_param = { parameters: {
         patient: @patient.id,
         type: '81218-0',

@@ -1,6 +1,5 @@
-# frozen_string_literal: true
-
 module ApplicationHelper
+  include CacheKeysHelper
   include Pagy::Frontend
   # Flash messages tailwind classes for styling
   def tailwind_class_for(flash_type)
