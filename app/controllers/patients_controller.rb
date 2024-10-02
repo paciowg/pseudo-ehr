@@ -16,6 +16,7 @@ class PatientsController < ApplicationController
 
     session[:patient_id] = @patient.id
     retrieve_current_patient_resources
+    set_resources_count
     retrieve_practitioner_roles_and_orgs
   rescue StandardError => e
     flash[:danger] = e.message

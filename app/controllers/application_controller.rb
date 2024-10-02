@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
   end
 
   def grouped_current_patient_record
-    retrieve_current_patient_resources.group_by(&:resourceType) || {}
+    @grouped_current_patient_record ||= retrieve_current_patient_resources.group_by(&:resourceType) || {}
   end
 
   def cached_resources_type(type)
@@ -75,13 +75,32 @@ class ApplicationController < ActionController::Base
     %w[42348-3 75320-2]
   end
 
-  def filter_doc_refs_or_compositions_by_category(resources, category_codes)
+  def filter_doc_refs_or_compositions_by_category(resources, category_codes = [])
     resources.select do |resource|
-      resource.category.any? do |category|
-        category.coding.any? do |coding|
-          category_codes.include?(coding.code)
+      if category_codes.blank?
+        resource.category.blank?
+      else
+        resource.category.any? do |category|
+          category.coding.any? do |coding|
+            category_codes.include?(coding.code)
+          end
         end
       end
     end
+  end
+
+  def set_resources_count
+    @care_team_count = cached_resources_type('CareTeam').size
+    @condition_count = cached_resources_type('Condition').size
+    @goal_count = cached_resources_type('Goal').size
+    @medication_list_count = cached_resources_type('List').size
+    @observation_count = cached_resources_type('Observation').size
+    @questionnaire_response_count = cached_resources_type('QuestionnaireResponse').size
+    @nutrition_order_count = cached_resources_type('NutritionOrder').size
+    @service_request_count = cached_resources_type('ServiceRequest').size
+    @adi_count = filter_doc_refs_or_compositions_by_category(
+      cached_resources_type('DocumentReference'), adi_category_codes
+    ).size
+    @toc_count = filter_doc_refs_or_compositions_by_category(cached_resources_type('Composition')).size
   end
 end
