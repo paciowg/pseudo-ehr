@@ -58,4 +58,8 @@ module CacheKeysHelper
   def cache_key_for_patient_tocs(patient_id)
     "patient_#{patient_id}_tocs_#{session_id}"
   end
+
+  def cache_key_for_practioner_roles
+    "practitioner_roles_#{session_id}"
+  end
 end

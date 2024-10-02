@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # app/controllers/patients_controller.rb
 class PatientsController < ApplicationController
   before_action :require_server, :delete_current_patient_id
@@ -17,7 +15,8 @@ class PatientsController < ApplicationController
     raise 'Unable to find patient' unless @patient
 
     session[:patient_id] = @patient.id
-    fetch_and_cache_current_patient_record
+    retrieve_current_patient_resources
+    retrieve_practitioner_roles_and_orgs
   rescue StandardError => e
     flash[:danger] = e.message
     redirect_to pages_patients_path
@@ -50,7 +49,7 @@ class PatientsController < ApplicationController
 
       patient
     rescue StandardError => e
-      Rails.logger.erro("Error fetching or parsing patient:\n #{e.message.inspect}")
+      Rails.logger.error("Error fetching or parsing patient:\n #{e.message.inspect}")
       raise 'Error fetching or parsing patient from FHIR server. Check logs.'
     end
   end
@@ -59,15 +58,5 @@ class PatientsController < ApplicationController
     return unless params[:query_id].present? || params[:query_name].present? || session[:previous_query]
 
     Rails.cache.delete(cache_key_for_patients)
-  end
-
-  def fetch_and_cache_current_patient_record
-    patient_id = @patient.id
-
-    Rails.cache.fetch(cache_key_for_patient_record(patient_id)) do
-      fetch_single_patient_record(patient_id)
-    end
-  rescue StandardError => e
-    Rails.logger.error("Error fetching patient #{patient_id} record: #{e.message.inspect}")
   end
 end

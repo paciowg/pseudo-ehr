@@ -35,12 +35,32 @@ class ApplicationController < ActionController::Base
     redirect_to pages_patients_path
   end
 
+  def retrieve_practitioner_roles_and_orgs
+    return [] unless session[:patient_id]
+
+    Rails.cache.fetch(cache_key_for_practioner_roles) do
+      @practitioner_roles ||= fetch_practitioner_roles
+    end
+  rescue StandardError
+    Rails.logger.error('Empty bundle or Error fetching practitioner roles')
+    []
+  end
+
   def retrieve_current_patient_resources
-    Rails.cache.fetch(cache_key_for_patient_record(session[:patient_id]))
+    return [] unless session[:patient_id]
+
+    patient_id = session[:patient_id]
+
+    Rails.cache.fetch(cache_key_for_patient_record(patient_id)) do
+      @patient_record ||= fetch_single_patient_record(patient_id)
+    end
+  rescue StandardError => e
+    Rails.logger.error("Error fetching patient #{patient_id} record: #{e.message.inspect}")
+    []
   end
 
   def grouped_current_patient_record
-    retrieve_current_patient_resources&.group_by(&:resourceType) || {}
+    retrieve_current_patient_resources.group_by(&:resourceType) || {}
   end
 
   def cached_resources_type(type)

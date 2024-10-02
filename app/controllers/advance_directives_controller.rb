@@ -6,7 +6,7 @@ class AdvanceDirectivesController < ApplicationController
   before_action :require_server, :retrieve_patient
   # GET /patients/:patient_id/advance_directives
   def index
-    @adis = fetch_adis(params[:patient_id])
+    @adis = fetch_and_cache_adis(params[:patient_id])
     flash.now[:notice] = 'No ADI found' if @adis.empty?
   rescue StandardError => e
     Rails.logger.error e
@@ -38,8 +38,8 @@ class AdvanceDirectivesController < ApplicationController
     save_updated_data(bundle_entries, doc_ref)
 
     flash[:success] = 'Successfully updated PMO'
-    # Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
-    # Rails.cache.delete(cache_key_for_adi(params[:id]))
+    Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
+    Rails.cache.delete(cache_key_for_adi(params[:id]))
     redirect_to patient_advance_directives_page_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error updating PMO: #{e.message}" }
@@ -75,21 +75,26 @@ class AdvanceDirectivesController < ApplicationController
     }
   end
 
-  def fetch_adis(patient_id)
-    cached_doc_refs = cached_resources_type('DocumentReference')
-    adi_entries = filter_doc_refs_or_compositions_by_category(cached_doc_refs, adi_category_codes)
-    adi_entries = adi_entries.select { |res| res.status == adi_status } if adi_status
+  def fetch_and_cache_adis(patient_id)
+    clear_cache_if_query_changed(patient_id)
+    session[:previous_queried_status] = params[:status]
 
-    adi_entries = fetch_adi_documents_by_patient(patient_id) if adi_entries.blank?
+    Rails.cache.fetch(cache_key_for_patient_adis(patient_id)) do
+      cached_doc_refs = cached_resources_type('DocumentReference')
+      adi_entries = filter_doc_refs_or_compositions_by_category(cached_doc_refs, adi_category_codes)
+      adi_entries = adi_entries.select { |res| res.status == adi_status } if adi_status
 
-    adis = adi_entries.map do |doc|
-      get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
-      attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
-      compositions = build_compositions(attachment_bundle_entries)
-      AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
+      adi_entries = fetch_adi_documents_by_patient(patient_id) if adi_entries.blank?
+
+      adis = adi_entries.map do |doc|
+        get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
+        attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
+        compositions = build_compositions(attachment_bundle_entries)
+        AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
+      end
+
+      adis.sort_by(&:date).reverse.group_by(&:identifier)
     end
-
-    adis.sort_by(&:date).reverse.group_by(&:identifier)
   rescue StandardError => e
     Rails.logger.error("Error fetching or parsing ADIs:\n #{e.message.inspect}")
     raise 'Error fetching or parsing ADIs. Check logs for detail.'
@@ -178,6 +183,12 @@ class AdvanceDirectivesController < ApplicationController
   def adi_status
     status_map = { 'Superseded' => 'superseded', 'Current' => 'current' }
     status_map[params[:status]]
+  end
+
+  def clear_cache_if_query_changed(patient_id)
+    return unless session[:previous_queried_status].present? && params[:status] != session[:previous_queried_status]
+
+    Rails.cache.delete(cache_key_for_patient_adis(patient_id))
   end
 
   def extract_id_from_ref(ref)

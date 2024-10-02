@@ -73,8 +73,8 @@ module ResourceFetchHelper # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def fetch_single_patient_record(patient_id, max_results = 150)
-    search_params = { _sort: '-_lastUpdated', _maxresults: max_results, _count: 50 }
+  def fetch_single_patient_record(patient_id, max_results = 500)
+    search_params = { _sort: '-_lastUpdated', _maxresults: max_results, _count: max_results / 2 }
     response = client.fetch_patient_record(patient_id, search_params:)
     add_query(response.request)
 
@@ -83,20 +83,22 @@ module ResourceFetchHelper # rubocop:disable Metrics/ModuleLength
     raise TIMEOUT_ERROR_MESSAGE
   end
 
-  def fetch_organizations
-    response = fetch_resource(FHIR::Organization, method: :search, parameters: { _sort: '-_lastUpdated', _count: 50 })
-    fetch_bundle_entries(response, 50)
+  def fetch_organizations(max_results = 100)
+    parameters = { _sort: '-_lastUpdated', _count: max_results / 2 }
+    response = fetch_resource(FHIR::Organization, method: :search, parameters:)
+    fetch_bundle_entries(response, max_results)
   end
 
-  def fetch_locations
-    response = fetch_resource(FHIR::Location, method: :search, parameters: { _sort: '-_lastUpdated', _count: 50 })
-    fetch_bundle_entries(response, 50)
+  def fetch_locations(max_results = 100)
+    parameters = { _sort: '-_lastUpdated', _count: max_results / 2 }
+    response = fetch_resource(FHIR::Location, method: :search, parameters:)
+    fetch_bundle_entries(response, max_results)
   end
 
-  def fetch_practitioner_roles
-    parameters = { _sort: '-_lastUpdated', _include: '*', _count: 100 }
+  def fetch_practitioner_roles(max_results = 300)
+    parameters = { _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
     response = fetch_resource(FHIR::PractitionerRole, method: :search, parameters:)
-    fetch_bundle_entries(response, 300)
+    fetch_bundle_entries(response, max_results)
   end
 
   def fetch_adi_documents_by_patient(patient_id)
@@ -120,7 +122,7 @@ module ResourceFetchHelper # rubocop:disable Metrics/ModuleLength
     fetch_resource(FHIR::Bundle, method: :read, id: bundle_id)&.resource
   end
 
-  def fetch_bundle_entries(response, max_results = 150)
+  def fetch_bundle_entries(response, max_results = 500)
     bundle_entries = []
     while response&.resource.is_a?(FHIR::Bundle) && response.resource.entry.present?
       bundle_entries.concat(response.resource.entry.map(&:resource))
@@ -128,8 +130,6 @@ module ResourceFetchHelper # rubocop:disable Metrics/ModuleLength
 
       response = client.next_page(response)
     end
-
-    raise "Error fetching Patient record:\n #{response.resource&.inspect}" if bundle_entries.empty?
 
     bundle_entries.compact.uniq
   rescue Net::ReadTimeout, Net::OpenTimeout
