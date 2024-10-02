@@ -1,20 +1,8 @@
-# frozen_string_literal: true
-
 # app/controllers/pages_controller.rb
 class PagesController < ApplicationController
-  before_action :delete_current_patient,
-                except: %i[patient_advance_directives advance_directive patient_care_teams
-                           patient_questionnaire_responses patient_questionnaire_response
-                           patient_service_requests patient_nutrition_orders
-                           patient_observations patient_observation patient_conditions patient_condition
-                           patient_goals patient_goal patient_transition_of_care patient_medication_lists]
+  before_action :delete_current_patient_id, only: %i[patients fhir_servers]
   before_action :require_server, except: %i[fhir_servers]
-  before_action :retrieve_patient,
-                only: %i[patient_advance_directives advance_directive patient_care_teams
-                         patient_questionnaire_responses patient_questionnaire_response
-                         patient_service_requests patient_nutrition_orders
-                         patient_observations patient_observation patient_conditions patient_condition
-                         patient_goals patient_goal patient_transition_of_care patient_medication_lists]
+  before_action :retrieve_patient, except: %i[patients fhir_servers]
 
   # GET /pages/patients
   def patients; end
@@ -78,10 +66,4 @@ class PagesController < ApplicationController
 
   # GET /pages/patients/:id/medication_lists
   def patient_medication_lists; end
-
-  private
-
-  def delete_current_patient
-    session.delete(:patient_id)
-  end
 end

@@ -5,7 +5,7 @@ class WelcomeController < ApplicationController
   def index
     return unless server_present?
 
-    flash[:notice] = "You are connected to FHIR Server: #{@fhir_server.base_url}"
+    flash[:notice] = "You are connected to FHIR Server: #{@current_server.base_url}"
     redirect_to pages_patients_path
   end
 end

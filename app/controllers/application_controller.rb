@@ -1,14 +1,8 @@
-# frozen_string_literal: true
-
 class ApplicationController < ActionController::Base
   include ApplicationHelper
   include Pagy::Backend
 
   before_action :current_server, :clear_queries
-
-  def current_server
-    @fhir_server = FhirServer.find_by(base_url: session[:fhir_server_url])
-  end
 
   def server_present?
     !!current_server
@@ -19,25 +13,55 @@ class ApplicationController < ActionController::Base
     set_client and return if server_present?
 
     reset_session
+    @client = nil
     flash[:danger] = msg
     redirect_to root_path
   end
 
   def set_client
-    @client = FhirClientService.new(fhir_server: current_server).client
+    client
   end
 
-  def session_id
-    session[:id] ||= Base64.encode64(SecureRandom.random_number(2**64).to_s).chomp
+  def delete_current_patient_id
+    session.delete(:patient_id)
   end
 
   def retrieve_patient
-    @patient = Rails.cache.read(cache_key_for_patient(session[:patient_id]))
+    @patient = Rails.cache.fetch(cache_key_for_patient(session[:patient_id]))
+
     return unless @patient.nil?
 
-    reset_session
-    Rails.cache.clear
-    flash[:danger] = 'Session has expired. Please reconnect!'
-    redirect_to root_path
+    flash[:danger] = 'Please select a patient to proceed'
+    redirect_to pages_patients_path
+  end
+
+  def retrieve_current_patient_resources
+    Rails.cache.fetch(cache_key_for_patient_record(session[:patient_id]))
+  end
+
+  def grouped_current_patient_record
+    retrieve_current_patient_resources&.group_by(&:resourceType) || {}
+  end
+
+  def cached_resources_type(type)
+    grouped_current_patient_record[type] || []
+  end
+
+  def find_cached_resource(resource_type, resource_id)
+    cached_resources_type(resource_type).find { |res| res.id == resource_id }
+  end
+
+  def adi_category_codes
+    %w[42348-3 75320-2]
+  end
+
+  def filter_doc_refs_or_compositions_by_category(resources, category_codes)
+    resources.select do |resource|
+      resource.category.any? do |category|
+        category.coding.any? do |coding|
+          category_codes.include?(coding.code)
+        end
+      end
+    end
   end
 end

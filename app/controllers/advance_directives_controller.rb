@@ -16,7 +16,7 @@ class AdvanceDirectivesController < ApplicationController
 
   # GET /advance_directives/:id
   def show
-    @adi = fetch_adi(params[:id])
+    @adi = fetch_and_cache_adi(params[:id])
   rescue StandardError => e
     flash[:danger] = e.message
     redirect_to patient_advance_directives_page_path, id: @patient.id
@@ -26,7 +26,7 @@ class AdvanceDirectivesController < ApplicationController
   # We will use the logged provider data in the update request as opposed to the hardcoded provider.
   # PUT /advance_directives/:id
   def update_pmo
-    @adi = fetch_adi(params[:id])
+    @adi = fetch_and_cache_adi(params[:id])
     doc_ref = @adi.fhir_doc_ref
     bundle_entries = get_structured_data_from_contents(doc_ref.content)
 
@@ -49,7 +49,7 @@ class AdvanceDirectivesController < ApplicationController
 
   # PUT /advance_directives/:id
   def revoke_living_will
-    @adi = fetch_adi(params[:id])
+    @adi = fetch_and_cache_adi(params[:id])
     doc_ref = @adi.fhir_doc_ref
     doc_ref.extension ||= []
     doc_ref.extension << revoke_extension('cancelled')
@@ -76,10 +76,13 @@ class AdvanceDirectivesController < ApplicationController
   end
 
   def fetch_adis(patient_id)
-    response = fetch_adi_documents_by_patient(patient_id)
-    doc_entries = response.resource.entry.map(&:resource)
+    cached_doc_refs = cached_resources_type('DocumentReference')
+    adi_entries = filter_doc_refs_or_compositions_by_category(cached_doc_refs, adi_category_codes)
+    adi_entries = adi_entries.select { |res| res.status == adi_status } if adi_status
 
-    adis = doc_entries.map do |doc|
+    adi_entries = fetch_adi_documents_by_patient(patient_id) if adi_entries.blank?
+
+    adis = adi_entries.map do |doc|
       get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
       attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
       compositions = build_compositions(attachment_bundle_entries)
@@ -88,48 +91,26 @@ class AdvanceDirectivesController < ApplicationController
 
     adis.sort_by(&:date).reverse.group_by(&:identifier)
   rescue StandardError => e
-    raise "Error fetching patient's (#{patient_id}) ADIs from FHIR server. Status code: #{e.message}"
+    Rails.logger.error("Error fetching or parsing ADIs:\n #{e.message.inspect}")
+    raise 'Error fetching or parsing ADIs. Check logs for detail.'
   end
 
-  def fetch_adi(adi_id)
-    response = @client.read(FHIR::DocumentReference, adi_id)
-    doc = response.try(:resource)
-    request = response.request
-    add_query("#{request[:method].upcase} #{request[:url]}")
-    raise "Unable to fetch ADI with id #{adi_id} from FHIR server." if doc.nil?
-
-    get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
-    attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
-    compositions = build_compositions(attachment_bundle_entries)
-    AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
-  rescue Net::ReadTimeout, Net::OpenTimeout
-    raise "Unable to fetch DocumentReference/#{adi_id}: Request timed out."
-  rescue StandardError
-    raise "Unable to fetch ADI with id #{adi_id} from FHIR server."
+  def fetch_and_cache_adi(adi_id)
+    Rails.cache.fetch(cache_key_for_adi(adi_id)) do
+      doc = find_cached_resource('DocumentReference', adi_id) || fetch_document_reference(adi_id)
+      get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
+      attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
+      compositions = build_compositions(attachment_bundle_entries)
+      AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
+    end
+  rescue StandardError => e
+    Rails.logger.error("Error fetching or parsing patient ADI #{adi_id}:\n #{e.message.inspect}")
+    raise "Unable to fetch or parse ADI with id #{adi_id}. Check logs for detail"
   end
 
   def build_compositions(attachment_bundle_entries)
     fhir_compositions = attachment_bundle_entries.select { |entry| entry.resourceType == 'Composition' }
     fhir_compositions.map { |composition| Composition.new(composition, attachment_bundle_entries) }
-  end
-
-  def fetch_adi_documents_by_patient(patient_id)
-    status_map = { 'Superseded' => 'superseded', 'Current' => 'current' }
-    status = status_map[params[:status]]
-    search_param = { parameters: {
-      patient: patient_id,
-      category: '42348-3,75320-2',
-      status:
-    }.compact }
-    response = @client.search(FHIR::DocumentReference, search: search_param)
-    raise response&.response&.dig(:code) if response&.resource&.entry.nil?
-
-    request = response.request
-    add_query("#{request[:method].upcase} #{request[:url]}")
-
-    response
-  rescue Net::ReadTimeout, Net::OpenTimeout
-    raise "Unable to fetch DocumentReference for patient #{patient_id}: Request timed out."
   end
 
   def get_structured_data_from_contents(contents)
@@ -157,19 +138,13 @@ class AdvanceDirectivesController < ApplicationController
 
   def retrieve_bundle_from_binary(binary_id, content_type)
     begin
-      response = @client.read(FHIR::Binary, binary_id)
-      data = response.try(:resource)&.data
-      request = response.request
-      add_query("#{request[:method].upcase} #{request[:url]}")
-      return { pdf: data, pdf_binary_id: binary_id } if content_type == 'pdf'
-    rescue Net::ReadTimeout, Net::OpenTimeout
-      raise "Unable to read Binary/#{binary_id}: Request timed out."
-    rescue StandardError => e
-      Rails.logger.error "#{response&.response&.dig(:code)} : #{e.message}:" \
-      'Failed to fetch ADI FHIR Binary using fhir_client'
-      return { pdf: nil, pdf_binary_id: binary_id } if content_type == 'pdf'
+      fhir_binary = find_cached_resource('Binary', binary_id) || fetch_binary(binary_id)
+      data = fhir_binary&.data
 
-      nil
+      return { pdf: data, pdf_binary_id: binary_id } if content_type == 'pdf'
+    rescue StandardError => e
+      Rails.logger.error "Failed to fetch ADI FHIR Binary:\n #{e.message.inspect}"
+      return { pdf: nil, pdf_binary_id: binary_id } if content_type == 'pdf'
     end
 
     return if data.nil?
@@ -178,19 +153,15 @@ class AdvanceDirectivesController < ApplicationController
     fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
     fhir_attachment_bundle.entry.map(&:resource)
   rescue StandardError => e
-    Rails.logger.error "#{e.message} : Failed to fetch ADI FHIR Binary using Faraday"
-    nil
+    Rails.logger.error e.message.inspect
   end
 
   def fetch_bundle_from_contents(bundle_id)
-    response = @client.read(FHIR::Bundle, bundle_id)
-    request = response.request
-    add_query("#{request[:method].upcase} #{request[:url]}")
-    response.resource.entry.map(&:resource)
-  rescue Net::ReadTimeout, Net::OpenTimeout
-    raise 'Failed to fetch ADI FHIR Bundle: request timed out'
-  rescue StandardError
-    raise "#{response&.response&.dig(:code)}: Failed to fetch ADI FHIR Bundle"
+    fhir_bundle = fetch_bundle(bundle_id)
+    fhir_bundle.entry.map(&:resource)
+  rescue StandardError => e
+    Rails.logger.error "Failed to fetch ADI FHIR Bundle #{bundle_id}:\n #{e.message.inspect}"
+    raise "Failed to fetch ADI FHIR Bundle #{bundle_id}. Check logs for detail."
   end
 
   def check_content_attachment_resource(content)
@@ -202,6 +173,11 @@ class AdvanceDirectivesController < ApplicationController
 
       'binary' if content.attachment&.url&.include?('Binary')
     end
+  end
+
+  def adi_status
+    status_map = { 'Superseded' => 'superseded', 'Current' => 'current' }
+    status_map[params[:status]]
   end
 
   def extract_id_from_ref(ref)

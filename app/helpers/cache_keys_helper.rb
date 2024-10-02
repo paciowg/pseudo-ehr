@@ -1,4 +1,8 @@
 module CacheKeysHelper
+  def session_id
+    session[:id] ||= Base64.encode64(SecureRandom.random_number(2**64).to_s).chomp
+  end
+
   def cache_key_for_patients
     "patients_#{session_id}"
   end
@@ -7,7 +11,7 @@ module CacheKeysHelper
     "fhir_patient_#{patient_id}_#{session_id}"
   end
 
-  def cache_key_for_all_resources_for_patient(patient_id)
+  def cache_key_for_patient_record(patient_id)
     "patient_#{patient_id}_all_resources_#{session_id}"
   end
 
