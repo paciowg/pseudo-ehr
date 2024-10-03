@@ -133,4 +133,33 @@ module ModelHelper
 
     DateTime.parse(date_string).strftime('%b %d, %Y')
   end
+  #-----------------------------------------------------------------------------
+
+  def read_provider_name(provider_ref, bundle_entries)
+    return '--' unless provider_ref.try(:reference)
+
+    resource_type, resource_id = provider_ref.reference.split('/')
+    provider_resource = bundle_entries.find { |res| res.resourceType == resource_type && res.id == resource_id }
+    return '--' unless provider_resource
+
+    case resource_type
+    when 'Practitioner', 'Patient', 'RelatedPerson'
+      format_name(provider_resource.name) => { first_name:, last_name: }
+      "#{first_name} #{last_name}"
+    when 'Organization'
+      provider_resource.name
+    when 'PractitionerRole'
+      role = provider_resource.try(:code)&.first&.coding&.first&.display
+      name = provider_resource.practitioner.display
+      if name
+        return role.present? ? "#{name} | #{role}" : name
+      end
+
+      practioner_id = provider_resource.practitioner.reference.split('/').last
+      practitioner = bundle_entries.find { |res| res.resourceType == 'Practitioner' && res.id == practioner_id }
+      format_name(practitioner.name) => { first_name:, last_name: }
+      name = "#{first_name} #{last_name}"
+      role.present? ? "#{name} | #{role}" : name
+    end
+  end
 end

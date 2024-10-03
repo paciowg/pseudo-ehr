@@ -15,27 +15,19 @@ class ServiceRequestsController < ApplicationController
   private
 
   def fetch_and_cache_service_requests(patient_id)
-    Rails.cache.fetch(cache_key_for_patient_service_requests(patient_id), expires_in: 1.minute) do
-      response = fetch_service_requests_by_patient(patient_id)
-      entries = response.resource.entry.map(&:resource)
-      fhir_service_requests = entries.select { |entry| entry.resourceType == 'ServiceRequest' }
+    Rails.cache.fetch(cache_key_for_patient_service_requests(patient_id)) do
+      entries = retrieve_current_patient_resources
+      fhir_service_requests = cached_resources_type('ServiceRequest')
 
-      fhir_service_requests.map { |entry| ServiceRequest.new(entry, entries) }.sort_by(&:date).reverse
-    rescue StandardError => e
-      raise "
-            Error fetching patient's (#{patient_id}) Service Requests from FHIR server. Status code: #{e.message}
-      "
+      if fhir_service_requests.blank?
+        entries = fetch_service_requests_by_patient(patient_id)
+        fhir_service_requests = entries.select { |entry| entry.resourceType == 'ServiceRequest' }
+      end
+
+      entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
+      fhir_service_requests.map { |entry| ServiceRequest.new(entry, entries) }
+    rescue StandardError
+      raise "Error fetching or parsing patient's Service Requests. Check the log for detail."
     end
-  end
-
-  def fetch_service_requests_by_patient(patient_id)
-    search_param = { parameters: {
-      patient: patient_id,
-      _include: '*'
-    } }
-    response = @client.search(FHIR::ServiceRequest, search: search_param)
-    raise response&.response&.dig(:code) if response&.resource&.entry.nil?
-
-    response
   end
 end
