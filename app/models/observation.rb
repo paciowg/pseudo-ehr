@@ -11,8 +11,10 @@ class Observation < Resource
     @effective_date_time = fhir_observation.effectiveDateTime
     @category = retrieve_category
     @domain = retrieve_domain
-    @code = retrieve_code
-    @performer = retrieve_performer_name(fhir_observation.performer, bundle_entries)
+    @code = retrieve_code&.gsub('\n', '')&.gsub('\t', '')
+    @performer = fhir_observation.performer&.map do |performer|
+                   parse_provider_name(performer, bundle_entries)
+                 end&.join(',').presence || '--'
     @organization = retrieve_org(fhir_observation.performer, bundle_entries)
     @derived_from = retrieve_derived_from(fhir_observation.derivedFrom, fhir_observation.subject)
     value_quantity = fhir_observation.valueQuantity.presence || fhir_observation.valueCodeableConcept
@@ -100,36 +102,14 @@ class Observation < Resource
     display.present? ? "#{display} (#{code})" : code
   end
 
-  def retrieve_performer_name(performer, bundle_entries)
-    performer.map do |performer_ref|
-      name = performer_ref.display
-      return name if name.present?
-
-      resource_type, id = performer_ref.reference.split('/')
-      ref_resource = bundle_entries.find { |entry| entry.resourceType == resource_type && entry.id == id }
-
-      name = ref_resource.try(:practitioner)&.display
-      if name
-        role = ref_resource.try(:code)&.first&.coding&.first&.display
-
-        return role.present? ? "#{name} | #{role}" : name
-      end
-
-      fhir_name_array = ref_resource.try(:name) || []
-      format_name(fhir_name_array) => { first_name:, last_name: }
-      "#{first_name} #{last_name}"
-    end.join(', ')
-  end
-
   def retrieve_org(performer, bundle_entries)
-    role = performer.find {|elmt| elmt.reference.start_with?('PractitionerRole') }
-    return "Not provided" if role.blank?
+    role = performer.find { |elmt| elmt.reference.start_with?('PractitionerRole') }
+    return 'Not provided' if role.blank?
 
     resource_type, id = role.reference.split('/')
     ref_resource = bundle_entries.find { |entry| entry.resourceType == resource_type && entry.id == id }
 
-    ref_resource.try(:organization)&.display || "Not provided"
-
+    ref_resource.try(:organization)&.display || 'Not provided'
   end
 
   def retrieve_location(bundle_entries)
