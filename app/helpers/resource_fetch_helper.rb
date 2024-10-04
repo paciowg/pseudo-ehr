@@ -128,6 +128,12 @@ module ResourceFetchHelper # rubocop:disable Metrics/ModuleLength
     fetch_bundle_entries(response, max_results)
   end
 
+  def fetch_nutrition_orders_by_patient(patient_id, max_results = 200)
+    parameters = { patient: patient_id, _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
+    response = fetch_resource(FHIR::NutritionOrder, method: :search, parameters:)
+    fetch_bundle_entries(response, max_results)
+  end
+
   def fetch_bundle_entries(response, max_results = 500)
     bundle_entries = []
     while response&.resource.is_a?(FHIR::Bundle) && response.resource.entry.present?

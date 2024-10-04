@@ -16,9 +16,9 @@ class ServiceRequest < Resource
     @occurence = parse_date(fhir_service_request.occurrenceDateTime || fhir_service_request.occurrencePeriod&.start)
     @date = fhir_service_request.authoredOn
     @authored_on = parse_date(fhir_service_request.authoredOn)
-    @performer = read_provider_name(fhir_service_request.performer.first, bundle_entries)
+    @performer = parse_provider_name(fhir_service_request.performer.first, bundle_entries)
     @performer_reference = fhir_service_request.performer.first&.reference
-    @requester = read_provider_name(fhir_service_request.requester, bundle_entries)
+    @requester = parse_provider_name(fhir_service_request.requester, bundle_entries)
   end
 
   private

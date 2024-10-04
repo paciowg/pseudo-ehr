@@ -135,7 +135,7 @@ module ModelHelper
   end
   #-----------------------------------------------------------------------------
 
-  def read_provider_name(provider_ref, bundle_entries)
+  def parse_provider_name(provider_ref, bundle_entries)
     return '--' unless provider_ref.try(:reference)
 
     resource_type, resource_id = provider_ref.reference.split('/')

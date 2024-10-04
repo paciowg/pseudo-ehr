@@ -26,7 +26,8 @@ class ServiceRequestsController < ApplicationController
 
       entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
       fhir_service_requests.map { |entry| ServiceRequest.new(entry, entries) }
-    rescue StandardError
+    rescue StandardError => e
+      Rails.logger.error("Error fetching or parsing Service Request:\n #{e.message.inspect}")
       raise "Error fetching or parsing patient's Service Requests. Check the log for detail."
     end
   end
