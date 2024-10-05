@@ -27,6 +27,7 @@ class NutritionOrdersController < ApplicationController
       fhir_nutrition_orders.map { |entry| NutritionOrder.new(entry, entries) }
     rescue StandardError => e
       Rails.logger.error("Error fetching or parsing Nutrition Orders:\n #{e.message.inspect}")
+      Rails.logger.error(e.backtrace.join("\n"))
       raise "Error fetching patient's Nutrition Orders. Check logs for detail."
     end
   end

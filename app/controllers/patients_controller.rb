@@ -23,6 +23,22 @@ class PatientsController < ApplicationController
     redirect_to pages_patients_path
   end
 
+  def sync_patient_record
+    Rails.cache.clear
+    session[:patient_id] = params[:id]
+    record = retrieve_current_patient_resources
+    if record.present?
+      flash[:notice] = 'Patient record synced successfully!'
+    else
+      flash[:danger] = 'Failed to sync Patient record!'
+    end
+
+    respond_to do |format|
+      format.turbo_stream { redirect_back(fallback_location: patient_path(params[:id])) }
+      format.html { redirect_back(fallback_location: patient_path(params[:id])) }
+    end
+  end
+
   private
 
   def fetch_and_cache_patients
@@ -35,6 +51,7 @@ class PatientsController < ApplicationController
       bundle_entries.map { |entry| Patient.new(entry) }
     rescue StandardError => e
       Rails.logger.error("Error fetching or parsing FHIR Patients:\n #{e.message.inspect}")
+      Rails.logger.error(e.backtrace.join("\n"))
       raise 'Error fetching or parsing patients from FHIR server. Check logs.'
     end
   end
@@ -51,6 +68,7 @@ class PatientsController < ApplicationController
       patient
     rescue StandardError => e
       Rails.logger.error("Error fetching or parsing patient:\n #{e.message.inspect}")
+      Rails.logger.error(e.backtrace.join("\n"))
       raise 'Error fetching or parsing patient from FHIR server. Check logs.'
     end
   end

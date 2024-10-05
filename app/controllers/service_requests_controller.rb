@@ -28,6 +28,8 @@ class ServiceRequestsController < ApplicationController
       fhir_service_requests.map { |entry| ServiceRequest.new(entry, entries) }
     rescue StandardError => e
       Rails.logger.error("Error fetching or parsing Service Request:\n #{e.message.inspect}")
+      Rails.logger.error(e.backtrace.join("\n"))
+
       raise "Error fetching or parsing patient's Service Requests. Check the log for detail."
     end
   end

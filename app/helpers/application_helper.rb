@@ -30,4 +30,8 @@ module ApplicationHelper
 
     age
   end
+
+  def patient_id
+    session[:patient_id]
+  end
 end

@@ -37,6 +37,7 @@ class ObservationsController < ApplicationController
       fhir_observations.map { |entry| Observation.new(entry, entries) }
     rescue StandardError => e
       Rails.logger.error("Error fetching or parsing Observation:\n #{e.message.inspect}")
+      Rails.logger.error(e.backtrace.join("\n"))
       raise "Error fetching or parsing patient's Observations. Check the log for detail."
     end
   end
@@ -54,6 +55,8 @@ class ObservationsController < ApplicationController
     redirect_to patient_observations_page_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.error("Unable to retrieve or parse Observation:\n #{e.message.inspect}")
+    Rails.logger.error(e.backtrace.join("\n"))
+
     flash[:danger] = 'Unable to retrieve Observation. Check logs for detail.'
     redirect_to patient_observations_page_path, id: @patient.id
   end

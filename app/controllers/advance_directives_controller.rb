@@ -97,6 +97,7 @@ class AdvanceDirectivesController < ApplicationController
     end
   rescue StandardError => e
     Rails.logger.error("Error fetching or parsing ADIs:\n #{e.message.inspect}")
+    Rails.logger.error(e.backtrace.join("\n"))
     raise 'Error fetching or parsing ADIs. Check logs for detail.'
   end
 
@@ -110,6 +111,7 @@ class AdvanceDirectivesController < ApplicationController
     end
   rescue StandardError => e
     Rails.logger.error("Error fetching or parsing patient ADI #{adi_id}:\n #{e.message.inspect}")
+    Rails.logger.error(e.backtrace.join("\n"))
     raise "Unable to fetch or parse ADI with id #{adi_id}. Check logs for detail"
   end
 

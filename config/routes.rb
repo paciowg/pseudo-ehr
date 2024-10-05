@@ -4,12 +4,15 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root 'welcome#index'
   resources :sessions, only: [:new]
-  resources :patients, only: %i[show index]
+  resources :patients, only: %i[show index] do
+    post :sync_patient_record, on: :member
+  end
   resources :fhir_servers, only: %i[index destroy]
 
   get 'welcome/index'
   get 'pdf/:binary_id', to: 'pdfs#show', as: :pdf
   get 'pages/patients'
+  get 'pages/patients/:id', to: 'pages#patient', as: 'patient_page'
   get 'pages/fhir_servers'
   get 'pages/patients/:id/advance_directives', to: 'pages#patient_advance_directives',
                                                as: 'patient_advance_directives_page'
@@ -21,9 +24,9 @@ Rails.application.routes.draw do
   get 'pages/patients/:patient_id/questionnaire_responses/:id', to: 'pages#patient_questionnaire_response',
                                                                 as: 'patient_questionnaire_response_page'
   get 'pages/patients/:id/nutrition_orders', to: 'pages#patient_nutrition_orders',
-                                                    as: 'patient_nutrition_orders_page'
+                                             as: 'patient_nutrition_orders_page'
   get 'pages/patients/:id/service_requests', to: 'pages#patient_service_requests',
-                                                    as: 'patient_service_requests_page'
+                                             as: 'patient_service_requests_page'
   get 'pages/patients/:id/observations', to: 'pages#patient_observations', as: 'patient_observations_page'
   get 'pages/patients/:patient_id/observations/:id', to: 'pages#patient_observation', as: 'patient_observation_page'
   get 'pages/patients/:id/conditions', to: 'pages#patient_conditions', as: 'patient_conditions_page'

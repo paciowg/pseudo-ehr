@@ -27,7 +27,12 @@ class ApplicationController < ActionController::Base
   end
 
   def retrieve_patient
-    @patient = Rails.cache.fetch(cache_key_for_patient(session[:patient_id]))
+    @patient = Rails.cache.fetch(cache_key_for_patient(patient_id)) do
+      Patient.new(fetch_single_patient(patient_id))
+    rescue StandardError => e
+      Rails.logger.error("Error fetching patient: #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
+    end
 
     return unless @patient.nil?
 
@@ -36,26 +41,26 @@ class ApplicationController < ActionController::Base
   end
 
   def retrieve_practitioner_roles_and_orgs
-    return [] unless session[:patient_id]
+    return [] unless patient_id
 
     Rails.cache.fetch(cache_key_for_practioner_roles) do
       @practitioner_roles ||= fetch_practitioner_roles
     end
-  rescue StandardError
-    Rails.logger.error('Empty bundle or Error fetching practitioner roles')
+  rescue StandardError => e
+    Rails.logger.error("Empty bundle or Error fetching practitioner roles:\n #{e.message.inspect}")
+    Rails.logger.error(e.backtrace.join("\n"))
     []
   end
 
   def retrieve_current_patient_resources
-    return [] unless session[:patient_id]
-
-    patient_id = session[:patient_id]
+    return [] unless patient_id
 
     Rails.cache.fetch(cache_key_for_patient_record(patient_id)) do
       @patient_record ||= fetch_single_patient_record(patient_id)
     end
   rescue StandardError => e
     Rails.logger.error("Error fetching patient #{patient_id} record: #{e.message.inspect}")
+    Rails.logger.error(e.backtrace.join("\n"))
     []
   end
 

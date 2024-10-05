@@ -2,10 +2,15 @@
 class PagesController < ApplicationController
   before_action :delete_current_patient_id, only: %i[patients fhir_servers]
   before_action :require_server, except: %i[fhir_servers]
-  before_action :retrieve_patient, :set_resources_count, except: %i[patients fhir_servers]
+  before_action :retrieve_patient, :set_resources_count, except: %i[patients patient fhir_servers]
 
   # GET /pages/patients
   def patients; end
+
+  # GET /pages/patients/:id
+  def patient
+    @patient_id = params[:id]
+  end
 
   # GET /pages/fhir_servers
   def fhir_servers; end

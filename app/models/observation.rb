@@ -155,7 +155,7 @@ class Observation < Resource
       next unless ref_resource
 
       Observation.new(ref_resource, bundle_entries)
-    end
+    end.compact
   end
 
   def categories
@@ -163,6 +163,6 @@ class Observation < Resource
       code = category.coding.first.code
       display = category.coding.first.display
       { code:, display: }
-    end
+    end.compact
   end
 end

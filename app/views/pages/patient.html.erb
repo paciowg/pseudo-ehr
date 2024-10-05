@@ -1,0 +1,10 @@
+<!-- app/views/pages/patient.html.erb -->
+<div class="p-2 mb-4 sm:ml-40 lg:ml-44 flex flex-col font-sans justify-items-center">
+  <h1 class="font-semibold text-left text-xl mb-2">Personal Information</h1>
+  <%= turbo_frame_tag "patient", src: patient_path(@patient_id), loading: "lazy" do %>
+    <div class="w-full flex flex-col items-center justify-center my-4 p-6">
+      <i class="fas fa-spinner fa-spin text-8xl mr-2"></i>
+      <span class="text-center mt-4">Loading Patient...</span>
+    </div>
+  <% end %>
+</div>
