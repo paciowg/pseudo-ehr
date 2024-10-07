@@ -7,7 +7,7 @@
       <th scope="col" class="px-6 py-3">Code</th>
       <th scope="col" class="px-6 py-3">Effective</th>
       <th scope="col" class="px-6 py-3">Category</th>
-      <th scope="col" class="px-6 py-3">Domain</th>
+      <th scope="col" class="px-6 py-3">ICF Category</th>
       <th scope="col" class="px-6 py-3">Performer</th>
       <th scope="col" class="px-6 py-3">Value</th>
       <th scope="col" class="px-6 py-3">Members</th>
@@ -29,7 +29,7 @@
           <% if observation.collection? %>
             <% observation.members.each do |member| %>
               <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
-                <a href="<%= patient_observation_page_path(patient_id: @patient.id, id: member.id) %>">Observation/<%= member.id %></a>
+                <a href="<%= patient_observation_path(patient_id: @patient.id, id: member.id) %>">Observation/<%= member.id %></a>
               </p>
             <% end %>
 

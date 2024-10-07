@@ -1,15 +1,12 @@
-# frozen_string_literal: true
-
 # app/controllers/adis_controller.rb
 class AdvanceDirectivesController < ApplicationController
   include AdvanceDirectivesHelper
-  before_action :require_server, :retrieve_patient
+  before_action :require_server, :retrieve_patient, :set_resources_count
   # GET /patients/:patient_id/advance_directives
   def index
     @adis = fetch_and_cache_adis(params[:patient_id])
     flash.now[:notice] = 'No ADI found' if @adis.empty?
   rescue StandardError => e
-    Rails.logger.error e
     flash.now[:danger] = e.message
     @adis = []
   end
@@ -19,7 +16,7 @@ class AdvanceDirectivesController < ApplicationController
     @adi = fetch_and_cache_adi(params[:id])
   rescue StandardError => e
     flash[:danger] = e.message
-    redirect_to patient_advance_directives_page_path, id: @patient.id
+    redirect_to patient_advance_directives_path, id: @patient.id
   end
 
   # TODO: to be reworked once we will implement selecting a provider when connecting to the server
@@ -40,11 +37,11 @@ class AdvanceDirectivesController < ApplicationController
     flash[:success] = 'Successfully updated PMO'
     Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
     Rails.cache.delete(cache_key_for_adi(params[:id]))
-    redirect_to patient_advance_directives_page_path, id: @patient.id
+    redirect_to patient_advance_directives_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error updating PMO: #{e.message}" }
     flash[:error] = 'An error has occurred while updating the PMO'
-    redirect_to advance_directive_page_path, id: params[:id]
+    redirect_to advance_directive_path, id: params[:id]
   end
 
   # PUT /advance_directives/:id
@@ -56,11 +53,11 @@ class AdvanceDirectivesController < ApplicationController
     @client.update(doc_ref, doc_ref.id)
 
     flash[:success] = 'Successfully revoked Living Will'
-    redirect_to patient_advance_directives_page_path, id: @patient.id
+    redirect_to patient_advance_directives_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error revoking Living Will: #{e.message}" }
     flash[:error] = 'An error has occurred while revoking the living will'
-    redirect_to advance_directive_page_path, id: params[:id]
+    redirect_to advance_directive_path, id: params[:id]
   end
 
   private

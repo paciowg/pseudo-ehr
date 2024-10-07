@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 # app/controllers/questionnaire_responses_controller.rb
 class QuestionnaireResponsesController < ApplicationController
-  before_action :require_server, :retrieve_patient
+  before_action :require_server, :retrieve_patient, :set_resources_count
   before_action :find_questionnaire_response, only: %i[show]
 
   # GET /patients/:patient_id/questionnaire_responses
@@ -51,9 +49,9 @@ class QuestionnaireResponsesController < ApplicationController
     return if @questionnaire_response.present?
 
     flash[:notice] = 'Questionnaire response not found'
-    redirect_to patient_questionnaire_responses_page_path, id: @patient.id
+    redirect_to patient_questionnaire_responses_path, id: @patient.id
   rescue StandardError => e
     flash[:danger] = e.message
-    redirect_to patient_questionnaire_responses_page_path, id: @patient.id
+    redirect_to patient_questionnaire_responses_path, id: @patient.id
   end
 end

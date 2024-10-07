@@ -17,8 +17,8 @@ RSpec.describe WelcomeController do
         expect(flash[:notice]).to eq("You are connected to FHIR Server: #{fhir_server.base_url}")
       end
 
-      it 'redirects to pages_patients_path' do
-        expect(response).to redirect_to pages_patients_path
+      it 'redirects to patients_path' do
+        expect(response).to redirect_to patients_path
       end
     end
 

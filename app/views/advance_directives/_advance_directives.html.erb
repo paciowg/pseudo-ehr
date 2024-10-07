@@ -1,0 +1,13 @@
+<%= turbo_frame_tag "adis" do %>
+  <%= turbo_stream.update "queries" do %>
+    <%= render "shared/queries" %>
+  <% end %>
+  <%= turbo_stream.update "flash" do %>
+    <%= render "shared/flash_messages" %>
+  <% end %>
+  <div id="accordion" data-accordion="open">
+    <% @adis.each do |identifier, adis| %>
+      <%= render "adis_category", adis: adis, identifier: identifier %>
+    <% end %>
+  </div>
+<% end %>

@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 # app/controllers/medication_lists_controller.rb
 class MedicationListsController < ApplicationController
-  before_action :require_server, :retrieve_patient
+  before_action :require_server, :retrieve_patient, :set_resources_count
 
   # GET /patients/:patient_id/medication_lists
   def index

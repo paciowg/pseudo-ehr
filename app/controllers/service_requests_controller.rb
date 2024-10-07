@@ -1,6 +1,6 @@
 # app/controllers/service_requests_controller.rb
 class ServiceRequestsController < ApplicationController
-  before_action :require_server, :retrieve_patient
+  before_action :require_server, :retrieve_patient, :set_resources_count
 
   # GET /patients/:patient_id/service_requests
   def index

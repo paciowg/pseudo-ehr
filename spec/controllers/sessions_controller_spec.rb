@@ -13,9 +13,9 @@ RSpec.describe SessionsController do
         get :new
       end
 
-      it 'sets flash notice and redirects to pages_patients_path' do
+      it 'sets flash notice and redirects to patients_path' do
         expect(flash[:notice]).to include('Client already connected')
-        expect(response).to redirect_to pages_patients_path
+        expect(response).to redirect_to patients_path
       end
     end
 
@@ -34,8 +34,8 @@ RSpec.describe SessionsController do
         post :launch_server, params: { base_url: 'https://qa-rr-fhir2.maxmddirect.com', authenticated_access: false, name: 'Fhir Server' }
       end
 
-      it 'redirects to pages_patients_path' do
-        expect(response).to redirect_to pages_patients_path
+      it 'redirects to patients_path' do
+        expect(response).to redirect_to patients_path
       end
     end
 

@@ -59,7 +59,7 @@ RSpec.describe PatientsController do
 
       it 'sets the danger flash and redirects to index' do
         expect(flash[:danger]).to eq('Unable to fetch patient with id dummy from FHIR server.')
-        expect(response).to redirect_to pages_patients_path
+        expect(response).to redirect_to patients_path
       end
     end
   end

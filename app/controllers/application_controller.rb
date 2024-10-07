@@ -37,7 +37,7 @@ class ApplicationController < ActionController::Base
     return unless @patient.nil?
 
     flash[:danger] = 'Please select a patient to proceed'
-    redirect_to pages_patients_path
+    redirect_to patients_path
   end
 
   def retrieve_practitioner_roles_and_orgs
@@ -95,6 +95,8 @@ class ApplicationController < ActionController::Base
   end
 
   def set_resources_count
+    return unless patient_id
+
     @care_team_count = cached_resources_type('CareTeam').size
     @condition_count = cached_resources_type('Condition').size
     @goal_count = cached_resources_type('Goal').size

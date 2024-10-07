@@ -22,7 +22,7 @@
         <% @goals.each do |goal| %>
           <tr class="bg-gray-100 border-b border-gray-300 hover:bg-gray-200"
             data-controller="table-row-click"
-            data-table-row-click-url="<%= patient_goal_page_path(patient_id: @patient.id, id: goal.id) %>"
+            data-table-row-click-url="<%= patient_goal_path(patient_id: @patient.id, id: goal.id) %>"
             data-action="click->table-row-click#goToLink"
           >
             <td class="px-6 py-4"><%= goal.id %></td>

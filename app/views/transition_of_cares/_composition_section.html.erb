@@ -20,12 +20,12 @@
 
         <% if section['code'].include?('52471-0') %>
           <h5 class="mb-2 text-md text-left text-blue-500 hover:text-red-500 dark:text-blue-900">
-            <%= link_to 'See Medication List', patient_medication_lists_page_path(patient_id: @patient.id), data: {turbo: false} %>
+            <%= link_to 'See Medication List', patient_medication_lists_path(patient_id: @patient.id), data: {turbo: false} %>
           </h5>
         <% end %>
         <% if section['code'].include?('42348-3') %>
           <h5 class="mb-2 text-md text-left text-blue-500 hover:text-red-500 dark:text-blue-900">
-            <%= link_to 'See Advance Directives', patient_advance_directives_page_path(@patient.id), data: {turbo: false} %>
+            <%= link_to 'See Advance Directives', patient_advance_directives_path(@patient.id), data: {turbo: false} %>
           </h5>
         <% end %>
 

@@ -18,9 +18,16 @@ class PatientsController < ApplicationController
     retrieve_current_patient_resources
     set_resources_count
     retrieve_practitioner_roles_and_orgs
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace('patient', partial: 'patients/patient')
+      end
+    end
   rescue StandardError => e
     flash[:danger] = e.message
-    redirect_to pages_patients_path
+    redirect_to patients_path
   end
 
   def sync_patient_record

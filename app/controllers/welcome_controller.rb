@@ -6,6 +6,6 @@ class WelcomeController < ApplicationController
     return unless server_present?
 
     flash[:notice] = "You are connected to FHIR Server: #{@current_server.base_url}"
-    redirect_to pages_patients_path
+    redirect_to patients_path
   end
 end

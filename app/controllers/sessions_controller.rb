@@ -12,14 +12,14 @@ class SessionsController < ApplicationController
     msg = "Client already connected to fhir_server #{@current_server.base_url}"
     flash[:notice] = msg
     # Where to redirect depends on the context of your app. Change as needed to match your logic.
-    redirect_to pages_patients_path
+    redirect_to patients_path
   end
 
   # POST /launch
   def launch_server
     # Where to redirect depends on the context of your app. Change as needed to match your logic.
     flash[:success] = 'Successfully connected' unless @current_server.authenticated_access?
-    redirect_to pages_patients_path and return unless @current_server.authenticated_access?
+    redirect_to patients_path and return unless @current_server.authenticated_access?
 
     state = SecureRandom.uuid
     session[:code_verifier] = SecureRandom.urlsafe_base64(64)
@@ -47,7 +47,7 @@ class SessionsController < ApplicationController
       flash[:success] = 'Successfully authenticated with server.'
       # Where to redirect depends on the context of your app. Change as needed to match your logic.
       # if withing patient or user context, the patient id or user id will be provided in the authentication response.
-      redirect_to pages_patients_path
+      redirect_to patients_path
     end
   rescue StandardError => e
     reset_session

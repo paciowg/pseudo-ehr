@@ -26,7 +26,7 @@
       <% observation_collection.members.each do |member| %>
         <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50"
           data-controller="table-row-click"
-          data-table-row-click-url="<%= patient_observation_page_path(patient_id: @patient.id, id: member.id) %>"
+          data-table-row-click-url="<%= patient_observation_path(patient_id: @patient.id, id: member.id) %>"
           data-action="click->table-row-click#goToLink"
         >
           <td class="px-6 py-4"><%= Observation.format_domain(member.domain) %></td>

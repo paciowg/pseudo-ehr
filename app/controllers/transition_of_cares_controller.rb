@@ -1,6 +1,6 @@
 # app/controllers/transition_of_cares_controller.rb
 class TransitionOfCaresController < ApplicationController
-  before_action :require_server, :retrieve_patient
+  before_action :require_server, :retrieve_patient, :set_resources_count
 
   # GET /patients/:patient_id/transition_of_care
   def show

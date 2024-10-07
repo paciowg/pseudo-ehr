@@ -1,6 +1,6 @@
 # app/controllers/nutrition_orders_controller.rb
 class NutritionOrdersController < ApplicationController
-  before_action :require_server, :retrieve_patient
+  before_action :require_server, :retrieve_patient, :set_resources_count
 
   # GET /patients/:patient_id/nutrition_orders
   def index

@@ -1,4 +1,4 @@
-// app/javascript/controllers/visibility_controller.js
+// app/javascript/controllers/showhide_controller.js
 
 import { Controller } from "@hotwired/stimulus"
 

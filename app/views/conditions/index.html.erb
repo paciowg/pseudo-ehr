@@ -20,7 +20,7 @@
         <% @conditions.each do |condition| %>
           <tr class="bg-gray-100 border-b border-gray-300 hover:bg-gray-200"
             data-controller="table-row-click"
-            data-table-row-click-url="<%= patient_condition_page_path(patient_id: @patient.id, id: condition.id) %>"
+            data-table-row-click-url="<%= patient_condition_path(patient_id: @patient.id, id: condition.id) %>"
             data-action="click->table-row-click#goToLink"
           >
             <td class="px-6 py-4"><%= condition.id %></td>

@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 # app/controllers/conditions_controller.rb
 class ConditionsController < ApplicationController
-  before_action :require_server, :retrieve_patient
+  before_action :require_server, :retrieve_patient, :set_resources_count
   before_action :find_condition, only: %i[show]
 
   # GET /patients/:patient_id/conditions
@@ -54,9 +52,9 @@ class ConditionsController < ApplicationController
     return if @condition.present?
 
     flash[:notice] = 'Condition not found'
-    redirect_to patient_conditions_page_path, id: @patient.id
+    redirect_to patient_conditions_path, id: @patient.id
   rescue StandardError => e
     flash[:danger] = e.message
-    redirect_to patient_conditions_page_path, id: @patient.id
+    redirect_to patient_conditions_path, id: @patient.id
   end
 end

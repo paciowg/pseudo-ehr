@@ -18,7 +18,7 @@
       <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50">
         <td class="px-2 py-2 font-semibold flex col-span-1 flex-shrink-0 whitespace-normal"
           data-controller="table-row-click"
-          data-table-row-click-url="/pages/advance_directives/<%= adi.id %>"
+          data-table-row-click-url="/advance_directives/<%= adi.id %>"
           data-action="click->table-row-click#goToLink"
           data-showhide-target="<%= target %>"
         >
@@ -38,7 +38,7 @@
             </button>
             <%= render "pdf_modal", pdf: adi.pdf, binary_id: adi.pdf_binary_id, title: adi.description, id: adi.id, revoked: adi.revoked? %>
             <% else %>
-          <%= link_to 'See document', advance_directive_page_path(adi.id), class: 'text-blue-600 hover:text-red-500', data: {turbo: false} %>
+          <%= link_to 'See document', advance_directive_path(adi.id), class: 'text-blue-600 hover:text-red-500' %>
           <% end %>
         </td>
         <% if adi.doc_revoke_status.present? %>

@@ -11,32 +11,6 @@ Rails.application.routes.draw do
 
   get 'welcome/index'
   get 'pdf/:binary_id', to: 'pdfs#show', as: :pdf
-  get 'pages/patients'
-  get 'pages/patients/:id', to: 'pages#patient', as: 'patient_page'
-  get 'pages/fhir_servers'
-  get 'pages/patients/:id/advance_directives', to: 'pages#patient_advance_directives',
-                                               as: 'patient_advance_directives_page'
-
-  get 'pages/advance_directives/:id', to: 'pages#advance_directive', as: 'advance_directive_page'
-  get 'pages/patients/:id/care_teams', to: 'pages#patient_care_teams', as: 'patient_care_teams_page'
-  get 'pages/patients/:id/questionnaire_responses', to: 'pages#patient_questionnaire_responses',
-                                                    as: 'patient_questionnaire_responses_page'
-  get 'pages/patients/:patient_id/questionnaire_responses/:id', to: 'pages#patient_questionnaire_response',
-                                                                as: 'patient_questionnaire_response_page'
-  get 'pages/patients/:id/nutrition_orders', to: 'pages#patient_nutrition_orders',
-                                             as: 'patient_nutrition_orders_page'
-  get 'pages/patients/:id/service_requests', to: 'pages#patient_service_requests',
-                                             as: 'patient_service_requests_page'
-  get 'pages/patients/:id/observations', to: 'pages#patient_observations', as: 'patient_observations_page'
-  get 'pages/patients/:patient_id/observations/:id', to: 'pages#patient_observation', as: 'patient_observation_page'
-  get 'pages/patients/:id/conditions', to: 'pages#patient_conditions', as: 'patient_conditions_page'
-  get 'pages/patients/:patient_id/conditions/:id', to: 'pages#patient_condition', as: 'patient_condition_page'
-  get 'pages/patients/:id/goals', to: 'pages#patient_goals', as: 'patient_goals_page'
-  get 'pages/patients/:patient_id/goals/:id', to: 'pages#patient_goal', as: 'patient_goal_page'
-  get 'pages/patients/:patient_id/transition_of_care', to: 'pages#patient_transition_of_care',
-                                                       as: 'patient_transition_of_care_page'
-  get 'pages/patients/:patient_id/medication_lists', to: 'pages#patient_medication_lists',
-                                                     as: 'patient_medication_lists_page'
 
   get '/login', to: 'sessions#login'
   post '/launch', to: 'sessions#launch_server'

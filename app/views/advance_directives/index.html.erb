@@ -1,12 +1,17 @@
 <!-- app/views/advance_directives/index.html.erb -->
 <div class="p-2 mb-4 sm:ml-10 lg:ml-10 font-sans w-8/12" data-controller="showhide">
   <div class="flex flex-row items-center justify-around my-1 pb-4 w-full">
-    <h1 class="p-5 text-xl font-bold text-left text-gray-900 dark:text-white w-1/2">
-      Advance Directives (ADIs)
-    </h1>
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900">
+        Advance Directives (ADIs)
+        <span class="inline-flex items-center justify-center w-4 h-4 ms-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+          <%= @adi_count %>
+        </span>
+      </h1>
+    </div>
     <div class="w-1/2">
       <%= form_with(url: patient_advance_directives_path(@patient.id), method: :get, id: "adi_status_form", data: { turbo_frame: "adis",
-                                                                                                                    turbo_action: "advance", controller: "form", action: "input->form#submit" }) do %>
+                                                                                                                    controller: "form", action: "input->form#submit" }) do %>
         <div class="flex justify-center items-center space-x-1" data-controller="spinner">
           <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
           <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
@@ -22,19 +27,6 @@
       <% end %>
     </div>
   </div>
-
-  <%= turbo_frame_tag "adis" do %>
-    <%= turbo_stream.update "queries" do %>
-      <%= render "shared/queries" %>
-    <% end %>
-    <%= turbo_stream.update "flash" do %>
-      <%= render "shared/flash_messages" %>
-    <% end %>
-    <div id="accordion" data-accordion="open">
-      <% @adis.each do |identifier, adis| %>
-        <%= render "adis_category", adis: adis, identifier: identifier %>
-      <% end %>
-    </div>
-  <% end %>
+  <%= render "advance_directives" %>
 </div>
 

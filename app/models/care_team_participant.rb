@@ -4,11 +4,11 @@
 class CareTeamParticipant < Resource
   attr_reader :name, :role, :organization, :contact, :fhir_resource
 
-  def initialize(name, role, fhir_resource)
+  def initialize(name, role, fhir_resource, bundle_entries = [])
     @fhir_resource = fhir_resource
     @name = name || retrieve_provider_name
     @role = role || retrieve_provider_role
-    @organization = retrieve_organization_name
+    @organization = retrieve_organization_name(bundle_entries)
     @contact = retrieve_contact
   end
 
@@ -32,8 +32,20 @@ class CareTeamParticipant < Resource
   end
 
   # Retrieve provider org from PractionerRole or Practioner resource
-  def retrieve_organization_name
-    @fhir_resource.try(:organization).try(:display) || '--'
+  def retrieve_organization_name(bundle_entries)
+    org = @fhir_resource.try(:organization)
+    return '--' unless org
+
+    name = org.try(:display)
+    return name if name
+
+    org_ref = org.try(:reference)
+    return '--' unless org_ref
+
+    resource_type, resource_id = org_ref.split('/')
+    resource = bundle_entries.find { |res| res.resourceType == resource_type && res.id == resource_id }
+
+    resource&.name || '--'
   end
 
   # Retrieve provider contact info from either PractitionerRole, RelatedPerson, Patient or Practitioner resource.

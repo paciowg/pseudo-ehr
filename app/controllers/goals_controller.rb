@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 # app/controllers/goals_controller.rb
 class GoalsController < ApplicationController
-  before_action :require_server, :retrieve_patient
+  before_action :require_server, :retrieve_patient, :set_resources_count
   before_action :find_goal, only: %i[show]
 
   # GET /patients/:patient_id/goals
@@ -51,9 +49,9 @@ class GoalsController < ApplicationController
     return if @goal.present?
 
     flash[:notice] = 'Goal not found'
-    redirect_to patient_goals_page_path, id: @patient.id
+    redirect_to patient_goals_path, id: @patient.id
   rescue StandardError => e
     flash[:danger] = e.message
-    redirect_to patient_goals_page_path, id: @patient.id
+    redirect_to patient_goals_path, id: @patient.id
   end
 end

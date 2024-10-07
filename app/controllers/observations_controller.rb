@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 # app/controllers/observations_controller.rb
 class ObservationsController < ApplicationController
-  before_action :require_server, :retrieve_patient
+  before_action :require_server, :retrieve_patient, :set_resources_count
   before_action :find_observation, only: %i[show]
 
   # GET /patients/:patient_id/observations
@@ -52,12 +50,12 @@ class ObservationsController < ApplicationController
     return if @observation.present?
 
     flash[:notice] = 'Observation not found'
-    redirect_to patient_observations_page_path, id: @patient.id
+    redirect_to patient_observations_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.error("Unable to retrieve or parse Observation:\n #{e.message.inspect}")
     Rails.logger.error(e.backtrace.join("\n"))
 
     flash[:danger] = 'Unable to retrieve Observation. Check logs for detail.'
-    redirect_to patient_observations_page_path, id: @patient.id
+    redirect_to patient_observations_path, id: @patient.id
   end
 end
