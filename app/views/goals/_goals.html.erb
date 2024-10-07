@@ -114,6 +114,11 @@
                 <% end %>
               </tbody>
             </table>
+            <br />
+            <% if @pagy %>
+              <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
+            <% end %>
+            <br />
           <% end %>
         </div>
       </div>

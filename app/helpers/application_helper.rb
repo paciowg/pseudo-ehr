@@ -29,6 +29,8 @@ module ApplicationHelper
     age -= 1 if today < birthdate + age.years
 
     age
+  rescue StandardError
+    '--'
   end
 
   def patient_id
