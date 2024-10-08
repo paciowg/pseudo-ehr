@@ -1,7 +1,6 @@
 # app/controllers/conditions_controller.rb
 class ConditionsController < ApplicationController
   before_action :require_server, :retrieve_patient, :set_resources_count
-  before_action :find_condition, only: %i[show]
 
   # GET /patients/:patient_id/conditions
   def index
@@ -13,48 +12,25 @@ class ConditionsController < ApplicationController
     @conditions = []
   end
 
-  # GET /patients/:patient_id/conditions/:id
-  def show; end
-
   private
 
   def fetch_and_cache_conditions(patient_id)
-    Rails.cache.fetch(cache_key_for_patient_conditions(patient_id), expires_in: 1.minute) do
-      response = fetch_conditions_by_patient(patient_id)
-      entries = response.resource.entry.map(&:resource)
-      fhir_conditions = entries.select { |entry| entry.resourceType == 'Condition' }
+    Rails.cache.fetch(cache_key_for_patient_conditions(patient_id)) do
+      entries = retrieve_current_patient_resources
+      fhir_conditions = cached_resources_type('Condition')
 
-      conditions = fhir_conditions.map do |entry|
-        Condition.new(entry, entries)
+      if fhir_conditions.blank?
+        entries = fetch_conditions_by_patient(patient_id)
+        fhir_conditions = entries.select { |entry| entry.resourceType == 'Condition' }
       end
+
+      entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
+      conditions = fhir_conditions.map { |entry| Condition.new(entry, entries) }
       conditions.sort_by { |cond| cond.onset_date_time || cond.recorded_date || '' }.reverse
     rescue StandardError => e
-      raise "
-            Error fetching patient's (#{patient_id}) conditions from FHIR server. Status code: #{e.message}
-      "
+      Rails.logger.error("Error fetching or parsing Condition:\n #{e.message.inspect}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      raise "Error fetching or parsing patient's conditions. Check the log for detail."
     end
-  end
-
-  def fetch_conditions_by_patient(patient_id)
-    search_param = { parameters: {
-      patient: patient_id,
-      _include: '*'
-    } }
-    response = @client.search(FHIR::Condition, search: search_param)
-    raise response&.response&.dig(:code) if response&.resource&.entry.nil?
-
-    response
-  end
-
-  def find_condition
-    conditions = fetch_and_cache_conditions(params[:patient_id])
-    @condition = conditions.find { |response| response.id == params[:id] }
-    return if @condition.present?
-
-    flash[:notice] = 'Condition not found'
-    redirect_to patient_conditions_path, id: @patient.id
-  rescue StandardError => e
-    flash[:danger] = e.message
-    redirect_to patient_conditions_path, id: @patient.id
   end
 end

@@ -6,7 +6,8 @@ export default class extends Controller {
   static targets = [
     "authenticatedInput", "credentialFields", "requiredFields",
     "adiStatus", "currentAdis", "supersededAdis",
-    "obsType", "singleObs", "collectionObs"
+    "obsType", "singleObs", "collectionObs", "conditionType",
+    "encounterDiagnosis", "problemListItem", "other"
   ]
   static values = { showIf: String }
   connect() {
@@ -64,6 +65,50 @@ export default class extends Controller {
         el.hidden = true;
       })
       this.collectionObsTargets.forEach(el => {
+        el.hidden = false;
+      })
+    }
+  }
+
+  toggleConditions() {
+    if (this.conditionTypeTarget.value === "Condition Problem/Health Concern") {
+      this.problemListItemTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.encounterDiagnosisTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.otherTargets.forEach(el => {
+        el.hidden = true;
+      })
+    } else if (this.conditionTypeTarget.value === "Encounter Diagnosis") {
+      this.problemListItemTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.otherTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.encounterDiagnosisTargets.forEach(el => {
+        el.hidden = false;
+      })
+    } else if (this.conditionTypeTarget.value === "Other") {
+      this.problemListItemTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.otherTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.encounterDiagnosisTargets.forEach(el => {
+        el.hidden = true;
+      })
+    } else {
+      this.problemListItemTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.otherTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.encounterDiagnosisTargets.forEach(el => {
         el.hidden = false;
       })
     }

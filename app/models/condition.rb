@@ -16,10 +16,20 @@ class Condition < Resource
     @onset_date_time = fhir_condition.try(:onsetDateTime)
     @asserted_date = fhir_condition.try(:assertedDate)
     @recorded_date = fhir_condition.try(:recordedDate)
-    @asserter = retrieve_asserter(bundle_entries)
-    @evidences = retrieve_evidences(fhir_condition.subject)
+    @asserter = parse_provider_name(@fhir_resource.asserter, bundle_entries)
+    @evidences = retrieve_evidences(bundle_entries)
     @body_site = fhir_condition.bodySite&.map { |c| coding_string(c.coding) }&.join(', ')
     @note = fhir_condition.try(:note)&.first&.text || '--'
+  end
+
+  def type
+    if @category&.downcase&.include?('encounter-diagnosis')
+      'encounter-diagnosis'
+    elsif @category&.downcase&.include?('problem-list-item') || @category&.downcase&.include?('health-concern')
+      'problem-list-item'
+    else
+      'other'
+    end
   end
 
   def onset
@@ -55,36 +65,20 @@ class Condition < Resource
     formatted_code.strip.start_with?('(') ? formatted_code.strip.delete_prefix('(').delete_suffix(')') : formatted_code
   end
 
-  def retrieve_asserter(bundle_entries)
-    asserter_display = @fhir_resource.asserter&.display
-    return asserter_display if asserter_display.present?
+  def retrieve_evidences(bundle_entries)
+    @fhir_resource.evidence.map(&:detail).flatten.map do |item|
+      resource_type, id = item.reference.split('/')
+      resource = bundle_entries.find { |res| res.resourceType == resource_type && res.id == id }
+      next unless resource
 
-    asserter_ref = @fhir_resource.asserter&.reference
-    return '--' if asserter_ref.blank?
-
-    resource_type, id = asserter_ref.split('/')
-
-    asserter_resource = bundle_entries.find { |resource| resource.resourceType == resource_type && resource.id == id }
-    return '--' if asserter_resource.blank?
-
-    name = '--'
-    if resource_type == 'Practitioner'
-      format_name(asserter_resource.name) => { first_name:, last_name: }
-      name = "#{first_name} #{last_name}"
-    elsif resource_type == 'PractitionerRole'
-      name = asserter_resource.practitioner&.display || '--'
-    end
-    name
-  end
-
-  def retrieve_evidences(patient_ref)
-    patient_id = patient_ref.reference.split('/').last
-    detail_refs = @fhir_resource.evidence.map(&:detail).flatten.map(&:reference).compact
-
-    detail_refs.map do |elmt|
-      resource_type, id = elmt.split('/')
-      path = "/patients/#{patient_id}/#{resource_type.downcase}s/#{id}"
-      { name: elmt, path: }
-    end
+      case resource_type
+      when 'Condition'
+        Condition.new(resource, bundle_entries).code
+      when 'Observation'
+        Observation.new(resource, bundle_entries).code
+      else
+        next
+      end
+    end.compact
   end
 end

@@ -158,6 +158,12 @@ module ResourceFetchHelper # rubocop:disable Metrics/ModuleLength
     fetch_bundle_entries(response, max_results)
   end
 
+  def fetch_conditions_by_patient(patient_id, max_results = 200)
+    parameters = { patient: patient_id, _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
+    response = fetch_resource(FHIR::Condition, method: :search, parameters:)
+    fetch_bundle_entries(response, max_results)
+  end
+
   def fetch_observation(observation_id)
     fetch_resource(FHIR::Observation, method: :read, id: observation_id)&.resource
   end

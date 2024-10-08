@@ -27,7 +27,6 @@ Rails.application.routes.draw do
   get 'patients/:patient_id/observations', to: 'observations#index', as: 'patient_observations'
   get 'patients/:patient_id/observations/:id', to: 'observations#show', as: 'patient_observation'
   get 'patients/:patient_id/conditions', to: 'conditions#index', as: 'patient_conditions'
-  get 'patients/:patient_id/conditions/:id', to: 'conditions#show', as: 'patient_condition'
   get 'patients/:patient_id/goals', to: 'goals#index', as: 'patient_goals'
   get 'patients/:patient_id/transition_of_care', to: 'transition_of_cares#show', as: 'patient_transition_of_care'
   get 'patients/:patient_id/medication_lists', to: 'medication_lists#index', as: 'patient_medication_lists'
