@@ -34,7 +34,7 @@ RSpec.describe PatientsController do
       end
 
       it 'sets the danger flash and still renders index' do
-        expect(flash[:danger]).to match(/Error fetching patients from FHIR server/)
+        expect(flash[:danger]).to match(/Error fetching or parsing patients from FHIR server/)
         expect(response).to render_template(:index)
       end
     end
@@ -58,7 +58,7 @@ RSpec.describe PatientsController do
       end
 
       it 'sets the danger flash and redirects to index' do
-        expect(flash[:danger]).to eq('Unable to fetch patient with id dummy from FHIR server.')
+        expect(flash[:danger]).to eq('Error fetching or parsing patient from FHIR server. Check logs.')
         expect(response).to redirect_to patients_path
       end
     end
