@@ -2,9 +2,9 @@
 class TransitionOfCaresController < ApplicationController
   before_action :require_server, :retrieve_patient, :set_resources_count
 
-  # GET /patients/:patient_id/transition_of_care
-  def show
-    @toc = fetch_toc
+  # GET /patients/:patient_id/transition_of_cares
+  def index
+    @pagy, @tocs = pagy_array(fetch_and_cache_tocs, items: 10)
   rescue StandardError => e
     flash[:danger] = e.message
     redirect_to patients_path
@@ -12,29 +12,22 @@ class TransitionOfCaresController < ApplicationController
 
   private
 
-  def fetch_toc
-    Rails.cache.fetch(cache_key_for_patient_tocs(params[:patient_id]), expires_in: 1.day) do
-      search_param = { parameters: {
-        patient: @patient.id,
-        type: '81218-0',
-        _include: '*'
-      }.compact }
-      response = @client.search(FHIR::Composition, search: search_param)
-      bundle = response.try(:resource)
-      request = response.request
-      add_query("#{request[:method].upcase} #{request[:url]}")
-      raise "Unable to fetch TOC Composition for patient #{@patient.id} from FHIR server." if bundle.nil?
+  def fetch_and_cache_tocs
+    Rails.cache.fetch(cache_key_for_patient_tocs(params[:patient_id])) do
+      entries = retrieve_current_patient_resources
+      fhir_compositions = filter_doc_refs_or_compositions_by_category(cached_resources_type('Composition'))
 
-      bundle_entries = bundle.entry.map(&:resource)
-      composition = bundle_entries.find { |res| res.resourceType == 'Composition' }
+      if fhir_compositions.blank?
+        entries = fetch_toc_compositions_by_patient(patient_id)
+        fhir_compositions = entries.select { |entry| entry.resourceType == 'Composition' }
+      end
 
-      raise "No TOC Composition for patient #{@patient.id}." if composition.nil?
-
-      Composition.new(composition, bundle_entries)
-    rescue Net::ReadTimeout, Net::OpenTimeout
-      raise "Unable to fetch patient #{@patient.id} composition: Request timed out."
+      entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
+      fhir_compositions.map { |entry| Composition.new(entry, entries) }
     rescue StandardError => e
-      raise e.message
+      Rails.logger.error("Error fetching or parsing TOC Composition:\n #{e.message.inspect}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      raise 'Error fetching or parsing TOC Composition. Check logs for detail.'
     end
   end
 end

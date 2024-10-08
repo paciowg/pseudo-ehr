@@ -1,14 +1,8 @@
-<div class="mb-4">
-  <h5 class="mb-2 text-md font-bold text-left text-gray-900 dark:text-white">
-      Care Plan
-  </h5>
-  <br />
-  <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Intent: </b><%= care_plan.intent %></p>
-  <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Category: </b><%= care_plan.category %></p>
-
-
-  <% if care_plan.activities.all? {|activity| activity.is_a?(ServiceRequest)} %>
-    <%= render 'service_requests_table', service_requests: care_plan.activities %>
-  <% end %>
-
+<div class="items-center">
+  <p class="flex items-center py-2"><b class="w-32">Category:</b><span class="flex-1"><%= care_plan.category %></span></p>
+  <p class="flex items-center py-2"><b class="w-32">Intent:</b><span class="flex-1"><%= care_plan.intent %></span></p>
+    <% if care_plan.activities.all? {|activity| activity.is_a?(ServiceRequest)} %>
+      <% @service_requests = care_plan.activities %>
+      <%= render 'service_requests/service_requests' %>
+    <% end %>
 </div>

@@ -1,0 +1,139 @@
+<%= turbo_frame_tag "tocs" do %>
+  <div class="mt-8 flow-root w-11/12">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <% if @tocs.empty? %>
+          <h1 class="text-center">No TOC Composition Found!</h1>
+        <% else %>
+          <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Date</th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Type</th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Description</th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Author</th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Custodian</th>
+              </tr>
+            </thead>
+            <tbody data-accordion="table-column">
+              <% @tocs.each do |toc| %>
+                <% identifier = toc.id.downcase %>
+                <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition" id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>" aria-expanded="false" aria-controls="table-column-body-<%= identifier %>">
+                  <td class="p-3 w-4">
+                    <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </td>
+                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= toc.date %></td>
+                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= toc.type %></td>
+                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= toc.title %></td>
+                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= toc.author %></td>
+                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= toc.custodian %></td>
+                </tr>
+                <tr class="hidden flex-1 overflow-x-auto w-full" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
+                  <td scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
+                  <td class="p-4 border-b" colspan="5">
+                    <% if toc.section.present? %>
+                      <% toc.section.each do |section| %>
+                        <% next if section['title'].blank? || section['title'] == '--' %>
+                        <div class="items-center my-2" data-controller="showhide">
+                          <h6 class="mb-2 py-2 text-base leading-none font-medium text-gray-900"><%= section['title'] %></h6>
+                          <% if section['code'] %>
+                            <p class="flex items-center py-2"><b class="w-32">Classification:</b><span class="flex-1"><%= section['code'] %></span></p>
+                          <% end %>
+                          <% if section['code'].include?('52471-0') %>
+                            <p class="flex items-center py-2 text-blue-500 hover:text-red-500 dark:text-blue-900">
+                              <%= link_to 'See Medication List', patient_medication_lists_path(patient_id: @patient.id), data: {turbo: false} %>
+                            </p>
+                          <% end %>
+                          <% if section['code'].include?('42348-3') %>
+                            <p class="flex items-center py-2 text-blue-500 hover:text-red-500 dark:text-blue-900">
+                              <%= link_to 'See Advance Directives', patient_advance_directives_path(@patient.id), data: {turbo: false} %>
+                            </p>
+                          <% end %>
+                          <% section_group = section['objects'].group_by {|obj| obj[:resource_type]}%>
+                          <% section_group.each do |type, objects| %>
+                            <% if type == 'ServiceRequest' %>
+                              <a href="#" class="font-medium mb-2 text-blue-600 dark:text-blue-500 hover:underline"
+                                data-action="click->showhide#toggleSection" data-showhide-target="tocServiceRequestButton">
+                                Show service requests
+                              </a>
+                              <div data-showhide-target="tocServiceRequestContent" hidden>
+                                <% @service_requests = objects.map {|obj| obj[:resource]} %>
+                                <%= render 'service_requests/service_requests' %>
+                              </div>
+                            <% end %>
+                            <% if type == 'Condition' %>
+                              <a href="#" class="font-medium mb-2 text-blue-600 dark:text-blue-500 hover:underline"
+                                data-action="click->showhide#toggleSection" data-showhide-target="tocConditionButton">
+                                Show conditions
+                              </a>
+                              <div data-showhide-target="tocConditionContent" hidden>
+                                <% @conditions = objects.map {|obj| obj[:resource]} %>
+                                <%= render 'conditions/conditions'%>
+                              </div>
+                            <% end %>
+                            <% if type == 'AllergyIntolerance' %>
+                              <a href="#" class="font-medium mb-2 text-blue-600 dark:text-blue-500 hover:underline"
+                                data-action="click->showhide#toggleSection" data-showhide-target="tocAllergyButton">
+                                Show allergies
+                              </a>
+                              <div data-showhide-target="tocAllergyContent" hidden>
+                                <% allergies = objects.map {|obj| obj[:resource]} %>
+                                <div class="items-center">
+                                  <% allergies.each do |allergy| %>
+                                    <h6 class="py-2 text-base leading-none font-medium text-gray-700"><%= allergy.code %></h6>
+                                    <p class="flex items-center py-2"><b class="w-32">Category:</b><span class="flex-1"><%= allergy.category %></span></p>
+                                    <p class="flex items-center py-2"><b class="w-32">Criticality:</b> <span class="flex-1"><%= allergy.criticality %></span></p>
+                                    <p class="flex items-center py-2"><b class="w-32">Last Occurrence:</b> <span class="flex-1"><%= allergy.last_occurence %></span></p>
+                                    <% allergy.reactions.each do |reaction| %>
+                                      <div class="flex items-center space-x-4">
+                                        <p class="flex items-center py-2"><b class="w-32">Substance:</b> <span class="flex-1"><%= reaction[:substance]%></span></p>
+                                        <p class="flex items-center"><b class="w-28">Manifestation:</b> <span class="flex-1"><%= reaction[:manifestation]%></span></p>
+                                      </div>
+                                    <% end %>
+                                  <% end %>
+                                </div>
+                              </div>
+                            <% end %>
+                            <% if type == 'CarePlan' %>
+                              <a href="#" class="font-medium mb-2 text-blue-600 dark:text-blue-500 hover:underline"
+                                data-action="click->showhide#toggleSection" data-showhide-target="tocCarePlanButton">
+                                Show care plan detail
+                              </a>
+                              <div data-showhide-target="tocCarePlanContent" hidden>
+                                <%= render 'care_plan', care_plan: objects.first[:resource] %>
+                              </div>
+                            <% end %>
+                            <% if type == 'Observation' %>
+                              <a href="#" class="font-medium mb-2 text-blue-600 dark:text-blue-500 hover:underline"
+                                data-action="click->showhide#toggleSection" data-showhide-target="tocObservationButton">
+                                Show observations
+                              </a>
+                              <div data-showhide-target="tocCarePlanContent" hidden>
+                                <%= render 'observations_table', observations: objects %>
+                              </div>
+                            <% end %>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    <% end %>
+
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+          <br />
+            <% if @pagy %>
+              <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
+            <% end %>
+            <br />
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+

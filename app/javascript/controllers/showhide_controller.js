@@ -7,7 +7,10 @@ export default class extends Controller {
     "authenticatedInput", "credentialFields", "requiredFields",
     "adiStatus", "currentAdis", "supersededAdis",
     "obsType", "singleObs", "collectionObs", "conditionType",
-    "encounterDiagnosis", "problemListItem", "other"
+    "encounterDiagnosis", "problemListItem", "other",
+    "tocConditionButton", "tocConditionContent", "tocServiceRequestButton",
+     "tocServiceRequestContent", "tocAllergyButton", "tocAllergyContent",
+     "tocCarePlanContent", "tocCarePlanButton", "tocObservationButton", "tocObservationContent"
   ]
   static values = { showIf: String }
   connect() {
@@ -113,4 +116,41 @@ export default class extends Controller {
       })
     }
   }
+
+  // toggleTocConditions(event) {
+  //   event.stopPropagation()
+
+  //   if (this.tocConditionButtonTarget.textContent.trim() === "Show conditions") {
+  //     this.tocConditionButtonTarget.textContent = "Hide conditions";
+  //     this.tocConditionTargets.forEach(el => {
+  //       el.hidden = false;
+  //     })
+  //   } else if (this.tocConditionButtonTarget.textContent.trim() === "Hide conditions") {
+  //     this.tocConditionButtonTarget.textContent = "Show conditions";
+  //     this.tocConditionTargets.forEach(el => {
+  //       el.hidden = true;
+  //     })
+  //   }
+  // }
+  toggleSection(event) {
+    event.stopPropagation();
+
+    const button = event.currentTarget;
+    const content = this.tocConditionContentTargets.concat(this.tocServiceRequestContentTargets)
+    .concat(this.tocAllergyContentTargets).concat(this.tocCarePlanContentTargets)
+    .concat(this.tocObservationContentTargets);
+
+    if (button.textContent.trim().includes("Show")) {
+      button.textContent = button.textContent.replace("Show", "Hide");
+      content.forEach(el => {
+        el.hidden = false;
+      });
+    } else {
+      button.textContent = button.textContent.replace("Hide", "Show");
+      content.forEach(el => {
+        el.hidden = true;
+      });
+    }
+  }
+
 }
