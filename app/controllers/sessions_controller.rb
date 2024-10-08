@@ -2,7 +2,7 @@
 
 # app/controllers/sessions_controller.rb
 class SessionsController < ApplicationController
-  before_action :require_server, only: %i[login disconnect_server]
+  before_action :require_server, only: %i[login]
   before_action :set_current_server, only: %i[launch_server]
 
   # GET /sessions/new
