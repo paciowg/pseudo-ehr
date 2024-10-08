@@ -1,4 +1,4 @@
-module ResourceFetchHelper # rubocop:disable Metrics/ModuleLength
+module ResourceFetchHelper
   TIMEOUT_ERROR_MESSAGE = 'Unable to fetch resources: Request timed out.'.freeze
   CLIENT_BUNDLE_METHODS = %i[search read_feed].freeze
 

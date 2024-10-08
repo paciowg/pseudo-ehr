@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # app/models/concerns/model_helper.rb
 module ModelHelper
   extend ActiveSupport::Concern
