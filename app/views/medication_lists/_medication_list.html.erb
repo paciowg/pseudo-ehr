@@ -1,4 +1,4 @@
-<div class="w-full mb-5 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+<div class="min-w-full mb-5 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
   <% formatted_title = medication_list.title.downcase.gsub(/[(),]/, '').split.join('-')%>
   <% body_id = "accordion-body-#{formatted_title}"%>
   <h5 id="accordion-heading-<%= formatted_title%>">
