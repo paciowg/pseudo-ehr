@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # QuestionnaireResponse Model
 class QuestionnaireResponse < Resource
   attr_reader :id, :name, :description, :questionnaire, :status, :author, :date, :formatted_date, :items, :fhir_resource

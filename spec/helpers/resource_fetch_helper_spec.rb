@@ -94,8 +94,9 @@ RSpec.describe ResourceFetchHelper, type: :helper do
 
   describe '#fetch_single_patient_record' do
     it 'fetches patient records and handles pagination' do
+      url = "#{fhir_server.base_url}/Patient/123/$everything?_sort=-_lastUpdated&_maxresults=500&_count=250"
       # Stub the FHIR server fetch patient record response
-      stub_request(:get, "#{fhir_server.base_url}/Patient/123/$everything?_sort=-_lastUpdated&_maxresults=500&_count=250")
+      stub_request(:get, url)
         .to_return(
           status: 200,
           body: FHIR::Bundle.new(entry: [FHIR::Bundle::Entry.new(resource: FHIR::Patient.new(id: '123'))]).to_json,
@@ -109,11 +110,12 @@ RSpec.describe ResourceFetchHelper, type: :helper do
 
   describe '#fetch_resource_with_defaults' do
     it 'fetches a resource with default parameters' do
+      body = FHIR::Bundle.new(entry: [FHIR::Bundle::Entry.new(resource: FHIR::Organization.new(id: 'org123'))]).to_json
       # Stub the FHIR server organization search response
       stub_request(:get, "#{fhir_server.base_url}/Organization?_sort=-_lastUpdated&_count=150")
         .to_return(
           status: 200,
-          body: FHIR::Bundle.new(entry: [FHIR::Bundle::Entry.new(resource: FHIR::Organization.new(id: 'org123'))]).to_json,
+          body:,
           headers: { 'Content-Type' => 'application/fhir+json' }
         )
 
@@ -154,7 +156,8 @@ RSpec.describe ResourceFetchHelper, type: :helper do
 
   describe '#fetch_bundle_entries' do
     it 'fetches entries from a bundle and handles pagination' do
-      stub_request(:get, "#{fhir_server.base_url}/Patient/123/$everything?_sort=-_lastUpdated&_maxresults=500&_count=250")
+      url = "#{fhir_server.base_url}/Patient/123/$everything?_sort=-_lastUpdated&_maxresults=500&_count=250"
+      stub_request(:get, url)
         .to_return(
           status: 200,
           body: FHIR::Bundle.new(entry: [FHIR::Bundle::Entry.new(resource: FHIR::Patient.new(id: '123'))]).to_json,

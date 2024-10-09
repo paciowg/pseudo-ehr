@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # CarePlan Model
 class CarePlan < Resource
   attr_reader :id, :fhir_resource, :status, :intent, :category, :activities

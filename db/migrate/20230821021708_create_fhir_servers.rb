@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # FhirServers Migration
 class CreateFhirServers < ActiveRecord::Migration[7.0]
   def change

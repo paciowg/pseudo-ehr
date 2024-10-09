@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # CareTeamParticipant Model
 class CareTeamParticipant < Resource
   attr_reader :name, :role, :organization, :contact, :fhir_resource

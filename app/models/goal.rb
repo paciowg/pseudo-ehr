@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Goal Model
 class Goal < Resource
   attr_reader :id, :lifecycle_status, :achievement_status, :category,

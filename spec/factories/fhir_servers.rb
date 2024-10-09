@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # factories/fhir_servers.rb
 FactoryBot.define do
   factory :fhir_server do

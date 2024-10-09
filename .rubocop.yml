@@ -21,6 +21,12 @@ RSpec/LeakyConstantDeclaration:
 
 RSpec/SubjectStub:
   Enabled: false
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+RSpec/ExampleLength:
+  Enabled: false
+RSpec/ReceiveMessages:
+  Enabled: false
 
 Metrics/ClassLength:
   Enabled: false

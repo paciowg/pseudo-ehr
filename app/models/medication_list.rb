@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # MedicationList Model
 class MedicationList < Resource
   attr_reader :id, :fhir_resource, :status, :title, :code, :date, :medication_statements
