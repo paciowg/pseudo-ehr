@@ -1,6 +1,13 @@
 module ResourceFetchHelper
   TIMEOUT_ERROR_MESSAGE = 'Unable to fetch resources: Request timed out.'.freeze
   CLIENT_BUNDLE_METHODS = %i[search read_feed].freeze
+  DEFAULT_MAX_RESULTS = 300
+  DEFAULT_SORT = '-_lastUpdated'.freeze
+  NON_PATIENT_RELATED_RESOURCES = %i[Organization Location PractitionerRole].freeze
+  PATIENT_RELATED_RESOURCES = %i[
+    ServiceRequest NutritionOrder Observation CareTeam Goal QuestionnaireResponse Condition
+    List Composition
+  ].freeze
 
   def current_server
     @current_server ||= FhirServer.find_by(base_url: session[:fhir_server_url])
@@ -48,15 +55,48 @@ module ResourceFetchHelper
     raise TIMEOUT_ERROR_MESSAGE
   end
 
+  def fetch_resource_with_defaults(resource_class, max_results = DEFAULT_MAX_RESULTS, additional_params = {})
+    parameters = {
+      _sort: DEFAULT_SORT,
+      _count: max_results / 2
+    }.merge(additional_params)
+
+    response = fetch_resource(resource_class, method: :search, parameters:)
+    fetch_bundle_entries(response, max_results)
+  end
+
+  def fetch_patient_related(resource_class, patient_id, max_results = DEFAULT_MAX_RESULTS)
+    parameters = { patient: patient_id, _include: '*' }
+    fetch_resource_with_defaults(resource_class, max_results, parameters)
+  end
+
+  # Dynamically generate non-patient-related fetch methods
+  NON_PATIENT_RELATED_RESOURCES.each do |resource_class_name|
+    method_name = "fetch_#{resource_class_name.to_s.underscore.pluralize}"
+    define_method(method_name.to_sym) do |max_results = DEFAULT_MAX_RESULTS|
+      additional_params = resource_class_name == :PractitionerRole ? { _include: '*' } : {}
+      fetch_resource_with_defaults("FHIR::#{resource_class_name}".constantize, max_results, additional_params)
+    end
+  end
+
+  # Dynamically generate methods for patient-related resources
+  PATIENT_RELATED_RESOURCES.each do |resource_class_name|
+    method_name = "fetch_#{resource_class_name.to_s.underscore.pluralize}_by_patient"
+    define_method(method_name.to_sym) do |patient_id, max_results = DEFAULT_MAX_RESULTS|
+      fetch_patient_related("FHIR::#{resource_class_name}".constantize, patient_id, max_results)
+    end
+  end
+
+  # Fetch specific patient data
+
   def fetch_patients_by_id
-    response = fetch_resource(FHIR::Patient, method: :search, parameters: { _id: params[:query_id] })
-    fetch_bundle_entries(response)
+    parameters = { _id: params[:query_id] }
+    fetch_resource_with_defaults(FHIR::Patient, 2, parameters)
   end
 
   def fetch_patients_by_name
-    parameters = { name: params[:query_name], active: true, _sort: '-_lastUpdated' }
-    response = fetch_resource(FHIR::Patient, method: :search, parameters:)
-    fetch_bundle_entries(response)
+    parameters = { name: params[:query_name], active: true }
+    fetch_resource_with_defaults(FHIR::Patient, 20, parameters)
   end
 
   def fetch_single_patient(patient_id)
@@ -83,31 +123,12 @@ module ResourceFetchHelper
     raise TIMEOUT_ERROR_MESSAGE
   end
 
-  def fetch_organizations(max_results = 100)
-    parameters = { _sort: '-_lastUpdated', _count: max_results / 2 }
-    response = fetch_resource(FHIR::Organization, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
-  end
-
-  def fetch_locations(max_results = 100)
-    parameters = { _sort: '-_lastUpdated', _count: max_results / 2 }
-    response = fetch_resource(FHIR::Location, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
-  end
-
-  def fetch_practitioner_roles(max_results = 300)
-    parameters = { _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
-    response = fetch_resource(FHIR::PractitionerRole, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
-  end
-
   def fetch_adi_documents_by_patient(patient_id)
     status_map = { 'Superseded' => 'superseded', 'Current' => 'current' }
     status = status_map[params[:status]]
     parameters = { patient: patient_id, category: '42348-3,75320-2', _count: 100, status: }.compact
 
-    response = fetch_resource(FHIR::DocumentReference, method: :search, parameters:)
-    fetch_bundle_entries(response, 100)
+    fetch_resource_with_defaults(FHIR::DocumentReference, 100, parameters)
   end
 
   def fetch_document_reference(doc_id)
@@ -120,63 +141,6 @@ module ResourceFetchHelper
 
   def fetch_bundle(bundle_id)
     fetch_resource(FHIR::Bundle, method: :read, id: bundle_id)&.resource
-  end
-
-  def fetch_service_requests_by_patient(patient_id, max_results = 200)
-    parameters = { patient: patient_id, _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
-    response = fetch_resource(FHIR::ServiceRequest, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
-  end
-
-  def fetch_nutrition_orders_by_patient(patient_id, max_results = 200)
-    parameters = { patient: patient_id, _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
-    response = fetch_resource(FHIR::NutritionOrder, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
-  end
-
-  def fetch_observations_by_patient(patient_id, max_results = 200)
-    parameters = { patient: patient_id, _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
-    response = fetch_resource(FHIR::Observation, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
-  end
-
-  def fetch_care_teams_by_patient(patient_id, max_results = 200)
-    parameters = { patient: patient_id, _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
-    response = fetch_resource(FHIR::CareTeam, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
-  end
-
-  def fetch_goals_by_patient(patient_id, max_results = 200)
-    parameters = { patient: patient_id, _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
-    response = fetch_resource(FHIR::Goal, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
-  end
-
-  def fetch_questionnaire_responses_by_patient(patient_id, max_results = 200)
-    parameters = { patient: patient_id, _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
-    response = fetch_resource(FHIR::QuestionnaireResponse, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
-  end
-
-  def fetch_conditions_by_patient(patient_id, max_results = 200)
-    parameters = { patient: patient_id, _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
-    response = fetch_resource(FHIR::Condition, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
-  end
-
-  def fetch_lists_by_patient(patient_id, max_results = 200)
-    parameters = { patient: patient_id, _sort: '-_lastUpdated', _include: '*', _count: max_results / 2 }
-    response = fetch_resource(FHIR::List, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
-  end
-
-  def fetch_toc_compositions_by_patient(patient_id, max_results = 200)
-    parameters = {
-      patient: patient_id, type: '81218-0', _sort: '-_lastUpdated',
-      _include: '*', _count: max_results / 2
-    }
-    response = fetch_resource(FHIR::Composition, method: :search, parameters:)
-    fetch_bundle_entries(response, max_results)
   end
 
   def fetch_observation(observation_id)

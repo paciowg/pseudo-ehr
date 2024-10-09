@@ -100,6 +100,7 @@ group :test do
   gem 'selenium-webdriver'
   gem 'shoulda-matchers', '~> 6.1'
   gem 'webdrivers'
+  gem 'webmock'
 end
 
 gem 'pagy', '~> 8.3'

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # app/services/fhir_client_service.rb
 # Auth access conformant to Smart-on-Fhir App Launch for Symmetric Client Auth
 class FhirClientService
@@ -15,7 +13,13 @@ class FhirClientService
   def connect(new_session, code, redirect_url, code_verifier)
     @client = FHIR::Client.new(@fhir_server.base_url).tap(&:use_r4)
     msg = "Couldn't connect to server: unable to fetch capability statement. Verify the base URL is correct."
-    raise msg if new_session && @client.capability_statement.nil?
+    capability_statement = begin
+      @client&.capability_statement
+    rescue StandardError
+      Rails.logger.info('Unable to get capability statement')
+    end
+
+    raise msg if new_session && capability_statement.nil?
     return @client unless @fhir_server.authenticated_access
 
     authenticate_fhir_server(code, redirect_url, code_verifier) if code.present?
