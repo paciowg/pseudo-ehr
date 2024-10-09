@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # spec/controllers/application_controller_spec.rb
 
 require 'rails_helper'
@@ -13,6 +11,16 @@ RSpec.describe ApplicationController do
     def index
       render plain: 'Hello, World!'
     end
+  end
+
+  before do
+    # Stub the FHIR server capability statement response
+    stub_request(:get, "#{fhir_server.base_url}/metadata")
+      .to_return(
+        status: 200,
+        body: FHIR::CapabilityStatement.new.to_json,
+        headers: { 'Content-Type' => 'application/fhir+json' }
+      )
   end
 
   describe '#current_server' do

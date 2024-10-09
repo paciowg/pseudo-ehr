@@ -1,17 +1,55 @@
-# frozen_string_literal: true
-
 # spec/controllers/patients_controller_spec.rb
 require 'rails_helper'
 
 RSpec.describe PatientsController do
-  let!(:fhir_server) { create(:fhir_server, base_url: 'https://qa-rr-fhir2.maxmddirect.com', authenticated_access: false) }
-  let!(:client) { FhirClientService.new(fhir_server:).client }
-  let!(:patients) { client.read_feed(FHIR::Patient).resource.entry.map(&:resource) }
-  let!(:patient_id) { patients.first.id }
+  let(:fhir_server) { create(:fhir_server, base_url: 'https://qa-rr-fhir2.maxmddirect.com', authenticated_access: false) }
+  let(:client) { FhirClientService.new(fhir_server:).client }
+  let(:patients_bundle) { FHIR::Bundle.new(entry: [FHIR::Bundle::Entry.new(resource: FHIR::Patient.new(id: '123'))]) }
+  let(:patient_id) { patients_bundle.entry.first.resource.id }
 
   before do
     session[:fhir_server_url] = fhir_server.base_url
     allow(Rails.cache).to receive(:fetch).and_call_original
+
+    # Stub the FHIR server capability statement response
+    stub_request(:get, "#{fhir_server.base_url}/metadata")
+      .to_return(
+        status: 200,
+        body: FHIR::CapabilityStatement.new.to_json,
+        headers: { 'Content-Type' => 'application/fhir+json' }
+      )
+
+    # Stub the FHIR server patient feed (used in index and show)
+    stub_request(:get, "#{fhir_server.base_url}/Patient")
+      .to_return(
+        status: 200,
+        body: patients_bundle.to_json,
+        headers: { 'Content-Type' => 'application/fhir+json' }
+      )
+
+    # Stub the FHIR server single patient fetch (used in show)
+    stub_request(:get, "#{fhir_server.base_url}/Patient/123")
+      .to_return(
+        status: 200,
+        body: FHIR::Patient.new(id: '123').to_json,
+        headers: { 'Content-Type' => 'application/fhir+json' }
+      )
+
+    # Stub the $everything operation
+    stub_request(:get, "#{fhir_server.base_url}/Patient/123/$everything?_count=250&_maxresults=500&_sort=-_lastUpdated")
+      .to_return(
+        status: 200,
+        body: FHIR::Bundle.new(entry: [FHIR::Bundle::Entry.new(resource: FHIR::Observation.new(id: 'obs1'))]).to_json,
+        headers: { 'Content-Type' => 'application/fhir+json' }
+      )
+
+    # Stub PractitionerRole search
+    stub_request(:get, "#{fhir_server.base_url}/PractitionerRole?_count=150&_include=*&_sort=-_lastUpdated")
+      .to_return(
+        status: 200,
+        body: FHIR::Bundle.new(entry: [FHIR::Bundle::Entry.new(resource: FHIR::PractitionerRole.new(id: 'role1'))]).to_json,
+        headers: { 'Content-Type' => 'application/fhir+json' }
+      )
   end
 
   describe 'GET #index' do
@@ -28,8 +66,14 @@ RSpec.describe PatientsController do
 
     context 'when there is an error fetching patients' do
       before do
-        server = create(:fhir_server, base_url: 'http://example.com', authenticated_access: false)
-        session[:fhir_server_url] = server.base_url
+        # Stub the FHIR server request to return an error for this case
+        stub_request(:get, "#{fhir_server.base_url}/Patient")
+          .to_return(
+            status: 500,
+            body: { issue: [{ diagnostics: 'Error fetching patients' }] }.to_json,
+            headers: { 'Content-Type' => 'application/fhir+json' }
+          )
+
         get :index
       end
 
@@ -54,6 +98,14 @@ RSpec.describe PatientsController do
 
     context 'when there is an error fetching the patient' do
       before do
+        # Stub the request to return a 404 error for a non-existent patient
+        stub_request(:get, "#{fhir_server.base_url}/Patient/dummy")
+          .to_return(
+            status: 404,
+            body: { issue: [{ diagnostics: 'Patient not found' }] }.to_json,
+            headers: { 'Content-Type' => 'application/fhir+json' }
+          )
+
         get :show, params: { id: 'dummy' }
       end
 
