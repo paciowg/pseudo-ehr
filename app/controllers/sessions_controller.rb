@@ -1,8 +1,5 @@
-# frozen_string_literal: true
-
 # app/controllers/sessions_controller.rb
 class SessionsController < ApplicationController
-  before_action :require_server, only: %i[login]
   before_action :set_current_server, only: %i[launch_server]
 
   # GET /sessions/new
@@ -25,11 +22,14 @@ class SessionsController < ApplicationController
     session[:code_verifier] = SecureRandom.urlsafe_base64(64)
     code_challenge = Base64.urlsafe_encode64(Digest::SHA256.digest(session[:code_verifier])).gsub(/=+$/, '')
     server_auth_url = "#{@current_server.authorization_url}?response_type=code&redirect_uri=#{login_url}"
-    server_auth_url += "&aud=#{@current_server.base_url}&state=#{state}&scope=#{scope}&client_id=#{@current_server.client_id}" # rubocop:disable Layout/LineLength
+    server_auth_url += "&aud=#{@current_server.base_url}&state=#{state}&scope=#{@current_server.scope}&client_id=#{@current_server.client_id}" # rubocop:disable Layout/LineLength
     server_auth_url += "&code_challenge=#{code_challenge}&code_challenge_method=S256"
 
-    redirect_to server_auth_url
+    redirect_to server_auth_url, allow_other_host: true
   rescue StandardError => e
+    Rails.logger.info("Error launching server: #{e.message}")
+    Rails.logger.error(e.backtrace.join("\n"))
+
     reset_session
     flash[:danger] = "Failed to obtain authorization code: #{e.message}"
     redirect_to root_path
@@ -41,17 +41,23 @@ class SessionsController < ApplicationController
       flash[:danger] = "Authorization Failure: #{params[:error]} - #{params[:error_description]}"
       redirect_to root_path
     else
-      args = { fhir_server: @current_server, new_session: false, code: params[:code], redirect_uri: login_url,
+      raise 'No server to connect to: Please connect.' unless server_present?
+
+      args = { fhir_server: @current_server, new_session: false, code: params[:code], redirect_url: login_url,
                code_verifier: session[:code_verifier] }
-      @client = FhirClientService.new(**args)
+      @client = FhirClientService.new(**args).client
+
       flash[:success] = 'Successfully authenticated with server.'
       # Where to redirect depends on the context of your app. Change as needed to match your logic.
       # if withing patient or user context, the patient id or user id will be provided in the authentication response.
       redirect_to patients_path
     end
   rescue StandardError => e
+    Rails.logger.info("Error in login: #{e.message}")
+    Rails.logger.error(e.backtrace.join("\n"))
+
     reset_session
-    flash[:danger] = e.message
+    flash[:danger] = 'Internal Error after authorization: Check the logs for detail.'
     redirect_to root_path
   end
 

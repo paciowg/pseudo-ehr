@@ -1,10 +1,17 @@
-# frozen_string_literal: true
-
-# spec/controllers/sessions_controller_spec.rb
 require 'rails_helper'
 
 RSpec.describe SessionsController do
-  let!(:fhir_server) { create(:fhir_server, base_url: 'https://qa-rr-fhir2.maxmddirect.com', authenticated_access: false) }
+  let(:fhir_server) { create(:fhir_server, base_url: 'https://qa-rr-fhir2.maxmddirect.com', authenticated_access: false) }
+
+  before do
+    # Stub the FHIR server metadata (CapabilityStatement) request
+    stub_request(:get, "#{fhir_server.base_url}/metadata")
+      .to_return(
+        status: 200,
+        body: FHIR::CapabilityStatement.new.to_json,
+        headers: { 'Content-Type' => 'application/fhir+json' }
+      )
+  end
 
   describe 'GET #new' do
     context 'when server is present' do
@@ -31,7 +38,8 @@ RSpec.describe SessionsController do
   describe 'POST #launch_server' do
     context 'when server does not have authenticated access' do
       before do
-        post :launch_server, params: { base_url: 'https://qa-rr-fhir2.maxmddirect.com', authenticated_access: false, name: 'Fhir Server' }
+        post :launch_server,
+             params: { base_url: fhir_server.base_url, authenticated_access: false, name: 'Fhir Server' }
       end
 
       it 'redirects to patients_path' do
@@ -39,8 +47,36 @@ RSpec.describe SessionsController do
       end
     end
 
-    # Add test for when server have authenticated access.
-    # Add test for if an exception is raised in launch_server
+    context 'when server has authenticated access' do
+      let(:fhir_server) { create(:fhir_server, base_url: 'https://qa-rr-fhir2.maxmddirect.com', authenticated_access: true) }
+
+      before do
+        stub_request(:get, "#{fhir_server.base_url}/metadata")
+          .to_return(
+            status: 200,
+            body: FHIR::CapabilityStatement.new.to_json,
+            headers: { 'Content-Type' => 'application/fhir+json' }
+          )
+        post :launch_server, params: { base_url: fhir_server.base_url, authenticated_access: true, name: 'Fhir Server' }
+      end
+
+      it 'redirects to the authorization URL' do
+        expect(response).to redirect_to(/response_type=code/)
+      end
+    end
+
+    context 'when an error occurs during server connection' do
+      before do
+        allow(FhirClientService).to receive(:new).and_raise(StandardError, 'Connection Error')
+        post :launch_server,
+             params: { base_url: fhir_server.base_url, authenticated_access: false, name: 'Fhir Server' }
+      end
+
+      it 'sets the danger flash and redirects to root_path' do
+        expect(flash[:danger]).to eq('Connection Error')
+        expect(response).to redirect_to root_path
+      end
+    end
   end
 
   describe 'GET #login' do
@@ -56,7 +92,35 @@ RSpec.describe SessionsController do
       end
     end
 
-    # Add tests for other contexts for login action handling successful authentication, and exceptions.
+    context 'when authentication is successful' do
+      before do
+        session[:fhir_server_url] = fhir_server.base_url
+        session[:code_verifier] = 'test_code_verifier'
+
+        get :login, params: { code: 'test_auth_code' }
+      end
+
+      it 'creates a FhirClientService instance and sets the success flash' do
+        expect(flash[:success]).to eq('Successfully authenticated with server.')
+      end
+
+      it 'redirects to the patients path' do
+        expect(response).to redirect_to patients_path
+      end
+    end
+
+    context 'when an exception occurs during login' do
+      before do
+        session[:fhir_server_url] = fhir_server.base_url
+        allow(FhirClientService).to receive(:new).and_raise(StandardError, 'Connection Error')
+        get :login, params: { code: 'test_auth_code' }
+      end
+
+      it 'sets the danger flash and redirects to root' do
+        expect(flash[:danger]).to match(/Internal Error after authorization/)
+        expect(response).to redirect_to root_path
+      end
+    end
   end
 
   describe 'GET #disconnect_server' do
@@ -71,6 +135,4 @@ RSpec.describe SessionsController do
       expect(response).to redirect_to root_path
     end
   end
-
-  # Add tests for private methods.
 end
