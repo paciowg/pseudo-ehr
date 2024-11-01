@@ -98,7 +98,7 @@ group :test do
   gem 'faker'
   gem 'rails-controller-testing'
   gem 'selenium-webdriver'
-  gem 'shoulda-matchers', '~> 6.1'
+  gem 'shoulda-matchers', '~> 6.4'
   gem 'webdrivers'
 end
 
@@ -106,4 +106,4 @@ gem 'pagy', '~> 8.3'
 
 gem 'bundler-audit', '~> 0.9.1'
 
-gem 'brakeman', '~> 6.1'
+gem 'brakeman', '~> 6.2'
