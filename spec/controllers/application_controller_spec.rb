@@ -36,7 +36,7 @@ RSpec.describe ApplicationController do
 
   describe '#server_present?' do
     context 'when current_server returns an instance' do
-      before { allow(controller).to receive(:current_server).and_return(true) }
+      before { allow(controller).to receive(:current_server).and_return(fhir_server) }
 
       it 'returns true' do
         expect(controller).to be_server_present
@@ -64,7 +64,8 @@ RSpec.describe ApplicationController do
     context 'when server is not present' do
       before { allow(controller).to receive(:current_server).and_return(nil) }
 
-      it 'redirects to root path with a flash message' do
+      it 'resets session and redirects to root path with a flash message' do
+        allow(controller).to receive(:reset_session)
         get :index
         expect(response).to redirect_to(root_path)
         expect(flash[:danger]).to eq('No session available. Please connect to a fhir server to get started')
@@ -78,6 +79,86 @@ RSpec.describe ApplicationController do
     it 'sets the @client variable' do
       controller.set_client
       expect(assigns(:client)).to be_instance_of(FHIR::Client)
+    end
+  end
+
+  describe '#retrieve_patient' do
+    let(:patient_id) { '123' }
+
+    before do
+      allow(controller).to receive(:patient_id).and_return(patient_id)
+      allow(controller).to receive(:fetch_single_patient).with(patient_id).and_return(FHIR::Patient.new(id: patient_id))
+      allow(Rails.cache).to receive(:fetch).and_yield
+    end
+
+    it 'sets the @patient variable' do
+      controller.retrieve_patient
+      expect(assigns(:patient)).to be_instance_of(Patient)
+      expect(assigns(:patient).id).to eq(patient_id)
+    end
+
+    context 'when an error occurs while fetching patient' do
+      before do
+        allow(controller).to receive(:fetch_single_patient).and_raise(StandardError, 'Some error')
+        allow(Rails.logger).to receive(:error)
+        allow(controller).to receive(:redirect_to)
+      end
+
+      it 'logs the error and does not set @patient' do
+        controller.retrieve_patient
+        expect(assigns(:patient)).to be_nil
+        expect(Rails.logger).to have_received(:error).with(/Error fetching patient: Some error/)
+      end
+    end
+  end
+
+  describe '#retrieve_practitioner_roles_and_orgs' do
+    let(:patient_id) { '123' }
+
+    before do
+      allow(controller).to receive(:patient_id).and_return(patient_id)
+      allow(controller).to receive(:fetch_practitioner_roles).and_return([FHIR::PractitionerRole.new])
+    end
+
+    it 'sets @practitioner_roles' do
+      roles = controller.retrieve_practitioner_roles_and_orgs
+      expect(roles).to all(be_instance_of(FHIR::PractitionerRole))
+    end
+
+    context 'when an error occurs while fetching practitioner roles' do
+      before do
+        allow(controller).to receive(:fetch_practitioner_roles).and_raise(StandardError, 'Some error')
+        allow(Rails.logger).to receive(:error)
+      end
+
+      it 'logs the error and returns an empty array' do
+        roles = controller.retrieve_practitioner_roles_and_orgs
+        expect(roles).to eq([])
+        expect(Rails.logger).to have_received(:error).with(/Empty bundle or Error fetching practitioner roles/)
+      end
+    end
+  end
+
+  describe '#set_resources_count' do
+    let(:patient_id) { '123' }
+
+    before do
+      allow(controller).to receive(:patient_id).and_return(patient_id)
+      allow(controller).to receive(:cached_resources_type).with(anything).and_return([])
+    end
+
+    it 'sets resource count variables' do
+      controller.set_resources_count
+      expect(assigns(:care_team_count)).to eq(0)
+      expect(assigns(:condition_count)).to eq(0)
+      expect(assigns(:goal_count)).to eq(0)
+      expect(assigns(:medication_list_count)).to eq(0)
+      expect(assigns(:observation_count)).to eq(0)
+      expect(assigns(:questionnaire_response_count)).to eq(0)
+      expect(assigns(:nutrition_order_count)).to eq(0)
+      expect(assigns(:service_request_count)).to eq(0)
+      expect(assigns(:adi_count)).to eq(0)
+      expect(assigns(:toc_count)).to eq(0)
     end
   end
 end
