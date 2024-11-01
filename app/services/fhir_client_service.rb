@@ -59,20 +59,20 @@ class FhirClientService
     raise "Failed to refresh access token for FHIR server #{@fhir_server.base_url}: #{e.message}"
   end
 
+  # Support SMART_ON_FHIR CLIENT CONFIDENTIAL SYMMETRIC
   def authenticate_fhir_server(code, redirect_url, code_verifier)
-    auth = "Basic #{Base64.strict_encode64("#{@fhir_server.client_id}:#{@fhir_server.client_secret}")}"
-    response = RestClient.post(
-      @fhir_server.token_url,
-      {
-        grant_type: 'authorization_code',
-        code:,
-        redirect_uri: redirect_url,
-        code_verifier:
-      },
-      {
-        Authorization: auth
-      }
-    )
+    oauth2_headers = { content_type: 'application/x-www-form-urlencoded', accept: :json }
+    client_credentials = "#{@fhir_server.client_id}:#{@fhir_server.client_secret}"
+    oauth2_headers[:Authorization] = "Basic #{Base64.strict_encode64(client_credentials)}"
+
+    oauth2_params = {
+      code:,
+      redirect_uri: redirect_url,
+      grant_type: 'authorization_code',
+      code_verifier:
+    }
+
+    response = RestClient.post(@fhir_server.token_url, oauth2_params, oauth2_headers)
 
     token_data = JSON.parse(response.body)
     @fhir_server.update!(
@@ -82,6 +82,8 @@ class FhirClientService
     )
     # rubocop:enable Layout/LineLength
   rescue RestClient::ExceptionWithResponse => e
-    raise "Failed to obtain access token for #{@fhir_server.base_url}: #{e.message}"
+    raise "Failed to obtain access token for #{@fhir_server.base_url}: #{e.response.inspect}"
+  rescue JSON::ParserError
+    raise "Unable to parse server's authorization response. Response is not a valid JSON"
   end
 end
