@@ -29,6 +29,7 @@ module ModelValueSet
   OBSERVATION_INTERNAL_CATEGORY_DISPLAY = {
     'clinical-test, functional-status' => 'Clinical Test & Functional Status',
     'functional-status, survey' => 'Survey & Functional Status',
+    'cognitive-status, survey' => 'Survey & Cognitive Status',
     'activity' => 'Activity',
     'laboratory' => 'Laboratory'
   }.freeze

@@ -1,5 +1,5 @@
 <!-- app/views/advance_directives/show.html.erb -->
-<div class="relative sm:ml-40 lg:ml-44 overflow-x-auto sm:rounded-lg">
+<div class="relative xl:mt-6 lg:mt-10 md:mt-12 sm:mt-32 lg:ml-64 w-full lg:w-3/4 h-full mb-4 font-sans">
   <%= turbo_frame_tag "adi" do %>
     <%= turbo_stream.update "queries" do%>
       <%= render 'shared/queries' %>

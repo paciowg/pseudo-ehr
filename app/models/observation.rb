@@ -1,7 +1,8 @@
 # Observation Model
 class Observation < Resource
   attr_reader :id, :status, :category, :domain, :code, :effective_date_time,
-              :performer, :derived_from, :measurement, :measurement_interpretation, :location, :members, :fhir_resource
+              :performer, :derived_from, :measurement, :measurement_interpretation,
+              :location, :organization, :members, :fhir_resource
 
   def initialize(fhir_observation, bundle_entries)
     @fhir_resource = fhir_observation
@@ -10,8 +11,11 @@ class Observation < Resource
     @effective_date_time = fhir_observation.effectiveDateTime
     @category = retrieve_category
     @domain = retrieve_domain
-    @code = retrieve_code
-    @performer = retrieve_performer_name(fhir_observation.performer, bundle_entries)
+    @code = retrieve_code&.gsub('\n', '')&.gsub('\t', '')
+    @performer = fhir_observation.performer&.map do |performer|
+                   parse_provider_name(performer, bundle_entries)
+                 end&.join(',').presence || '--'
+    @organization = retrieve_org(fhir_observation.performer, bundle_entries)
     @derived_from = retrieve_derived_from(fhir_observation.derivedFrom, fhir_observation.subject)
     value_quantity = fhir_observation.valueQuantity.presence || fhir_observation.valueCodeableConcept
     @measurement = retrieve_mesearement(value_quantity)
@@ -73,14 +77,14 @@ class Observation < Resource
   private
 
   def retrieve_category
-    list = %w[clinical-test functional-status survey activity laboratory]
+    list = %w[clinical-test functional-status cognitive-status survey activity laboratory]
     formatted_category = categories.select { |cat| list.include?(cat[:code]) }.map { |cat| cat[:code] }.sort.join(', ')
 
     Observation.internal_category_dict[formatted_category] || 'Other'
   end
 
   def retrieve_domain
-    list = %w[clinical-test functional-status survey activity laboratory]
+    list = %w[clinical-test functional-status cognitive-status survey activity laboratory]
     domain = @category == 'Other' ? categories.last : categories.find { |cat| !list.include?(cat[:code]) }
 
     if domain.blank?
@@ -98,21 +102,14 @@ class Observation < Resource
     display.present? ? "#{display} (#{code})" : code
   end
 
-  def retrieve_performer_name(performer, bundle_entries)
-    performer.map do |performer_ref|
-      name = performer_ref.display
-      return name if name.present?
+  def retrieve_org(performer, bundle_entries)
+    role = performer.find { |elmt| elmt.reference.start_with?('PractitionerRole') }
+    return 'Not provided' if role.blank?
 
-      resource_type, id = performer_ref.reference.split('/')
-      ref_resource = bundle_entries.find { |entry| entry.resourceType == resource_type && entry.id == id }
+    resource_type, id = role.reference.split('/')
+    ref_resource = bundle_entries.find { |entry| entry.resourceType == resource_type && entry.id == id }
 
-      name = ref_resource.try(:practitioner)&.display
-      return name if name.present?
-
-      fhir_name_array = ref_resource.try(:name) || []
-      format_name(fhir_name_array) => { first_name:, last_name: }
-      "#{first_name} #{last_name}"
-    end.join(', ')
+    ref_resource.try(:organization)&.display || 'Not provided'
   end
 
   def retrieve_location(bundle_entries)
@@ -158,7 +155,7 @@ class Observation < Resource
       next unless ref_resource
 
       Observation.new(ref_resource, bundle_entries)
-    end
+    end.compact
   end
 
   def categories
@@ -166,6 +163,6 @@ class Observation < Resource
       code = category.coding.first.code
       display = category.coding.first.display
       { code:, display: }
-    end
+    end.compact
   end
 end

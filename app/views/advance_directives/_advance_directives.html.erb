@@ -1,0 +1,7 @@
+<%= turbo_frame_tag "adis" do %>
+  <div id="accordion" data-accordion="open">
+    <% @adis.each do |identifier, adis| %>
+      <%= render "adis_category", adis: adis, identifier: identifier %>
+    <% end %>
+  </div>
+<% end %>

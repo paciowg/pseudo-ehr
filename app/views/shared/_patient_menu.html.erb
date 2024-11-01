@@ -1,68 +1,109 @@
 <!-- app/views/shared/_patient_menu.html.erb -->
-<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
+<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 lg:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
    <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
       <ul class="space-y-2 font-medium" data-controller="menu">
         <li class="flex flex-col">
-            <a href="<%= patient_path(@patient.id) %>" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              data-action="click->menu#navigate" data-url="<%= patient_path(@patient.id) %>" data-menu-target="item"
+            >
               <% icon = @patient.gender == "female" ? "woman.svg" : "man-user.svg" %>
               <%= image_tag icon, alt: "User Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
                <span class="flex-1 ml-3 text-lg font-bold whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500"><%= @patient.name %></span>
-            </a>
+            </button>
             <small class="text-center text-gray-500">Age: <%= calculate_age(@patient.dob) %></small>
          </li>
          <li class="border-t border-gray-400 dark:border-gray-700">
-            <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#navigate" data-menu-target="item">
               <%= image_tag "dashboard.svg", alt: "Dashboard Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
               <span class="ml-3 group-hover:text-blue-600 dark:group-hover:text-blue-500">Dashboard</span>
-            </a>
+            </button>
          </li>
           <li>
-            <a href="/pages/patients/<%= @patient.id %>/advance_directives?status=Current" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive click->menu#navigate" data-url="/patients/<%= @patient.id %>/advance_directives?status=Current" data-menu-target="item">
               <%= image_tag "writing.svg", alt: "Book Pen Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
                <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">ADIs</span>
-            </a>
+               <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                <%= @adi_count %>
+              </span>
+            </button>
          </li>
          <li>
-            <a href="/pages/patients/<%= @patient.id %>/care_teams" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive click->menu#navigate" data-url="/patients/<%= @patient.id %>/care_teams" data-menu-target="item">
                <%= image_tag "medical-team.svg", alt: "Medical care team Logo", class: "flex-shrink-0 w-5 h-10 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
                <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Care Team</span>
-            </a>
+               <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                <%= @care_team_count %>
+              </span>
+            </button>
          </li>
           <li>
-            <a href="/pages/patients/<%= @patient.id %>/conditions" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive click->menu#navigate" data-url="/patients/<%= @patient.id %>/conditions" data-menu-target="item">
                <%= image_tag "condition.png", alt: "Medical Condition Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
                <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Conditions</span>
-            </a>
+               <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                <%= @condition_count %>
+              </span>
+            </button>
          </li>
          <li>
-            <a href="/pages/patients/<%= @patient.id %>/goals" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive click->menu#navigate" data-url="/patients/<%= @patient.id %>/goals" data-menu-target="item">
                <%= image_tag "goal.png", alt: "Medical Goal Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
                <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Goals</span>
-            </a>
+               <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                <%= @goal_count %>
+              </span>
+            </button>
          </li>
          <li>
-            <a href="/pages/patients/<%= @patient.id %>/medication_lists" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive click->menu#navigate" data-url="/patients/<%= @patient.id %>/medication_lists" data-menu-target="item">
                <%= image_tag "medication_list.png", alt: "Medical Goal Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
                <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Medication List</span>
-            </a>
+               <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                <%= @medication_list_count %>
+              </span>
+            </button>
          </li>
          <li>
-            <a href="/pages/patients/<%= @patient.id %>/observations" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive click->menu#navigate" data-url="/patients/<%= @patient.id %>/observations" data-menu-target="item">
                <%= image_tag "observations.png", alt: "Medical Observation Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
                <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Observations</span>
-            </a>
+               <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                <%= @observation_count %>
+              </span>
+            </button>
          </li>
          <li>
-            <a href="/pages/patients/<%= @patient.id %>/questionnaire_responses" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive click->menu#navigate" data-url="/patients/<%= @patient.id %>/questionnaire_responses" data-menu-target="item">
                <%= image_tag "questionnaire_response.png", alt: "Questionnaire Response Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
                <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Questionnaire Responses</span>
-            </a>
+            </button>
          </li>
          <li>
-            <a href="/pages/patients/<%= @patient.id %>/transition_of_care" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive" data-menu-target="item">
-               <%= image_tag "medical-team.svg", alt: "Medical care team Logo", class: "flex-shrink-0 w-5 h-10 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive click->menu#navigate" data-url="/patients/<%= @patient.id %>/nutrition_orders" data-menu-target="item">
+               <%= image_tag "nutrition_order.png", alt: "Nutrition Order Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
+               <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">Nutrition Order</span>
+               <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                <%= @nutrition_order_count %>
+              </span>
+            </button>
+         </li>
+         <li>
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive click->menu#navigate" data-url="/patients/<%= @patient.id %>/service_requests" data-menu-target="item">
+               <%= image_tag "service_request.png", alt: "Service Request Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
+               <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">ServiceRequest</span>
+               <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                <%= @service_request_count %>
+              </span>
+            </button>
+         </li>
+         <li>
+            <button type="button" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group" data-action="click->menu#setActive click->menu#navigate" data-url="/patients/<%= @patient.id %>/transition_of_cares" data-menu-target="item">
+               <%= image_tag "transition_of_care.png", alt: "Transition of Care Logo", class: "flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" %>
                <span class="flex-1 ml-3 whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-500">TOC</span>
-            </a>
+               <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                <%= @toc_count %>
+              </span>
+            </button>
          </li>
       </ul>
    </div>

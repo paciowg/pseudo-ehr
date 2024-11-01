@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 # app/controllers/care_teams_controller.rb
 class CareTeamsController < ApplicationController
-  before_action :require_server, :retrieve_patient
+  before_action :require_server, :retrieve_patient, :set_resources_count
 
   # GET /patients/:patient_id/care_teams
   def index
@@ -16,29 +14,21 @@ class CareTeamsController < ApplicationController
   private
 
   def fetch_and_cache_care_teams(patient_id)
-    Rails.cache.fetch(cache_key_for_patient_care_teams(patient_id), expires_in: 1.minute) do
-      response = fetch_care_teams_by_patient(patient_id)
-      entries = response.resource.entry.map(&:resource)
-      fhir_care_teams = entries.select { |entry| entry.resourceType == 'CareTeam' }
+    Rails.cache.fetch(cache_key_for_patient_care_teams(patient_id)) do
+      entries = retrieve_current_patient_resources
+      fhir_care_teams = cached_resources_type('CareTeam')
 
+      if fhir_care_teams.blank?
+        entries = fetch_care_teams_by_patient(patient_id)
+        fhir_care_teams = entries.select { |entry| entry.resourceType == 'CareTeam' }
+      end
+
+      entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
       fhir_care_teams.map { |entry| CareTeam.new(entry, entries) }
     rescue StandardError => e
-      raise "Error fetching patient's (#{patient_id}) care teams from FHIR server. Status code: #{e.message}"
+      Rails.logger.error("Error fetching or parsing Care team:\n #{e.message.inspect}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      raise "Error fetching patient's care teams. Check the log for detail."
     end
-  end
-
-  def fetch_care_teams_by_patient(patient_id)
-    search_param = { parameters: {
-      patient: patient_id,
-      _include: '*'
-    } }
-    response = @client.search(FHIR::CareTeam, search: search_param)
-    raise response&.response&.dig(:code) if response&.resource&.entry.nil?
-
-    response
-  end
-
-  def cache_key_for_patient_care_teams(patient_id)
-    "patient_#{patient_id}_care_teams_#{session_id}"
   end
 end

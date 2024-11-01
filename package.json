@@ -2,6 +2,6 @@
   "name": "pseudo-ehr",
   "dependencies": {
     "debounce": "^1.2.1",
-    "flowbite": "^1.8.1"
+    "flowbite": "^2.5.1"
   }
 }

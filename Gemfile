@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
@@ -100,6 +98,7 @@ group :test do
   gem 'selenium-webdriver'
   gem 'shoulda-matchers', '~> 6.4'
   gem 'webdrivers'
+  gem 'webmock'
 end
 
 gem 'pagy', '~> 8.3'

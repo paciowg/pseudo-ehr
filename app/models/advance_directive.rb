@@ -49,11 +49,11 @@ class AdvanceDirective < Resource
   end
 
   def read_version_extension
-    version_ext = @fhir_doc_ref.extension.find { |ext| ext.url == 'http://hl7.org/fhir/us/ccda/StructureDefinition/VersionNumber' }
-    version_ext&.valueInteger
+    version_ext = @fhir_doc_ref.extension.find { |ext| ext.url == 'http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber' }
+    version_ext&.valueString
   end
 
   def read_identifier
-    coding_string(@fhir_doc_ref.type&.coding).downcase.delete('[],().-').split.join('')
+    coding_string(@fhir_doc_ref.type&.coding).downcase.delete('[],().-:{}_;').split.join('')
   end
 end

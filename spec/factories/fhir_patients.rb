@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # spec/factories/fhir_patient.rb
 
 FactoryBot.define do

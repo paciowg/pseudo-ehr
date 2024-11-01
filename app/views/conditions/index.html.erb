@@ -1,41 +1,35 @@
 <!-- app/views/conditions/index.html.erb -->
-<div class="mb-4 sm:ml-10 lg:ml-0 font-sans w-8/12">
-  <div class="flex flex-row items-center justify-around my-1 w-full h-14 relative align-bottom">
-    <h1 class="p-5 text-xl font-bold text-left whitespace-nowrap text-gray-900 dark:text-white w-1/2">
-      Conditions
-    </h1>
+<div class="xl:mt-6 lg:mt-10 md:mt-12 sm:mt-32 lg:ml-64 w-full lg:w-3/4 h-full" data-controller="showhide">
+  <div class="sm:flex sm:items-center w-11/12">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900">
+        Conditions
+        <span class="inline-flex items-center justify-center w-4 h-4 ms-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+          <%= @condition_count %>
+        </span>
+      </h1>
+    </div>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <button type="button"
+        class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+       Add new condition
+       </button>
+    </div>
   </div>
-  <%= turbo_frame_tag "conditions" do %>
-    <table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
-      <thead class="text-md text-white uppercase bg-gray-900">
-        <tr>
-          <th scope="col" class="px-6 py-3">Condition ID</th>
-          <th scope="col" class="px-6 py-3">Category</th>
-          <th scope="col" class="px-6 py-3">Asserter</th>
-          <th scope="col" class="px-6 py-3">Onset/Recorded Date</th>
-        </tr>
-      </thead>
-      <tbody>
-
-        <% @conditions.each do |condition| %>
-          <tr class="bg-gray-100 border-b border-gray-300 hover:bg-gray-200"
-            data-controller="table-row-click"
-            data-table-row-click-url="<%= patient_condition_page_path(patient_id: @patient.id, id: condition.id) %>"
-            data-action="click->table-row-click#goToLink"
-          >
-            <td class="px-6 py-4"><%= condition.id %></td>
-            <td class="px-6 py-4"><%= condition.category%></td>
-            <td class="px-6 py-4"><%= condition.asserter %></td>
-            <td class="px-6 py-4"><%= condition.onset != '--' ? condition.onset : condition.recorded %></td>
-          </tr>
-        <% end %>
-
-      </tbody>
-    </table>
-    <br />
-    <% if @pagy %>
-      <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
-    <% end %>
-    <br />
-  <% end %>
+  <div class="w-11/12 flex flex-col-reverse md:flex-row items-start md:items-center justify-between md:space-x-4 p-4 border-b dark:border-gray-700">
+    <div class="grid grid-cols-1 md:grid-cols-2 w-full lg:w-2/3 md:gap-4">
+      <div class="w-full">
+        <label for="condition-type" class="sr-only">Filter By type</label>
+        <select id="condition-type" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+          data-action="change->showhide#toggleConditions" data-showhide-target="conditionType"
+        >
+          <option>All</option>
+          <option>Condition Problem/Health Concern</option>
+          <option>Encounter Diagnosis</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <%= render "conditions" %>
 </div>

@@ -19,9 +19,64 @@
       <%= render "shared/patient_menu" %>
     <% end %>
 
-    <div id="flash"><%= render "shared/flash_messages" %></div>
-    <main class="container mx-auto mt-20 px-5 flex flex-col items-center w-full overflow-auto h-full shadow-md">
+    <div id="flash" class="flex flex-col"><%= render "shared/flash_messages" %></div>
+    <!-- Spinner (initially visible until the frame content is loaded) -->
+    <div id="loading-spinner" class="hidden w-full flex-col items-center justify-center mt-40 p-6">
+      <i class="fas fa-spinner fa-spin text-9xl mr-2"></i>
+      <span class="text-center mt-4">Loading content...</span>
+    </div>
+    <main id="patient-content" class="container mx-auto mt-20 px-5 flex flex-col items-center w-full overflow-auto h-full shadow-md">
       <%= yield %>
     </main>
   </body>
+  <!-- Inline JavaScript for Turbo Events -->
+  <script>
+    // Show the spinner and hide the frame content before a Turbo visit
+    document.addEventListener("turbo:before-visit", function(event) {
+      const spinnerElmt = document.getElementById("loading-spinner");
+      const contentElmt = document.getElementById("patient-content");
+      if (spinnerElmt) {
+        spinnerElmt.style.display = "flex";
+        if(contentElmt) {
+          contentElmt.style.display = "none";
+        }
+      }
+    });
+
+    // Handle full page reloads using window 'load' event (fires on page reloads)
+    window.addEventListener("load", function() {
+      const spinnerElmt = document.getElementById("loading-spinner")
+      const contentElmt = document.getElementById("patient-content");
+      if (spinnerElmt) {
+        spinnerElmt.style.display = "none";
+        if(contentElmt) {
+          contentElmt.style.display = "flex";
+        }
+      }
+    });
+
+    // Show the spinner and hide content on page load/reload
+    document.addEventListener("DOMContentLoaded", function(event) {
+      const spinnerElmt = document.getElementById("loading-spinner")
+      const contentElmt = document.getElementById("patient-content");
+      if (spinnerElmt) {
+        spinnerElmt.style.display = "flex";
+        if(contentElmt) {
+          contentElmt.style.display = "none";
+        }
+      }
+    });
+
+    // Hide the spinner and show the frame content when the page is fully loaded
+    document.addEventListener("turbo:frame-load", function(event) {
+      const spinnerElmt = document.getElementById("loading-spinner")
+      const contentElmt = document.getElementById("patient-content");
+      if (spinnerElmt) {
+        spinnerElmt.style.display = "none";
+        if(contentElmt) {
+          contentElmt.style.display = "flex";
+        }
+      }
+    });
+  </script>
 </html>

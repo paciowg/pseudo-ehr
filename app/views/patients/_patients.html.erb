@@ -1,0 +1,49 @@
+<%= turbo_frame_tag "patients" do %>
+    <table class="w-full h-full text-sm text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2">
+      <thead class="text-md text-white uppercase bg-gray-900">
+        <tr>
+          <th scope="col" class="px-6 py-3">
+            Name
+          </th>
+          <th scope="col" class="px-6 py-3">
+            DOB
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Age
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Gender
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Address
+          </th>
+          <th scope="col" class="px-6 py-3">
+            phone
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <% @patients.each do |patient| %>
+          <tr class="bg-gray-100 border-b border-gray-300 hover:bg-gray-200"
+            data-controller="table-row-click"
+            data-table-row-click-url="<%= patient_path(patient.id) %>"
+            data-action="click->table-row-click#goToLink"
+          >
+            <td class="px-6 py-4"><%= patient.name %></td>
+            <td class="px-6 py-4"><%= patient.dob %></td>
+            <td class="px-6 py-4"><%= calculate_age(patient.dob) %></td>
+            <td class="px-6 py-4"><%= patient.gender %></td>
+            <td class="px-6 py-4"><%= patient.address %></td>
+            <td class="px-6 py-4"><%= patient.phone %></td>
+          </tr>
+        <% end %>
+
+      </tbody>
+    </table>
+    <br />
+    <% if @pagy %>
+      <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
+    <% end %>
+    <br />
+  <% end %>

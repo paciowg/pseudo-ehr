@@ -1,15 +1,11 @@
-# frozen_string_literal: true
-
 # app/controllers/observations_controller.rb
 class ObservationsController < ApplicationController
-  before_action :require_server, :retrieve_patient
+  before_action :require_server, :retrieve_patient, :set_resources_count
   before_action :find_observation, only: %i[show]
 
   # GET /patients/:patient_id/observations
   def index
-    observations = fetch_and_cache_observations(
-      params[:patient_id]
-    )
+    observations = fetch_and_cache_observations(params[:patient_id])
 
     @grouped_observations = Observation.group_by_category_and_domain(observations)
     @collection_observations = Observation.collections(observations)
@@ -26,40 +22,22 @@ class ObservationsController < ApplicationController
   private
 
   def fetch_and_cache_observations(patient_id)
-    Rails.cache.fetch(cache_key_for_patient_observations(patient_id), expires_in: 1.minute) do
-      response1 = fetch_observations_by_patient(patient_id)
-      entries1 = response1.resource.entry.map(&:resource)
-      response2 = fetch_observations_by_patient(patient_id, 'survey')
-      entries2 = response2.resource.entry.map(&:resource)
-      entries = entries2 + entries1
-      fhir_observations = entries.select { |entry| entry.resourceType == 'Observation' }
+    Rails.cache.fetch(cache_key_for_patient_observations(patient_id)) do
+      entries = retrieve_current_patient_resources
+      fhir_observations = cached_resources_type('Observation')
 
+      if fhir_observations.blank?
+        entries = fetch_observations_by_patient(patient_id)
+        fhir_observations = entries.select { |entry| entry.resourceType == 'Observation' }
+      end
+
+      entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
       fhir_observations.map { |entry| Observation.new(entry, entries) }
     rescue StandardError => e
-      raise "
-            Error fetching patient's (#{patient_id}) observations from FHIR server. Status code: #{e.message}
-      "
+      Rails.logger.error("Error fetching or parsing Observation:\n #{e.message.inspect}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      raise "Error fetching or parsing patient's Observations. Check the log for detail."
     end
-  end
-
-  def fetch_observations_by_patient(patient_id, category = nil)
-    search_param = if category
-                     { parameters: {
-                       patient: patient_id,
-                       _include: '*',
-                       category:
-                     } }
-                   else
-                     { parameters: {
-                       patient: patient_id,
-                       _include: '*'
-                     } }
-                   end
-
-    response = @client.search(FHIR::Observation, search: search_param)
-    raise response&.response&.dig(:code) if response&.resource&.entry.nil?
-
-    response
   end
 
   def find_observation
@@ -67,18 +45,17 @@ class ObservationsController < ApplicationController
     @observation = observations.find { |response| response.id == params[:id] }
     return if @observation.present?
 
-    resource = @client.read(FHIR::Observation, params[:id])&.resource
-    @observation = Observation.new(resource, [])
+    resource = fetch_observation(params[:id])
+    @observation = Observation.new(resource, retrieve_practitioner_roles_and_orgs)
     return if @observation.present?
 
     flash[:notice] = 'Observation not found'
-    redirect_to patient_observations_page_path, id: @patient.id
+    redirect_to patient_observations_path, id: @patient.id
   rescue StandardError => e
-    flash[:danger] = e.message
-    redirect_to patient_observations_page_path, id: @patient.id
-  end
+    Rails.logger.error("Unable to retrieve or parse Observation:\n #{e.message.inspect}")
+    Rails.logger.error(e.backtrace.join("\n"))
 
-  def cache_key_for_patient_observations(patient_id)
-    "patient_#{patient_id}_observations_#{session_id}"
+    flash[:danger] = 'Unable to retrieve Observation. Check logs for detail.'
+    redirect_to patient_observations_path, id: @patient.id
   end
 end

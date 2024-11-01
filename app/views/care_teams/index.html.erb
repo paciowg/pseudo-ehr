@@ -1,23 +1,11 @@
 <!-- app/views/care_teams/index.html.erb -->
-<div class="mb-4 sm:ml-10 lg:ml-0 font-sans w-8/12">
-  <div class="flex flex-row items-center justify-around my-1 w-full h-14 relative align-bottom">
-    <h1 class="text-xl font-bold text-left whitespace-nowrap text-gray-900 dark:text-white w-1/2">
-      Care Teams
-    </h1>
-  </div>
-  <%= turbo_frame_tag "care_teams" do %>
-    <div id="accordion" data-accordion="open">
-
-      <% if @care_teams.empty? %>
-        <div class="m-auto max-w-4xl self-center">
-          <%= image_tag "providers.webp" , alt: "Providers team" , class: "overflow-clip" %>
-          <span class="text-center text-2xl w-auto mt-8" tabindex="-1">No providers currently available</span>
-        </div>
-      <% end %>
-
-      <% @care_teams.each do |care_team| %>
-        <%= render "single_care_team", care_team: care_team %>
-      <% end %>
+<div class="lg:ml-64 w-full lg:w-3/4 h-full">
+  <div class="sm:flex sm:items-center sm:mt-24 md:mt-12 lg:mt-4">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900">
+        Care Teams
+      </h1>
     </div>
-  <% end %>
+  </div>
+  <%= render "care_teams" %>
 </div>

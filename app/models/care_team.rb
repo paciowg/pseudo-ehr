@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # CareTeam Model
 class CareTeam < Resource
   attr_reader :id, :name, :participants
@@ -23,7 +21,7 @@ class CareTeam < Resource
       reference_resource = bundle_entries.find do |resource|
         resource.resourceType == reference_resource_type && resource.id == reference_id
       end
-      participants << CareTeamParticipant.new(name, role, reference_resource)
+      participants << CareTeamParticipant.new(name, role, reference_resource, bundle_entries)
     end
     participants
   end

@@ -1,39 +1,33 @@
 <!-- app/views/observations/index.html.erb -->
-<div class="p-2 mb-4 sm:ml-10 lg:ml-10 font-sans w-8/12" data-controller="showhide">
-  <div class="flex flex-row items-center justify-around my-1 pb-4 w-full">
-    <h1 class="p-5 text-xl font-bold text-left text-gray-900 dark:text-white w-1/2">
-      Observations
-    </h1>
-    <div class="w-1/2">
-      <label for="obs-type" class="sr-only block mb-2 text-md font-medium text-gray-900 dark:text-white">Filter By type</label>
-      <select id="obs-type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-1/2 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        data-action="change->showhide#toggleObservations" data-showhide-target="obsType"
-      >
-        <option>Single Observations</option>
-        <option>Observation Collection</option>
-      </select>
+<div class="xl:mt-6 lg:mt-10 md:mt-12 sm:mt-32 lg:ml-64 w-full lg:w-3/4 h-full" data-controller="showhide">
+  <div class="sm:flex sm:items-center w-11/12">
+      <div class="sm:flex-auto">
+        <h1 class="text-base font-semibold leading-6 text-gray-900">
+          Observations
+          <span class="inline-flex items-center justify-center w-4 h-4 ms-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+            <%= @grouped_observations&.values&.map(&:values)&.flatten&.size %>
+          </span>
+        </h1>
+      </div>
+      <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+        <button type="button"
+          class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+          Add new observation
+        </button>
+      </div>
+  </div>
+  <div class="w-11/12 flex flex-col-reverse md:flex-row items-start md:items-center justify-between md:space-x-4 p-4 border-b dark:border-gray-700">
+    <div class="grid grid-cols-1 md:grid-cols-2 w-full lg:w-2/3 md:gap-4">
+      <div class="w-full">
+        <label for="obs-type" class="sr-only">Filter By type</label>
+        <select id="obs-type" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+          data-action="change->showhide#toggleObservations" data-showhide-target="obsType"
+        >
+          <option>Observation Collection</option>
+          <option>Single Observations</option>
+        </select>
+      </div>
     </div>
   </div>
-  <%= turbo_frame_tag "observations" do %>
-    <% if @grouped_observations.blank? %>
-        <h3> No Observations Found!</h3>
-    <% end %>
-    <div id="accordion" data-accordion="open" data-showhide-target="singleObs">
-      <% index = 0 %>
-      <% @grouped_observations.each do |type, sub_group| %>
-        <% index += 1 %>
-        <%= render "observations_category", observation_sub_group: sub_group, type: type, index: index %>
-      <% end %>
-    </div>
-    <div  class="" data-showhide-target="collectionObs" hidden>
-
-      <% if @collection_observations.blank? %>
-        <h3> No Collections Found!</h3>
-      <% end %>
-
-      <% @collection_observations.each do |collection| %>
-        <%= render "collection_observation", observation_collection: collection %>
-      <% end %>
-    </div>
-  <% end %>
+  <%= render "observations" %>
 </div>

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # FhirServer Model: save fhir server info with client credentials to authenticate to fhir server.
 class FhirServer < ApplicationRecord
   before_save :clean_attributes

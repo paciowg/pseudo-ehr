@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # rubocop:disable Layout/LineLength, RSpec/NamedSubject
 # spec/models/fhir_server_spec.rb
 

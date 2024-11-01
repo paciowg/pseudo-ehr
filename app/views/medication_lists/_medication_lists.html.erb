@@ -1,0 +1,17 @@
+<%= turbo_frame_tag "medication_lists" do %>
+  <div class="mt-8 flow-root w-11/12">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <% if @medication_lists.empty? %>
+          <h1 class="text-center">No Medication List Found!</h1>
+        <% else %>
+          <div id="accordion" data-accordion="collapse" data-active-classes="bg-white dark:bg-gray-900 text-gray-900 dark:text-white" data-inactive-classes="text-gray-500 dark:text-gray-400">
+            <% @medication_lists.each do |list| %>
+              <%= render 'medication_list', medication_list: list%>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

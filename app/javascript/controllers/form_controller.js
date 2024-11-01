@@ -8,6 +8,10 @@ export default class extends Controller {
   }
 
   submit() {
-    this.element.requestSubmit();
+    if (window.Turbo) {
+      this.element.requestSubmit();
+    } else {
+      this.element.submit();
+    }
   }
 }

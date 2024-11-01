@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module AdvanceDirectivesHelper
   # ADI PMO Initial Treatment ServiceRequest
   def loinc_polst_initial_tx_vs

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Goal Model
 class Goal < Resource
   attr_reader :id, :lifecycle_status, :achievement_status, :category,
@@ -13,9 +11,10 @@ class Goal < Resource
     @category = retrieve_categories
     @description = fhir_goal.try(:description)&.text
     @targets = retrieve_targets
-    @addresses = retrieve_addresses(fhir_goal.subject)
+    @addresses = retrieve_addresses(bundle_entries)
     @notes = retrieve_notes(bundle_entries)
-    @author = retrieve_author(bundle_entries, @fhir_resource.try(:expressedBy))
+    author_ref = @fhir_resource.try(:expressedBy)
+    @author = author_ref.present? ? parse_provider_name(author_ref, bundle_entries) : '--'
   end
 
   private
@@ -55,14 +54,21 @@ class Goal < Resource
     end
   end
 
-  def retrieve_addresses(patient_ref)
-    patient_id = patient_ref.reference.split('/').last
+  def retrieve_addresses(bundle_entries)
     @fhir_resource.addresses.map do |item|
-      name = item.reference
-      resource_type, id = name.split('/')
-      path = "/patients/#{patient_id}/#{resource_type.downcase}s/#{id}"
-      { name:, path: }
-    end
+      resource_type, id = item.reference.split('/')
+      resource = bundle_entries.find { |res| res.resourceType == resource_type && res.id == id }
+      next unless resource
+
+      case resource_type
+      when 'Condition'
+        Condition.new(resource, bundle_entries).code
+      when 'Observation'
+        Observation.new(resource, bundle_entries).code
+      else
+        next
+      end
+    end.compact
   end
 
   def retrieve_notes(bundle_entries)
@@ -71,28 +77,9 @@ class Goal < Resource
       note = fhir_note.text || '--'
       time = parse_date(fhir_note.time)
       author_ref = fhir_note.authorReference.presence
-      author = retrieve_author(bundle_entries, author_ref)
+      author = parse_provider_name(author_ref, bundle_entries)
 
       { note:, time:, author: }
     end.reverse
-  end
-
-  def retrieve_author(bundle_entries, author_ref)
-    return '--' if author_ref.blank?
-
-    return author_ref.display if author_ref&.display.present?
-
-    resource_type, id = author_ref.reference&.split('/')
-    resource = bundle_entries.find { |res| res.resourceType == resource_type && res.id == id }
-    return '--' if resource.blank?
-
-    name = '--'
-    if resource_type == 'Practitioner'
-      format_name(resource.name) => { first_name:, last_name: }
-      name = "#{first_name} #{last_name}"
-    elsif resource_type == 'PractitionerRole'
-      name = resource.practitioner&.display || '--'
-    end
-    name
   end
 end

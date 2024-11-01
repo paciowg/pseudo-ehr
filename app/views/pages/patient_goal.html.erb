@@ -1,8 +1,0 @@
-<div class="relative sm:ml-40 lg:ml-44 overflow-x-auto sm:rounded-lg">
-  <%= turbo_frame_tag "goal", src: patient_goal_path(patient_id: @patient.id, id: @goal_id), loading: "lazy" do %>
-    <div class="w-full flex flex-col items-center justify-center my-4 p-6">
-      <i class="fas fa-spinner fa-spin text-8xl mr-2"></i>
-      <span class="text-center mt-4">Loading Goal...</span>
-    </div>
-  <% end %>
-</div>
