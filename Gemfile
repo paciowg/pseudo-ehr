@@ -101,7 +101,7 @@ group :test do
   gem 'webmock'
 end
 
-gem 'pagy', '~> 8.3'
+gem 'pagy', '~> 9.1'
 
 gem 'bundler-audit', '~> 0.9.1'
 
