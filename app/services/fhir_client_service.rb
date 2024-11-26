@@ -40,14 +40,15 @@ class FhirClientService
 
   def refresh_access_token
     # Refresh the access token using the refresh token
-    response = RestClient.post(
-      @fhir_server.token_url,
-      {
-        grant_type: 'refresh_token',
-        refresh_token: @fhir_server.refresh_token,
-        scope: @fhir_server.scope
-      }
-    )
+    oauth2_headers = { content_type: 'application/x-www-form-urlencoded', accept: :json }
+    client_credentials = "#{@fhir_server.client_id}:#{@fhir_server.client_secret}"
+    oauth2_headers[:Authorization] = "Basic #{Base64.strict_encode64(client_credentials)}"
+    oauth2_params = {
+      grant_type: 'refresh_token',
+      refresh_token: @fhir_server.refresh_token,
+      scope: @fhir_server.scope
+    }
+    response = RestClient.post(@fhir_server.token_url, oauth2_params, oauth2_headers)
     # rubocop:disable Layout/LineLength
     token_data = JSON.parse(response.body)
     @fhir_server.update!(
@@ -56,7 +57,7 @@ class FhirClientService
       access_token_expires_at: token_data['expires_in'].present? ? Time.current + token_data['expires_in'].to_i.seconds : nil
     )
   rescue RestClient::ExceptionWithResponse => e
-    raise "Failed to refresh access token for FHIR server #{@fhir_server.base_url}: #{e.message}"
+    raise "Failed to refresh access token for FHIR server #{@fhir_server.base_url}: #{e.message}. Response: #{e.response}"
   end
 
   # Support SMART_ON_FHIR CLIENT CONFIDENTIAL SYMMETRIC
