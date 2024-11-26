@@ -1,0 +1,94 @@
+  <%= turbo_frame_tag "questionnaire_responses" do %>
+    <div class="mt-8 flow-root w-11/12">
+      <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          <% if @questionnaire_responses.empty? %>
+            <h1 class="text-center">No Questionnaire Responses</h1>
+          <% else %>
+            <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Date</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Questionnaire</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Status</th>
+                </tr>
+              </thead>
+              <tbody data-accordion="table-column">
+                <% @questionnaire_responses.each do |response| %>
+                  <% identifier = response.id.downcase %>
+                  <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition" id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>" aria-expanded="false" aria-controls="table-column-body-<%= identifier %>">
+                    <td class="p-3 w-4">
+                      <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                    </td>
+                    <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= response.formatted_date %></td>
+                    <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= response.questionnaire || '--'  %></td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <%color = response.status&.downcase == 'completed' ? 'green' : 'gray' %>
+                      <div class="w-fit bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
+                        <%= response.status %>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="hidden flex-1 overflow-x-auto w-full" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
+                    <td scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
+                    <td class="p-4 border-b" colspan="3">
+                      <div class="items-center mb-2">
+                        <p class="flex items-center py-2"><b class="w-32">Description:</b><span class="flex-1"><%= response.description %></span></p>
+                      </div>
+                      <% if response.author && response.author != '--' %>
+                        <div class="items-center mb-2">
+                          <p class="flex items-center py-2"><b class="w-32">Author:</b><span class="flex-1"><%= response.author %></span></p>
+                        </div>
+                      <% end %>
+
+                      <% if response.items.present? %>
+                        <div class="items-center mt-2">
+                          <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
+                              <tr>
+                                <th scope="col" class="px-4 py-3 min-w-[6rem]">
+                                  Link ID
+                                </th>
+                                <th scope="col" class="px-4 py-3 min-w-[6rem]">
+                                  Description
+                                </th>
+                                <th scope="col" class="px-4 py-3 min-w-[6rem]">
+                                  Answer
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% response.items.each do |item| %>
+                                <tr class="bg-gray-100 border-b border-gray-300 hover:bg-gray-200">
+                                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= item[:link_id] %></td>
+                                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= item[:text] || '--' %></td>
+                                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white">
+                                    <% item[:answers].each do |answer| %>
+                                      <P><%= link_to answer[:code] || answer[:system] || '#', answer[:system], class: "font-bold text-blue-500" %>: <%= answer[:display] %></p>
+                                    <% end %>
+                                  </td>
+                                </tr>
+                              <% end %>
+                            </tbody>
+                          </table>
+                        </div>
+                      <% end %>
+
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+            <br />
+            <% if @pagy %>
+              <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
+            <% end %>
+            <br />
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>

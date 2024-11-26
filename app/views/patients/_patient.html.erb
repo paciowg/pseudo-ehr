@@ -1,0 +1,7 @@
+<%= turbo_frame_tag "patient" do %>
+  <div class="container mx-auto grid sm:grid-cols-1 xl:grid-cols-2 gap-4">
+    <%= render "personal_identifiable_info" %>
+    <%= render "contact_info" %>
+    <%= render "demographics" %>
+  </div>
+<% end %>

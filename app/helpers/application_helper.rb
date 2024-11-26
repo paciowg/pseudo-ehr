@@ -1,6 +1,6 @@
-# frozen_string_literal: true
-
 module ApplicationHelper
+  include CacheKeysHelper
+  include ResourceFetchHelper
   include Pagy::Frontend
   # Flash messages tailwind classes for styling
   def tailwind_class_for(flash_type)
@@ -29,17 +29,11 @@ module ApplicationHelper
     age -= 1 if today < birthdate + age.years
 
     age
+  rescue StandardError
+    '--'
   end
 
-  def queries
-    session[:queries] ||= []
-  end
-
-  def add_query(query)
-    queries << query
-  end
-
-  def clear_queries
-    session[:queries] = []
+  def patient_id
+    session[:patient_id]
   end
 end

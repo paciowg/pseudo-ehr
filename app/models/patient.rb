@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Patient Model
 class Patient < Resource
   attr_reader :id, :fhir_resource, :first_name, :last_name, :name, :dob, :medical_record_number, :gender, :address,

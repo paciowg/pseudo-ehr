@@ -1,4 +1,4 @@
-// app/javascript/controllers/visibility_controller.js
+// app/javascript/controllers/showhide_controller.js
 
 import { Controller } from "@hotwired/stimulus"
 
@@ -6,7 +6,11 @@ export default class extends Controller {
   static targets = [
     "authenticatedInput", "credentialFields", "requiredFields",
     "adiStatus", "currentAdis", "supersededAdis",
-    "obsType", "singleObs", "collectionObs"
+    "obsType", "singleObs", "collectionObs", "conditionType",
+    "encounterDiagnosis", "problemListItem", "other",
+    "tocConditionButton", "tocConditionContent", "tocServiceRequestButton",
+     "tocServiceRequestContent", "tocAllergyButton", "tocAllergyContent",
+     "tocCarePlanContent", "tocCarePlanButton", "tocObservationButton", "tocObservationContent"
   ]
   static values = { showIf: String }
   connect() {
@@ -68,4 +72,85 @@ export default class extends Controller {
       })
     }
   }
+
+  toggleConditions() {
+    if (this.conditionTypeTarget.value === "Condition Problem/Health Concern") {
+      this.problemListItemTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.encounterDiagnosisTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.otherTargets.forEach(el => {
+        el.hidden = true;
+      })
+    } else if (this.conditionTypeTarget.value === "Encounter Diagnosis") {
+      this.problemListItemTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.otherTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.encounterDiagnosisTargets.forEach(el => {
+        el.hidden = false;
+      })
+    } else if (this.conditionTypeTarget.value === "Other") {
+      this.problemListItemTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.otherTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.encounterDiagnosisTargets.forEach(el => {
+        el.hidden = true;
+      })
+    } else {
+      this.problemListItemTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.otherTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.encounterDiagnosisTargets.forEach(el => {
+        el.hidden = false;
+      })
+    }
+  }
+
+  // toggleTocConditions(event) {
+  //   event.stopPropagation()
+
+  //   if (this.tocConditionButtonTarget.textContent.trim() === "Show conditions") {
+  //     this.tocConditionButtonTarget.textContent = "Hide conditions";
+  //     this.tocConditionTargets.forEach(el => {
+  //       el.hidden = false;
+  //     })
+  //   } else if (this.tocConditionButtonTarget.textContent.trim() === "Hide conditions") {
+  //     this.tocConditionButtonTarget.textContent = "Show conditions";
+  //     this.tocConditionTargets.forEach(el => {
+  //       el.hidden = true;
+  //     })
+  //   }
+  // }
+  toggleSection(event) {
+    event.stopPropagation();
+
+    const button = event.currentTarget;
+    const content = this.tocConditionContentTargets.concat(this.tocServiceRequestContentTargets)
+    .concat(this.tocAllergyContentTargets).concat(this.tocCarePlanContentTargets)
+    .concat(this.tocObservationContentTargets);
+
+    if (button.textContent.trim().includes("Show")) {
+      button.textContent = button.textContent.replace("Show", "Hide");
+      content.forEach(el => {
+        el.hidden = false;
+      });
+    } else {
+      button.textContent = button.textContent.replace("Hide", "Show");
+      content.forEach(el => {
+        el.hidden = true;
+      });
+    }
+  }
+
 }

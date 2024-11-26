@@ -5,7 +5,7 @@
   <div class="bg-white shadow-md rounded-lg p-8 flex flex-col md:flex-row">
     <%= render "shared/app_info" %>
       <div class="md:w-1/2 md:ml-4">
-        <%= form_with(url: launch_path, method: :post, local: true, class: "space-y-4" ) do |form| %>
+        <%= form_with(url: launch_path, method: :post, local: true, class: "space-y-4", data: { turbo: false } ) do |form| %>
           <h2 class="text-lg font-bold">Select an existing FHIR server</h2>
           <%= form.collection_select :base_url, FhirServer.all, :base_url, :name, {prompt: 'Select FHIR server' },
             {class: 'w-full p-2 border border-gray-300 rounded', required: true }

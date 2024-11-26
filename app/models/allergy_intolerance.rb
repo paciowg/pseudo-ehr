@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # AllergyIntolerance Model
 class AllergyIntolerance < Resource
   attr_reader :id, :clinical_status, :verification_status, :category, :criticality,
