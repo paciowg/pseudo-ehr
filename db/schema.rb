@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_08_21_021708) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_01_204128) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -18,7 +18,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_08_21_021708) do
     t.string "base_url"
     t.string "name", null: false
     t.string "client_id"
-    t.string "client_secret_digest"
+    t.string "client_secret"
     t.boolean "authenticated_access", default: false
     t.string "token_url"
     t.string "authorization_url"

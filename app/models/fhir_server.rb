@@ -1,8 +1,6 @@
 # FhirServer Model: save fhir server info with client credentials to authenticate to fhir server.
 class FhirServer < ApplicationRecord
   before_save :clean_attributes
-  # bcrypt method to encrypt client_secret
-  has_secure_password :client_secret, validations: false
 
   # Validations
   validates :base_url, uniqueness: true, presence: true
