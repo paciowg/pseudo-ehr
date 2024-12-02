@@ -84,7 +84,7 @@ GEM
     benchmark (0.4.0)
     bigdecimal (3.1.8)
     bindex (0.8.1)
-    bootsnap (1.18.3)
+    bootsnap (1.18.4)
       msgpack (~> 1.2)
     brakeman (6.2.2)
       racc
@@ -202,7 +202,7 @@ GEM
     mime-types-data (3.2024.1001)
     mini_mime (1.1.5)
     minitest (5.25.2)
-    msgpack (1.7.2)
+    msgpack (1.7.5)
     multi_json (1.15.0)
     multi_xml (0.7.1)
       bigdecimal (~> 3.1)
