@@ -103,6 +103,6 @@ end
 
 gem 'pagy', '~> 9.1'
 
-gem 'bundler-audit', '~> 0.9.1'
+gem 'bundler-audit', '~> 0.9.2'
 
 gem 'brakeman', '~> 6.2'
