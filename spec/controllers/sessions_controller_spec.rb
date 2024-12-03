@@ -134,5 +134,29 @@ RSpec.describe SessionsController do
       expect(flash[:success]).to eq('Successfully disconnected client from server')
       expect(response).to redirect_to root_path
     end
+
+    context 'when server has authenticated access' do
+      let(:fhir_server) do
+        create(:fhir_server, base_url: 'https://qa-rr-fhir2.maxmddirect.com',
+                             authenticated_access: true,
+                             access_token: 'example-access-token',
+                             refresh_token: 'example-refresh-token',
+                             access_token_expires_at: 'example-access-token-date')
+      end
+
+      before do
+        session[:fhir_server_url] = fhir_server.base_url
+        get :disconnect_server
+      end
+
+      it 'deletes the access_token, refresh_token, and access_token_expires_at fields from an authenticated server' do
+        expect(session[:fhir_server_url]).to be_nil
+        expect(session[:access_token]).to be_nil
+        expect(session[:refresh_token]).to be_nil
+        expect(session[:access_token_expires_at]).to be_nil
+        expect(flash[:success]).to eq('Successfully disconnected client from server')
+        expect(response).to redirect_to root_path
+      end
+    end
   end
 end
