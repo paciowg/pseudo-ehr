@@ -39,6 +39,22 @@ module CacheKeysHelper
     "patient_#{patient_id}_medication_lists_#{session_id}"
   end
 
+  def cache_key_for_patient_medication_requests(patient_id)
+    "patient_#{patient_id}_medication_requests_#{session_id}"
+  end
+
+  def cache_key_for_patient_procedures(patient_id)
+    "patient_#{patient_id}_procedures_#{session_id}"
+  end
+
+  def cache_key_for_patient_diagnostic_reports(patient_id)
+    "patient_#{patient_id}_diagnostic_reports_#{session_id}"
+  end
+
+  def cache_key_for_patient_document_references(patient_id)
+    "patient_#{patient_id}_document_references_#{session_id}"
+  end
+
   def cache_key_for_patient_nutrition_orders(patient_id)
     "patient_#{patient_id}_nutrition_orders_#{session_id}"
   end
