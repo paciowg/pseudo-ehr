@@ -9,7 +9,7 @@
               <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
                 <tr>
                   <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
-                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Procedure</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Procedure Code</th>
                   <th scope="col" class="px-4 py-3 min-w-[6rem]">Date</th>
                   <th scope="col" class="px-4 py-3 min-w-[6rem]">Clinical Status</th>
                 </tr>
@@ -27,10 +27,18 @@
                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                       </svg>
                     </td>
-                    <td ><%= procedure.id %></td>
-                    <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= procedure.date %></td>
+                    <td ><%= procedure.code %></td>
+                    <% if procedure.date != "--" %>
+                      <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= procedure.date %></td>
+                    <% end %>
+                    <% if procedure.date_period != "--" %>
+                      <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= procedure.date_period %></td>
+                    <% end %>
+                    <% if procedure.date == "--" && procedure.date_period == "--" %>
+                      <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= procedure.date %></td>
+                    <% end %>
                     <td class="px-4 py-3 whitespace-nowrap">
-                      <%color = procedure.status == 'active' ? 'green' : 'gray' %>
+                      <%color = procedure.status == 'completed' ? 'green' : 'gray' %>
                       <div class="w-fit bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
                         <%= procedure.status %>
                       </div>
@@ -39,72 +47,57 @@
                   <tr class="hidden flex-1 overflow-x-auto w-full" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
                     <td scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
                     <td class="p-4 border-b" colspan="4">
-                      <% if procedure.status  %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Status:</b><span class="flex-1"><%= procedure.status%></span></p>
-                        </div>
-                      <% end %>
-                      <% if procedure.status_reason %>
+                      <% if procedure.status_reason != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Status Reason:</b><span class="flex-1"><%= procedure.status_reason%></span></p>
                         </div>
                       <% end %>
-                      <% if procedure.code %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Procedure Code:</b><span class="flex-1"><%= procedure.code%></span></p>
-                        </div>
-                      <% end %>
-                      <% if procedure.category %>
+                      <% if procedure.category != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Category of Procedure:</b><span class="flex-1"><%= procedure.category%></span></p>
                         </div>
                       <% end %>
-                      <% if procedure.encounter %>
+                      <% if procedure.encounter != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Encounter Reference:</b><span class="flex-1"><%= procedure.encounter%></span></p>
                         </div>
                       <% end %>
-                      <% if procedure.date %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Date of procedure:</b><span class="flex-1"><%= procedure.date%></span></p>
-                        </div>
-                      <% end %>
-                      <% if procedure.performer %>
+                      <% if procedure.performer != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Performer:</b><span class="flex-1"><%= procedure.performer%></span></p>
                         </div>
                       <% end %>
-                      <% if procedure.asserter %>
+                      <% if procedure.asserter != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Asserter:</b><span class="flex-1"><%= procedure.asserter%></span></p>
                         </div>
                       <% end %>
-                      <% if procedure.reason_code %>
+                      <% if procedure.reason_code != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Reason Code:</b><span class="flex-1"><%= procedure.reason_code%></span></p>
                         </div>
                       <% end %>
-                      <% if procedure.reason_reference %>
+                      <% if procedure.reason_reference != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Reason Reference:</b><span class="flex-1"><%= procedure.reason_reference%></span></p>
                         </div>
                       <% end %>
-                      <% if procedure.bodysite %>
+                      <% if procedure.bodysite != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Body site:</b><span class="flex-1"><%= procedure.bodysite%></span></p>
                         </div>
                       <% end %>
-                      <% if procedure.outcome %>
+                      <% if procedure.outcome != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Outcome:</b><span class="flex-1"><%= procedure.outcome%></span></p>
                         </div>
                       <% end %>
-                      <% if procedure.complication %>
+                      <% if procedure.complication != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Complication:</b><span class="flex-1"><%= procedure.complication%></span></p>
                         </div>
                       <% end %>
-                      <% if procedure.note %>
+                      <% if procedure.note != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Note:</b><span class="flex-1"><%= procedure.note%></span></p>
                         </div>

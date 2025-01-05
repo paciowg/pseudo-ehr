@@ -10,19 +10,21 @@ class MedicationRequests < Resource
     @status = @fhir_resource.status
     @status_reason = @fhir_resource.statusReason.presence || '--'
     @intent = @fhir_resource.intent
-    @request_intent = fhir_medication_request.reasonCode&.map { |c| coding_string(c.coding) }&.join(', ')
+    @request_intent = fhir_medication_request.reasonCode&.map do |c|
+                        coding_string(c.coding)
+                      end&.join(', ')
     @medication = coding_string(@fhir_resource.medicationCodeableConcept&.coding)
     @authored_on = parse_date(@fhir_resource.authoredOn)
-    @requester = @fhir_resource&.requester.presence || '--'
+    @requester = @fhir_resource.requester.reference&.split('/')&.last.presence || '--'
     @category = fhir_medication_request.category&.map { |c| coding_string(c.coding) }&.join(', ').presence || '--'
     @dosage_instruction = @fhir_resource.dosageInstruction.map(&:text)&.join(', ')
     @procedure_intent = coding_string(read_extension(@fhir_resource.extension))
 
     # TODO: connect resource
-    @reason_reference = @fhir_resource.reasonReference.map(&:reference)&.join(', ').presence || '--'
+    @reason_reference = @fhir_resource.reasonReference.map(&:reference)&.join(', ')&.split('/')&.last.presence || '--'
     @reported = @fhir_resource.reportedBoolean.presence || '--'
     @reported_reference = @fhir_resource.reportedReference.presence || '--'
-    @note = @fhir_resource.note.presence || '--'
+    @note = @fhir_resource.note.map(&:text)&.join(', ').presence || '--'
   end
 
   def read_extension(extensions)

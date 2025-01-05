@@ -39,52 +39,71 @@
                   <tr class="hidden flex-1 overflow-x-auto w-full" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
                     <td scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
                     <td class="p-4 border-b" colspan="4">
-                      <% if report.status %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Status:</b><span class="flex-1"><%= report.status %></span></p>
-                        </div>
-                      <% end %>
-                      <% if report.last_updated %>
+                      <% if report.last_updated != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Last Updated:</b><span class="flex-1"><%= report.last_updated %></span></p>
                         </div>
                       <% end %>
-                      <% if report.code %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Report Code:</b><span class="flex-1"><%= report.code %></span></p>
-                        </div>
-                      <% end %>
-                      <% if report.subject %>
+                      <% if report.subject != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Subject:</b><span class="flex-1"><%= report.subject %></span></p>
                         </div>
                       <% end %>
-                       <% if report.encounter %>
+                       <% if report.encounter != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Encounter:</b><span class="flex-1"><%= report.encounter %></span></p>
                         </div>
                       <% end %>
-                      <% if report.issued %>
+                      <% if report.issued != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Issued:</b><span class="flex-1"><%= report.issued %></span></p>
                         </div>
                       <% end %>
-                      <% if report.performer %>
+                      <% if report.performer != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Performer:</b><span class="flex-1"><%= report.performer %></span></p>
                         </div>
                       <% end %>
-                      <% if report.result %>
+                      <% if report.result%>
                         <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Result:</b><span class="flex-1"><%= report.result %></span></p>
+                          <p class="flex items-center py-2"><b class="w-32">Result List:</b><span class="flex-1"><%= %></span></p>
                         </div>
                       <% end %>
-                      <% if report.media_link %>
+                        <% report.result.each do |result| %>
+                          <div class="items-center mt-2">
+                          <p class="flex items-center py-2 ml-4"><b class="w-32">Observation:</b><span class="flex-1"><%= result.id %></span></p>
+                          <p class="flex items-center py-2 ml-4"><b class="w-32">status:</b><span class="flex-1"><%= result.status %></span></p>
+                          <% result.code.coding.each do |coding_el| %>
+                            <p class="flex items-center py-2 ml-2 ml-4"><b class="w-32">code:</b><span class="flex-1"><%= coding_el.code + ": " + coding_el.display %></span></p>
+                          <% end %>
+                           <% if result&.valueCodeableConcept %>
+                           <% result.valueCodeableConcept.coding.each do |concept| %>
+                              <p class="flex items-center py-2 ml-4"><b class="w-32">Result value:</b><span class="flex-1"><%= concept.display %></span></p>
+                           <% end %>
+                          <% end %>
+                          <% if result&.component.length > 0 %>
+                           <% result&.component.each do |value| %>
+                           <% if value&.valueQuantity %>
+                              <p class="flex items-center py-2 ml-4"><b class="w-32">Value quantity:</b><span class="flex-1"><%= value&.valueQuantity&.value.to_s + " " + value&.valueQuantity&.unit%></span></p>
+                            <% end %>
+                          <% if value&.valueCodeableConcept %>
+                          <% value&.code&.coding.each do |coding| %>
+                            <p class="flex items-center py-2 ml-4"><b class="w-32">Component code:</b><span class="flex-1"><%= coding.code %></span></p>
+                           <% end %>
+                           <% value&.valueCodeableConcept&.coding.each do |coding| %>
+                            <p class="flex items-center py-2 ml-4"><b class="w-32">Component value:</b><span class="flex-1"><%= coding.display ? coding.code + " ( " + coding.display + " ) " : coding.code %></span></p>
+                           <% end %>
+                          <% end %>
+                           <% end %>
+                          <% end %>
+                        <p class="flex items-center py-2 ml-4"><b class="w-32">---------</b><span class="flex-1"><%= %></span></p>
+                        <% end %>
+                      <% if report.media_link != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Media Link:</b><span class="flex-1"><%= report.media_link %></span></p>
                         </div>
                       <% end %>
-                      <% if report.presented_form %>
+                      <% if report.presented_form != "--" %>
                         <div class="items-center mt-2">
                           <p class="flex items-center py-2"><b class="w-32">Presented Form Type:</b><span class="flex-1"><%= report.presented_form %></span></p>
                         </div>
