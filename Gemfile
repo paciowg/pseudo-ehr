@@ -105,4 +105,4 @@ gem 'pagy', '~> 9.3'
 
 gem 'bundler-audit', '~> 0.9.2'
 
-gem 'brakeman', '~> 6.2'
+gem 'brakeman', '~> 7.0'
