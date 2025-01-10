@@ -65,9 +65,14 @@
                                 <tr class="bg-gray-100 border-b border-gray-300 hover:bg-gray-200">
                                   <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= item[:link_id] %></td>
                                   <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= item[:text] || '--' %></td>
-                                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white">
+                                  <td class=" text-wrap:wrap">
                                     <% item[:answers].each do |answer| %>
+                                      <% if answer[:code].present? %>
                                       <P><%= link_to answer[:code] || answer[:system] || '#', answer[:system], class: "font-bold text-blue-500" %>: <%= answer[:display] %></p>
+                                      <% end %>
+                                      <% if !answer[:code].present? %>
+                                        <P><%= answer[:display] %></p>
+                                      <% end %>
                                     <% end %>
                                   </td>
                                 </tr>
