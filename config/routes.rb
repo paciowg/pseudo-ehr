@@ -30,4 +30,8 @@ Rails.application.routes.draw do
   get 'patients/:patient_id/goals', to: 'goals#index', as: 'patient_goals'
   get 'patients/:patient_id/transition_of_cares', to: 'transition_of_cares#index', as: 'patient_transition_of_cares'
   get 'patients/:patient_id/medication_lists', to: 'medication_lists#index', as: 'patient_medication_lists'
+  get 'patients/:patient_id/medication_requests', to: 'medication_requests#index', as: 'patient_medication_requests'
+  get 'patients/:patient_id/procedures', to: 'procedures#index', as: 'patient_procedures'
+  get 'patients/:patient_id/diagnostic_reports', to: 'diagnostic_reports#index', as: 'patient_diagnostic_reports'
+  get 'patients/:patient_id/document_references', to: 'document_references#index', as: 'patient_document_references'
 end
