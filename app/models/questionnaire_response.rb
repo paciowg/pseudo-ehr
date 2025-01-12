@@ -43,8 +43,10 @@ class QuestionnaireResponse < Resource
         coding = answer.valueCoding || answer.valueQuantity
         if !coding.nil?
           { code: coding.code, system: coding.system, display: coding.display || "#{coding.value} #{coding.unit}" }
-        elsif coding.nil?
+        elsif string_answer.present?
           { code: '', system: '', display: string_answer }
+        else
+          { code: '', system: '', display: '--' }
         end
       end.compact
       @items << item

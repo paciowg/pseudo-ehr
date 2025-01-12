@@ -70,7 +70,7 @@
                                       <% if answer[:code].present? %>
                                       <P><%= link_to answer[:code] || answer[:system] || '#', answer[:system], class: "font-bold text-blue-500" %>: <%= answer[:display] %></p>
                                       <% end %>
-                                      <% if !answer[:code].present? %>
+                                      <% if !item[:answers].any?{|pair| pair[:code] != ''} %>
                                         <P><%= answer[:display] %></p>
                                       <% end %>
                                     <% end %>
