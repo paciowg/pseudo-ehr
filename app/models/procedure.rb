@@ -14,12 +14,14 @@ class Procedure < Resource
     @date = @fhir_resource.performedDateTime.presence || '--'
     @date_period = (@fhir_resource.performedPeriod&.start&.+ ' to ' + @fhir_resource.performedPeriod&.end).presence || '--'
     @performer = @fhir_resource.performer&.map do |c|
-                   c&.actor&.reference
-                 end&.join(', ')&.split('/')&.last.presence || '--'
-    @asserter = @fhir_resource.asserter.reference&.split('/')&.last.presence || '--'
+                   parse_provider_name(c&.actor, bundle_entries)
+                 end&.join(', ').presence || '--'
+    @asserter = parse_provider_name(@fhir_resource.asserter, bundle_entries)
     @category = '--'
     @reason_code = @fhir_resource.reasonCode&.map { |c| coding_string(c.coding) }&.join(', ').presence || '--'
-    @reason_reference = @fhir_resource.reasonReference.map(&:reference)&.join(', ')&.split('/')&.last.presence || '--'
+    @reason_reference = @fhir_resource.reasonReference.map do |each|
+      find_condition(each, bundle_entries)
+    end&.join(', ').presence || '--'
     @bodysite = @fhir_resource.bodySite&.map { |c| coding_string(c.coding) }&.join(', ').presence || '--'
     @outcome = coding_string(@fhir_resource.outcome&.coding).presence || '--'
     @complication = @fhir_resource.complication.presence || '--'
@@ -31,5 +33,19 @@ class Procedure < Resource
     text << name
 
     text.compact.empty? ? '--' : text.compact.join(', ')
+  end
+
+  def find_condition(provider_ref, bundle_entries)
+    return '--' unless provider_ref.try(:reference)
+
+    resource_type, resource_id = provider_ref.reference.split('/')
+    provider_resource = bundle_entries.find { |res| res.resourceType == resource_type && res.id == resource_id }
+    return '--' unless provider_resource
+
+    case resource_type
+    when 'Condition'
+      condition = coding_string(provider_resource&.code&.coding)
+    end
+    condition
   end
 end

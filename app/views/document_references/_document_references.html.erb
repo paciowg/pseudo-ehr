@@ -6,8 +6,8 @@
           <h1 class="text-center">No Document Reference Found!</h1>
         <% else %>
           <div id="accordion" data-accordion="open">
+            <div class="w-full mb-5 p-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
               <% @document_references.each do | document_reference| %>
-              <div class="w-full mb-5 p-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                 <% body_id = "accordion-body-#{document_reference.id}" %>
                 <h5 id="accordion-heading-<%= document_reference.id %>">
                   <a class="flex items-center justify-between w-full p-4 font-medium text-left text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-800 dark:border-gray-700 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-gray-800" data-accordion-target="#<%= body_id %>" aria-expanded="true" aria-controls="<%= body_id %>">
@@ -23,29 +23,28 @@
                 <thead class="text-xs text-white uppercase bg-gray-900">
                   <tr>
                     <th scope="col" class="px-2 py-2">Title</th>
-                    <th scope="col" class="px-2 py-2">Status</th>
+                    <th scope="col" class="px-2 py-2">Type</th>
                     <th scope="col" class="px-2 py-2">Author</th>
                     <th scope="col" class="px-2 py-2">Created</th>
                     <th scope="col" class="px-2 py-2">Document</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <% @document_references.each do |doc| %>
                     <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50">
-                      <td class="px-2 py-2"><%= doc.attachment_title %></td>
-                      <td class="px-2 py-2 <%= doc.status == "current" ? "text-green-500" : ""%>"><%= doc.status %></td>
-                      <td class="px-2 py-2"><%= doc.author %></td>
-                      <td class="px-2 py-2"><%= doc.date %></td>
+                      <td class="px-2 py-2"><%= document_reference.attachment_title %></td>
+                      <td class="px-2 py-2"><%= document_reference.type %></td>
+                      <td class="px-2 py-2"><%= document_reference.author %></td>
+                      <td class="px-2 py-2"><%= document_reference.date %></td>
                       <td class="px-2 py-2">
                       <% if document_reference.attachment_content_type.include?("pdf")%>
-                      <button data-modal-target="<%= document_reference.id %>" data-modal-toggle="<%= document_reference.id %>" class="border-none text-blue-600 hover:text-red-500 font-medium text-xs px-5 text-center" type="button">
-                        View PDF
-                      </button>
+                        <button data-modal-target="<%= document_reference.id %>" data-modal-toggle="<%= document_reference.id %>" class="border-none text-blue-600 hover:text-red-500 font-medium text-xs px-5 text-center" type="button">
+                          View PDF
+                        </button>
+                        <%= render "pdf_modal", pdf: document_reference.pdf, binary_id: document_reference.pdf_binary_id, title: document_reference.id, id: document_reference.id, revoked: false %>
                       <% else %>
                         <%= "Not a pdf" %>
                       <% end %>
                     </tr>
-                    <% end %>
                   </tbody>
                 </table>
                 </div>

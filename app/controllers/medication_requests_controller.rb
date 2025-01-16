@@ -25,7 +25,8 @@ class MedicationRequestsController < ApplicationController
       end
 
       entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
-      fhir_medication_requests.map { |entry| MedicationRequests.new(entry, entries) }
+      med_requests = fhir_medication_requests.map { |entry| MedicationRequests.new(entry, entries) }
+      med_requests.sort_by { |medreq| DateTime.parse(medreq.authored_on) || '' }.reverse
     rescue StandardError => e
       Rails.logger.error("Error fetching or parsing Medication Request:\n #{e.message.inspect}")
       Rails.logger.error(e.backtrace.join("\n"))

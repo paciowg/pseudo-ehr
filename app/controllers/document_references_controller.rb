@@ -24,12 +24,62 @@ class DocumentReferencesController < ApplicationController
         fhir_document_references = entries.select { |entry| entry.resourceType == 'DocumentReference' }
       end
 
-      entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
-      fhir_document_references.map { |entry| DocumentReference.new(entry, entries) }
+      drs = fhir_document_references.map do |ref|
+        get_pdf_from_contents(ref.content) => {pdf:, pdf_binary_id:}
+        DocumentReference.new(ref, fhir_document_references, pdf, pdf_binary_id)
+      end
+
+      drs
     rescue StandardError => e
       Rails.logger.error("Error fetching or parsing Document References:\n #{e.message.inspect}")
       Rails.logger.error(e.backtrace.join("\n"))
       raise "Error fetching or parsing patient's Document Reference. Check the log for detail."
     end
+  end
+
+  def get_pdf_from_contents(contents)
+    pdf_data = { pdf: nil, pdf_binary_id: nil }
+    pdf_content = contents.find { |content| check_content_attachment_resource(content) == 'pdf' }
+    if pdf_content
+      ref = pdf_content.attachment&.url
+      binary_id = extract_id_from_ref(ref)
+      pdf_data = retrieve_bundle_from_binary(binary_id, 'pdf')
+    end
+    pdf_data
+  end
+
+  def check_content_attachment_resource(content)
+    case content.attachment.contentType
+    when 'application/pdf'
+      'pdf'
+    when 'application/fhir+json', 'application/json'
+      return 'bundle' if content.attachment&.url&.include?('Bundle')
+
+      'binary' if content.attachment&.url&.include?('Binary')
+    end
+  end
+
+  def extract_id_from_ref(ref)
+    ref&.split('/')&.last
+  end
+
+  def retrieve_bundle_from_binary(binary_id, content_type)
+    begin
+      fhir_binary = find_cached_resource('Binary', binary_id) || fetch_binary(binary_id)
+      data = fhir_binary&.data
+
+      return { pdf: data, pdf_binary_id: binary_id } if content_type == 'pdf'
+    rescue StandardError => e
+      Rails.logger.error "Failed to fetch ADI FHIR Binary:\n #{e.message.inspect}"
+      return { pdf: nil, pdf_binary_id: binary_id } if content_type == 'pdf'
+    end
+
+    return if data.nil?
+
+    fhir_attachment_json = JSON(Base64.decode64(data))
+    fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
+    fhir_attachment_bundle.entry.map(&:resource)
+  rescue StandardError => e
+    Rails.logger.error e.message.inspect
   end
 end
