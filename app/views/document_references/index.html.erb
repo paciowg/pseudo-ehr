@@ -1,0 +1,14 @@
+<!-- app/views/document_references/index.html.erb -->
+<div class="xl:mt-6 lg:mt-10 md:mt-12 sm:mt-32 lg:ml-64 w-full lg:w-3/4 h-full">
+  <div class="sm:flex sm:items-center w-11/12">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900">
+        Document References
+        <span class="inline-flex items-center justify-center w-4 h-4 ms-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+          <%= @document_references_count %>
+        </span>
+      </h1>
+    </div>
+  </div>
+  <%= render "document_references" %>
+</div>

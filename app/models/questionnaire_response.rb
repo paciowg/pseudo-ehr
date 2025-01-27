@@ -39,10 +39,15 @@ class QuestionnaireResponse < Resource
       item[:link_id] = fhir_item.linkId || '--'
       item[:text] = fhir_item.text || '--'
       item[:answers] = fhir_item.answer.map do |answer|
+        string_answer = answer.valueString
         coding = answer.valueCoding || answer.valueQuantity
-        next if coding.nil?
-
-        { code: coding.code, system: coding.system, display: coding.display || "#{coding.value} #{coding.unit}" }
+        if !coding.nil?
+          { code: coding.code, system: coding.system, display: coding.display || "#{coding.value} #{coding.unit}" }
+        elsif string_answer.present?
+          { code: '', system: '', display: string_answer }
+        else
+          { code: '', system: '', display: '--' }
+        end
       end.compact
       @items << item
 
