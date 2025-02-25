@@ -19,7 +19,6 @@
             </thead>
             <tbody data-accordion="table-column">
               <% @tocs.each do |toc| %>
-                <% toc_str = JSON.parse(toc) %>
                 <% identifier = toc.id.downcase %>
                 <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition" id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>" aria-expanded="false" aria-controls="table-column-body-<%= identifier %>">
                   <td class="p-3 w-4">
@@ -133,7 +132,6 @@
                        <div class="px-6 py-6 lg:px-8">
                           <h3 class="mt-6 pb-4 text-xl font-medium text-gray-900 border-b-2 border-b-gray-600 dark:text-white">
                             <%= form_with(url: "/patients/:patient_id/transition_of_cares" , method: :put, class: 'space-y-6', data: {turbo: "false"}) do |form| %>
-                            <%= form.label :new_toc_resource, toc_str[0...10] %>
                               <%= form.hidden_field :new_toc_resource, value: '{}' %>
                               <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
                                 <%= form.submit 'UPDATE TOC',
