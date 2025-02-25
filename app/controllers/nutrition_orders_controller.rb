@@ -24,7 +24,8 @@ class NutritionOrdersController < ApplicationController
       end
 
       entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
-      fhir_nutrition_orders.map { |entry| NutritionOrder.new(entry, entries) }
+      nutri_orders = fhir_nutrition_orders.map { |entry| NutritionOrder.new(entry, entries) }
+      nutri_orders.sort_by { |order| DateTime.parse(order.date) || '' }.reverse
     rescue StandardError => e
       Rails.logger.error("Error fetching or parsing Nutrition Orders:\n #{e.message.inspect}")
       Rails.logger.error(e.backtrace.join("\n"))
