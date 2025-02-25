@@ -1,0 +1,125 @@
+<%= turbo_frame_tag "medication_requests" do %>
+  <div class="mt-8 flow-root w-11/12">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <% if @medication_requests.empty? %>
+          <h1 class="text-center">No Medication Request Found!</h1>
+        <% else %>
+          <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Medication</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Authored on</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Clinical Status</th>
+                </tr>
+              </thead>
+              <tbody data-accordion="table-column">
+                <% @medication_requests.each do |request| %>
+                  <% identifier = request.id %>
+                  <% medication = request.medication.downcase %>
+                  <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
+                    id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>"
+                    aria-expanded="false" aria-controls="table-column-body-<%= identifier %>" data-showhide-target="<%= medication %>"
+                  >
+                    <td class="p-3 w-4">
+                      <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                    </td>
+                    <td ><%= request.medication.downcase %></td>
+                    <td ><%= request.authored_on %></td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <%color = request.status == 'active' ? 'green' : 'gray' %>
+                      <div class="w-fit bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
+                        <%= request.status %>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="hidden flex-1 overflow-x-auto w-full" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
+                    <td scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
+                    <td class="p-4 border-b" colspan="4">
+                      <% if request.requester != "--"  %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Requested by:</b><span class="flex-1"><%= request.requester %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.authored_on != "--"  %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Date requested:</b><span class="flex-1"><%= request.authored_on %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.intent != "--"  %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Intent of Request:</b><span class="flex-1"><%= request.intent %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.status_reason != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Status Reason:</b><span class="flex-1"><%= request.status_reason %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.category != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Category:</b><span class="flex-1"><%= request.category %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.request_intent != "" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Request Reason:</b><span class="flex-1"><%= request.request_intent %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.procedure_intent != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Treatment Intent:</b><span class="flex-1"><%= request.procedure_intent %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.reason_reference != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Condition Reference:</b><span class="flex-1"><%= request.reason_reference %></span></p>
+                        </div>
+                      <% end %>
+                        <% if request.dosage_instruction != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Dosage Instructions:</b><span class="flex-1"><%= request.dosage_instruction %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.reported != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Reported:</b><span class="flex-1"><%= request.reported %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.reported_reference != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Reported Reference:</b><span class="flex-1"><%= request.reported_reference %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.note != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Note:</b><span class="flex-1"><%= request.note %></span></p>
+                        </div>
+                      <% end %>
+                      <div class="flex items-center space-x-3 mt-4">
+                        <button type="button" class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-primary-700 rounded-lg hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                          </svg>
+                          Edit
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+            <br />
+            <% if @pagy %>
+              <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
+            <% end %>
+            <br />
+          <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
