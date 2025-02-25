@@ -7,32 +7,37 @@
         <% else %>
           <div id="accordion" data-accordion="open">
             <div class="w-full mb-5 p-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-              <% @document_references.each do | document_reference| %>
-                <% body_id = "accordion-body-#{document_reference.id}" %>
-                <h5 id="accordion-heading-<%= document_reference.id %>">
-                  <a class="flex items-center justify-between w-full p-4 font-medium text-left text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-800 dark:border-gray-700 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-gray-800" data-accordion-target="#<%= body_id %>" aria-expanded="true" aria-controls="<%= body_id %>">
-                    <span><%= document_reference.type %></span>
+              <h5 id="accordion-heading-<%= "Document References" %>">
+                  <a class="flex items-center justify-between w-full p-4 font-medium text-left text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-800 dark:border-gray-700 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-gray-800" data-accordion-target="#<%= 1 %>" aria-expanded="true" aria-controls="<%= 1 %>">
+                    <span><%= "Document References" %></span>
                     <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
                     </svg>
                   </a>
                 </h5>
-                <div id="<%= body_id %>" aria-labelledby="accordion-heading-<%= document_reference.id %>">
+                <div id="<%= 1 %>" aria-labelledby="accordion-heading-<%= "Document Reference" %>">
                   <div class="p-4 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900 overflow-x-auto">
                     <table class="w-full table-fixed text-xs text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2 overflow-x-auto">
                 <thead class="text-xs text-white uppercase bg-gray-900">
                   <tr>
-                    <th scope="col" class="px-2 py-2">Title</th>
-                    <th scope="col" class="px-2 py-2">Type</th>
+                    <th scope="col" class="px-2 py-2">Document Type</th>
+                    <th scope="col" class="px-2 py-2">Description</th>
+                    <th scope="col" class="px-2 py-2">Relation to target</th>
+                    <th scope="col" class="px-2 py-2">target</th>
                     <th scope="col" class="px-2 py-2">Author</th>
                     <th scope="col" class="px-2 py-2">Created</th>
-                    <th scope="col" class="px-2 py-2">Document</th>
+                    <th scope="col" class="px-2 py-2">Document Type</th>
                   </tr>
                 </thead>
                 <tbody>
+                   <% @document_references.each do | document_reference| %>
+                    <% if !document_reference.category.include?("42348-3")%>
+                    <% body_id = "accordion-body-#{document_reference.id}" %>
                     <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50">
-                      <td class="px-2 py-2"><%= document_reference.attachment_title %></td>
                       <td class="px-2 py-2"><%= document_reference.type %></td>
+                      <td class="px-2 py-2"><%= document_reference.description %></td>
+                      <td class="px-2 py-2"><%= document_reference.code %></td>
+                      <td class="px-2 py-2"><%= document_reference.target %></td>
                       <td class="px-2 py-2"><%= document_reference.author %></td>
                       <td class="px-2 py-2"><%= document_reference.date %></td>
                       <td class="px-2 py-2">
@@ -44,7 +49,10 @@
                       <% else %>
                         <%= "Not a pdf" %>
                       <% end %>
+                      </td>
                     </tr>
+                    <% end %>
+                    <% end %>
                   </tbody>
                 </table>
                 </div>
@@ -54,7 +62,6 @@
               <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
             <% end %>
             <br />
-          <% end %>
         <% end %>
       </div>      
       </div>
