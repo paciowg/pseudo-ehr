@@ -10,6 +10,14 @@ class TransitionOfCaresController < ApplicationController
     redirect_to patients_path
   end
 
+  # PUT /patients/:patient_id/transition_of_cares
+  def create_toc_resource
+    Rails.logger.info('Creating a new resource.')
+    new_json_composition_resource = JSON.parse(params[:new_toc_resource].to_json)
+    new_fhir_composition_resource = FHIR.from_contents(new_json_composition_resource)
+    create_new_toc_resource(new_fhir_composition_resource, method: :put, id: new_fhir_composition_resource.id.to_s)
+  end
+
   private
 
   def fetch_and_cache_tocs

@@ -1,6 +1,7 @@
 module ApplicationHelper
   include CacheKeysHelper
   include ResourceFetchHelper
+  include ResourcePutHelper
   include Pagy::Frontend
   # Flash messages tailwind classes for styling
   def tailwind_class_for(flash_type)

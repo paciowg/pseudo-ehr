@@ -5,7 +5,7 @@
         <% if @tocs.empty? %>
           <h1 class="text-center">No TOC Composition Found!</h1>
         <% else %>
-          <table class="w-2/3 text-sm text-left text-gray-500 dark:text-gray-400">
+          <table class="ml-80 w-2/3 text-sm text-left text-gray-500 dark:text-gray-400">
             <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
@@ -14,10 +14,12 @@
                 <th scope="col" class="px-4 py-3 min-w-[6rem]">Description</th>
                 <th scope="col" class="px-4 py-3 min-w-[6rem]">Author</th>
                 <th scope="col" class="px-4 py-3 min-w-[6rem]">Custodian</th>
+                <th scope="col" class="px-4 py-3"><span>edit</span></th>
               </tr>
             </thead>
             <tbody data-accordion="table-column">
               <% @tocs.each do |toc| %>
+                <% toc_str = JSON.parse(toc) %>
                 <% identifier = toc.id.downcase %>
                 <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition" id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>" aria-expanded="false" aria-controls="table-column-body-<%= identifier %>">
                   <td class="p-3 w-4">
@@ -26,10 +28,20 @@
                     </svg>
                   </td>
                   <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= toc.date %></td>
-                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= toc.type %></td>
-                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= toc.title %></td>
+                  <td class="px-4 py-3 text-gray-900 max-w-[25rem] dark:text-white"><%= toc.type %></td>
+                  <td class="px-4 py-3 text-gray-900 max-w-[25rem] dark:text-white"><%= toc.title %></td>
                   <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= toc.author %></td>
                   <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= toc.custodian %></td>
+                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white">
+                    <button id="toggle-update-button-<%= identifier %>" type="button" data-action="" data-showhide-target="" 
+                        class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-primary-700 rounded-lg hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                        <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                      </svg>
+                      Edit
+                    </button>
+                  </td>
                 </tr>
                 <tr class="hidden flex-1 overflow-x-auto w-full" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
                   <td scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
@@ -118,6 +130,19 @@
                           <% end %>
                         </div>
                       <% end %>
+                       <div class="px-6 py-6 lg:px-8">
+                          <h3 class="mt-6 pb-4 text-xl font-medium text-gray-900 border-b-2 border-b-gray-600 dark:text-white">
+                            <%= form_with(url: "/patients/:patient_id/transition_of_cares" , method: :put, class: 'space-y-6', data: {turbo: "false"}) do |form| %>
+                            <%= form.label :new_toc_resource, toc_str[0...10] %>
+                              <%= form.hidden_field :new_toc_resource, value: '{}' %>
+                              <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+                                <%= form.submit 'UPDATE TOC',
+                                  class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                %>
+                              </div>
+                            <% end %>
+                          </h3>
+                        </div>
                     <% end %>
 
                   </td>
@@ -126,9 +151,11 @@
             </tbody>
           </table>
           <br />
+          <div class="ml-80">
             <% if @pagy %>
               <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
             <% end %>
+            </div>
             <br />
         <% end %>
       </div>
