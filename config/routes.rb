@@ -24,6 +24,7 @@ Rails.application.routes.draw do
                                                       as: 'patient_questionnaire_responses'
   get 'patients/:patient_id/nutrition_orders', to: 'nutrition_orders#index', as: 'patient_nutrition_orders'
   get 'patients/:patient_id/service_requests', to: 'service_requests#index', as: 'patient_service_requests'
+  get 'patients/:patient_id/allergy_intolerances', to: 'allergy_intolerances#index', as: 'patient_allergy_intolerances'
   get 'patients/:patient_id/observations', to: 'observations#index', as: 'patient_observations'
   get 'patients/:patient_id/observations/:id', to: 'observations#show', as: 'patient_observation'
   get 'patients/:patient_id/conditions', to: 'conditions#index', as: 'patient_conditions'
