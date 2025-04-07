@@ -4,7 +4,7 @@ class Composition < Resource
   include ActiveModel::Serializers::JSON
 
   attr_reader :id, :identifier, :status, :type, :category, :date, :author, :title, :custodian,
-              :subject, :section, :json_resource, :json_bundle
+              :subject, :section, :json_resource, :json_bundle, :list_selected
 
   #-----------------------------------------------------------------------------
   # TODO: Get api keys to read code values from https://cts.nlm.nih.gov/fhir/login.html
@@ -24,6 +24,7 @@ class Composition < Resource
     fill_sections(fhir_composition.section, fhir_bundle)
     @json_resource = fhir_composition.to_json
     @json_bundle = fhir_bundle.to_json
+    @list_selected = []
   end
 
   private
@@ -105,6 +106,15 @@ class Composition < Resource
       build_allergy_intolerance_hash(resource)
     when 'Condition'
       build_condition_hash(resource)
+    when 'MedicationRequest'
+      build_medication_requests_hash(resource)
+    when 'List'
+      build_medication_list_hash(resource)
+    when 'MedicationStatement'
+      build_medication_statement_hash(resource)
+    when 'MedicationAdministration'
+      # we don't actually build these objects, but keep to catch error
+      build_medication_administration_hash(resource)
     else
       Rails.logger.debug { "error unexpected type: #{resource_type}" }
       {}
@@ -112,6 +122,34 @@ class Composition < Resource
   rescue StandardError => e
     Rails.logger.debug { "oops #{e.message}" }
     {}
+  end
+
+  def build_medication_list_hash(resource)
+    {
+      resource_type: 'MedicationList',
+      resource: MedicationList.new(resource, @fhir_bundle)
+    }
+  end
+
+  def build_medication_requests_hash(resource)
+    {
+      resource_type: 'MedicationRequest',
+      resource: {}
+    }
+  end
+
+  def build_medication_statement_hash(resource)
+    {
+      resource_type: 'MedicationStatement',
+      resource: MedicationStatement.new(resource, @fhir_bundle)
+    }
+  end
+
+  def build_medication_administration_hash(resource)
+    {
+      resource_type: 'MedicationAdministration',
+      resource: {}
+    }
   end
 
   def build_service_request_hash(resource)
@@ -187,14 +225,14 @@ class Composition < Resource
 
   def build_allergy_intolerance_hash(resource)
     {
-      resource_type: resource.resourceType,
+      resource_type: 'AllergyIntolerance',
       resource: AllergyIntolerance.new(resource, @fhir_bundle)
     }
   end
 
   def build_condition_hash(resource)
     {
-      resource_type: resource.resourceType,
+      resource_type: 'Condition',
       resource: Condition.new(resource, @fhir_bundle)
     }
   end

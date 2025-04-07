@@ -1,0 +1,46 @@
+<div id="<%= toc.id.to_s %>" tabindex="-1" aria-hidden="true" class="fixed top-0  z-50 hidden p-4 md:inset-0 ">
+  <div data-controller="showhide">
+    <% if !toc.section.present? %>
+      <h1 class="text-center">No TOCs</h1>
+    <% else %>
+     <!-- Modal content -->
+    <div class="fixed top-4 right-4 left-4 bottom-4 height-3/4 overflow-auto bg-white rounded-lg shadow dark:bg-gray-700">
+      <button type="button"
+        class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+        data-modal-hide="<%= toc.id.to_s %>">
+        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+        </svg>
+        <span class="sr-only">Close modal</span>
+      </button>
+
+      <div class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800" >Updating this resource type in the TOC: </div>
+      <div class="p-4 w-1/4">
+        <label for="resource-type" class="sr-only">Filter By Resource</label>
+        <select id="resource-type" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+          data-action="change->showhide#toggleTOCSection" data-showhide-target="resourceType"
+        >
+          <option>Conditions</option>
+          <option>Allergy Intolerances</option>
+          <option>Medication Lists</option>
+          <option>Test Results</option>
+        </select>
+      </div>
+
+      <div data-showhide-target="condition">
+        <%= render "update_toc_condition_modal",  toc: toc, toc_json: toc.json_resource, list_selected: toc.list_selected, json_bundle: toc.json_bundle %>
+      </div>
+      <div data-showhide-target="medicationList" hidden>
+        <%= render "update_toc_medlist_modal",  toc: toc, toc_json: toc.json_resource, list_selected: toc.list_selected, json_bundle: toc.json_bundle %>
+      </div> 
+      <div data-showhide-target="allergyIntolerance" hidden>
+        <%= render "update_toc_allergy_modal",  toc: toc, toc_json: toc.json_resource, list_selected: toc.list_selected, json_bundle: toc.json_bundle %>
+      </div> 
+      <div data-showhide-target="testResults" hidden>
+        <%= render "update_toc_testresults_modal",  toc: toc, toc_json: toc.json_resource, list_selected: toc.list_selected, json_bundle: toc.json_bundle %>
+      </div> 
+    <% end %>
+    </div>
+  </div> 
+</div>

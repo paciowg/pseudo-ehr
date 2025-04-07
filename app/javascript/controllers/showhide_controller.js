@@ -8,6 +8,8 @@ export default class extends Controller {
     "adiStatus", "currentAdis", "supersededAdis",
     "obsType", "singleObs", "collectionObs", "conditionType",
     "encounterDiagnosis", "problemListItem", "other",
+    "condition", "medicationList", "resourceType", "allergyIntolerance",
+    "testResults",
     "tocConditionButton", "tocConditionContent", "tocServiceRequestButton",
      "tocServiceRequestContent", "tocAllergyButton", "tocAllergyContent",
      "tocCarePlanContent", "tocCarePlanButton", "tocObservationButton", "tocObservationContent"
@@ -68,6 +70,62 @@ export default class extends Controller {
         el.hidden = true;
       })
       this.collectionObsTargets.forEach(el => {
+        el.hidden = false;
+      })
+    }
+  }
+
+  toggleTOCSection() {
+    if (this.resourceTypeTarget.value === "Conditions") {
+      this.conditionTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.medicationListTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.allergyIntoleranceTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.testResultsTargets.forEach(el => {
+        el.hidden = true;
+      })
+    } else if (this.resourceTypeTarget.value === "Medication Lists"){
+      this.conditionTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.medicationListTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.allergyIntoleranceTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.testResultsTargets.forEach(el => {
+        el.hidden = true;
+      })
+    } else if (this.resourceTypeTarget.value === "Allergy Intolerances"){
+      this.conditionTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.medicationListTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.allergyIntoleranceTargets.forEach(el => {
+        el.hidden = false;
+      })
+      this.testResultsTargets.forEach(el => {
+        el.hidden = true;
+      })
+    } else if (this.resourceTypeTarget.value === "Test Results"){
+      this.conditionTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.medicationListTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.allergyIntoleranceTargets.forEach(el => {
+        el.hidden = true;
+      })
+      this.testResultsTargets.forEach(el => {
         el.hidden = false;
       })
     }
