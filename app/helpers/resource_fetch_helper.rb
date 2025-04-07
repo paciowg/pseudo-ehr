@@ -6,7 +6,8 @@ module ResourceFetchHelper
   NON_PATIENT_RELATED_RESOURCES = %i[Organization Location PractitionerRole].freeze
   PATIENT_RELATED_RESOURCES = %i[
     ServiceRequest NutritionOrder Observation CareTeam Goal QuestionnaireResponse Condition
-    List Composition
+    List Composition MedicationRequest Procedure DiagnosticReport DocumentReference
+    AllergyIntolerance
   ].freeze
 
   def current_server
