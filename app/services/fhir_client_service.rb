@@ -23,7 +23,7 @@ class FhirClientService
     return @client unless @fhir_server.authenticated_access
 
     authenticate_fhir_server(code, redirect_url, code_verifier) if code.present?
-    refresh_access_token if access_token_expired?
+    refresh_access_token if access_token_expired? && !new_session
     @client.set_bearer_token(@fhir_server.access_token) if @fhir_server.access_token.present?
     @client
   rescue StandardError => e

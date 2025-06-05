@@ -66,6 +66,13 @@ class SessionsController < ApplicationController
     reset_session
     Rails.cache.clear
     @client = nil
+    if @current_server.authenticated_access?
+      @current_server.update!(
+        access_token: nil,
+        refresh_token: nil,
+        access_token_expires_at: nil
+      )
+    end
     @current_server = nil
     flash[:success] = 'Successfully disconnected client from server'
     redirect_to root_path
