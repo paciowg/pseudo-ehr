@@ -21,9 +21,28 @@ Rails.application.configure do
   # Run rails dev:cache to toggle caching.
   config.action_controller.perform_caching = true
   config.action_controller.enable_fragment_cache_logging = true
-  config.cache_store = :mem_cache_store
-  if Rails.root.join('tmp/caching-dev.txt').exist?
 
+  # Configure memcached for development with optimized settings
+  config.cache_store = :mem_cache_store,
+                       '127.0.0.1:11211',
+                       {
+                         namespace: 'pseudo_ehr_dev',
+                         expires_in: 1.hour,
+                         compress: true,
+                         compress_threshold: 1.kilobyte,
+                         pool_size: 5,
+                         failover: true,
+                         socket_timeout: 0.5,           # Reduced from 1.5 for faster response
+                         socket_failure_delay: 0.1,     # Reduced from 0.2 for faster failover
+                         down_retry_delay: 30,          # Reduced from 60 for faster recovery
+                         error_when_client_sharing: false,
+                         value_max_bytes: 2.megabytes,  # Increased max value size
+                         cache_nils: true,              # Cache nil values to avoid repeated lookups
+                         retry_count: 2,                # Retry failed operations
+                         keepalive: true                # Keep connections alive
+                       }
+
+  if Rails.root.join('tmp/caching-dev.txt').exist?
     config.public_file_server.headers = {
       'Cache-Control' => "public, max-age=#{2.days.to_i}"
     }
