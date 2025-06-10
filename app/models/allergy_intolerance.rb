@@ -59,8 +59,8 @@ class AllergyIntolerance < Resource
   def retrieve_reactions
     @fhir_resource.reaction.map do |fhir_reaction|
       {
-        substance: coding_string(fhir_reaction.substance.coding),
-        manifestation: fhir_reaction.manifestation.map { |m| coding_string(m.coding) }.join(', ')
+        substance: coding_string(fhir_reaction&.substance&.coding),
+        manifestation: fhir_reaction&.manifestation&.map { |m| coding_string(m.coding) }&.join(', ')
       }
     end
   end

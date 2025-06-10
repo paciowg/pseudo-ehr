@@ -1,0 +1,153 @@
+<div class=" gap-4 p-3 columns-2" > 
+<table class="w-[45vw] p-3 overflow-scroll break-after-column dropzone w-full h-300" id="dropzone1" ondrop="dragDrop(event)" ondragover="allowDrop(event)">
+    <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+    All Test Results
+    </caption>
+    <thead class="text-md text-white uppercase bg-gray-900 w-xl">
+    <tr class="h-24">
+        <th scope="col" class="text-wrap py-3">
+            Date
+        </th>
+        <th scope="col" class="text-wrap py-3">
+            Observation
+        </th>
+        <th scope="col" class="text-wrap py-3">
+            Performer
+        </th>
+        <th scope="col" class="text-wrap py-3">
+            Organization
+        </th>
+    </tr>
+    </thead>
+    <tbody class="dropzone w-full h-full" id="dropzone1" ondrop="dragDrop(event)" ondragover="allowDrop(event)">
+    <% json_bundle = JSON.parse(json_bundle)  %>
+    <% json_bundle.each do |obs| %>
+        <!-- This parses out the allergyIntolerances that exist in right list -->
+        <% if toc.section.present? %>
+            <% toc.section.each do |section| %>
+                <% next if section['title'].blank? || section['title'] == '--' %>
+                <% section_group = section['objects'].group_by {|obj| obj[:resource_type]}%>
+                <% section_group.each do |type, objects| %>
+                <% if type == 'Observation' %>
+                    <% @allergies = objects.map {|obj| obj[:resource]} %>
+                <% end %>
+                <% end %>
+            <% end %>
+        <% end %>
+        <% if obs["resourceType"] == "Observation" && (obs["meta"]["profile"].to_s.include?("http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab") || obs["meta"]["profile"].to_s.include?("http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab")) && !@allergies.any? {|h| h.id == obs['id']} %>
+    <tr class="h-24 bg-indigo-50 border-b border-gray-300 hover:bg-stone-50" id="draggable1-<%=obs['id'].to_s%>" draggable="true" ondragstart="dragStart(event)">
+        <td class="px-6 py-4 font-semibold text-wrap"><%= obs["effectiveDateTime"] %></td>
+        <td class="px-6 py-4 font-semibold text-wrap"><%= obs["code"]["coding"][0]["display"] %></td>
+        <td class="px-6 py-4 font-semibold text-wrap"><%= obs["performer"][0]["reference"] %></td>
+        <td class="px-6 py-4 font-semibold text-wrap"><%= obs["organization"] %></td>
+    </tr>
+    <% end %>
+    <% end %>
+    </tbody>
+</table>
+<table class="w-[45vw] p-3 overflow-y-auto" class="dropzone" id="dropzone2" ondrop="dragDrop(event)" ondragover="allowDrop(event)">
+    <% if toc.section.present? %>
+    <% toc.section.each do |section| %>
+        <% next if section['title'].blank? || section['title'] == '--' %>
+        <% if section['code'].to_s.include?("19146-0") %>
+            <caption class="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+                <%= "Test Results in selected TOC: " + toc.id.to_s %>
+            </caption>
+            <thead class="text-md text-white uppercase bg-gray-900">
+                <tr class="h-24">
+                    <th scope="col" class="text-wrap py-3">
+                        Date
+                    </th>
+                    <th scope="col" class="text-wrap py-3">
+                        Observation
+                    </th>
+                    <th scope="col" class="text-wrap py-3">
+                        Performer
+                    </th>
+                    <th scope="col" class="text-wrap py-3">
+                        Organization
+                    </th>
+                    </tr>
+                </thead>
+        <% end %>
+        <% section_group = section['objects'].group_by {|obj| obj[:resource_type]}%>
+        <% section_group.each do |type, objects| %>
+        <% Rails.logger.debug(type) %>
+        <% if type == 'Observation' %>
+            <% @observations = objects.map {|obj| obj[:resource]} %>
+                <tbody class="dropzone" id="dropzone2" ondrop="dragDrop(event)" ondragover="allowDrop(event)">
+                    <% @observations.each do |obs| %>
+                        <% if obs.resourceType == "Observation" && (obs.meta.profile.to_s.include?("http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab") || obs["meta"]["profile"].to_s.include?("http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab")) && !@observations.any? {|h| h.id == obs['id']} %>
+                            <tr class="h-24 bg-indigo-100 border-b border-gray-300 hover:bg-indigo-50" id='draggable2-<%=obs.id%>' draggable="true" ondragstart="dragStart(event)">
+                            <td class="px-6 py-4 font-semibold text-wrap"><%= obs.effective %></td>
+                            <td class="px-6 py-4"><%= obs.code %></td>
+                            <td class="px-6 py-4"><%= obs.performer %></td>
+                            <td class="px-6 py-4"><%= obs.organization %></td>
+                            </tr>
+                        <% end %>
+                    <% end %>
+                </tbody>
+        <% end %>
+        <% end %>
+    <% end %>
+    <% end %> 
+</table>  
+</div>
+
+<script> 
+// Note: This sets values on initial load.
+if (document.getElementById("toc_selected_resource_ids")?.value == '') {
+    document.getElementById("toc_selected_resource_ids").value = getChildrenList();
+}
+</script>
+<div class="px-6 py-6 lg:px-8"  >
+<h3 class="mt-6 pb-4 text-xl font-medium text-gray-900 border-b-2 border-b-gray-600 dark:text-white">
+    <%= form_with(url: "/patients/:patient_id/transition_of_cares" , method: :put, class: 'space-y-6', data: {turbo: "false"}) do |form| %>
+    <%= form.hidden_field :original_toc_resource, value: toc_json.to_s %>
+    <%= form.hidden_field :toc_selected_resource_ids, value: '' %>
+    <%= form.hidden_field :resource_type, value: :resource_type %>
+    <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+        <%= form.submit 'UPDATE the TOC', 
+        class: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800", 
+        data: {modal_hide: toc.id.to_s}
+        %>
+    </div>
+    <% end %>
+</h3>
+</div>
+
+<script>
+
+  // This gets the resource ids from the table.
+  function getChildrenList() {
+    let parent = document.getElementById("dropzone2");
+    let childrenList = parent.children;
+    let selectedResourceIds = []
+    for (var i = 0; i < childrenList.length; i ++){
+      selectedResourceIds.push(childrenList[i].id.replace('draggable1-', 'AllergyIntolerance/').replace('draggable2-', 'AllergyIntolerance/'))
+    }
+    return selectedResourceIds;
+  }
+
+  // Drag and drop functionality of the table
+  function allowDrop(ev) {
+    ev.preventDefault();
+  }
+
+  // Drag and drop functionality of the table
+  function dragStart(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+  }
+
+  // Drag and drop functionality of the table
+  function dragDrop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    ev.currentTarget.appendChild(document.getElementById(data));
+
+    // For every change in the table, get the updated list of id values
+    // in order to send it to the toc controller for updating
+    document.getElementById("toc_selected_resource_ids").value = getChildrenList();
+  }
+
+</script>
