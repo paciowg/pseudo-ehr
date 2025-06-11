@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '3.1.2'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem 'rails', '~> 7.1.3'
+gem 'rails', '~> 7.2.2'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
@@ -13,7 +13,7 @@ gem 'sprockets-rails'
 gem 'pg', '~> 1.5'
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem 'puma', '~> 6.4'
+gem 'puma', '~> 6.6'
 
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem 'importmap-rails'
@@ -101,8 +101,8 @@ group :test do
   gem 'webmock'
 end
 
-gem 'pagy', '~> 9.1'
+gem 'pagy', '~> 9.3'
 
-gem 'bundler-audit', '~> 0.9.1'
+gem 'bundler-audit', '~> 0.9.2'
 
-gem 'brakeman', '~> 6.2'
+gem 'brakeman', '~> 7.0'
