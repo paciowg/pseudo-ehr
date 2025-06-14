@@ -18,7 +18,7 @@ class TransitionOfCaresController < ApplicationController
       fhir_compositions = filter_doc_refs_or_compositions_by_category(cached_resources_type('Composition'))
 
       if fhir_compositions.blank?
-        entries = fetch_compositions_by_patient(patient_id)
+        entries = fetch_toc_compositions_by_patient(patient_id)
         fhir_compositions = entries.select { |entry| entry.resourceType == 'Composition' }
       end
 

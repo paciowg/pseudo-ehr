@@ -133,6 +133,10 @@ class AdvanceDirectivesController < ApplicationController
     pdf_data = { pdf: nil, pdf_binary_id: nil }
     pdf_content = contents.find { |content| check_content_attachment_resource(content) == 'pdf' }
     if pdf_content
+      data = pdf_content.attachment&.data
+      pdf_data[:pdf] = data
+      return pdf_data if data.present?
+
       ref = pdf_content.attachment&.url
       binary_id = extract_id_from_ref(ref)
       pdf_data = retrieve_bundle_from_binary(binary_id, 'pdf')

@@ -134,6 +134,8 @@ module ModelHelper
   #-----------------------------------------------------------------------------
 
   def parse_provider_name(provider_ref, bundle_entries)
+    display = provider_ref.try(:display)
+    return display if display.present?
     return '--' unless provider_ref.try(:reference)
 
     resource_type, resource_id = provider_ref.reference.split('/')

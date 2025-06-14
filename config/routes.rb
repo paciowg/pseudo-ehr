@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   get 'welcome/index'
   get 'pdf/:binary_id', to: 'pdfs#show', as: :pdf
+  get 'content/:id', to: 'contents#show', as: :content
 
   get '/login', to: 'sessions#login'
   post '/launch', to: 'sessions#launch_server'

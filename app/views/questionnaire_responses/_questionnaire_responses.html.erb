@@ -1,78 +1,181 @@
-  <%= turbo_frame_tag "questionnaire_responses" do %>
-    <div class="mt-8 flow-root w-11/12">
-      <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <% if @questionnaire_responses.empty? %>
-            <h1 class="text-center">No Questionnaire Responses</h1>
-          <% else %>
-            <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
-              <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
-                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Date</th>
-                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Questionnaire</th>
-                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Status</th>
-                </tr>
-              </thead>
-              <tbody data-accordion="table-column">
-                <% @questionnaire_responses.each do |response| %>
-                  <% identifier = response.id.downcase %>
-                  <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition" id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>" aria-expanded="false" aria-controls="table-column-body-<%= identifier %>">
-                    <td class="p-3 w-4">
-                      <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                      </svg>
-                    </td>
-                    <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= response.formatted_date %></td>
-                    <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= response.questionnaire || '--'  %></td>
-                    <td class="px-4 py-3 whitespace-nowrap">
-                      <%color = response.status&.downcase == 'completed' ? 'green' : 'gray' %>
-                      <div class="w-fit bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-                        <%= response.status %>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="hidden flex-1 overflow-x-auto w-full" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
-                    <td scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
-                    <td class="p-4 border-b" colspan="3">
-                      <div class="items-center mb-2">
-                        <p class="flex items-center py-2"><b class="w-32">Description:</b><span class="flex-1"><%= response.description %></span></p>
-                      </div>
-                      <% if response.author && response.author != '--' %>
-                        <div class="items-center mb-2">
-                          <p class="flex items-center py-2"><b class="w-32">Author:</b><span class="flex-1"><%= response.author %></span></p>
-                        </div>
+<%= turbo_frame_tag "questionnaire_responses" do %>
+  <div class="mt-8 flow-root w-full">
+    <div class="overflow-x-auto">
+      <div class="inline-block min-w-full py-2 align-middle">
+        <% if @questionnaire_responses.empty? %>
+          <div class="text-center p-8 bg-gray-50 rounded-lg">
+            <h1 class="text-xl font-semibold text-gray-700">No Questionnaire Responses Found</h1>
+            <p class="mt-2 text-gray-500">There are no questionnaire responses available for this patient.</p>
+          </div>
+        <% else %>
+          <table class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-500">
+            <thead class="text-xs uppercase bg-gray-50">
+              <tr>
+                <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Date</th>
+                <th scope="col" class="px-4 py-3 min-w-[12rem]">Questionnaire</th>
+                <th scope="col" class="px-4 py-3 hidden md:table-cell">Author</th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Status</th>
+              </tr>
+            </thead>
+            <tbody data-accordion="table-column" class="divide-y divide-gray-200">
+              <% @questionnaire_responses.each do |response| %>
+                <% identifier = response.id.downcase %>
+                <tr class="bg-white hover:bg-gray-50 cursor-pointer transition"
+                  id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>"
+                  aria-expanded="false" aria-controls="table-column-body-<%= identifier %>">
+                  <td class="p-3 w-4">
+                    <svg data-accordion-icon class="w-5 h-5 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </td>
+                  <td class="px-4 py-3 font-medium text-gray-900"><%= response.formatted_date %></td>
+                  <td class="px-4 py-3 font-medium text-gray-900">
+                    <div class="flex flex-col">
+                      <span><%= response.questionnaire_title || response.name %></span>
+                      <% if response.questionnaire && response.questionnaire != response.questionnaire_title %>
+                        <span class="text-xs text-gray-500 truncate max-w-xs" title="<%= response.questionnaire %>">
+                          <%= response.questionnaire.truncate(50) %>
+                        </span>
                       <% end %>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 hidden md:table-cell"><%= response.author || '--' %></td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <%
+                      status_color = case response.status&.downcase
+                        when 'completed' then 'green'
+                        when 'in-progress' then 'blue'
+                        when 'stopped' then 'yellow'
+                        when 'entered-in-error' then 'red'
+                        when 'amended' then 'purple'
+                        else 'gray'
+                      end
+                    %>
+                    <div class="w-fit bg-<%= status_color %>-100 text-<%= status_color %>-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      <%= response.status %>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="hidden" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
+                  <td class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
+                  <td class="p-4" colspan="4">
+                    <div class="bg-white rounded-lg shadow-sm p-4">
+                      <!-- Header Information -->
+                      <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2"><%= response.name %></h3>
+                        <p class="text-gray-600 mb-4"><%= response.description %></p>
 
-                      <% if response.items.present? %>
-                        <div class="items-center mt-2">
-                          <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                          <% if response.author && response.author != '--' %>
+                            <div class="flex flex-col">
+                              <span class="text-xs text-gray-500 uppercase">Author</span>
+                              <span class="font-medium text-gray-900"><%= response.author %></span>
+                            </div>
+                          <% end %>
+
+                          <% if response.formatted_date %>
+                            <div class="flex flex-col">
+                              <span class="text-xs text-gray-500 uppercase">Date</span>
+                              <span class="font-medium text-gray-900"><%= response.formatted_date %></span>
+                            </div>
+                          <% end %>
+
+                          <% if response.subject && response.subject[:display] %>
+                            <div class="flex flex-col">
+                              <span class="text-xs text-gray-500 uppercase">Subject</span>
+                              <span class="font-medium text-gray-900"><%= response.subject[:display] %></span>
+                            </div>
+                          <% end %>
+
+                          <% if response.encounter && response.encounter[:display] %>
+                            <div class="flex flex-col">
+                              <span class="text-xs text-gray-500 uppercase">Encounter</span>
+                              <span class="font-medium text-gray-900"><%= response.encounter[:display] %></span>
+                            </div>
+                          <% end %>
+
+                          <% if response.source && response.source[:display] %>
+                            <div class="flex flex-col">
+                              <span class="text-xs text-gray-500 uppercase">Source</span>
+                              <span class="font-medium text-gray-900"><%= response.source[:display] %></span>
+                            </div>
+                          <% end %>
+                        </div>
+                      </div>
+
+                      <!-- Sections and Questions -->
+                      <% if response.sections.present? %>
+                        <!-- Display organized by sections -->
+                        <div class="space-y-6">
+                          <% response.sections.each do |section| %>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                              <h4 class="text-md font-semibold text-gray-800 mb-3"><%= section[:text] %></h4>
+
+                              <% if section[:children].present? %>
+                                <div class="space-y-4 pl-4">
+                                  <% section[:children].each do |item| %>
+                                    <% if item[:type] == 'group' %>
+                                      <!-- Nested group -->
+                                      <div class="bg-white p-3 rounded border border-gray-200">
+                                        <h5 class="text-sm font-medium text-gray-700 mb-2"><%= item[:text] %></h5>
+
+                                        <% if item[:children].present? %>
+                                          <div class="space-y-3 pl-3 mt-2">
+                                            <% item[:children].select { |child| child[:type] == 'question' }.each do |question| %>
+                                              <%= render partial: 'questionnaire_responses/question_item', locals: { question: question } %>
+                                            <% end %>
+                                          </div>
+                                        <% end %>
+                                      </div>
+                                    <% elsif item[:type] == 'question' %>
+                                      <!-- Direct question under section -->
+                                      <%= render partial: 'questionnaire_responses/question_item', locals: { question: item } %>
+                                    <% end %>
+                                  <% end %>
+                                </div>
+                              <% end %>
+                            </div>
+                          <% end %>
+                        </div>
+                      <% elsif response.flattened_questions.present? %>
+                        <!-- Display flat list of questions -->
+                        <div class="space-y-4">
+                          <% response.flattened_questions.each do |question| %>
+                            <%= render partial: 'questionnaire_responses/question_item', locals: { question: question } %>
+                          <% end %>
+                        </div>
+                      <% else %>
+                        <!-- Legacy format for backward compatibility -->
+                        <div class="overflow-x-auto">
+                          <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-gray-50">
                               <tr>
-                                <th scope="col" class="px-4 py-3 min-w-[6rem]">
-                                  Link ID
-                                </th>
-                                <th scope="col" class="px-4 py-3 min-w-[6rem]">
-                                  Description
-                                </th>
-                                <th scope="col" class="px-4 py-3 min-w-[6rem]">
-                                  Answer
-                                </th>
+                                <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Link ID</th>
+                                <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Question</th>
+                                <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Answer</th>
                               </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="bg-white divide-y divide-gray-200">
                               <% response.items.each do |item| %>
-                                <tr class="bg-gray-100 border-b border-gray-300 hover:bg-gray-200">
-                                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= item[:link_id] %></td>
-                                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= item[:text] || '--' %></td>
-                                  <td class=" text-wrap:wrap">
-                                    <% item[:answers].each do |answer| %>
-                                      <% if answer[:code].present? %>
-                                      <P><%= link_to answer[:code] || answer[:system] || '#', answer[:system], class: "font-bold text-blue-500" %>: <%= answer[:display] %></p>
-                                      <% end %>
-                                      <% if !item[:answers].any?{|pair| pair[:code] != ''} %>
-                                        <P><%= answer[:display] %></p>
-                                      <% end %>
+                                <tr class="hover:bg-gray-50">
+                                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900"><%= item[:link_id] %></td>
+                                  <td class="px-4 py-3 text-sm text-gray-500"><%= item[:text] || '--' %></td>
+                                  <td class="px-4 py-3 text-sm text-gray-500">
+                                    <% if item[:answers].present? %>
+                                      <div class="space-y-1">
+                                        <% item[:answers].each do |answer| %>
+                                          <div>
+                                            <% if answer[:value_type] == 'coding' && answer[:code].present? %>
+                                              <span class="font-medium"><%= answer[:code] %></span>: <%= answer[:display] %>
+                                            <% else %>
+                                              <%= answer[:display] %>
+                                            <% end %>
+                                          </div>
+                                        <% end %>
+                                      </div>
+                                    <% else %>
+                                      <span class="text-gray-400">No answer provided</span>
                                     <% end %>
                                   </td>
                                 </tr>
@@ -82,18 +185,234 @@
                         </div>
                       <% end %>
 
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-            <br />
+                      <!-- References Section -->
+                      <% if response.based_on.present? || response.part_of.present? %>
+                        <div class="mt-6 pt-4 border-t border-gray-200">
+                          <h4 class="text-md font-semibold text-gray-800 mb-3">Related Resources</h4>
+
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <% if response.based_on.present? %>
+                              <div>
+                                <h5 class="text-sm font-medium text-gray-700 mb-2">Based On</h5>
+                                <ul class="space-y-2">
+                                  <% response.based_on.each do |reference| %>
+                                    <li class="bg-gray-50 p-2 rounded">
+                                      <div class="flex items-center justify-between">
+                                        <div>
+                                          <span class="text-xs text-gray-500"><%= reference[:type] %></span>
+                                          <p class="font-medium text-gray-900"><%= reference[:display] %></p>
+                                        </div>
+                                        <% case reference[:type] %>
+                                        <% when 'Condition' %>
+                                          <% if reference[:resource].present? %>
+                                            <button data-modal-target="condition-<%= reference[:resource].id %>" data-modal-toggle="condition-<%= reference[:resource].id %>"
+                                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Condition
+                                            </button>
+                                            <%= render partial: 'shared/condition_modal', locals: { condition: reference[:resource] } %>
+                                          <% else %>
+                                            <a href="<%= patient_conditions_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Condition
+                                            </a>
+                                          <% end %>
+                                        <% when 'Observation' %>
+                                          <% if reference[:resource].present? %>
+                                            <button data-modal-target="observation-<%= reference[:resource].id %>" data-modal-toggle="observation-<%= reference[:resource].id %>"
+                                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Observation
+                                            </button>
+                                            <%= render partial: 'shared/observation_modal', locals: { observation: reference[:resource] } %>
+                                          <% else %>
+                                            <a href="<%= patient_observations_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Observation
+                                            </a>
+                                          <% end %>
+                                        <% when 'DiagnosticReport' %>
+                                          <% if reference[:resource].present? %>
+                                            <button data-modal-target="diagnostic-report-<%= reference[:resource].id %>" data-modal-toggle="diagnostic-report-<%= reference[:resource].id %>"
+                                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Diagnostic Report
+                                            </button>
+                                            <%= render partial: 'shared/diagnostic_report_modal', locals: { diagnostic_report: reference[:resource] } %>
+                                          <% else %>
+                                            <a href="<%= patient_diagnostic_reports_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Diagnostic Report
+                                            </a>
+                                          <% end %>
+                                        <% when 'Procedure' %>
+                                          <% if reference[:resource].present? %>
+                                            <button data-modal-target="procedure-<%= reference[:resource].id %>" data-modal-toggle="procedure-<%= reference[:resource].id %>"
+                                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Procedure
+                                            </button>
+                                            <%= render partial: 'shared/procedure_modal', locals: { procedure: reference[:resource] } %>
+                                          <% else %>
+                                            <a href="<%= patient_procedures_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Procedure
+                                            </a>
+                                          <% end %>
+                                        <% when 'CarePlan' %>
+                                          <% if reference[:resource].present? %>
+                                            <button data-modal-target="care-plan-<%= reference[:resource].id %>" data-modal-toggle="care-plan-<%= reference[:resource].id %>"
+                                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Care Plan
+                                            </button>
+                                            <%= render partial: 'shared/care_plan_modal', locals: { care_plan: reference[:resource] } %>
+                                          <% end %>
+                                        <% when 'ServiceRequest' %>
+                                          <% if reference[:resource].present? %>
+                                            <button data-modal-target="service-request-<%= reference[:resource].id %>" data-modal-toggle="service-request-<%= reference[:resource].id %>"
+                                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Service Request
+                                            </button>
+                                            <%= render partial: 'shared/service_request_modal', locals: { service_request: reference[:resource] } %>
+                                          <% else %>
+                                            <a href="<%= patient_service_requests_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Service Request
+                                            </a>
+                                          <% end %>
+                                        <% when 'DocumentReference' %>
+                                          <a href="<%= patient_document_references_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                            View Document
+                                          </a>
+                                        <% end %>
+                                      </div>
+                                    </li>
+                                  <% end %>
+                                </ul>
+                              </div>
+                            <% end %>
+
+                            <% if response.part_of.present? %>
+                              <div>
+                                <h5 class="text-sm font-medium text-gray-700 mb-2">Part Of</h5>
+                                <ul class="space-y-2">
+                                  <% response.part_of.each do |reference| %>
+                                    <li class="bg-gray-50 p-2 rounded">
+                                      <div class="flex items-center justify-between">
+                                        <div>
+                                          <span class="text-xs text-gray-500"><%= reference[:type] %></span>
+                                          <p class="font-medium text-gray-900"><%= reference[:display] %></p>
+                                        </div>
+                                        <% case reference[:type] %>
+                                        <% when 'Condition' %>
+                                          <% if reference[:resource].present? %>
+                                            <button data-modal-target="condition-<%= reference[:resource].id %>" data-modal-toggle="condition-<%= reference[:resource].id %>"
+                                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Condition
+                                            </button>
+                                            <%= render partial: 'shared/condition_modal', locals: { condition: reference[:resource] } %>
+                                          <% else %>
+                                            <a href="<%= patient_conditions_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Condition
+                                            </a>
+                                          <% end %>
+                                        <% when 'Observation' %>
+                                          <% if reference[:resource].present? %>
+                                            <button data-modal-target="observation-<%= reference[:resource].id %>" data-modal-toggle="observation-<%= reference[:resource].id %>"
+                                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Observation
+                                            </button>
+                                            <%= render partial: 'shared/observation_modal', locals: { observation: reference[:resource] } %>
+                                          <% else %>
+                                            <a href="<%= patient_observations_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Observation
+                                            </a>
+                                          <% end %>
+                                        <% when 'DiagnosticReport' %>
+                                          <% if reference[:resource].present? %>
+                                            <button data-modal-target="diagnostic-report-<%= reference[:resource].id %>" data-modal-toggle="diagnostic-report-<%= reference[:resource].id %>"
+                                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Diagnostic Report
+                                            </button>
+                                            <%= render partial: 'shared/diagnostic_report_modal', locals: { diagnostic_report: reference[:resource] } %>
+                                          <% else %>
+                                            <a href="<%= patient_diagnostic_reports_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Diagnostic Report
+                                            </a>
+                                          <% end %>
+                                        <% when 'Procedure' %>
+                                          <% if reference[:resource].present? %>
+                                            <button data-modal-target="procedure-<%= reference[:resource].id %>" data-modal-toggle="procedure-<%= reference[:resource].id %>"
+                                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Procedure
+                                            </button>
+                                            <%= render partial: 'shared/procedure_modal', locals: { procedure: reference[:resource] } %>
+                                          <% else %>
+                                            <a href="<%= patient_procedures_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Procedure
+                                            </a>
+                                          <% end %>
+                                        <% when 'QuestionnaireResponse' %>
+                                          <% if reference[:resource].present? %>
+                                            <button data-modal-target="questionnaire-response-<%= reference[:resource].id %>" data-modal-toggle="questionnaire-response-<%= reference[:resource].id %>"
+                                                    class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Questionnaire Response
+                                            </button>
+                                            <%# TODO: Create questionnaire_response_modal partial %>
+                                          <% else %>
+                                            <a href="<%= patient_questionnaire_responses_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                              View Questionnaire Response
+                                            </a>
+                                          <% end %>
+                                        <% end %>
+                                      </div>
+                                    </li>
+                                  <% end %>
+                                </ul>
+                              </div>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% end %>
+
+                      <!-- Identifiers Section -->
+                      <% if response.identifier.present? %>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                          <h4 class="text-sm font-medium text-gray-700 mb-2">Identifiers</h4>
+                          <div class="space-y-2">
+                            <% response.identifier.each do |identifier| %>
+                              <div class="flex items-center space-x-2">
+                                <% if identifier[:type].present? %>
+                                  <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded"><%= identifier[:type] %></span>
+                                <% end %>
+                                <span class="text-sm text-gray-600"><%= identifier[:system] %></span>
+                                <span class="font-medium"><%= identifier[:value] %></span>
+                              </div>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% end %>
+
+                      <!-- Actions -->
+                      <div class="flex items-center space-x-3 mt-6">
+                        <button type="button" class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                          </svg>
+                          Edit
+                        </button>
+                        <button type="button" class="py-2 px-3 flex items-center text-sm font-medium text-center text-gray-900 bg-white rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clip-rule="evenodd" />
+                          </svg>
+                          Export
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+          <div class="mt-4">
             <% if @pagy %>
               <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
             <% end %>
-            <br />
-          <% end %>
-        </div>
+          </div>
+        <% end %>
       </div>
     </div>
-  <% end %>
+  </div>
+<% end %>
