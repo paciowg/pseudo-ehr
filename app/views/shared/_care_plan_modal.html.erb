@@ -1,0 +1,252 @@
+<div id="care-plan-<%= care_plan.id %>" tabindex="-1" aria-hidden="true"
+  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+  <div class="relative w-full max-w-2xl max-h-full">
+    <!-- Modal content -->
+    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+      <!-- Modal header -->
+      <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          <%= care_plan.title %>
+        </h3>
+        <button type="button"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+          data-modal-hide="care-plan-<%= care_plan.id %>">
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="p-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="flex flex-col">
+            <span class="text-xs text-gray-500 uppercase">Status</span>
+            <span class="font-medium text-gray-900">
+              <% color = care_plan.status == 'active' ? 'green' : (care_plan.status == 'draft' ? 'blue' : 'gray') %>
+              <span class="bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                <%= care_plan.status %>
+              </span>
+            </span>
+          </div>
+          <% if care_plan.intent != "--" %>
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase">Intent</span>
+              <span class="font-medium text-gray-900"><%= care_plan.intent %></span>
+            </div>
+          <% end %>
+          <% if care_plan.category != "--" %>
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase">Category</span>
+              <span class="font-medium text-gray-900"><%= care_plan.category %></span>
+            </div>
+          <% end %>
+          <% if care_plan.period != "--" %>
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase">Period</span>
+              <span class="font-medium text-gray-900"><%= care_plan.period %></span>
+            </div>
+          <% end %>
+          <% if care_plan.created != "--" %>
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase">Created</span>
+              <span class="font-medium text-gray-900"><%= care_plan.created %></span>
+            </div>
+          <% end %>
+          <% if care_plan.author != "--" %>
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase">Author</span>
+              <span class="font-medium text-gray-900"><%= care_plan.author %></span>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Description Section -->
+        <% if care_plan.description.present? && care_plan.description != "--" %>
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Description</h3>
+            <div class="bg-gray-50 p-4 rounded-md">
+              <p class="text-gray-700"><%= care_plan.description %></p>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Addresses Section -->
+        <% if care_plan.addresses.present? %>
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Addresses</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <% care_plan.addresses.each do |reference| %>
+                <div class="bg-gray-50 p-3 rounded-md">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="text-xs text-gray-500"><%= reference[:type] %></span>
+                      <p class="font-medium text-gray-900"><%= reference[:display] %></p>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Goals Section -->
+        <% if care_plan.goals.present? %>
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Goals</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <% care_plan.goals.each do |goal| %>
+                <div class="bg-gray-50 p-3 rounded-md">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="text-xs text-gray-500">Goal</span>
+                      <p class="font-medium text-gray-900"><%= goal[:display] %></p>
+                    </div>
+                    <% if goal[:resource].present? %>
+                      <button data-modal-target="goal-<%= goal[:resource].id %>" data-modal-toggle="goal-<%= goal[:resource].id %>"
+                              class="text-blue-600 hover:text-blue-800 text-sm">
+                        View Goal
+                      </button>
+                    <% else %>
+                      <a href="<%= patient_goals_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                        View Goals
+                      </a>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Activities Section -->
+        <% if care_plan.activities.present? %>
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Activities</h3>
+            <div class="space-y-4">
+              <% care_plan.activities.each do |activity| %>
+                <div class="bg-gray-50 p-4 rounded-md">
+                  <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-md font-medium text-gray-900"><%= activity[:detail] %></h4>
+                    <% status_color = activity[:status] == 'completed' ? 'green' : (activity[:status] == 'in-progress' ? 'blue' : 'gray') %>
+                    <span class="bg-<%= status_color %>-100 text-<%= status_color %>-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      <%= activity[:status] %>
+                    </span>
+                  </div>
+
+                  <% if activity[:description].present? %>
+                    <p class="text-gray-700 mb-3"><%= activity[:description] %></p>
+                  <% end %>
+
+                  <% if activity[:performer].present? %>
+                    <div class="flex items-center mt-2">
+                      <span class="text-xs text-gray-500 mr-2">Performer:</span>
+                      <span class="text-sm text-gray-700"><%= activity[:performer] %></span>
+                    </div>
+                  <% end %>
+
+                  <% if activity[:location].present? %>
+                    <div class="flex items-center mt-1">
+                      <span class="text-xs text-gray-500 mr-2">Location:</span>
+                      <span class="text-sm text-gray-700"><%= activity[:location] %></span>
+                    </div>
+                  <% end %>
+
+                  <% if activity[:scheduled].present? %>
+                    <div class="flex items-center mt-1">
+                      <span class="text-xs text-gray-500 mr-2">Scheduled:</span>
+                      <span class="text-sm text-gray-700"><%= activity[:scheduled] %></span>
+                    </div>
+                  <% end %>
+
+                  <% if activity[:reference].present? %>
+                    <div class="mt-3 flex justify-end">
+                      <% case activity[:reference][:type] %>
+                      <% when 'ServiceRequest' %>
+                        <% if activity[:reference][:resource].present? %>
+                          <button data-modal-target="service-request-<%= activity[:reference][:resource].id %>" data-modal-toggle="service-request-<%= activity[:reference][:resource].id %>"
+                                  class="text-blue-600 hover:text-blue-800 text-sm">
+                            View Service Request
+                          </button>
+                        <% else %>
+                          <a href="<%= patient_service_requests_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                            View Service Request
+                          </a>
+                        <% end %>
+                      <% when 'Procedure' %>
+                        <% if activity[:reference][:resource].present? %>
+                          <button data-modal-target="procedure-<%= activity[:reference][:resource].id %>" data-modal-toggle="procedure-<%= activity[:reference][:resource].id %>"
+                                  class="text-blue-600 hover:text-blue-800 text-sm">
+                            View Procedure
+                          </button>
+                        <% else %>
+                          <a href="<%= patient_procedures_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                            View Procedure
+                          </a>
+                        <% end %>
+                      <% when 'MedicationRequest' %>
+                        <a href="<%= patient_medication_requests_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                          View Medication Request
+                        </a>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Team Section -->
+        <% if care_plan.team.present? %>
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Care Team</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <% care_plan.team.each do |team| %>
+                <div class="bg-gray-50 p-3 rounded-md">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="text-xs text-gray-500">Care Team</span>
+                      <p class="font-medium text-gray-900"><%= team[:display] %></p>
+                    </div>
+                    <a href="<%= patient_care_teams_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                      View Care Team
+                    </a>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Notes Section -->
+        <% if care_plan.notes.present? %>
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Notes</h3>
+            <div class="space-y-4">
+              <% care_plan.notes.each do |note| %>
+                <div class="bg-gray-50 p-4 rounded-md">
+                  <% if note[:author].present? %>
+                    <div class="flex items-center mb-2">
+                      <span class="font-medium text-gray-900"><%= note[:author] %></span>
+                      <% if note[:time].present? %>
+                        <span class="text-xs text-gray-500 ml-2">(<%= note[:time] %>)</span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                  <p class="text-gray-700"><%= note[:text] %></p>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <!-- Modal footer -->
+      <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+        <button data-modal-hide="care-plan-<%= care_plan.id %>" type="button"
+          class="text-gray-200 bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-600 rounded-lg border border-gray-500 text-sm font-medium px-5 py-2.5 hover:text-white focus:z-10">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

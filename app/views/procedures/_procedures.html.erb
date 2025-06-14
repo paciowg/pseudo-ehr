@@ -1,0 +1,430 @@
+<%= turbo_frame_tag "procedures" do %>
+  <div class="mt-8 flow-root w-full">
+    <div class="overflow-x-auto">
+      <div class="inline-block min-w-full py-2 align-middle">
+        <% if @procedures.empty? %>
+          <div class="text-center p-8 bg-gray-50 rounded-lg">
+            <h1 class="text-xl font-semibold text-gray-700">No Procedure Found!</h1>
+          </div>
+        <% else %>
+          <table class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-500">
+            <thead class="text-xs uppercase bg-gray-50">
+              <tr>
+                <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Procedure Code</th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Date</th>
+                <th scope="col" class="px-4 py-3 hidden md:table-cell">Category</th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Status</th>
+              </tr>
+            </thead>
+            <tbody data-accordion="table-column" class="divide-y divide-gray-200">
+              <% @procedures.each do |procedure| %>
+                <% identifier = procedure.id %>
+                <% status = procedure.status %>
+                <tr class="bg-white hover:bg-gray-50 cursor-pointer transition"
+                  id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>"
+                  aria-expanded="false" aria-controls="table-column-body-<%= identifier %>" data-showhide-target="<%= status %>"
+                >
+                  <td class="p-3 w-4">
+                    <svg data-accordion-icon class="w-5 h-5 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </td>
+                  <td class="px-4 py-3 font-medium text-gray-900"><%= procedure.code %></td>
+                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap"><%= procedure.performed_display %></td>
+                  <td class="px-4 py-3 hidden md:table-cell"><%= procedure.category %></td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <% color = procedure.status == 'completed' ? 'green' : (procedure.status == 'in-progress' ? 'blue' : 'gray') %>
+                    <div class="w-fit bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
+                      <%= procedure.status %>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="hidden" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
+                  <td class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
+                  <td class="p-4" colspan="4">
+                    <div class="bg-white rounded-lg shadow-sm p-4">
+                      <!-- Basic Information -->
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <% if procedure.status_reason != "--" %>
+                          <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 uppercase">Status Reason</span>
+                            <span class="font-medium text-gray-900"><%= procedure.status_reason %></span>
+                          </div>
+                        <% end %>
+                        <% if procedure.category != "--" %>
+                          <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 uppercase">Category</span>
+                            <span class="font-medium text-gray-900"><%= procedure.category %></span>
+                          </div>
+                        <% end %>
+                        <% if procedure.encounter != "--" %>
+                          <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 uppercase">Encounter</span>
+                            <span class="font-medium text-gray-900"><%= procedure.encounter %></span>
+                          </div>
+                        <% end %>
+                        <% if procedure.location != "--" %>
+                          <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 uppercase">Location</span>
+                            <span class="font-medium text-gray-900"><%= procedure.location %></span>
+                          </div>
+                        <% end %>
+                      </div>
+
+                      <!-- Performers Section -->
+                      <% if procedure.performers.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Performers</h3>
+                          <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                              <thead class="bg-gray-50">
+                                <tr>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actor</th>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Function</th>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">On Behalf Of</th>
+                                </tr>
+                              </thead>
+                              <tbody class="bg-white divide-y divide-gray-200">
+                                <% procedure.performers.each do |performer| %>
+                                  <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900"><%= performer[:actor] %></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500"><%= performer[:function] || '--' %></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500"><%= performer[:on_behalf_of] || '--' %></td>
+                                  </tr>
+                                <% end %>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      <% end %>
+
+                      <% if procedure.asserter != "--" %>
+                        <div class="mt-4">
+                          <h3 class="text-sm font-semibold text-gray-800 mb-2">Asserter</h3>
+                          <p class="text-gray-700"><%= procedure.asserter %></p>
+                        </div>
+                      <% end %>
+
+                      <!-- Reasons Section -->
+                      <% if procedure.reason_codes.present? || procedure.reason_references.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Reasons</h3>
+
+                          <% if procedure.reason_codes.present? %>
+                            <div class="mb-4">
+                              <h4 class="text-sm font-medium text-gray-700 mb-2">Reason Codes</h4>
+                              <div class="flex flex-wrap gap-2">
+                                <% procedure.reason_codes.each do |code| %>
+                                  <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                    <%= code %>
+                                  </span>
+                                <% end %>
+                              </div>
+                            </div>
+                          <% end %>
+
+                          <% if procedure.reason_references.present? %>
+                            <div>
+                              <h4 class="text-sm font-medium text-gray-700 mb-2">Reason References</h4>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <% procedure.reason_references.each do |reference| %>
+                                  <div class="bg-gray-50 p-3 rounded-md">
+                                    <div class="flex items-center justify-between">
+                                      <div>
+                                        <span class="text-xs text-gray-500"><%= reference[:type] %></span>
+                                        <p class="font-medium text-gray-900"><%= reference[:display] %></p>
+                                      </div>
+                                      <% case reference[:type] %>
+                                      <% when 'Condition' %>
+                                        <% if reference[:resource].present? %>
+                                          <button data-modal-target="condition-<%= reference[:resource].id %>" data-modal-toggle="condition-<%= reference[:resource].id %>"
+                                                  class="text-blue-600 hover:text-blue-800 text-sm">
+                                            View Condition
+                                          </button>
+                                          <%= render partial: 'shared/condition_modal', locals: { condition: reference[:resource] } %>
+                                        <% else %>
+                                          <a href="<%= patient_conditions_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                            View Condition
+                                          </a>
+                                        <% end %>
+                                      <% when 'Observation' %>
+                                        <% if reference[:resource].present? %>
+                                          <button data-modal-target="observation-<%= reference[:resource].id %>" data-modal-toggle="observation-<%= reference[:resource].id %>"
+                                                  class="text-blue-600 hover:text-blue-800 text-sm">
+                                            View Observation
+                                          </button>
+                                          <%= render partial: 'shared/observation_modal', locals: { observation: reference[:resource] } %>
+                                        <% else %>
+                                          <a href="<%= patient_observations_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                            View Observation
+                                          </a>
+                                        <% end %>
+                                      <% when 'DiagnosticReport' %>
+                                        <% if reference[:resource].present? %>
+                                          <button data-modal-target="diagnostic-report-<%= reference[:resource].id %>" data-modal-toggle="diagnostic-report-<%= reference[:resource].id %>"
+                                                  class="text-blue-600 hover:text-blue-800 text-sm">
+                                            View Diagnostic Report
+                                          </button>
+                                          <%= render partial: 'shared/diagnostic_report_modal', locals: { diagnostic_report: reference[:resource] } %>
+                                        <% else %>
+                                          <a href="<%= patient_diagnostic_reports_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                            View Diagnostic Report
+                                          </a>
+                                        <% end %>
+                                      <% when 'DocumentReference' %>
+                                        <a href="<%= patient_document_references_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                          View Document
+                                        </a>
+                                      <% end %>
+                                    </div>
+                                  </div>
+                                <% end %>
+                              </div>
+                            </div>
+                          <% end %>
+                        </div>
+                      <% end %>
+
+                      <!-- Based On Section -->
+                      <% if procedure.based_on.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Based On</h3>
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <% procedure.based_on.each do |reference| %>
+                              <div class="bg-gray-50 p-3 rounded-md">
+                                <div class="flex items-center justify-between">
+                                  <div>
+                                    <span class="text-xs text-gray-500"><%= reference[:type] %></span>
+                                    <p class="font-medium text-gray-900"><%= reference[:display] %></p>
+                                  </div>
+                                  <% case reference[:type] %>
+                                  <% when 'CarePlan' %>
+                                    <% if reference[:resource].present? %>
+                                      <button data-modal-target="care-plan-<%= reference[:resource].id %>" data-modal-toggle="care-plan-<%= reference[:resource].id %>"
+                                              class="text-blue-600 hover:text-blue-800 text-sm">
+                                        View Care Plan
+                                      </button>
+                                      <%= render partial: 'shared/care_plan_modal', locals: { care_plan: reference[:resource] } %>
+                                    <% else %>
+                                      <span class="text-blue-600 text-sm">Care Plan</span>
+                                    <% end %>
+                                  <% when 'ServiceRequest' %>
+                                    <% if reference[:resource].present? %>
+                                      <button data-modal-target="service-request-<%= reference[:resource].id %>" data-modal-toggle="service-request-<%= reference[:resource].id %>"
+                                              class="text-blue-600 hover:text-blue-800 text-sm">
+                                        View Service Request
+                                      </button>
+                                      <%= render partial: 'shared/service_request_modal', locals: { service_request: reference[:resource] } %>
+                                    <% else %>
+                                      <a href="<%= patient_service_requests_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                        View Service Request
+                                      </a>
+                                    <% end %>
+                                  <% end %>
+                                </div>
+                              </div>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% end %>
+
+                      <!-- Part Of Section -->
+                      <% if procedure.part_of.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Part Of</h3>
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <% procedure.part_of.each do |reference| %>
+                              <div class="bg-gray-50 p-3 rounded-md">
+                                <div class="flex items-center justify-between">
+                                  <div>
+                                    <span class="text-xs text-gray-500"><%= reference[:type] %></span>
+                                    <p class="font-medium text-gray-900"><%= reference[:display] %></p>
+                                  </div>
+                                  <% case reference[:type] %>
+                                  <% when 'Procedure' %>
+                                    <% if reference[:resource].present? %>
+                                      <button data-modal-target="procedure-<%= reference[:resource].id %>" data-modal-toggle="procedure-<%= reference[:resource].id %>"
+                                              class="text-blue-600 hover:text-blue-800 text-sm">
+                                        View Procedure
+                                      </button>
+                                      <%= render partial: 'shared/procedure_modal', locals: { procedure: reference[:resource] } %>
+                                    <% else %>
+                                      <a href="<%= patient_procedures_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                        View Procedure
+                                      </a>
+                                    <% end %>
+                                  <% when 'Observation' %>
+                                    <% if reference[:resource].present? %>
+                                      <button data-modal-target="observation-<%= reference[:resource].id %>" data-modal-toggle="observation-<%= reference[:resource].id %>"
+                                              class="text-blue-600 hover:text-blue-800 text-sm">
+                                        View Observation
+                                      </button>
+                                      <%= render partial: 'shared/observation_modal', locals: { observation: reference[:resource] } %>
+                                    <% else %>
+                                      <a href="<%= patient_observations_path(patient_id: params[:patient_id]) %>" class="text-blue-600 hover:text-blue-800 text-sm">
+                                        View Observation
+                                      </a>
+                                    <% end %>
+                                  <% end %>
+                                </div>
+                              </div>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% end %>
+
+                      <!-- Body Sites Section -->
+                      <% if procedure.body_sites.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Body Sites</h3>
+                          <div class="flex flex-wrap gap-2">
+                            <% procedure.body_sites.each do |body_site| %>
+                              <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                <%= body_site %>
+                              </span>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% end %>
+
+                      <!-- Outcome and Complications Section -->
+                      <% if procedure.outcome != "--" || procedure.complications.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Outcome & Complications</h3>
+
+                          <% if procedure.outcome != "--" %>
+                            <div class="mb-4">
+                              <h4 class="text-sm font-medium text-gray-700 mb-2">Outcome</h4>
+                              <p class="text-gray-700"><%= procedure.outcome %></p>
+                            </div>
+                          <% end %>
+
+                          <% if procedure.complications.present? %>
+                            <div>
+                              <h4 class="text-sm font-medium text-gray-700 mb-2">Complications</h4>
+                              <div class="flex flex-wrap gap-2">
+                                <% procedure.complications.each do |complication| %>
+                                  <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                    <%= complication %>
+                                  </span>
+                                <% end %>
+                              </div>
+                            </div>
+                          <% end %>
+                        </div>
+                      <% end %>
+
+                      <!-- Follow-up Section -->
+                      <% if procedure.follow_up.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Follow-up</h3>
+                          <div class="flex flex-wrap gap-2">
+                            <% procedure.follow_up.each do |follow_up| %>
+                              <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                <%= follow_up %>
+                              </span>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% end %>
+
+                      <!-- Used Items Section -->
+                      <% if procedure.used_reference.present? || procedure.used_code.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Used Items</h3>
+
+                          <% if procedure.used_reference.present? %>
+                            <div class="mb-4">
+                              <h4 class="text-sm font-medium text-gray-700 mb-2">Referenced Items</h4>
+                              <ul class="list-disc list-inside text-gray-700">
+                                <% procedure.used_reference.each do |reference| %>
+                                  <li><%= reference %></li>
+                                <% end %>
+                              </ul>
+                            </div>
+                          <% end %>
+
+                          <% if procedure.used_code.present? %>
+                            <div>
+                              <h4 class="text-sm font-medium text-gray-700 mb-2">Coded Items</h4>
+                              <div class="flex flex-wrap gap-2">
+                                <% procedure.used_code.each do |code| %>
+                                  <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                    <%= code %>
+                                  </span>
+                                <% end %>
+                              </div>
+                            </div>
+                          <% end %>
+                        </div>
+                      <% end %>
+
+                      <!-- Notes Section -->
+                      <% if procedure.notes.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Notes</h3>
+                          <div class="space-y-4">
+                            <% procedure.notes.each do |note| %>
+                              <div class="bg-gray-50 p-4 rounded-md">
+                                <% if note[:author].present? %>
+                                  <div class="flex items-center mb-2">
+                                    <span class="font-medium text-gray-900"><%= note[:author] %></span>
+                                    <% if note[:time].present? %>
+                                      <span class="text-xs text-gray-500 ml-2">(<%= note[:time] %>)</span>
+                                    <% end %>
+                                  </div>
+                                <% end %>
+                                <p class="text-gray-700"><%= note[:text] %></p>
+                              </div>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% end %>
+
+                      <div class="flex items-center space-x-3 mt-6">
+                        <button type="button" class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                          </svg>
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+          <div class="mt-4">
+            <% if @pagy %>
+              <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript to toggle result details -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const target = document.querySelector(this.getAttribute('data-bs-target'));
+          if (target.classList.contains('hidden')) {
+            target.classList.remove('hidden');
+            this.setAttribute('aria-expanded', 'true');
+            this.textContent = 'Hide Details';
+          } else {
+            target.classList.add('hidden');
+            this.setAttribute('aria-expanded', 'false');
+            this.textContent = 'View Details';
+          }
+        });
+      });
+    });
+  </script>
+<% end %>

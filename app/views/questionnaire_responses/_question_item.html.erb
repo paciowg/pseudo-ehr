@@ -1,0 +1,141 @@
+<div class="bg-white p-3 rounded border border-gray-200">
+  <div class="flex flex-col">
+    <div class="flex justify-between items-start mb-2">
+      <h5 class="text-sm font-medium text-gray-700"><%= question[:text] %></h5>
+      <span class="text-xs text-gray-500"><%= question[:link_id] %></span>
+    </div>
+
+    <% if question[:answers].present? %>
+      <div class="mt-2">
+        <% if question[:answers].length == 1 %>
+          <!-- Single answer display -->
+          <% answer = question[:answers].first %>
+          <div class="answer-display">
+            <% case answer[:value_type] %>
+            <% when 'boolean' %>
+              <span class="<%= answer[:value] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %> text-xs font-medium px-2.5 py-0.5 rounded">
+                <%= answer[:display] %>
+              </span>
+            <% when 'coding' %>
+              <div class="flex items-center">
+                <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded mr-2">
+                  <%= answer[:code] %>
+                </span>
+                <span class="text-gray-700"><%= answer[:display] %></span>
+              </div>
+              <% if answer[:system].present? %>
+                <div class="mt-1 text-xs text-gray-500 truncate" title="<%= answer[:system] %>">
+                  <%= answer[:system].truncate(50) %>
+                </div>
+              <% end %>
+            <% when 'quantity' %>
+              <div class="flex items-center">
+                <span class="font-medium text-gray-900"><%= answer[:display] %></span>
+                <% if answer[:code].present? %>
+                  <span class="ml-2 bg-purple-100 text-purple-800 text-xs font-medium px-2 py-0.5 rounded">
+                    <%= answer[:code] %>
+                  </span>
+                <% end %>
+              </div>
+            <% when 'date', 'dateTime', 'time' %>
+              <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                <%= answer[:display] %>
+              </span>
+            <% when 'string', 'uri' %>
+              <p class="text-gray-700"><%= answer[:display] %></p>
+            <% when 'attachment' %>
+              <div class="flex items-center">
+                <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded mr-2">
+                  <%= answer[:content_type] %>
+                </span>
+                <% if answer[:url].present? %>
+                  <a href="<%= answer[:url] %>" target="_blank" class="text-blue-600 hover:underline">
+                    <%= answer[:display] %>
+                  </a>
+                <% elsif answer[:data].present? %>
+                  <a href="data:<%= answer[:content_type] %>;base64,<%= answer[:data] %>" target="_blank" class="text-blue-600 hover:underline">
+                    <%= answer[:display] %>
+                  </a>
+                <% else %>
+                  <span><%= answer[:display] %></span>
+                <% end %>
+              </div>
+            <% when 'reference' %>
+              <div class="flex items-center">
+                <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded mr-2">
+                  <%= answer[:reference]&.split('/')&.first %>
+                </span>
+                <span class="text-gray-700"><%= answer[:display] %></span>
+                <% if answer[:reference].present? %>
+                  <% resource_type, resource_id = answer[:reference].split('/') %>
+                  <% case resource_type %>
+                  <% when 'Condition' %>
+                    <a href="<%= patient_conditions_path(patient_id: params[:patient_id]) %>" class="ml-2 text-blue-600 hover:text-blue-800 text-xs">
+                      View
+                    </a>
+                  <% when 'Observation' %>
+                    <a href="<%= patient_observations_path(patient_id: params[:patient_id]) %>" class="ml-2 text-blue-600 hover:text-blue-800 text-xs">
+                      View
+                    </a>
+                  <% when 'DiagnosticReport' %>
+                    <a href="<%= patient_diagnostic_reports_path(patient_id: params[:patient_id]) %>" class="ml-2 text-blue-600 hover:text-blue-800 text-xs">
+                      View
+                    </a>
+                  <% when 'Procedure' %>
+                    <a href="<%= patient_procedures_path(patient_id: params[:patient_id]) %>" class="ml-2 text-blue-600 hover:text-blue-800 text-xs">
+                      View
+                    </a>
+                  <% when 'DocumentReference' %>
+                    <a href="<%= patient_document_references_path(patient_id: params[:patient_id]) %>" class="ml-2 text-blue-600 hover:text-blue-800 text-xs">
+                      View
+                    </a>
+                  <% when 'QuestionnaireResponse' %>
+                    <a href="<%= patient_questionnaire_responses_path(patient_id: params[:patient_id]) %>" class="ml-2 text-blue-600 hover:text-blue-800 text-xs">
+                      View
+                    </a>
+                  <% end %>
+                <% end %>
+              </div>
+            <% else %>
+              <span class="text-gray-700"><%= answer[:display] %></span>
+            <% end %>
+          </div>
+        <% else %>
+          <!-- Multiple answers display -->
+          <div class="space-y-2">
+            <% question[:answers].each_with_index do |answer, index| %>
+              <div class="flex items-start">
+                <span class="bg-gray-200 text-gray-800 text-xs font-medium h-5 w-5 flex items-center justify-center rounded-full mr-2">
+                  <%= index + 1 %>
+                </span>
+                <div class="flex-1">
+                  <% case answer[:value_type] %>
+                  <% when 'boolean' %>
+                    <span class="<%= answer[:value] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %> text-xs font-medium px-2.5 py-0.5 rounded">
+                      <%= answer[:display] %>
+                    </span>
+                  <% when 'coding' %>
+                    <div class="flex items-center">
+                      <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded mr-2">
+                        <%= answer[:code] %>
+                      </span>
+                      <span class="text-gray-700"><%= answer[:display] %></span>
+                    </div>
+                  <% when 'quantity' %>
+                    <span class="font-medium text-gray-900"><%= answer[:display] %></span>
+                  <% when 'string', 'uri' %>
+                    <p class="text-gray-700"><%= answer[:display] %></p>
+                  <% else %>
+                    <span class="text-gray-700"><%= answer[:display] %></span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-gray-400 italic text-sm">No answer provided</p>
+    <% end %>
+  </div>
+</div>
