@@ -1,50 +1,73 @@
-<table class="w-full table-fixed text-xs text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2 overflow-x-auto">
-  <thead class="text-xs text-white uppercase bg-gray-900">
-    <tr>
-      <th scope="col" class="px-2 py-2">Description</th>
-      <th scope="col" class="px-2 py-2">Version</th>
-      <th scope="col" class="px-2 py-2">Status</th>
-      <th scope="col" class="px-2 py-2">Author</th>
-      <th scope="col" class="px-2 py-2">Created</th>
-      <th scope="col" class="px-2 py-2">Document</th>
-      <% if adis.any?(&:doc_revoke_status) %>
-        <th scope="col" class="px-2 py-2">Doc Revoke Status Ext</th>
-      <% end %>
-    </tr>
-  </thead>
-  <tbody>
-    <% adis.each do |adi| %>
-      <% target = adi.status == "current" ? "currentAdis" : "supersededAdis" %>
-      <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50">
-        <td class="px-2 py-2 font-semibold flex col-span-1 flex-shrink-0 whitespace-normal"
-          data-controller="table-row-click"
-          data-table-row-click-url="/advance_directives/<%= adi.id %>"
-          data-action="click->table-row-click#goToLink"
-          data-showhide-target="<%= target %>"
-        >
-          <%= adi.description %>
-          <% if adi.revoked? %>
-            <span class="bg-red-100 text-red-800 text-xs h-6 font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Revoked</span>
-          <% end %>
-        </td>
-        <td class="px-2 py-2"><%= adi.version %></td>
-        <td class="px-2 py-2 <%= adi.status == "current" ? "text-green-500" : ""%>"><%= adi.status %></td>
-        <td class="px-2 py-2"><%= adi.author %></td>
-        <td class="px-2 py-2"><%= adi.date %></td>
-        <td class="px-2 py-2">
-          <% if adi.pdf || adi.pdf_binary_id %>
-            <button data-modal-target="<%= adi.id %>" data-modal-toggle="<%= adi.id %>" class="border-none text-blue-600 hover:text-red-500 font-medium text-xs px-5 text-center" type="button">
-              View PDF
-            </button>
-            <%= render "pdf_modal", pdf: adi.pdf, binary_id: adi.pdf_binary_id, title: adi.description, id: adi.id, revoked: adi.revoked? %>
-            <% else %>
-          <%= link_to 'See document', advance_directive_path(adi.id), class: 'text-blue-600 hover:text-red-500' %>
-          <% end %>
-        </td>
-        <% if adi.doc_revoke_status.present? %>
-          <td class="px-2 py-2 text-red-500"><%= adi.doc_revoke_status %></td>
+<div class="overflow-x-auto rounded-lg">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-800 text-white">
+      <tr>
+        <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Description</th>
+        <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider hidden md:table-cell">Version</th>
+        <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
+        <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider hidden md:table-cell">Author</th>
+        <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Created</th>
+        <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Documents</th>
+        <% if adis.any?(&:doc_revoke_status) %>
+          <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider hidden lg:table-cell">Revoke Status</th>
         <% end %>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      <% adis.each do |adi| %>
+        <% target = adi.status == "current" ? "currentAdis" : "supersededAdis" %>
+        <tr class="hover:bg-gray-50 transition-colors">
+          <td class="px-4 py-3 whitespace-normal"
+            data-controller="table-row-click"
+            data-table-row-click-url="/advance_directives/<%= adi.id %>"
+            data-action="click->table-row-click#goToLink"
+            data-showhide-target="<%= target %>"
+          >
+            <div class="flex flex-col">
+              <span class="font-medium text-gray-900"><%= adi.description %></span>
+              <% if adi.revoked? %>
+                <span class="bg-red-100 text-red-800 text-xs font-medium mt-1 px-2.5 py-0.5 rounded w-fit">Revoked</span>
+              <% end %>
+            </div>
+          </td>
+          <td class="px-4 py-3 whitespace-nowrap hidden md:table-cell"><%= adi.version || "--" %></td>
+          <td class="px-4 py-3 whitespace-nowrap">
+            <% status_color = adi.status == "current" ? "green" : "gray" %>
+            <span class="bg-<%= status_color %>-100 text-<%= status_color %>-800 text-xs font-medium px-2.5 py-0.5 rounded">
+              <%= adi.status %>
+            </span>
+          </td>
+          <td class="px-4 py-3 whitespace-nowrap hidden md:table-cell"><%= adi.author %></td>
+          <td class="px-4 py-3 whitespace-nowrap"><%= adi.date %></td>
+          <td class="px-4 py-3 whitespace-nowrap">
+            <% if adi.contents.present? %>
+              <div class="flex flex-wrap gap-2">
+                <% adi.contents.each_with_index do |content, index| %>
+                  <button
+                    data-modal-target="<%= content.id %>"
+                    data-modal-toggle="<%= content.id %>"
+                    class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-1.5 focus:outline-none flex items-center"
+                    type="button"
+                  >
+                    <span class="text-sm">View Doc</span>
+                    <span class="text-sm ml-2"><%= content_type_badge(content.type) %></span>
+                  </button>
+                  <%= render partial: 'shared/content_display_modal', locals: { content: content } %>
+                <% end %>
+              </div>
+            <% else %>
+              <%= link_to 'See details', advance_directive_path(adi.id), class: 'text-blue-600 hover:text-blue-800 font-medium text-sm' %>
+            <% end %>
+          </td>
+          <% if adi.doc_revoke_status.present? %>
+            <td class="px-4 py-3 whitespace-nowrap hidden lg:table-cell">
+              <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                <%= adi.doc_revoke_status %>
+              </span>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
