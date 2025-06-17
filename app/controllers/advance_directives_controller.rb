@@ -84,10 +84,9 @@ class AdvanceDirectivesController < ApplicationController
       adi_entries = fetch_adi_documents_by_patient(patient_id) if adi_entries.blank?
 
       adis = adi_entries.map do |doc|
-        get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
         attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
         compositions = build_compositions(attachment_bundle_entries)
-        AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
+        AdvanceDirective.new(doc, compositions)
       end
 
       adis.sort_by(&:date).reverse.group_by(&:identifier)
@@ -101,10 +100,9 @@ class AdvanceDirectivesController < ApplicationController
   def fetch_and_cache_adi(adi_id)
     Rails.cache.fetch(cache_key_for_adi(adi_id)) do
       doc = find_cached_resource('DocumentReference', adi_id) || fetch_document_reference(adi_id)
-      get_pdf_from_contents(doc.content) => {pdf:, pdf_binary_id:}
       attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
       compositions = build_compositions(attachment_bundle_entries)
-      AdvanceDirective.new(doc, compositions, pdf, pdf_binary_id)
+      AdvanceDirective.new(doc, compositions)
     end
   rescue StandardError => e
     Rails.logger.error("Error fetching or parsing patient ADI #{adi_id}:\n #{e.message.inspect}")
@@ -127,17 +125,6 @@ class AdvanceDirectivesController < ApplicationController
 
   def extract_id_from_attachment_url(content)
     content.attachment&.url&.split('/')&.last
-  end
-
-  def get_pdf_from_contents(contents)
-    pdf_data = { pdf: nil, pdf_binary_id: nil }
-    pdf_content = contents.find { |content| check_content_attachment_resource(content) == 'pdf' }
-    if pdf_content
-      ref = pdf_content.attachment&.url
-      binary_id = extract_id_from_ref(ref)
-      pdf_data = retrieve_bundle_from_binary(binary_id, 'pdf')
-    end
-    pdf_data
   end
 
   def retrieve_bundle_from_binary(binary_id, content_type)

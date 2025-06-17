@@ -1,0 +1,199 @@
+<div id="<%= content.id %>" tabindex="-1" aria-hidden="true"
+  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+  <div class="relative w-full max-w-2xl max-h-full">
+    <!-- Modal content -->
+    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+      <!-- Modal header -->
+      <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          <%= content.title.presence || "Content" %>
+        </h3>
+        <button type="button"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+          data-modal-hide="<%= content.id %>">
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="p-6 space-y-6">
+        <% if content.data.present? %>
+          <% content_type = content.type.presence || 'application/octet-stream' %>
+          <% if content_type == 'application/pdf' %>
+            <embed src="data:application/pdf;base64,<%= content.data %>" type="application/pdf" width="100%" height="600px">
+          <% elsif content_type == 'text/plain' %>
+            <div class="whitespace-pre-wrap font-mono bg-gray-100 p-4 rounded">
+              <%= Base64.decode64(content.data) %>
+            </div>
+          <% elsif content_type == 'text/html' %>
+            <div class="content-html-container">
+              <%= Base64.decode64(content.data).html_safe %>
+            </div>
+          <% elsif content_type.present? && content_type.start_with?('image/') %>
+            <img src="data:<%= content_type %>;base64,<%= content.data %>" alt="<%= content.title.presence || 'Image' %>" class="max-w-full h-auto">
+          <% elsif content_type == 'application/json' || content_type == 'application/fhir+json' %>
+            <div class="whitespace-pre-wrap font-mono bg-gray-100 p-4 rounded">
+              <% begin %>
+                <%= JSON.pretty_generate(JSON.parse(Base64.decode64(content.data))) %>
+              <% rescue %>
+                <%= Base64.decode64(content.data) %>
+              <% end %>
+            </div>
+          <% elsif content_type == 'application/jws' %>
+            <div class="whitespace-pre-wrap font-mono bg-gray-100 p-4 rounded overflow-auto max-h-[500px]">
+              <% jws_content = Base64.decode64(content.data) %>
+              <% jws_data = parse_jws_content(jws_content) %>
+
+              <% if jws_data[:parsed_successfully] %>
+                <div class="mb-4 p-3 bg-indigo-50 rounded-lg">
+                  <div class="flex items-center flex-wrap">
+                    <svg class="w-5 h-5 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <span class="font-medium text-indigo-700">JSON Web Signature (JWS)</span>
+                  </div>
+                  <p class="mt-2 text-sm text-indigo-600">This is a JWS document, a compact, URL-safe means of representing signed content.</p>
+                </div>
+
+                <div class="mb-4">
+                  <h3 class="text-lg font-semibold text-gray-800 mb-2">Header</h3>
+                  <div class="bg-white p-3 rounded border border-gray-200">
+                    <pre class="text-gray-900"><%= h(jws_data[:header_formatted]) %></pre>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <h3 class="text-lg font-semibold text-gray-800 mb-2">Payload</h3>
+                  <div class="bg-white p-3 rounded border border-gray-200">
+                    <pre class="text-gray-900"><%= h(jws_data[:payload_formatted]) %></pre>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-800 mb-2">Signature</h3>
+                  <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <p class="text-gray-500 italic">The signature is used for verification and is not displayed in human-readable form.</p>
+                  </div>
+                </div>
+              <% else %>
+                <div class="p-4 bg-red-100 text-red-800 rounded mb-4">
+                  <p>Error parsing JWS content: <%= jws_data[:error] %></p>
+                </div>
+                <pre class="text-gray-900"><%= h(jws_content) %></pre>
+              <% end %>
+            </div>
+          <% elsif content_type == 'application/xml' || content_type == 'text/xml' || content_type == 'application/cda+xml' %>
+            <% is_cda = content_type == 'application/cda+xml' %>
+            <% if is_cda %>
+              <div class="mb-4 p-3 bg-blue-100 rounded-lg w-full">
+                <div class="flex items-center flex-wrap">
+                  <svg class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  <span class="font-medium text-blue-700">Clinical Document Architecture (CDA)</span>
+                </div>
+              </div>
+            <% end %>
+            <div class="whitespace-pre-wrap font-mono bg-gray-100 p-4 rounded overflow-auto max-h-[500px]">
+                <% xml_data = Base64.decode64(content.data) %>
+                <% begin %>
+                  <% if is_cda %>
+                    <embed src="data:text/html;base64,<%= Base64.encode64(parse_cda_document(xml_data)) %>" type="text/html" width="100%" height="600px">
+                  <% else %>
+                    <div class="whitespace-pre-wrap font-mono bg-gray-100 p-4 rounded">
+                      <pre class="text-gray-900"> <%= format_xml_content(xml_data) %> </pre>
+                    </div>
+                  <% end %>
+                <% rescue => e %>
+                  <div class="whitespace-pre-wrap font-mono bg-gray-100 p-4 rounded">
+                    <pre class="text-gray-900"> <%= h(xml_data) %> </pre>
+                  </div>
+                <% end %>
+            </div>
+          <% else %>
+            <div class="p-4 bg-yellow-100 text-yellow-800 rounded">
+              <p>Content type: <%= content_type.presence || "Unknown" %></p>
+              <p class="mt-2">Content is available but cannot be displayed in this viewer.</p>
+              <a href="<%= content_path(id: content.id, download: true) %>" class="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                Download Content
+              </a>
+            </div>
+          <% end %>
+        <% elsif content.url.present? %>
+          <% content_type = content.type.presence || 'application/octet-stream' %>
+          <% if content_type == 'application/pdf' %>
+            <iframe src="<%= content_path(id: content.id) %>" width="100%" height="600px">
+              This browser does not support PDFs. Please download the PDF to view it: <a href="<%= content_path(id: content.id) %>">Download PDF</a>.
+            </iframe>
+          <% elsif content_type.present? && content_type.start_with?('image/') %>
+            <img src="<%= content_path(id: content.id) %>" alt="<%= content.title.presence || 'Image' %>" class="max-w-full h-auto">
+          <% elsif content_type == 'application/jws' %>
+            <div class="mb-4">
+              <div class="flex justify-end mb-2">
+                <a href="<%= content.full_url(session[:fhir_server_url]) %>" target="_blank" class="text-blue-600 hover:text-blue-800 mr-4">
+                  Open in new tab
+                </a>
+                <a href="<%= content_path(id: content.id, download: true) %>" class="text-blue-600 hover:text-blue-800">
+                  Download JWS
+                </a>
+              </div>
+              <iframe src="<%= content_path(id: content.id) %>" width="100%" height="500px" class="border-0 rounded">
+                This browser does not support inline frames. <a href="<%= content_path(id: content.id) %>" target="_blank">View JWS content</a>.
+              </iframe>
+            </div>
+          <% elsif content_type == 'application/xml' || content_type == 'text/xml' || content_type == 'application/cda+xml' %>
+            <% is_cda = content_type == 'application/cda+xml' %>
+            <% if is_cda %>
+              <div class="mb-4 p-3 bg-blue-100 rounded-lg w-full">
+                <div class="flex items-center flex-wrap">
+                  <svg class="w-5 h-5 text-blue-600 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  <span class="font-medium text-blue-700">Clinical Document Architecture (CDA)</span>
+                </div>
+              </div>
+            <% end %>
+            <div class="mb-4">
+              <embed src="<%= content_path(id: content.id) %>" type="text/html" width="100%" height="600px" />
+            </div>
+          <% else %>
+            <div class="p-4 bg-yellow-100 text-yellow-800 rounded">
+              <p>Content is available at the following URL:</p>
+              <a href="<%= content.full_url(session[:fhir_server_url]) %>" target="_blank" class="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                Open Content
+              </a>
+              <p class="mt-2">Or view it directly:</p>
+              <a href="<%= content_path(id: content.id) %>" target="_blank" class="mt-2 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                View Content
+              </a>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="p-4 bg-red-100 text-red-800 rounded">
+            No content data or URL available.
+          </div>
+        <% end %>
+      </div>
+      <!-- Modal footer -->
+      <div class="flex items-center justify-between p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+        <% if content.creation_date.present? %>
+          <div class="text-sm text-gray-500">
+            Created: <%= content.creation_date %>
+          </div>
+        <% else %>
+          <div></div>
+        <% end %>
+        <div>
+          <% if content.data.present? %>
+            <a href="<%= content_path(id: content.id, download: true) %>" class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-blue-500 text-sm font-medium px-5 py-2.5 hover:text-white focus:z-10 mr-2">Download</a>
+          <% end %>
+          <button data-modal-hide="<%= content.id %>" type="button"
+            class="text-gray-200 bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-600 rounded-lg border border-gray-500 text-sm font-medium px-5 py-2.5 hover:text-white focus:z-10">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

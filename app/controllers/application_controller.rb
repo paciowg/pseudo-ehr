@@ -94,6 +94,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def filter_non_adi_docs(resources)
+    resources - filter_doc_refs_or_compositions_by_category(resources, adi_category_codes)
+  end
+
   def set_resources_count
     return unless patient_id
 
@@ -101,6 +105,10 @@ class ApplicationController < ActionController::Base
     @condition_count = cached_resources_type('Condition').size
     @goal_count = cached_resources_type('Goal').size
     @medication_list_count = cached_resources_type('List').size
+    @medication_requests_count = cached_resources_type('MedicationRequest').size
+    @procedures_count = cached_resources_type('Procedure').size
+    @diagnostic_reports_count = cached_resources_type('DiagnosticReport').size
+    @document_references_count = filter_non_adi_docs(cached_resources_type('DocumentReference')).size
     @observation_count = cached_resources_type('Observation').size
     @questionnaire_response_count = cached_resources_type('QuestionnaireResponse').size
     @nutrition_order_count = cached_resources_type('NutritionOrder').size

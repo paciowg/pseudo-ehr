@@ -1,0 +1,175 @@
+<div id="service-request-<%= service_request.id %>" tabindex="-1" aria-hidden="true"
+  class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+  <div class="relative w-full max-w-2xl max-h-full">
+    <!-- Modal content -->
+    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+      <!-- Modal header -->
+      <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          <%= service_request.code %>
+        </h3>
+        <button type="button"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+          data-modal-hide="service-request-<%= service_request.id %>">
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="p-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="flex flex-col">
+            <span class="text-xs text-gray-500 uppercase">Status</span>
+            <span class="font-medium text-gray-900">
+              <% color = service_request.status == 'active' ? 'green' : (service_request.status == 'draft' ? 'blue' : 'gray') %>
+              <span class="bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                <%= service_request.status %>
+              </span>
+            </span>
+          </div>
+          <% if service_request.intent != "--" %>
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase">Intent</span>
+              <span class="font-medium text-gray-900"><%= service_request.intent %></span>
+            </div>
+          <% end %>
+          <% if service_request.priority != "--" %>
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase">Priority</span>
+              <span class="font-medium text-gray-900"><%= service_request.priority %></span>
+            </div>
+          <% end %>
+          <% if service_request.category != "--" %>
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase">Category</span>
+              <span class="font-medium text-gray-900"><%= service_request.category %></span>
+            </div>
+          <% end %>
+          <% if service_request.authorized_date != "--" %>
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase">Authorized Date</span>
+              <span class="font-medium text-gray-900"><%= service_request.authorized_date %></span>
+            </div>
+          <% end %>
+          <% if service_request.occurrence != "--" %>
+            <div class="flex flex-col">
+              <span class="text-xs text-gray-500 uppercase">Occurrence</span>
+              <span class="font-medium text-gray-900"><%= service_request.occurrence %></span>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Requester Section -->
+        <% if service_request.requester != "--" %>
+          <div class="mt-4">
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Requester</h3>
+            <p class="text-gray-700"><%= service_request.requester %></p>
+          </div>
+        <% end %>
+
+        <!-- Performer Section -->
+        <% if service_request.performer != "--" %>
+          <div class="mt-4">
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Performer</h3>
+            <p class="text-gray-700"><%= service_request.performer %></p>
+          </div>
+        <% end %>
+
+        <!-- Location Section -->
+        <% if service_request.location != "--" %>
+          <div class="mt-4">
+            <h3 class="text-sm font-semibold text-gray-800 mb-2">Location</h3>
+            <p class="text-gray-700"><%= service_request.location %></p>
+          </div>
+        <% end %>
+
+        <!-- Reasons Section -->
+        <% if service_request.reason_codes.present? || service_request.reason_references.present? %>
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Reasons</h3>
+
+            <% if service_request.reason_codes.present? %>
+              <div class="mb-4">
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Reason Codes</h4>
+                <div class="flex flex-wrap gap-2">
+                  <% service_request.reason_codes.each do |code| %>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      <%= code %>
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+
+            <% if service_request.reason_references.present? %>
+              <div>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Reason References</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <% service_request.reason_references.each do |reference| %>
+                    <div class="bg-gray-50 p-3 rounded-md">
+                      <div class="flex items-center justify-between">
+                        <div>
+                          <span class="text-xs text-gray-500"><%= reference[:type] %></span>
+                          <p class="font-medium text-gray-900"><%= reference[:display] %></p>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <!-- Supporting Info Section -->
+        <% if service_request.supporting_info.present? %>
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Supporting Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <% service_request.supporting_info.each do |reference| %>
+                <div class="bg-gray-50 p-3 rounded-md">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="text-xs text-gray-500"><%= reference[:type] %></span>
+                      <p class="font-medium text-gray-900"><%= reference[:display] %></p>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Notes Section -->
+        <% if service_request.notes.present? %>
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Notes</h3>
+            <div class="space-y-4">
+              <% service_request.notes.each do |note| %>
+                <div class="bg-gray-50 p-4 rounded-md">
+                  <% if note[:author].present? %>
+                    <div class="flex items-center mb-2">
+                      <span class="font-medium text-gray-900"><%= note[:author] %></span>
+                      <% if note[:time].present? %>
+                        <span class="text-xs text-gray-500 ml-2">(<%= note[:time] %>)</span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                  <p class="text-gray-700"><%= note[:text] %></p>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <!-- Modal footer -->
+      <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+        <button data-modal-hide="service-request-<%= service_request.id %>" type="button"
+          class="text-gray-200 bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-600 rounded-lg border border-gray-500 text-sm font-medium px-5 py-2.5 hover:text-white focus:z-10">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
