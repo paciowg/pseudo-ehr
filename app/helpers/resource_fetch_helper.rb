@@ -132,6 +132,11 @@ module ResourceFetchHelper
     fetch_resource_with_defaults(FHIR::DocumentReference, 100, parameters)
   end
 
+  def fetch_toc_compositions_by_patient(patient_id)
+    parameters = { patient: patient_id, category: '18761-7', _count: 100 }.compact
+    fetch_resource_with_defaults(FHIR::Composition, 100, parameters)
+  end
+
   def fetch_document_reference(doc_id)
     fetch_resource(FHIR::DocumentReference, method: :read, id: doc_id)&.resource
   end

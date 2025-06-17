@@ -77,11 +77,21 @@
     <% end %>
 
 
-    <% if @adi.pdf || @adi.pdf_binary_id %>
-      <button data-modal-target="<%= @adi.id %>" data-modal-toggle="<%= @adi.id %>" class="mb-2 pb-4 border-none text-blue-600  hover:text-red-500 font-medium text-sm px-5 text-center" type="button">
-        View PDF
-      </button>
-      <%= render "pdf_modal", pdf: @adi.pdf, binary_id: @adi.pdf_binary_id, title: @adi.description, id: @adi.id, revoked: @adi.revoked? %>
+    <% if @adi.contents.present? %>
+      <div class="flex flex-wrap gap-2 mb-2 pb-4">
+        <% @adi.contents.each_with_index do |content, index| %>
+          <button
+            data-modal-target="<%= content.id %>"
+            data-modal-toggle="<%= content.id %>"
+            class="border-none text-blue-600 hover:text-red-500 focus:ring-4 focus:ring-blue-300 font-medium text-xs px-3 py-1.5 focus:outline-none flex items-center"
+            type="button"
+          >
+            <span class="text-sm">View Document <%= index + 1 %></span>
+            <span class="text-sm ml-2"><%= content_type_badge(content.type) %></span>
+          </button>
+          <%= render partial: 'shared/content_display_modal', locals: { content: content } %>
+        <% end %>
+      </div>
     <% end %>
 
   </div>

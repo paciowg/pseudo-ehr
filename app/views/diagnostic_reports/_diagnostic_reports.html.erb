@@ -1,115 +1,274 @@
 <%= turbo_frame_tag "diagnostic_reports" do %>
-  <div class="mt-8 flow-root w-11/12">
-    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+  <div class="mt-8 flow-root w-full">
+    <div class="overflow-x-auto">
+      <div class="inline-block min-w-full py-2 align-middle">
         <% if @diagnostic_reports.empty? %>
-          <h1 class="text-center">No Diagnostic Report Found!</h1>
+          <div class="text-center p-8 bg-gray-50 rounded-lg">
+            <h1 class="text-xl font-semibold text-gray-700">No Diagnostic Report Found!</h1>
+          </div>
         <% else %>
-          <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
-              <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
-                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Diagnostic Report</th>
-                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Date</th>
-                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Clinical Status</th>
+          <table class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-500">
+            <thead class="text-xs uppercase bg-gray-50">
+              <tr>
+                <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
+                <th scope="col" class="px-4 py-3">Diagnostic Report</th>
+                <th scope="col" class="px-4 py-3 hidden md:table-cell">Category</th>
+                <th scope="col" class="px-4 py-3">Date</th>
+                <th scope="col" class="px-4 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody data-accordion="table-column" class="divide-y divide-gray-200">
+              <% @diagnostic_reports.each do |report| %>
+                <% identifier = report.id %>
+                <% status = report.status %>
+                <tr class="bg-white hover:bg-gray-50 cursor-pointer transition"
+                  id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>"
+                  aria-expanded="false" aria-controls="table-column-body-<%= identifier %>" data-showhide-target="<%= status %>"
+                >
+                  <td class="p-3 w-4">
+                    <svg data-accordion-icon class="w-5 h-5 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </td>
+                  <td class="px-4 py-3 font-medium text-gray-900"><%= report.code %></td>
+                  <td class="px-4 py-3 hidden md:table-cell"><%= report.category %></td>
+                  <td class="px-4 py-3"><%= report.date %></td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <% color = report.status == 'final' ? 'green' : (report.status == 'preliminary' ? 'blue' : 'gray') %>
+                    <div class="w-fit bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      <%= report.status %>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody data-accordion="table-column">
-                <% @diagnostic_reports.each do |report| %>
-                  <% identifier = report.id %>
-                  <% status = report.status %>
-                  <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
-                    id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>"
-                    aria-expanded="false" aria-controls="table-column-body-<%= identifier %>" data-showhide-target="<%= status %>"
-                  >
-                    <td class="p-3 w-4">
-                      <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                      </svg>
-                    </td>
-                    <td ><%= report.code %></td>
-                    <td ><%= report.effective_datetime %></td>
-                    <td class="px-4 py-3 whitespace-nowrap">
-                      <%color = report.status == 'final' ? 'green' : 'gray' %>
-                      <div class="w-fit bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
-                        <%= report.status %>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr class="hidden flex-1 overflow-x-auto w-full" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
-                    <td scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
-                    <td class="p-4 border-b" colspan="4">
-                      <% if report.last_updated != "--" %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Last Updated:</b><span class="flex-1"><%= report.last_updated %></span></p>
-                        </div>
-                      <% end %>
-                      <% if report.subject != "--" %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Subject:</b><span class="flex-1"><%= report.subject %></span></p>
-                        </div>
-                      <% end %>
-                       <% if report.encounter != "--" %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Encounter:</b><span class="flex-1"><%= report.encounter %></span></p>
-                        </div>
-                      <% end %>
-                      <% if report.issued != "--" %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Issued:</b><span class="flex-1"><%= report.issued %></span></p>
-                        </div>
-                      <% end %>
-                      <% if report.performer != "--" %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Performer:</b><span class="flex-1"><%= report.performer %></span></p>
-                        </div>
-                      <% end %>
-                      <% if report.result%>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Result List:</b><span class="flex-1"><%= %></span></p>
-                        </div>
-                      <% end %>
-                        <% report.result.each do |result| %>
-                          <div class="items-center mt-2">
-                          <p class="flex items-center py-2 ml-4"><b class="w-32">Observation:</b><span class="flex-1"><%= result.id %></span></p>
-                          <p class="flex items-center py-2 ml-4"><b class="w-32">status:</b><span class="flex-1"><%= result.status %></span></p>
-                          <% result.code.coding.each do |coding_el| %>
-                            <p class="flex items-center py-2 ml-2 ml-4"><b class="w-32">code:</b><span class="flex-1"><%= coding_el.code + ": " + coding_el.display %></span></p>
-                          <% end %>
-                           <% if result&.valueCodeableConcept %>
-                           <% result.valueCodeableConcept.coding.each do |concept| %>
-                              <p class="flex items-center py-2 ml-4"><b class="w-32">Result value:</b><span class="flex-1"><%= concept.display %></span></p>
-                           <% end %>
-                          <% end %>
-                          <% if result&.component.length > 0 %>
-                           <% result&.component.each do |value| %>
-                           <% if value&.valueQuantity %>
-                              <p class="flex items-center py-2 ml-4"><b class="w-32">Value quantity:</b><span class="flex-1"><%= value&.valueQuantity&.value.to_s + " " + value&.valueQuantity&.unit%></span></p>
-                            <% end %>
-                          <% if value&.valueCodeableConcept %>
-                          <% value&.code&.coding.each do |coding| %>
-                            <p class="flex items-center py-2 ml-4"><b class="w-32">Component code:</b><span class="flex-1"><%= coding.code %></span></p>
-                           <% end %>
-                           <% value&.valueCodeableConcept&.coding.each do |coding| %>
-                            <p class="flex items-center py-2 ml-4"><b class="w-32">Component value:</b><span class="flex-1"><%= coding.display ? coding.code + " ( " + coding.display + " ) " : coding.code %></span></p>
-                           <% end %>
-                          <% end %>
-                           <% end %>
-                          <% end %>
-                        <p class="flex items-center py-2 ml-4"><b class="w-32">---------</b><span class="flex-1"><%= %></span></p>
+                <tr class="hidden" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
+                  <td class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
+                  <td class="p-4" colspan="4">
+                    <div class="bg-white rounded-lg shadow-sm p-4">
+                      <!-- Basic Information -->
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <% if report.subject != "--" %>
+                          <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 uppercase">Subject</span>
+                            <span class="font-medium text-gray-900"><%= report.subject %></span>
+                          </div>
                         <% end %>
-                      <% if report.media_link != "--" %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Media Link:</b><span class="flex-1"><%= report.media_link %></span></p>
+                        <% if report.encounter != "--" %>
+                          <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 uppercase">Encounter</span>
+                            <span class="font-medium text-gray-900"><%= report.encounter %></span>
+                          </div>
+                        <% end %>
+                        <% if report.performer != "--" %>
+                          <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 uppercase">Performer</span>
+                            <span class="font-medium text-gray-900"><%= report.performer %></span>
+                          </div>
+                        <% end %>
+                      </div>
+
+                      <!-- Results Section -->
+                      <% if report.results.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Results</h3>
+
+                          <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                              <thead class="bg-gray-50">
+                                <tr>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Observation</th>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Measurement</th>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody class="bg-white divide-y divide-gray-200">
+                                <% report.results.each do |result| %>
+                                  <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                      <div class="flex items-center">
+                                        <div class="ml-2">
+                                          <div class="text-sm font-medium text-gray-900"><%= result.id %></div>
+                                          <% if result.category != "--" %>
+                                            <div class="text-xs text-gray-500"><%= result.category %></div>
+                                          <% end %>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                      <% status_color = result.status == 'final' ? 'green' : (result.status == 'preliminary' ? 'blue' : 'gray') %>
+                                      <span class="bg-<%= status_color %>-100 text-<%= status_color %>-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                        <%= result.status %>
+                                      </span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                      <div class="text-sm text-gray-900"><%= result.code %></div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                      <div class="text-sm text-gray-900"><%= result.measurement %></div>
+                                      <% if result.measurement_interpretation != "--" %>
+                                        <div class="text-xs text-gray-500">Interpretation: <%= result.measurement_interpretation %></div>
+                                      <% end %>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                      <button type="button" class="text-blue-600 hover:text-blue-900"
+                                              data-bs-toggle="collapse" data-bs-target="#result-details-<%= result.id %>"
+                                              aria-expanded="false" aria-controls="result-details-<%= result.id %>">
+                                        View Details
+                                      </button>
+                                    </td>
+                                  </tr>
+                                  <tr class="hidden" id="result-details-<%= result.id %>">
+                                    <td colspan="5" class="px-4 py-3 bg-gray-50">
+                                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-3">
+                                        <% if result.domain.present? %>
+                                          <div class="flex flex-col">
+                                            <span class="text-xs text-gray-500">Domain</span>
+                                            <span class="text-sm"><%= result.domain %></span>
+                                          </div>
+                                        <% end %>
+
+                                        <% if result.effective.present? && result.effective != "--" %>
+                                          <div class="flex flex-col">
+                                            <span class="text-xs text-gray-500">Effective Date</span>
+                                            <span class="text-sm"><%= result.effective %></span>
+                                          </div>
+                                        <% end %>
+
+                                        <% if result.performer != "--" %>
+                                          <div class="flex flex-col">
+                                            <span class="text-xs text-gray-500">Performer</span>
+                                            <span class="text-sm"><%= result.performer %></span>
+                                          </div>
+                                        <% end %>
+
+                                        <% if result.organization != "Not provided" %>
+                                          <div class="flex flex-col">
+                                            <span class="text-xs text-gray-500">Organization</span>
+                                            <span class="text-sm"><%= result.organization %></span>
+                                          </div>
+                                        <% end %>
+
+                                        <% if result.location != "Not provided" %>
+                                          <div class="flex flex-col">
+                                            <span class="text-xs text-gray-500">Location</span>
+                                            <span class="text-sm"><%= result.location %></span>
+                                          </div>
+                                        <% end %>
+                                      </div>
+
+                                      <% if result.derived_from.present? %>
+                                        <div class="mt-3 p-3 border-t border-gray-200">
+                                          <h4 class="text-sm font-medium text-gray-700 mb-2">Derived From</h4>
+                                          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            <% result.derived_from.each do |derived| %>
+                                              <a href="<%= derived[:path] %>" class="text-blue-600 hover:underline text-sm">
+                                                <%= derived[:name] %>
+                                              </a>
+                                            <% end %>
+                                          </div>
+                                        </div>
+                                      <% end %>
+
+                                      <% if result.members.present? %>
+                                        <div class="mt-3 p-3 border-t border-gray-200">
+                                          <h4 class="text-sm font-medium text-gray-700 mb-2">Members</h4>
+                                          <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                            <thead class="bg-gray-100">
+                                              <tr>
+                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Measurement</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody class="bg-white divide-y divide-gray-200">
+                                              <% result.members.each do |member| %>
+                                                <tr>
+                                                  <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900"><%= member.code %></td>
+                                                  <td class="px-3 py-2 text-sm text-gray-900"><%= member.measurement %></td>
+                                                </tr>
+                                              <% end %>
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      <% end %>
+                                    </td>
+                                  </tr>
+                                <% end %>
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
                       <% end %>
-                      <% if report.presented_form != "--" %>
-                        <div class="items-center mt-2">
-                          <p class="flex items-center py-2"><b class="w-32">Presented Form Type:</b><span class="flex-1"><%= report.presented_form %></span></p>
+
+                      <!-- Media Section -->
+                      <% if report.media.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Media</h3>
+                          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <% report.media.each do |media| %>
+                              <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                                <p class="font-medium text-gray-700 mb-2 truncate"><%= media.title %></p>
+                                <p class="text-xs text-gray-500 mb-3"><%= media.type %></p>
+                                <% if media.creation_date.present? %>
+                                  <p class="text-xs text-gray-500 mb-3">Created: <%= media.creation_date %></p>
+                                <% end %>
+                                <button data-modal-target="<%= media.id %>" data-modal-toggle="<%= media.id %>"
+                                        class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-1.5 focus:outline-none flex items-center">
+                                  <span>View Media</span>
+                                  <span class="ml-2"><%= content_type_badge(media.type) %></span>
+                                </button>
+                                <%= render partial: 'shared/content_display_modal', locals: { content: media } %>
+                              </div>
+                            <% end %>
+                          </div>
                         </div>
                       <% end %>
-                      <div class="flex items-center space-x-3 mt-4">
-                        <button type="button" class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-primary-700 rounded-lg hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+
+                      <!-- Documents Section -->
+                      <% if report.contents.present? %>
+                        <div class="mt-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-3">Documents</h3>
+                          <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                              <thead class="bg-gray-50">
+                                <tr>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                  <% has_creation_dates = report.contents.any? { |content| content.creation_date.present? } %>
+                                  <% if has_creation_dates %>
+                                    <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                  <% end %>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                </tr>
+                              </thead>
+                              <tbody class="bg-white divide-y divide-gray-200">
+                                <% report.contents.each do |content| %>
+                                  <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900"><%= content.title %></td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500"><%= content.type %></td>
+                                    <% if has_creation_dates %>
+                                      <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                        <%= content.creation_date.present? ? content.creation_date : "-" %>
+                                      </td>
+                                    <% end %>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                      <button data-modal-target="<%= content.id %>" data-modal-toggle="<%= content.id %>"
+                                              class="text-blue-600 hover:text-blue-900 flex items-center">
+                                        <span>View Document</span>
+                                        <span class="ml-2"><%= content_type_badge(content.type) %></span>
+                                      </button>
+                                      <%= render partial: 'shared/content_display_modal', locals: { content: content } %>
+                                    </td>
+                                  </tr>
+                                <% end %>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      <% end %>
+
+                      <div class="flex items-center space-x-3 mt-6">
+                        <button type="button" class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
                             <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
@@ -117,18 +276,40 @@
                           Edit
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-            <br />
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+          <div class="mt-4">
             <% if @pagy %>
               <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
             <% end %>
-            <br />
-          <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
+
+  <!-- JavaScript to toggle result details -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const target = document.querySelector(this.getAttribute('data-bs-target'));
+          if (target.classList.contains('hidden')) {
+            target.classList.remove('hidden');
+            this.setAttribute('aria-expanded', 'true');
+            this.textContent = 'Hide Details';
+          } else {
+            target.classList.add('hidden');
+            this.setAttribute('aria-expanded', 'false');
+            this.textContent = 'View Details';
+          }
+        });
+      });
+    });
+  </script>
 <% end %>
