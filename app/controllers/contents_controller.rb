@@ -46,6 +46,11 @@ class ContentsController < ApplicationController
     content = Content.new(url: url)
     full_url = content.full_url(session[:fhir_server_url])
 
+    unless valid_url?(full_url)
+      Rails.logger.error("Invalid URL provided: #{full_url}")
+      return nil
+    end
+
     connection = Faraday.new(url: full_url)
     response = connection.get
 
@@ -61,8 +66,21 @@ class ContentsController < ApplicationController
     nil
   end
 
+  def valid_url?(url)
+    allowed_domains = FhirServer.all.map { |server| URI.parse(server.base_url).host }
+    uri = URI.parse(url)
+    allowed_domains.include?(uri.host)
+  rescue URI::InvalidURIError
+    false
+  end
+
   def fetch_content_data(content)
     full_url = content.full_url(session[:fhir_server_url])
+
+    unless valid_url?(full_url)
+      Rails.logger.error("Invalid URL provided: #{full_url}")
+      return nil
+    end
 
     connection = Faraday.new(url: full_url)
     response = connection.get
