@@ -46,7 +46,7 @@
                   <button
                     data-modal-target="<%= content.id %>"
                     data-modal-toggle="<%= content.id %>"
-                    class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-1.5 focus:outline-none flex items-center"
+                    class="border-none text-blue-600 hover:text-red-500 focus:ring-4 focus:ring-blue-300 font-medium text-xs px-3 py-1.5 focus:outline-none flex items-center"
                     type="button"
                   >
                     <span class="text-sm">View Doc</span>
@@ -56,7 +56,7 @@
                 <% end %>
               </div>
             <% else %>
-              <%= link_to 'See details', advance_directive_path(adi.id), class: 'text-blue-600 hover:text-blue-800 font-medium text-sm' %>
+              <small>No Document</small>
             <% end %>
           </td>
           <% if adi.doc_revoke_status.present? %>

@@ -26,31 +26,15 @@ class DocumentReferencesController < ApplicationController
       end
 
       drs = fhir_document_references.map do |ref|
-        get_pdf_from_contents(ref.content) => {pdf:, pdf_binary_id:}
-        DocumentReference.new(ref, fhir_document_references, pdf, pdf_binary_id)
+        DocumentReference.new(ref, entries)
       end
 
-      drs
+      drs.sort_by(&:full_date).reverse.group_by(&:identifier)
     rescue StandardError => e
       Rails.logger.error("Error fetching or parsing Document References:\n #{e.message.inspect}")
       Rails.logger.error(e.backtrace.join("\n"))
       raise "Error fetching or parsing patient's Document Reference. Check the log for detail."
     end
-  end
-
-  def get_pdf_from_contents(contents)
-    pdf_data = { pdf: nil, pdf_binary_id: nil }
-    pdf_content = contents.find { |content| check_content_attachment_resource(content) == 'pdf' }
-    if pdf_content
-      data = pdf_content.attachment&.data
-      pdf_data[:pdf] = data
-      return pdf_data if data.present?
-
-      ref = pdf_content.attachment&.url
-      binary_id = extract_id_from_ref(ref)
-      pdf_data = retrieve_bundle_from_binary(binary_id, 'pdf')
-    end
-    pdf_data
   end
 
   def check_content_attachment_resource(content)
