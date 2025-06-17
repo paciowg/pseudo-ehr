@@ -1,35 +1,40 @@
 # app/controllers/contents_controller.rb
 class ContentsController < ApplicationController
   def show
-    # Find the content by ID from the Content.all collection
-    @content = Content.all.find { |c| c.id == params[:id] }
-
-    # If content not found, check if we have URL to fetch from
+    @content = Content.find(params[:id])
     @content = fetch_content_from_url(params[:url], params[:type]) if @content.nil? && params[:url].present?
 
-    # If content still not found, return 404
     unless @content
       render plain: 'Content not found', status: :not_found
       return
     end
 
-    # If content has URL but no data, fetch the data
     fetch_content_data(@content) if @content.data.blank? && @content.url.present?
 
-    # Handle download request
-    if params[:download]
+    if params[:download] && @content.data.present?
+      content_type = @content.type.presence || 'application/octet-stream'
+      filename = @content.title.present? ? sanitize_filename(@content.title) : 'download'
+
       send_data Base64.decode64(@content.data),
-                type: @content.type,
+                type: content_type,
                 disposition: 'attachment',
-                filename: sanitize_filename(@content.title)
+                filename: filename
       return
     end
 
-    # Render content based on type
     respond_to do |format|
       format.html do
-        # Send the content data directly to the browser
-        send_data Base64.decode64(@content.data), type: @content.type, disposition: 'inline'
+        if @content.data.present?
+          content_type = @content.type.presence || 'application/octet-stream'
+          content_type = 'text/html' if content_type.include?('cda')
+
+          data = Base64.decode64(@content.data)
+          data = transfor_cda_to_html(data) if content_type == 'text/html'
+
+          send_data data, type: content_type, disposition: 'inline'
+        else
+          render plain: 'No content data available', status: :not_found
+        end
       end
       format.json { render json: { content: @content } }
     end
@@ -38,43 +43,43 @@ class ContentsController < ApplicationController
   private
 
   def fetch_content_from_url(url, type)
-    # Create a new Content instance with data from URL
+    content = Content.new(url: url)
+    full_url = content.full_url(session[:fhir_server_url])
 
-    connection = Faraday.new(url: url)
+    connection = Faraday.new(url: full_url)
     response = connection.get
 
-    # Determine content type if not provided
-    content_type = type || response.headers['content-type']
+    content.type = type || response.headers['content-type']
 
-    # Create a title from the URL if not provided
-    title = params[:title] || File.basename(URI.parse(url).path)
+    title = params[:title] || File.basename(URI.parse(full_url).path)
+    content.title = title
+    content.data = Base64.encode64(response.body)
 
-    # Create new Content instance (will be automatically added to Content.all)
-    Content.new(
-      title: title,
-      type: content_type,
-      data: Base64.encode64(response.body),
-      url: url
-    )
+    content
   rescue StandardError => e
     Rails.logger.error("Error fetching content from URL: #{e.message}")
     nil
   end
 
   def fetch_content_data(content)
-    # Fetch data from content URL if available
+    full_url = content.full_url(session[:fhir_server_url])
 
-    connection = Faraday.new(url: content.url)
+    connection = Faraday.new(url: full_url)
     response = connection.get
 
-    # Update content with fetched data
-    content.instance_variable_set(:@data, Base64.encode64(response.body))
+    content.data = Base64.encode64(response.body)
   rescue StandardError => e
     Rails.logger.error("Error fetching content data: #{e.message}")
   end
 
+  def transfor_cda_to_html(raw_xml)
+    doc = Nokogiri::XML(raw_xml)
+    xslt = Nokogiri::XSLT(File.read(Rails.root.join('public/CDA.xsl')))
+
+    xslt.transform(doc).to_html
+  end
+
   def sanitize_filename(filename)
-    # Remove invalid characters from filename
     filename.gsub(/[^0-9A-Za-z.-]/, '_')
   end
 end
