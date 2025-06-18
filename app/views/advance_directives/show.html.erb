@@ -1,5 +1,5 @@
 <!-- app/views/advance_directives/show.html.erb -->
-<div class="relative xl:mt-6 lg:mt-10 md:mt-12 sm:mt-32 lg:ml-64 w-full lg:w-3/4 h-full mb-4 font-sans">
+<div class="relative w-full max-w-6xl mx-auto px-4 py-6 mb-8 font-sans">
   <%= turbo_frame_tag "adi" do %>
     <%= turbo_stream.update "queries" do%>
       <%= render 'shared/queries' %>
@@ -8,11 +8,61 @@
       <%= render 'shared/flash_messages' %>
     <% end %>
 
-    <%= render "adi_header"%>
-    <% @adi.compositions.each do |composition| %>
-      <% composition.section.each do |section| %>
-        <%= render "composition_section", section: section %>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="border-b border-gray-200">
+        <%= render "adi_header"%>
+      </div>
+
+      <% if @adi.compositions.present? %>
+        <div class="p-6">
+          <% @adi.compositions.each do |composition| %>
+            <% if composition.section.present? %>
+              <div class="space-y-6">
+                <% composition.section.each do |section| %>
+                  <%= render "composition_section", section: section %>
+                <% end %>
+              </div>
+            <% else %>
+              <div class="p-4 bg-gray-50 rounded-lg">
+                <p class="text-gray-500 text-center">No sections available in this composition.</p>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="p-6">
+          <div class="p-4 bg-gray-50 rounded-lg">
+            <p class="text-gray-500 text-center">No composition data available for this advance directive.</p>
+          </div>
+        </div>
       <% end %>
-    <% end %>
+
+      <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+        <div class="flex justify-between items-center">
+          <a href="<%= patient_advance_directives_path(patient_id: patient_id) %>" data-turbo="false" class="text-blue-600 hover:text-blue-800 flex items-center">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Advance Directives
+          </a>
+
+          <% if @adi.contents.present? %>
+            <div class="flex gap-2">
+              <% @adi.contents.each_with_index do |content, index| %>
+                <button
+                  data-modal-target="<%= content.id %>"
+                  data-modal-toggle="<%= content.id %>"
+                  class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-1.5 focus:outline-none flex items-center"
+                  type="button"
+                >
+                  <span>View <%= content.title || "Document #{index + 1}" %></span>
+                  <span class="ml-2"><%= content_type_badge(content.type) %></span>
+                </button>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
   <% end %>
 </div>

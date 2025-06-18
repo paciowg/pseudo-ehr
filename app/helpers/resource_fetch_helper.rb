@@ -6,7 +6,7 @@ module ResourceFetchHelper
   NON_PATIENT_RELATED_RESOURCES = %i[Organization Location PractitionerRole].freeze
   PATIENT_RELATED_RESOURCES = %i[
     ServiceRequest NutritionOrder Observation CareTeam Goal QuestionnaireResponse Condition
-    List Composition
+    List Composition MedicationRequest Procedure DiagnosticReport DocumentReference
   ].freeze
 
   def current_server
@@ -129,6 +129,11 @@ module ResourceFetchHelper
     parameters = { patient: patient_id, category: '42348-3,75320-2', _count: 100, status: }.compact
 
     fetch_resource_with_defaults(FHIR::DocumentReference, 100, parameters)
+  end
+
+  def fetch_toc_compositions_by_patient(patient_id)
+    parameters = { patient: patient_id, category: '18761-7', _count: 100 }.compact
+    fetch_resource_with_defaults(FHIR::Composition, 100, parameters)
   end
 
   def fetch_document_reference(doc_id)

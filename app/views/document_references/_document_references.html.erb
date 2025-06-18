@@ -1,0 +1,73 @@
+<%= turbo_frame_tag "document_references" do %>
+  <div class="mt-8 flow-root w-11/12">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <% if @document_references.empty? %>
+          <h1 class="text-center">No Document Reference Found!</h1>
+        <% else %>
+          <div id="accordion" data-accordion="open">
+            <div class="w-full mb-5 p-4 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+              <% @document_references.each do |identifier, document_references| %>
+                <% body_id = "accordion-body-#{identifier}" %>
+                <h5 id="accordion-heading-<%= identifier %>">
+                  <a class="flex items-center justify-between w-full p-4 font-medium text-left text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-800 dark:border-gray-700 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-gray-800" data-accordion-target="#<%= body_id %>" aria-expanded="true" aria-controls="<%= body_id %>">
+                    <span><%= document_references.first.type %></span>
+                    <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                    </svg>
+                  </a>
+                </h5>
+                <div id="<%= body_id %>" aria-labelledby="accordion-heading-<%= identifier %>">
+                  <div class="p-4 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900 overflow-x-auto">
+                    <table class="w-full table-fixed text-xs text-left text-gray-700 dark:text-gray-400 shadow-md border-x-2 overflow-x-auto">
+                      <thead class="text-xs text-white uppercase bg-gray-900">
+                        <tr>
+                          <th scope="col" class="px-2 py-2">Title</th>
+                          <th scope="col" class="px-2 py-2">Author</th>
+                          <th scope="col" class="px-2 py-2">Created</th>
+                          <th scope="col" class="px-2 py-2">Documents</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% document_references.each do |document_reference| %>
+                          <tr class="bg-gray-100 border-b border-gray-300 hover:bg-blue-50">
+                            <td class="px-2 py-2"><%= document_reference.title %></td>
+                            <td class="px-2 py-2"><%= document_reference.author %></td>
+                            <td class="px-2 py-2"><%= document_reference.date %></td>
+                            <td class="px-2 py-2">
+                            <% if document_reference.contents.present? %>
+                              <div class="flex flex-wrap gap-2">
+                                <% document_reference.contents.each_with_index do |content, index| %>
+                                  <button
+                                    data-modal-target="<%= content.id %>"
+                                    data-modal-toggle="<%= content.id %>"
+                                    class="border-none text-blue-600 hover:text-red-500 focus:ring-4 focus:ring-blue-300 font-medium text-xs px-3 py-1.5 focus:outline-none flex items-center"
+                                    type="button"
+                                  >
+                                    <span class="text-sm">View Doc</span>
+                                    <span class="text-sm ml-2"><%= content_type_badge(content.type) %></span>
+                                  </button>
+                                  <%= render partial: 'shared/content_display_modal', locals: { content: content } %>
+                                <% end %>
+                              </div>
+                            <% else %>
+                              <small>No Document</small>
+                            <% end %>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+              </div>
+            <br />
+            <% if @pagy %>
+              <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
+            <% end %>
+            <br />
+          <% end %>
+        <% end %>
+      </div>
+      </div>
+    </div>
+  </div>
+<% end %>
