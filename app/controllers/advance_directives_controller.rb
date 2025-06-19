@@ -316,7 +316,7 @@ class AdvanceDirectivesController < ApplicationController
   end
 
   def update_section_entries(_resource, section)
-    section_entries = @adi.compositions.first.section.select do |s|
+    section_entries = @adi.compositions.first.sections.select do |s|
       s['title'] == section.title
     end.pluck('objects').flatten
     section_entries.each do |object|
