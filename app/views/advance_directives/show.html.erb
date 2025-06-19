@@ -16,9 +16,9 @@
       <% if @adi.compositions.present? %>
         <div class="p-6">
           <% @adi.compositions.each do |composition| %>
-            <% if composition.section.present? %>
+            <% if composition.sections.present? %>
               <div class="space-y-6">
-                <% composition.section.each do |section| %>
+                <% composition.sections.each do |section| %>
                   <%= render "composition_section", section: section %>
                 <% end %>
               </div>

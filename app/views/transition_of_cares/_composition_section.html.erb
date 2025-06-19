@@ -1,0 +1,247 @@
+<%# Partial for displaying Composition resources in the transition of care view %>
+<div class="mt-2">
+  <% modal_id = "compositionModal_#{SecureRandom.hex(4)}" %>
+  <button class="flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 focus:outline-none"
+    data-modal-target="<%= modal_id %>" data-modal-toggle="<%= modal_id %>">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+    Show compositions (<%= objects.length %>)
+  </button>
+
+  <!-- Composition Modal -->
+  <div id="<%= modal_id %>" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-7xl max-h-full">
+      <!-- Modal content -->
+      <div class="relative bg-white rounded-lg shadow">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+          <h3 class="text-xl font-semibold text-gray-900">
+            Compositions (<%= objects.length %>)
+          </h3>
+          <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="<%= modal_id %>">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
+        <!-- Modal body -->
+        <div class="p-4 md:p-5 space-y-4">
+          <% @compositions = objects.map {|obj| obj[:resource]} %>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-500">
+              <thead class="text-xs uppercase bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Title</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Type</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Status</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Date</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Author</th>
+                </tr>
+              </thead>
+              <tbody data-accordion="table-column" class="divide-y divide-gray-200">
+                <% @compositions.each do |composition| %>
+                  <% identifier = composition.id.to_s.downcase %>
+                  <tr class="bg-white hover:bg-gray-50 cursor-pointer transition"
+                    id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>"
+                    aria-expanded="false" aria-controls="table-column-body-<%= identifier %>">
+                    <td class="p-3 w-4">
+                      <svg data-accordion-icon class="w-5 h-5 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                    </td>
+                    <td class="px-4 py-3 font-medium text-gray-900"><%= composition.title || 'Untitled Composition' %></td>
+                    <td class="px-4 py-3 text-gray-700"><%= composition.type rescue '--' %></td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <% status = composition.status&.downcase rescue 'unknown' %>
+                      <% color = status == 'final' ? 'green' : (status == 'preliminary' ? 'yellow' : 'gray') %>
+                      <div class="w-fit bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        <%= composition.status || 'Unknown' %>
+                      </div>
+                    </td>
+                    <td class="px-4 py-3 text-gray-700"><%= composition.date rescue '--' %></td>
+                    <td class="px-4 py-3 text-gray-700"><%= composition.author rescue '--' %></td>
+                  </tr>
+                  <tr class="hidden" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
+                    <td class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
+                    <td class="p-4" colspan="5">
+                      <div class="bg-white rounded-lg shadow-sm p-4">
+                        <!-- Sections -->
+                        <% if composition.sections.present? %>
+                          <h4 class="text-lg font-semibold text-gray-800 mb-3">Sections</h4>
+                          <div class="space-y-4">
+                            <% composition.sections.each do |section| %>
+                              <div class="p-4 bg-gray-50 rounded-lg">
+                                <h5 class="font-medium text-gray-900 mb-2"><%= section['title'] || 'Untitled Section' %></h5>
+
+                                <% if section['code'].present? %>
+                                  <div class="mb-2">
+                                    <span class="text-sm text-gray-500">Code:</span>
+                                    <span class="ml-2 text-sm font-medium text-gray-700"><%= section['code'] %></span>
+                                  </div>
+                                <% end %>
+
+                                <% if section['clause'].present? %>
+                                  <div class="mb-4">
+                                    <span class="text-sm text-gray-500">Clause:</span>
+                                    <p class="mt-1 text-sm text-gray-700"><%= section['clause'] %></p>
+                                  </div>
+                                <% end %>
+
+                                <% if section['text'].present? && section['objects'].blank? %>
+                                  <div class="mb-4">
+                                    <span class="text-sm text-gray-500">Section Text:</span>
+                                    <div class="mt-1 text-sm text-gray-700"><%= raw(section['text']) %></div>
+                                  </div>
+                                <% end %>
+
+                                <% if section['objects'].present? %>
+                                  <div class="mt-3">
+                                    <h6 class="text-sm font-medium text-gray-700 mb-2">Resources</h6>
+                                    <div class="overflow-x-auto">
+                                      <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                          <tr>
+                                            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                          <% section['objects'].each do |object| %>
+                                            <tr class="hover:bg-gray-50">
+                                              <td class="px-4 py-2 text-sm font-medium text-gray-900">
+                                                <%= object[:resource_type] rescue 'Unknown' %>
+                                              </td>
+                                              <td class="px-4 py-2 text-sm text-gray-700">
+                                                <% if object[:resource].present? %>
+                                                  <% resource = object[:resource] %>
+                                                  <% case object[:resource_type] %>
+                                                  <% when 'Condition' %>
+                                                    <%= resource.respond_to?(:code) ? resource.code : 'No details available' %>
+                                                  <% when 'AllergyIntolerance' %>
+                                                    <%= resource.respond_to?(:code) ? resource.code : 'No details available' %>
+                                                  <% when 'MedicationRequest' %>
+                                                    <%= resource.respond_to?(:medication) ? resource.medication : 'No details available' %>
+                                                  <% when 'MedicationList' %>
+                                                    <%= resource.respond_to?(:title) ? resource.title : 'No details available' %>
+                                                  <% when 'MedicationStatement' %>
+                                                    <%= resource.respond_to?(:medication) ? resource.medication : 'No details available' %>
+                                                  <% when 'MedicationAdministration' %>
+                                                    <%= resource.respond_to?(:medication) ? resource.medication : 'No details available' %>
+                                                  <% when 'QuestionnaireResponse' %>
+                                                    <%= resource.respond_to?(:questionnaire_title) ? resource.questionnaire_title : resource.respond_to?(:name) ? resource.name : 'No details available' %>
+                                                  <% when 'Goal' %>
+                                                    <%= resource.respond_to?(:description) ? resource.description : 'No details available' %>
+                                                  <% when 'Observation' %>
+                                                    <% if resource.respond_to?(:code) && resource.respond_to?(:measurement) %>
+                                                      <%= resource.code %> <%= resource.measurement.present? ? "- #{resource.measurement}" : '' %>
+                                                    <% else %>
+                                                      <%= resource.respond_to?(:code) ? resource.code : 'No details available' %>
+                                                    <% end %>
+                                                  <% when 'Procedure' %>
+                                                    <%= resource.respond_to?(:code) ? resource.code : 'No details available' %>
+                                                  <% when 'DiagnosticReport' %>
+                                                    <%= resource.respond_to?(:code) ? resource.code : 'No details available' %>
+                                                  <% when 'DocumentReference' %>
+                                                    <%= resource.respond_to?(:title) ? resource.title : 'No details available' %>
+                                                  <% when 'Immunization' %>
+                                                    <%= resource.respond_to?(:vaccine_code) ? resource.vaccine_code : 'No details available' %>
+                                                  <% when 'ImmunizationRecommendation' %>
+                                                    <% if resource.respond_to?(:recommendation) && resource.recommendation.present? %>
+                                                      <% rec = resource.recommendation.first %>
+                                                      <% if rec[:vaccine_code].present? %>
+                                                        <%= rec[:vaccine_code].first %>
+                                                      <% else %>
+                                                        No details available
+                                                      <% end %>
+                                                    <% else %>
+                                                      No details available
+                                                    <% end %>
+                                                  <% when 'CarePlan' %>
+                                                    <%= resource.respond_to?(:category) ? resource.category : 'No details available' %>
+                                                  <% when 'Encounter' %>
+                                                    <%= resource.respond_to?(:type) ? resource.type : 'No details available' %>
+                                                  <% when 'Device' %>
+                                                    <%= resource.respond_to?(:type) ? resource.type : 'No details available' %>
+                                                  <% when 'Consent' %>
+                                                    <%= resource.respond_to?(:scope) ? resource.scope : 'No details available' %>
+                                                  <% when 'RelatedPerson' %>
+                                                    <%= resource.respond_to?(:name) ? resource.name : 'No details available' %>
+                                                  <% when 'ServiceRequest' %>
+                                                    <%= resource.respond_to?(:code) ? resource.code : 'No details available' %>
+                                                  <% when 'Composition' %>
+                                                    <%= resource.respond_to?(:title) ? resource.title : 'No details available' %>
+                                                  <% else %>
+                                                    No details available
+                                                  <% end %>
+                                                <% else %>
+                                                  No details available
+                                                <% end %>
+                                              </td>
+                                              <td class="px-4 py-2 text-sm text-gray-700">
+                                                <% if object[:resource].present? && object[:resource].respond_to?(:status) %>
+                                                  <% status = object[:resource].status&.downcase rescue 'unknown' %>
+                                                  <% color = status == 'active' || status == 'final' ? 'green' :
+                                                            status == 'preliminary' || status == 'in-progress' ? 'yellow' : 'gray' %>
+                                                  <div class="w-fit bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                                    <%= object[:resource].status || 'Unknown' %>
+                                                  </div>
+                                                <% else %>
+                                                  --
+                                                <% end %>
+                                              </td>
+                                              <td class="px-4 py-2 text-sm text-gray-700">
+                                                <% if object[:resource].present? %>
+                                                  <% resource = object[:resource] %>
+                                                  <% if resource.respond_to?(:date) %>
+                                                    <%= resource.date %>
+                                                  <% elsif resource.respond_to?(:effective_date_time) %>
+                                                    <%= resource.effective_date_time %>
+                                                  <% elsif resource.respond_to?(:authored_on) %>
+                                                    <%= resource.authored_on %>
+                                                  <% elsif resource.respond_to?(:occurrence_date) %>
+                                                    <%= resource.occurrence_date %>
+                                                  <% elsif resource.respond_to?(:recorded_date) %>
+                                                    <%= resource.recorded_date %>
+                                                  <% elsif resource.respond_to?(:date_time) %>
+                                                    <%= resource.date_time %>
+                                                  <% else %>
+                                                    --
+                                                  <% end %>
+                                                <% else %>
+                                                  --
+                                                <% end %>
+                                              </td>
+                                            </tr>
+                                          <% end %>
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                <% end %>
+                              </div>
+                            <% end %>
+                          </div>
+                        <% else %>
+                          <p class="text-gray-500 italic">No sections available for this composition.</p>
+                        <% end %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 md:p-5 border-t border-gray-200 rounded-b">
+          <button data-modal-hide="<%= modal_id %>" type="button" class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-md text-sm px-5 py-2.5 text-center">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
