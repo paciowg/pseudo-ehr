@@ -55,7 +55,6 @@ jobs:
         uses: ruby/setup-ruby@v1.207.0
         with:
           bundler-cache: true
-      # Add or replace any other lints here
       - name: Security audit dependencies
         run: bin/rails bundle:audit:update
       - name: Security audit application code
