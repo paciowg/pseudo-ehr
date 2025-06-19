@@ -85,16 +85,18 @@ RSpec.describe ApplicationController do
   describe '#retrieve_patient' do
     let(:patient_id) { '123' }
 
-    before do
-      allow(controller).to receive(:patient_id).and_return(patient_id)
-      allow(controller).to receive(:fetch_single_patient).with(patient_id).and_return(FHIR::Patient.new(id: patient_id))
-      allow(Rails.cache).to receive(:fetch).and_yield
-    end
+    context 'when no error' do
+      before do
+        allow(controller).to receive(:patient_id).and_return(patient_id)
+        allow(controller).to receive(:fetch_single_patient).with(patient_id).and_return(FHIR::Patient.new(id: patient_id))
+        allow(Rails.cache).to receive(:fetch).and_yield
+      end
 
-    it 'sets the @patient variable' do
-      controller.retrieve_patient
-      expect(assigns(:patient)).to be_instance_of(Patient)
-      expect(assigns(:patient).id).to eq(patient_id)
+      it 'sets the @patient variable' do
+        controller.retrieve_patient
+        expect(assigns(:patient)).to be_instance_of(Patient)
+        expect(assigns(:patient).id).to eq(patient_id)
+      end
     end
 
     context 'when an error occurs while fetching patient' do
@@ -115,18 +117,21 @@ RSpec.describe ApplicationController do
   describe '#retrieve_practitioner_roles' do
     let(:patient_id) { '123' }
 
-    before do
-      allow(controller).to receive(:patient_id).and_return(patient_id)
-      allow(controller).to receive(:fetch_practitioner_roles).and_return([FHIR::PractitionerRole.new])
-    end
+    context 'when no error' do
+      before do
+        allow(controller).to receive(:patient_id).and_return(patient_id)
+        allow(controller).to receive(:fetch_practitioner_roles).and_return([FHIR::PractitionerRole.new])
+      end
 
-    it 'sets @practitioner_roles' do
-      roles = controller.retrieve_practitioner_roles
-      expect(roles).to all(be_instance_of(FHIR::PractitionerRole))
+      it 'sets @practitioner_roles' do
+        roles = controller.retrieve_practitioner_roles
+        expect(roles).to all(be_instance_of(FHIR::PractitionerRole))
+      end
     end
 
     context 'when an error occurs while fetching practitioner roles' do
       before do
+        allow(PractitionerRoleCache).to receive(:expired?).and_return(true)
         allow(controller).to receive(:fetch_practitioner_roles).and_raise(StandardError, 'Some error')
         allow(Rails.logger).to receive(:error)
       end
