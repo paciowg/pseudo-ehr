@@ -56,30 +56,30 @@ Rails.application.configure do
   config.log_tags = [:request_id]
 
   # Use a different cache store in production with optimized settings.
-  config.cache_store = :mem_cache_store,
-                       (ENV['MEMCACHIER_SERVERS'] || '').split(','),
-                       {
-                         username: ENV.fetch('MEMCACHIER_USERNAME', nil),
-                         password: ENV.fetch('MEMCACHIER_PASSWORD', nil),
-                         namespace: 'pseudo_ehr_prod',
-                         expires_in: 1.day,
-                         compress: true,
-                         compress_threshold: 1.kilobyte,
-                         pool_size: 20,                 # Increased from 10 for better concurrency
-                         failover: true,
-                         socket_timeout: 0.3,           # Reduced from 0.5 for faster response
-                         socket_failure_limit: 2,       # Reduced from 3 for faster failover
-                         socket_failure_delay: 0.05,    # Reduced from 0.1 for faster failover
-                         down_retry_delay: 15,          # Reduced from 30 for faster recovery
-                         error_when_client_sharing: false,
-                         value_max_bytes: 5.megabytes,  # Increased from 1MB for larger objects
-                         cache_nils: true,
-                         retry_count: 3,                # Increased from 2 for better reliability
-                         keepalive: true,               # Keep connections alive
-                         expires_in_seconds: true,      # More precise expiration
-                         threadsafe: true,              # Thread safety for concurrent access
-                         tcp_nodelay: true              # Disable Nagle's algorithm for better performance
-                       }
+  # config.cache_store = :mem_cache_store,
+  #                      (ENV['MEMCACHIER_SERVERS'] || '').split(','),
+  #                      {
+  #                        username: ENV.fetch('MEMCACHIER_USERNAME', nil),
+  #                        password: ENV.fetch('MEMCACHIER_PASSWORD', nil),
+  #                        namespace: 'pseudo_ehr_prod',
+  #                        expires_in: 1.day,
+  #                        compress: true,
+  #                        compress_threshold: 1.kilobyte,
+  #                        pool_size: 20,                 # Increased from 10 for better concurrency
+  #                        failover: true,
+  #                        socket_timeout: 0.3,           # Reduced from 0.5 for faster response
+  #                        socket_failure_limit: 2,       # Reduced from 3 for faster failover
+  #                        socket_failure_delay: 0.05,    # Reduced from 0.1 for faster failover
+  #                        down_retry_delay: 15,          # Reduced from 30 for faster recovery
+  #                        error_when_client_sharing: false,
+  #                        value_max_bytes: 5.megabytes,  # Increased from 1MB for larger objects
+  #                        cache_nils: true,
+  #                        retry_count: 3,                # Increased from 2 for better reliability
+  #                        keepalive: true,               # Keep connections alive
+  #                        expires_in_seconds: true,      # More precise expiration
+  #                        threadsafe: true,              # Thread safety for concurrent access
+  #                        tcp_nodelay: true              # Disable Nagle's algorithm for better performance
+  #                      }
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter     = :resque
