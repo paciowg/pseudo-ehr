@@ -3,7 +3,7 @@ class RelatedPerson < Resource
   attr_reader :id, :fhir_resource, :name, :relationship, :telecom, :gender, :birth_date,
               :address, :period, :active, :patient, :patient_id
 
-  def initialize(fhir_related_person, bundle_entries = [])
+  def initialize(fhir_related_person, _bundle_entries = [])
     @id = fhir_related_person.id
     @fhir_resource = fhir_related_person
     @patient_id = @fhir_resource.patient&.reference&.split('/')&.last
@@ -34,7 +34,7 @@ class RelatedPerson < Resource
   private
 
   def format_period(period)
-    return '--' unless period&.start.present?
+    return '--' if period&.start.blank?
 
     start_date = parse_date(period.start)
     end_date = period.end.present? ? parse_date(period.end) : 'present'

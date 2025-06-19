@@ -69,7 +69,7 @@ class MedicationAdministration < Resource
   end
 
   def format_period(period)
-    return '--' unless period&.start.present?
+    return '--' if period&.start.blank?
 
     start_date = parse_date(period.start)
     end_date = period.end.present? ? parse_date(period.end) : 'present'
@@ -78,7 +78,7 @@ class MedicationAdministration < Resource
   end
 
   def get_performers(performers, bundle_entries)
-    return [] unless performers.present?
+    return [] if performers.blank?
 
     performers.map do |performer|
       {
@@ -89,7 +89,7 @@ class MedicationAdministration < Resource
   end
 
   def get_reason_references(reason_references, bundle_entries)
-    return [] unless reason_references.present?
+    return [] if reason_references.blank?
 
     reason_references.map do |reference|
       resource_type, resource_id = reference.reference.split('/')
@@ -113,7 +113,7 @@ class MedicationAdministration < Resource
   end
 
   def get_devices(devices, bundle_entries)
-    return [] unless devices.present?
+    return [] if devices.blank?
 
     devices.map do |reference|
       resource_type, resource_id = reference.reference.split('/')
@@ -129,7 +129,7 @@ class MedicationAdministration < Resource
   end
 
   def get_dosage(dosage)
-    return nil unless dosage.present?
+    return if dosage.blank?
 
     {
       text: dosage.text,
@@ -142,7 +142,7 @@ class MedicationAdministration < Resource
   end
 
   def format_quantity(quantity)
-    return nil unless quantity.present?
+    return if quantity.blank?
 
     value = quantity.value
     unit = quantity.unit || quantity.code
@@ -157,13 +157,11 @@ class MedicationAdministration < Resource
       numerator = format_quantity(rate_ratio.numerator)
       denominator = format_quantity(rate_ratio.denominator)
       "#{numerator} / #{denominator}"
-    else
-      nil
     end
   end
 
   def get_event_history(event_history, bundle_entries)
-    return [] unless event_history.present?
+    return [] if event_history.blank?
 
     event_history.map do |reference|
       resource_type, resource_id = reference.reference.split('/')
@@ -179,7 +177,7 @@ class MedicationAdministration < Resource
   end
 
   def get_notes(notes)
-    return [] unless notes.present?
+    return [] if notes.blank?
 
     notes.map do |note|
       {

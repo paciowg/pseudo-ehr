@@ -66,7 +66,7 @@ class Device < Resource
   end
 
   def get_versions(versions)
-    return [] unless versions.present?
+    return [] if versions.blank?
 
     versions.map do |version|
       {
@@ -84,7 +84,7 @@ class Device < Resource
   end
 
   def get_notes(notes)
-    return [] unless notes.present?
+    return [] if notes.blank?
 
     notes.map do |note|
       {

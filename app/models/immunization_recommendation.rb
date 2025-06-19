@@ -1,6 +1,6 @@
 # ImmunizationRecommendation Model
 class ImmunizationRecommendation < Resource
-  attr_reader :id, :fhir_resource, :patient, :date, :authority, :identifier, :recommendation,
+  attr_reader :id, :fhir_resource, :date, :authority, :identifier, :recommendation,
               :patient, :patient_id
 
   def initialize(fhir_immunization_recommendation, bundle_entries = [])
@@ -19,7 +19,7 @@ class ImmunizationRecommendation < Resource
   private
 
   def get_recommendations(recommendations, bundle_entries)
-    return [] unless recommendations.present?
+    return [] if recommendations.blank?
 
     recommendations.map do |rec|
       {
@@ -42,7 +42,7 @@ class ImmunizationRecommendation < Resource
   end
 
   def get_date_criterion(date_criterion)
-    return [] unless date_criterion.present?
+    return [] if date_criterion.blank?
 
     date_criterion.map do |dc|
       {
@@ -53,7 +53,7 @@ class ImmunizationRecommendation < Resource
   end
 
   def get_supporting_immunizations(supporting_immunizations, bundle_entries)
-    return [] unless supporting_immunizations.present?
+    return [] if supporting_immunizations.blank?
 
     supporting_immunizations.map do |reference|
       resource_type, resource_id = reference.reference.split('/')
@@ -69,7 +69,7 @@ class ImmunizationRecommendation < Resource
   end
 
   def get_supporting_patient_info(supporting_patient_info, bundle_entries)
-    return [] unless supporting_patient_info.present?
+    return [] if supporting_patient_info.blank?
 
     supporting_patient_info.map do |reference|
       resource_type, resource_id = reference.reference.split('/')

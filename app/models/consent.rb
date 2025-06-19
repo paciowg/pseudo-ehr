@@ -32,7 +32,7 @@ class Consent < Resource
   private
 
   def get_source_attachment(source)
-    return nil unless source&.attachment.present?
+    return if source&.attachment.blank?
 
     attachment = source.attachment
     Content.new(
@@ -45,7 +45,7 @@ class Consent < Resource
   end
 
   def get_policy(policy_array)
-    return [] unless policy_array.present?
+    return [] if policy_array.blank?
 
     policy_array.map do |policy|
       {
@@ -56,7 +56,7 @@ class Consent < Resource
   end
 
   def get_provision(provision)
-    return nil unless provision.present?
+    return if provision.blank?
 
     {
       type: provision.type,
@@ -70,7 +70,7 @@ class Consent < Resource
   end
 
   def format_period(period)
-    return nil unless period&.start.present?
+    return if period&.start.blank?
 
     start_date = parse_date(period.start)
     end_date = period.end.present? ? parse_date(period.end) : 'present'

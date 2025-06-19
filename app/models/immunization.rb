@@ -49,7 +49,7 @@ class Immunization < Resource
   end
 
   def format_quantity(quantity)
-    return '--' unless quantity.present?
+    return '--' if quantity.blank?
 
     value = quantity.value
     unit = quantity.unit || quantity.code
@@ -58,7 +58,7 @@ class Immunization < Resource
   end
 
   def get_performers(performers, bundle_entries)
-    return [] unless performers.present?
+    return [] if performers.blank?
 
     performers.map do |performer|
       {
@@ -69,7 +69,7 @@ class Immunization < Resource
   end
 
   def get_notes(notes)
-    return [] unless notes.present?
+    return [] if notes.blank?
 
     notes.map do |note|
       {
@@ -81,7 +81,7 @@ class Immunization < Resource
   end
 
   def get_reason_references(reason_references, bundle_entries)
-    return [] unless reason_references.present?
+    return [] if reason_references.blank?
 
     reason_references.map do |reference|
       resource_type, resource_id = reference.reference.split('/')
@@ -105,7 +105,7 @@ class Immunization < Resource
   end
 
   def get_education(education)
-    return [] unless education.present?
+    return [] if education.blank?
 
     education.map do |edu|
       {
@@ -118,7 +118,7 @@ class Immunization < Resource
   end
 
   def get_protocol_applied(protocol_applied)
-    return [] unless protocol_applied.present?
+    return [] if protocol_applied.blank?
 
     protocol_applied.map do |protocol|
       {

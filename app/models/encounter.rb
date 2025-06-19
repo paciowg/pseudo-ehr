@@ -43,7 +43,7 @@ class Encounter < Resource
   private
 
   def format_period(period)
-    return '--' unless period&.start.present?
+    return '--' if period&.start.blank?
 
     start_date = parse_date(period.start)
     end_date = period.end.present? ? parse_date(period.end) : 'present'
@@ -52,7 +52,7 @@ class Encounter < Resource
   end
 
   def format_duration(duration)
-    return '--' unless duration.present?
+    return '--' if duration.blank?
 
     value = duration.value
     unit = duration.unit || duration.code
@@ -61,7 +61,7 @@ class Encounter < Resource
   end
 
   def get_participants(participants, bundle_entries)
-    return [] unless participants.present?
+    return [] if participants.blank?
 
     participants.map do |participant|
       {
@@ -73,7 +73,7 @@ class Encounter < Resource
   end
 
   def get_reason_references(reason_references, bundle_entries)
-    return [] unless reason_references.present?
+    return [] if reason_references.blank?
 
     reason_references.map do |reference|
       resource_type, resource_id = reference.reference.split('/')
@@ -100,7 +100,7 @@ class Encounter < Resource
   end
 
   def get_diagnoses(diagnoses, bundle_entries)
-    return [] unless diagnoses.present?
+    return [] if diagnoses.blank?
 
     diagnoses.map do |diagnosis|
       condition_reference = diagnosis.condition
@@ -126,7 +126,7 @@ class Encounter < Resource
   end
 
   def get_locations(locations, bundle_entries)
-    return [] unless locations.present?
+    return [] if locations.blank?
 
     locations.map do |location|
       location_reference = location.location
