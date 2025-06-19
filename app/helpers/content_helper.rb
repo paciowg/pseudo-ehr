@@ -31,10 +31,10 @@ module ContentHelper
                 class: "bg-#{badge_color}-100 text-#{badge_color}-800 text-xs font-medium px-2 py-0.5 rounded-full")
   end
 
-  def format_xml_content(xml_content, is_cda = false)
-    doc = Nokogiri::XML(xml_content) { |config| config.noblanks }
+  def format_xml_content(xml_content, is_cda = false) # rubocop:disable Style/OptionalBooleanParameter
+    doc = Nokogiri::XML(xml_content, &:noblanks)
     is_cda ? doc.to_xml(indent: 4) : doc.to_xml(indent: 2)
-  rescue StandardError => e
+  rescue StandardError
     xml_content
   end
 

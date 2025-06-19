@@ -1,11 +1,15 @@
 # CareTeam Model
 class CareTeam < Resource
-  attr_reader :id, :name, :participants
+  attr_reader :id, :name, :participants, :patient_id, :patient
 
-  def initialize(fhir_care_team, bundle_entries)
+  def initialize(fhir_care_team, bundle_entries = [])
     @id = fhir_care_team.id
+    @patient_id = fhir_care_team.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @name = fhir_care_team.name
     @participants = get_care_team_participants(fhir_care_team.participant, bundle_entries)
+
+    self.class.update(self)
   end
 
   private

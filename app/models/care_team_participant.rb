@@ -1,13 +1,16 @@
 # CareTeamParticipant Model
 class CareTeamParticipant < Resource
-  attr_reader :name, :role, :organization, :contact, :fhir_resource
+  attr_reader :id, :name, :role, :organization, :contact, :fhir_resource
 
   def initialize(name, role, fhir_resource, bundle_entries = [])
+    @id = fhir_resource.id
     @fhir_resource = fhir_resource
     @name = name || retrieve_provider_name
     @role = role || retrieve_provider_role
     @organization = retrieve_organization_name(bundle_entries)
     @contact = retrieve_contact
+
+    self.class.update(self)
   end
 
   private

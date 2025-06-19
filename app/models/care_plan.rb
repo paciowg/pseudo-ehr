@@ -1,14 +1,19 @@
 # CarePlan Model
 class CarePlan < Resource
-  attr_reader :id, :fhir_resource, :status, :intent, :category, :activities
+  attr_reader :id, :fhir_resource, :status, :intent, :category, :activities,
+              :patient_id, :patient
 
-  def initialize(fhir_care_plan, bundle_entries)
+  def initialize(fhir_care_plan, bundle_entries = [])
     @fhir_resource = fhir_care_plan
     @id = fhir_care_plan.id
+    @patient_id = @fhir_resource.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @status = fhir_care_plan.status
     @intent = fhir_care_plan.intent
     @category = read_category(fhir_care_plan.category)
     @activities = read_activities(bundle_entries)
+
+    self.class.update(self)
   end
 
   private

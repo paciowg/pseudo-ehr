@@ -28,6 +28,9 @@ RSpec/ExampleLength:
 RSpec/ReceiveMessages:
   Enabled: false
 
+Naming/AccessorMethodName:
+  Enabled: false
+
 Metrics/ClassLength:
   Enabled: false
 

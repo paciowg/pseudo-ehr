@@ -1,11 +1,14 @@
 # Goal Model
 class Goal < Resource
-  attr_reader :id, :lifecycle_status, :achievement_status, :category,
-              :description, :targets, :addresses, :notes, :author, :fhir_resource
+  attr_reader :id, :lifecycle_status, :achievement_status, :category, :patient_id,
+              :description, :targets, :addresses, :notes, :author, :fhir_resource,
+              :patient
 
-  def initialize(fhir_goal, bundle_entries)
+  def initialize(fhir_goal, bundle_entries = [])
     @fhir_resource = fhir_goal
     @id = fhir_goal.id
+    @patient_id = @fhir_resource.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @lifecycle_status = fhir_goal.lifecycleStatus&.capitalize
     @achievement_status = fhir_goal.achievementStatus&.coding&.first&.code&.gsub('-', ' ')&.titleize
     @category = retrieve_categories
@@ -15,6 +18,8 @@ class Goal < Resource
     @notes = retrieve_notes(bundle_entries)
     author_ref = @fhir_resource.try(:expressedBy)
     @author = author_ref.present? ? parse_provider_name(author_ref, bundle_entries) : '--'
+
+    self.class.update(self)
   end
 
   private

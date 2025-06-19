@@ -65,16 +65,18 @@ module ResourceFetchHelper
     fetch_bundle_entries(response, max_results)
   end
 
-  def fetch_patient_related(resource_class, patient_id, max_results = DEFAULT_MAX_RESULTS)
+  def fetch_patient_related(resource_class, patient_id, max_results = DEFAULT_MAX_RESULTS, since_time = nil)
     parameters = { patient: patient_id, _include: '*' }
+    parameters[:_since] = since_time.iso8601 if since_time
     fetch_resource_with_defaults(resource_class, max_results, parameters)
   end
 
   # Dynamically generate non-patient-related fetch methods
   NON_PATIENT_RELATED_RESOURCES.each do |resource_class_name|
     method_name = "fetch_#{resource_class_name.to_s.underscore.pluralize}"
-    define_method(method_name.to_sym) do |max_results = DEFAULT_MAX_RESULTS|
+    define_method(method_name.to_sym) do |max_results = DEFAULT_MAX_RESULTS, since_time = nil|
       additional_params = resource_class_name == :PractitionerRole ? { _include: '*' } : {}
+      additional_params[:_since] = since_time.iso8601 if since_time
       fetch_resource_with_defaults("FHIR::#{resource_class_name}".constantize, max_results, additional_params)
     end
   end
@@ -82,8 +84,8 @@ module ResourceFetchHelper
   # Dynamically generate methods for patient-related resources
   PATIENT_RELATED_RESOURCES.each do |resource_class_name|
     method_name = "fetch_#{resource_class_name.to_s.underscore.pluralize}_by_patient"
-    define_method(method_name.to_sym) do |patient_id, max_results = DEFAULT_MAX_RESULTS|
-      fetch_patient_related("FHIR::#{resource_class_name}".constantize, patient_id, max_results)
+    define_method(method_name.to_sym) do |patient_id, max_results = DEFAULT_MAX_RESULTS, since_time = nil|
+      fetch_patient_related("FHIR::#{resource_class_name}".constantize, patient_id, max_results, since_time)
     end
   end
 
@@ -108,13 +110,20 @@ module ResourceFetchHelper
       fetch_patients_by_id
     elsif params[:query_name].present?
       fetch_patients_by_name
+    elsif Patient.updated_at
+      parameters = { _since: Patient.updated_at.iso8601, active: true }
+      fetch_resource_with_defaults(FHIR::Patient, 500, parameters)
     else
-      fetch_resource(FHIR::Patient, method: :read_feed)&.resource&.entry&.map(&:resource)
+      fetch_resource_with_defaults(FHIR::Patient, 500, { active: true })
     end
   end
 
-  def fetch_single_patient_record(patient_id, max_results = 500)
+  def fetch_single_patient_record(patient_id, max_results = 500, since_time = nil)
     search_params = { _sort: '-_lastUpdated', _maxresults: max_results, _count: max_results / 2 }
+
+    # Add _since parameter if provided
+    search_params[:_since] = since_time.iso8601 if since_time
+
     response = client.fetch_patient_record(patient_id, search_params:)
     add_query(response.request)
 
@@ -123,16 +132,19 @@ module ResourceFetchHelper
     raise TIMEOUT_ERROR_MESSAGE
   end
 
-  def fetch_adi_documents_by_patient(patient_id)
+  def fetch_adi_documents_by_patient(patient_id, since_time = nil)
     status_map = { 'Superseded' => 'superseded', 'Current' => 'current' }
     status = status_map[params[:status]]
     parameters = { patient: patient_id, category: '42348-3,75320-2', _count: 100, status: }.compact
+    parameters[:_since] = since_time.iso8601 if since_time
 
     fetch_resource_with_defaults(FHIR::DocumentReference, 100, parameters)
   end
 
-  def fetch_toc_compositions_by_patient(patient_id)
+  def fetch_toc_compositions_by_patient(patient_id, since_time = nil)
     parameters = { patient: patient_id, category: '18761-7', _count: 100 }.compact
+    parameters[:_since] = since_time.iso8601 if since_time
+
     fetch_resource_with_defaults(FHIR::Composition, 100, parameters)
   end
 

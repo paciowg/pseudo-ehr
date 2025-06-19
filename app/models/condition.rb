@@ -2,11 +2,14 @@
 class Condition < Resource
   attr_reader :id, :clinical_status, :verification_status, :category,
               :code, :onset_date_time, :asserted_date, :recorded_date,
-              :asserter, :evidences, :note, :body_site, :fhir_resource
+              :asserter, :evidences, :note, :body_site, :fhir_resource,
+              :patient_id, :patient
 
-  def initialize(fhir_condition, bundle_entries)
+  def initialize(fhir_condition, bundle_entries = [])
     @fhir_resource = fhir_condition
     @id = fhir_condition.id
+    @patient_id = fhir_condition.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @clinical_status = fhir_condition.clinicalStatus.coding.first&.code&.capitalize
     @verification_status = fhir_condition.verificationStatus.coding.first&.code&.capitalize
     @category = retrieve_categories
@@ -18,6 +21,8 @@ class Condition < Resource
     @evidences = retrieve_evidences(bundle_entries)
     @body_site = fhir_condition.bodySite&.map { |c| coding_string(c.coding) }&.join(', ')
     @note = fhir_condition.try(:note)&.first&.text || '--'
+
+    self.class.update(self)
   end
 
   def type

@@ -65,6 +65,7 @@ class SessionsController < ApplicationController
   def disconnect_server
     reset_session
     Rails.cache.clear
+    clear_all_data
     @client = nil
     if @current_server.authenticated_access?
       @current_server.update!(
@@ -90,7 +91,7 @@ class SessionsController < ApplicationController
     @current_server = FhirServer.new(fhir_server_params) if @current_server.blank?
     FhirClientService.new(fhir_server: @current_server, new_session: true)
     # Retrieve the smart configuration for auth access if not provided
-    if @current_server.new_record? && (!@current_server.save && @current_server.authenticated_access?)
+    if @current_server.new_record? && !@current_server.save && @current_server.authenticated_access?
       options = retrieve_smart_config
       @current_server.authorization_url = options['authorization_endpoint']
       @current_server.token = options['token_endpoint']

@@ -4,7 +4,7 @@ class DiagnosticReportsController < ApplicationController
 
   # GET /patients/:patient_id/diagnostic_report
   def index
-    @diagnostic_reports = fetch_patient_diagnostic_reports(params[:patient_id])
+    @pagy, @diagnostic_reports = pagy_array(fetch_patient_diagnostic_reports(params[:patient_id]), items: 10)
     flash.now[:notice] = 'No Diagnostic Report found' if @diagnostic_reports.empty?
   rescue StandardError => e
     Rails.logger.error e
@@ -15,21 +15,34 @@ class DiagnosticReportsController < ApplicationController
   private
 
   def fetch_patient_diagnostic_reports(patient_id)
-    Rails.cache.fetch(cache_key_for_patient_diagnostic_reports(patient_id)) do
-      entries = retrieve_current_patient_resources
-      fhir_diagnostic_reports = cached_resources_type('DiagnosticReport')
+    reports = DiagnosticReport.filter_by_patient_id(patient_id)
+    return sort_reports(reports) unless DiagnosticReport.expired? || reports.blank?
 
-      if fhir_diagnostic_reports.blank?
-        entries = fetch_diagnostic_reports_by_patient(patient_id)
-        fhir_diagnostic_reports = entries.select { |entry| entry.resourceType == 'DiagnosticReport' }
-      end
+    entries = retrieve_current_patient_resources
+    fhir_diagnostic_reports = cached_resources_type('DiagnosticReport')
 
-      entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
-      fhir_diagnostic_reports.map { |entry| DiagnosticReport.new(entry, entries) }
-    rescue StandardError => e
-      Rails.logger.error("Error fetching or parsing Diagnostic Reports:\n #{e.message.inspect}")
-      Rails.logger.error(e.backtrace.join("\n"))
-      raise "Error fetching or parsing patient's Diagnostic Report. Check the log for detail."
+    if fhir_diagnostic_reports.blank?
+      Rails.logger.info('Diagnostic Reports not found in patient record cache, fetching directly')
+      entries = fetch_diagnostic_reports_by_patient(patient_id, 500, DiagnosticReport.updated_at)
+      fhir_diagnostic_reports = entries.select { |entry| entry.resourceType == 'DiagnosticReport' }
     end
+
+    # Get practitioner roles for reference resolution
+    practitioner_roles = retrieve_practitioner_roles
+
+    # Combine entries and create DiagnosticReport objects
+    entries = (entries + practitioner_roles).uniq
+    fhir_diagnostic_reports.each { |entry| DiagnosticReport.new(entry, entries) }
+
+    reports = DiagnosticReport.filter_by_patient_id(patient_id)
+    sort_reports(reports)
+  rescue StandardError => e
+    Rails.logger.error("Error fetching or parsing Diagnostic Reports:\n #{e.message.inspect}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    raise "Error fetching or parsing patient's Diagnostic Report. Check the log for detail."
+  end
+
+  def sort_reports(reports)
+    reports.sort_by(&:raw_date).reverse
   end
 end

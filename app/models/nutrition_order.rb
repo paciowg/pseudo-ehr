@@ -1,19 +1,24 @@
 # NutritionOrder Model
 class NutritionOrder < Resource
-  attr_reader :id, :status, :intent, :date, :orderer, :category,
-              :exclude_food, :allergies, :oral_diet, :supplements, :fhir_resource
+  attr_reader :id, :status, :intent, :date, :orderer, :category, :fhir_resource,
+              :exclude_food, :allergies, :oral_diet, :supplements, :patient_id,
+              :patient
 
   def initialize(fhir_nutrition_order, bundle_entries = [])
     @id = fhir_nutrition_order.id
     @fhir_resource = fhir_nutrition_order
+    @patient_id = @fhir_resource.patient&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @status = fhir_nutrition_order.status
-    @intent = fhir_nutrition_order.intent
+    @intent = fhir_nutrition_order.intent&.capitalize
     @date = fhir_nutrition_order.dateTime
     @orderer = parse_provider_name(fhir_nutrition_order.orderer, bundle_entries)
     @supplements = fhir_nutrition_order.supplement&.map { |supp| parse_supplement(supp) }&.compact
     @oral_diet = parse_oral_diet(fhir_nutrition_order.oralDiet)
     @exclude_food = retrieve_excluded_food(fhir_nutrition_order.excludeFoodModifier)
     @allergies = parse_allergies(fhir_nutrition_order.allergyIntolerance, bundle_entries)
+
+    self.class.update(self)
   end
 
   private

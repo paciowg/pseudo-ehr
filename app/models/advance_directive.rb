@@ -2,7 +2,7 @@
 class AdvanceDirective < Resource
   attr_reader :id, :status, :doc_status, :type, :subject, :author, :date, :custodian, :description,
               :compositions, :relates_to_ref_id, :relates_to_code, :fhir_doc_ref,
-              :version, :identifier, :doc_revoke_status, :contents
+              :version, :identifier, :doc_revoke_status, :contents, :patient_id
 
   def initialize(fhir_doc_ref, compositions)
     @fhir_doc_ref = fhir_doc_ref
@@ -12,6 +12,7 @@ class AdvanceDirective < Resource
     @doc_revoke_status = read_revoke_status_ext
     @type = coding_string(fhir_doc_ref.type&.coding)
     @subject = fhir_doc_ref.subject&.reference
+    @patient_id = @subject&.split('/')&.last
     @author = fhir_doc_ref.author&.first&.display || '--'
     @date = read_doc_creation_date
     @custodian = compositions&.first&.custodian
@@ -23,6 +24,8 @@ class AdvanceDirective < Resource
     @version = read_version_extension
     @identifier = read_identifier
     @contents = get_contents
+
+    self.class.update(self)
   end
 
   def read_revoke_status_ext
@@ -36,6 +39,12 @@ class AdvanceDirective < Resource
 
   def revoked?
     doc_revoke_status == 'cancelled'
+  end
+
+  class << self
+    def filter_by_status(status)
+      all.filter { |r| r.status == status }
+    end
   end
 
   private

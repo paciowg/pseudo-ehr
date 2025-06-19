@@ -4,7 +4,7 @@ class CareTeamsController < ApplicationController
 
   # GET /patients/:patient_id/care_teams
   def index
-    @care_teams = fetch_and_cache_care_teams(params[:patient_id])
+    @care_teams = get_care_teams(params[:patient_id])
     flash.now[:notice] = 'Patient has no care team yet' if @care_teams.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
@@ -13,22 +13,30 @@ class CareTeamsController < ApplicationController
 
   private
 
-  def fetch_and_cache_care_teams(patient_id)
-    Rails.cache.fetch(cache_key_for_patient_care_teams(patient_id)) do
-      entries = retrieve_current_patient_resources
-      fhir_care_teams = cached_resources_type('CareTeam')
+  def get_care_teams(patient_id)
+    care_teams = CareTeam.filter_by_patient_id(patient_id)
+    return care_teams unless CareTeam.expired? || care_teams.blank?
 
-      if fhir_care_teams.blank?
-        entries = fetch_care_teams_by_patient(patient_id)
-        fhir_care_teams = entries.select { |entry| entry.resourceType == 'CareTeam' }
-      end
-
-      entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
-      fhir_care_teams.map { |entry| CareTeam.new(entry, entries) }
-    rescue StandardError => e
-      Rails.logger.error("Error fetching or parsing Care team:\n #{e.message.inspect}")
-      Rails.logger.error(e.backtrace.join("\n"))
-      raise "Error fetching patient's care teams. Check the log for detail."
+    entries = retrieve_current_patient_resources
+    fhir_care_teams = cached_resources_type('CareTeam')
+    # Only fetch care teams directly if not found in patient record
+    if fhir_care_teams.blank?
+      Rails.logger.info('Care teams not found in patient record cache, fetching directly')
+      entries = fetch_care_teams_by_patient(patient_id, 500, CareTeam.updated_at)
+      fhir_care_teams = entries.select { |entry| entry.resourceType == 'CareTeam' }
     end
+
+    # Get practitioner roles for reference resolution
+    practitioner_roles = retrieve_practitioner_roles
+
+    # Combine entries and create CareTeam objects
+    entries = (entries + practitioner_roles).uniq
+    fhir_care_teams.each { |entry| CareTeam.new(entry, entries) }
+
+    CareTeam.filter_by_patient_id(patient_id)
+  rescue StandardError => e
+    Rails.logger.error("Error fetching or parsing Care team:\n #{e.message.inspect}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    raise "Error fetching patient's care teams. Check the log for detail."
   end
 end

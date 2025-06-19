@@ -67,8 +67,10 @@ RSpec.describe PatientsController do
 
     context 'when there is an error fetching patients' do
       before do
+        allow(Patient).to receive(:all).and_return([])
+        allow(Patient).to receive(:updated_at).and_return(nil)
         # Stub the FHIR server request to return an error for this case
-        stub_request(:get, "#{fhir_server.base_url}/Patient")
+        stub_request(:get, "#{fhir_server.base_url}/Patient?_count=250&_sort=-_lastUpdated&active=true")
           .to_return(
             status: 500,
             body: { issue: [{ diagnostics: 'Error fetching patients' }] }.to_json,

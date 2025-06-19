@@ -1,9 +1,10 @@
 # DiagnosticReport Model
 class DiagnosticReport < Resource
   attr_reader :id, :fhir_resource, :status, :effective_datetime, :last_updated, :code, :subject,
-              :encounter, :issued, :performer, :results, :media, :contents, :category
+              :encounter, :issued, :performer, :results, :media, :contents, :category, :patient_id,
+              :patient
 
-  def initialize(fhir_diagnostic_report, bundle_entries)
+  def initialize(fhir_diagnostic_report, bundle_entries = [])
     @id = fhir_diagnostic_report.id
     @fhir_resource = fhir_diagnostic_report
     @status = @fhir_resource.status.presence || '--'
@@ -12,6 +13,8 @@ class DiagnosticReport < Resource
     @last_updated = parse_date(@fhir_resource.meta&.lastUpdated).presence || '--'
     @code = coding_string(@fhir_resource.code&.coding).presence || '--'
     @subject = parse_provider_name(@fhir_resource.subject, bundle_entries)
+    @patient_id = @fhir_resource.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     # Now retrieving the display, but to be updated to get the encounter instance
     @encounter = @fhir_resource&.encounter&.display&.gsub('_', ' ').presence || '--'
     @issued = parse_date(@fhir_resource.issued)
@@ -26,6 +29,12 @@ class DiagnosticReport < Resource
     # These are the contents of presented form. Each content has the following attributes:
     # title, type, url, and data
     @contents = get_presented_forms
+
+    self.class.update(self)
+  end
+
+  def raw_date
+    fhir_resource.try(:effectiveDateTime).presence || fhir_resource.try(:issued).presence || ''
   end
 
   def date
@@ -36,7 +45,7 @@ class DiagnosticReport < Resource
 
   def get_media(bundle_entries)
     media_links = @fhir_resource.media.map { |m| m.link&.reference }.compact
-    return [] unless media_links.present?
+    return [] if media_links.blank?
 
     media_ids = media_links.map { |link| link.split('/').last }.compact
 
@@ -53,7 +62,7 @@ class DiagnosticReport < Resource
 
   def get_presented_forms
     forms = @fhir_resource.presentedForm
-    return [] unless forms.present?
+    return [] if forms.blank?
 
     forms.map do |form|
       Content.new(
@@ -65,7 +74,7 @@ class DiagnosticReport < Resource
 
   def get_results(bundle_entries)
     observation_refs = @fhir_resource.result&.map(&:reference)&.compact
-    return unless observation_refs.present?
+    return if observation_refs.blank?
 
     observation_ids = observation_refs.map { |ref| ref.split('/').last }.compact
 

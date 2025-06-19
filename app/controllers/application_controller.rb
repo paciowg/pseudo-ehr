@@ -27,11 +27,20 @@ class ApplicationController < ActionController::Base
   end
 
   def retrieve_patient
-    @patient = Rails.cache.fetch(cache_key_for_patient(patient_id)) do
-      Patient.new(fetch_single_patient(patient_id))
-    rescue StandardError => e
-      Rails.logger.error("Error fetching patient: #{e.message}")
-      Rails.logger.error(e.backtrace.join("\n"))
+    cached_patient = Patient.find(patient_id)
+
+    if cached_patient
+      @patient = cached_patient
+    else
+      Rails.logger.info("Patient #{patient_id} not found in cache, fetching from server")
+      begin
+        patient_data = fetch_single_patient(patient_id)
+        @patient = Patient.new(patient_data)
+      rescue StandardError => e
+        Rails.logger.error("Error fetching patient: #{e.message}")
+        Rails.logger.error(e.backtrace.join("\n"))
+        @patient = nil
+      end
     end
 
     return unless @patient.nil?
@@ -40,36 +49,57 @@ class ApplicationController < ActionController::Base
     redirect_to patients_path
   end
 
-  def retrieve_practitioner_roles_and_orgs
-    return [] unless patient_id
+  def retrieve_practitioner_roles
+    return PractitionerRoleCache.all unless PractitionerRoleCache.expired? || PractitionerRoleCache.all.empty?
 
-    Rails.cache.fetch(cache_key_for_practioner_roles) do
-      @practitioner_roles ||= fetch_practitioner_roles
+    # If not in cache, fetch and store it
+    Rails.logger.info('Practitioner roles not found in memory, fetching from server')
+    begin
+      practitioner_roles = fetch_practitioner_roles(500, PractitionerRoleCache.updated_at)
+      PractitionerRoleCache.update_records(practitioner_roles)
+      PractitionerRoleCache.all
+    rescue StandardError => e
+      Rails.logger.error("Empty bundle or Error fetching practitioner roles:\n #{e.message.inspect}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      []
     end
-  rescue StandardError => e
-    Rails.logger.error("Empty bundle or Error fetching practitioner roles:\n #{e.message.inspect}")
-    Rails.logger.error(e.backtrace.join("\n"))
-    []
   end
 
   def retrieve_current_patient_resources
     return [] unless patient_id
 
-    Rails.cache.fetch(cache_key_for_patient_record(patient_id)) do
-      @patient_record ||= fetch_single_patient_record(patient_id)
+    cached_record = PatientRecordCache.get_patient_record(patient_id)
+    return cached_record if cached_record
+
+    Rails.logger.info("Patient record not found in memory or expired, fetching from server for patient #{patient_id}")
+    begin
+      patient_record = fetch_single_patient_record(patient_id)
+
+      PatientRecordCache.store_patient_record(patient_id, patient_record)
+
+      patient_record
+    rescue StandardError => e
+      Rails.logger.error("Error fetching patient #{patient_id} record: #{e.message.inspect}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      []
     end
-  rescue StandardError => e
-    Rails.logger.error("Error fetching patient #{patient_id} record: #{e.message.inspect}")
-    Rails.logger.error(e.backtrace.join("\n"))
-    []
   end
 
   def grouped_current_patient_record
-    @grouped_current_patient_record ||= retrieve_current_patient_resources.group_by(&:resourceType) || {}
+    return {} unless patient_id
+
+    cached_grouped_record = PatientRecordCache.get_grouped_patient_record(patient_id)
+    return cached_grouped_record if cached_grouped_record
+
+    retrieve_current_patient_resources
+
+    PatientRecordCache.get_grouped_patient_record(patient_id)
   end
 
   def cached_resources_type(type)
-    grouped_current_patient_record[type] || []
+    # Use a hash to store cached resources by type
+    @cached_resources ||= {}
+    @cached_resources[type] ||= grouped_current_patient_record[type] || []
   end
 
   def find_cached_resource(resource_type, resource_id)
@@ -78,6 +108,10 @@ class ApplicationController < ActionController::Base
 
   def adi_category_codes
     %w[42348-3 75320-2]
+  end
+
+  def toc_category_codes
+    %w[18761-7]
   end
 
   def filter_doc_refs_or_compositions_by_category(resources, category_codes = [])
@@ -98,6 +132,23 @@ class ApplicationController < ActionController::Base
     resources - filter_doc_refs_or_compositions_by_category(resources, adi_category_codes)
   end
 
+  PATIENT_MODELS = [
+    AdvanceDirective, AllergyIntolerance, CarePlan, CareTeamParticipant, CareTeam,
+    Composition, Condition, DiagnosticReport, DocumentReference, Goal,
+    MedicationList, MedicationRequest, MedicationStatement, NutritionOrder,
+    Observation, Procedure, QuestionnaireResponse, ServiceRequest
+  ].freeze
+  OTHER_MODELS = [Patient, PatientRecordCache, PractitionerRoleCache].freeze
+
+  def clear_models_data_for_patient(patient_id)
+    PATIENT_MODELS.each { |model| model.clear_patient_data(patient_id) }
+  end
+
+  def clear_all_data
+    PATIENT_MODELS.each(&:clear_data)
+    OTHER_MODELS.each(&:clear_data)
+  end
+
   def set_resources_count
     return unless patient_id
 
@@ -116,6 +167,8 @@ class ApplicationController < ActionController::Base
     @adi_count = filter_doc_refs_or_compositions_by_category(
       cached_resources_type('DocumentReference'), adi_category_codes
     ).size
-    @toc_count = filter_doc_refs_or_compositions_by_category(cached_resources_type('Composition')).size
+    @toc_count = filter_doc_refs_or_compositions_by_category(
+      cached_resources_type('Composition'), toc_category_codes
+    ).size
   end
 end
