@@ -1,12 +1,14 @@
 # QuestionnaireResponse Model
 class QuestionnaireResponse < Resource
   attr_reader :id, :name, :description, :questionnaire, :questionnaire_title, :status,
-              :subject, :encounter, :author, :source, :date, :formatted_date,
-              :items, :fhir_resource, :based_on, :part_of, :identifier
+              :subject, :encounter, :author, :source, :date, :formatted_date, :patient_id,
+              :items, :fhir_resource, :based_on, :part_of, :identifier, :patient
 
-  def initialize(fhir_questionnaire_response, bundle_entries)
+  def initialize(fhir_questionnaire_response, bundle_entries = [])
     @fhir_resource = fhir_questionnaire_response
     @id = fhir_questionnaire_response.id
+    @patient_id = @fhir_resource.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @identifier = parse_identifier(fhir_questionnaire_response.identifier)
     @name = find_name
     @description = find_description
@@ -24,6 +26,8 @@ class QuestionnaireResponse < Resource
     @items = []
     parse_items(fhir_questionnaire_response.item)
     organize_items_hierarchically
+
+    self.class.update(self)
   end
 
   # Returns a categorized view of items for better organization in the UI

@@ -2,11 +2,14 @@
 class Observation < Resource
   attr_reader :id, :status, :category, :domain, :code, :effective_date_time,
               :performer, :derived_from, :measurement, :measurement_interpretation,
-              :location, :organization, :members, :fhir_resource
+              :location, :organization, :members, :fhir_resource, :patient_id,
+              :patient
 
-  def initialize(fhir_observation, bundle_entries)
+  def initialize(fhir_observation, bundle_entries = [])
     @fhir_resource = fhir_observation
     @id = fhir_observation.id
+    @patient_id = @fhir_resource.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @status = fhir_observation.status
     @effective_date_time = fhir_observation.effectiveDateTime
     @category = retrieve_category
@@ -22,6 +25,8 @@ class Observation < Resource
     @measurement_interpretation = fhir_observation.try(:interpretation)&.map(&:text)&.join(', ').presence || '--'
     @location = retrieve_location(bundle_entries)
     @members = retrieve_members(fhir_observation.hasMember, bundle_entries)
+
+    self.class.update(self)
   end
 
   def collection?

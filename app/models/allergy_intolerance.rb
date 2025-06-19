@@ -1,11 +1,14 @@
 # AllergyIntolerance Model
 class AllergyIntolerance < Resource
   attr_reader :id, :clinical_status, :verification_status, :category, :criticality,
-              :code, :asserter, :last_occurence, :reactions, :fhir_resource
+              :code, :asserter, :last_occurence, :reactions, :fhir_resource, :patient_id,
+              :patient
 
-  def initialize(fhir_allergy_intolerance, bundle_entries)
+  def initialize(fhir_allergy_intolerance, bundle_entries = [])
     @fhir_resource = fhir_allergy_intolerance
     @id = fhir_allergy_intolerance.id
+    @patient_id = @fhir_resource.patient&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @clinical_status = fhir_allergy_intolerance.clinicalStatus.coding.first&.code&.capitalize
     @verification_status = fhir_allergy_intolerance.verificationStatus.coding.first&.code&.capitalize
     @category = fhir_allergy_intolerance.category.join(', ')
@@ -14,6 +17,8 @@ class AllergyIntolerance < Resource
     @asserter = retrieve_asserter(bundle_entries)
     @last_occurence = fhir_allergy_intolerance.lastOccurrence
     @reactions = retrieve_reactions
+
+    self.class.update(self)
   end
 
   private

@@ -4,7 +4,7 @@ class AdvanceDirectivesController < ApplicationController
   before_action :require_server, :retrieve_patient, :set_resources_count
   # GET /patients/:patient_id/advance_directives
   def index
-    @adis = fetch_and_cache_adis(params[:patient_id])
+    @adis = get_adis(params[:patient_id])
     flash.now[:notice] = 'No ADI found' if @adis.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
@@ -13,7 +13,7 @@ class AdvanceDirectivesController < ApplicationController
 
   # GET /advance_directives/:id
   def show
-    @adi = fetch_and_cache_adi(params[:id])
+    @adi = get_adi(params[:id])
   rescue StandardError => e
     flash[:danger] = e.message
     redirect_to patient_advance_directives_path, id: @patient.id
@@ -23,7 +23,7 @@ class AdvanceDirectivesController < ApplicationController
   # We will use the logged provider data in the update request as opposed to the hardcoded provider.
   # PUT /advance_directives/:id
   def update_pmo
-    @adi = fetch_and_cache_adi(params[:id])
+    @adi = get_adi(params[:id])
     doc_ref = @adi.fhir_doc_ref
     bundle_entries = get_structured_data_from_contents(doc_ref.content)
 
@@ -35,8 +35,8 @@ class AdvanceDirectivesController < ApplicationController
     save_updated_data(bundle_entries, doc_ref)
 
     flash[:success] = 'Successfully updated PMO'
-    Rails.cache.delete(cache_key_for_patient_adis(@patient.id))
-    Rails.cache.delete(cache_key_for_adi(params[:id]))
+    PatientRecordCache.patient_records_last_sync[@patient.id] = 2.hours.ago
+    AdvanceDirective.updated_at(2.hours.ago)
     redirect_to patient_advance_directives_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error updating PMO: #{e.message}" }
@@ -46,13 +46,15 @@ class AdvanceDirectivesController < ApplicationController
 
   # PUT /advance_directives/:id
   def revoke_living_will
-    @adi = fetch_and_cache_adi(params[:id])
+    @adi = get_adi(params[:id])
     doc_ref = @adi.fhir_doc_ref
     doc_ref.extension ||= []
     doc_ref.extension << revoke_extension('cancelled')
     @client.update(doc_ref, doc_ref.id)
 
     flash[:success] = 'Successfully revoked Living Will'
+    PatientRecordCache.patient_records_last_sync[@patient.id] = 2.hours.ago
+    AdvanceDirective.updated_at(2.hours.ago)
     redirect_to patient_advance_directives_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error revoking Living Will: #{e.message}" }
@@ -72,38 +74,60 @@ class AdvanceDirectivesController < ApplicationController
     }
   end
 
-  def fetch_and_cache_adis(patient_id)
-    clear_cache_if_query_changed(patient_id)
-    session[:previous_queried_status] = params[:status]
+  def get_adis(patient_id)
+    adis = filter_adis_by_status(patient_id)
+    return adis.sort_by(&:date).reverse.group_by(&:identifier) unless AdvanceDirective.expired? || adis.blank?
 
-    Rails.cache.fetch(cache_key_for_patient_adis(patient_id)) do
-      cached_doc_refs = cached_resources_type('DocumentReference')
-      adi_entries = filter_doc_refs_or_compositions_by_category(cached_doc_refs, adi_category_codes)
-      adi_entries = adi_entries.select { |res| res.status == adi_status } if adi_status
+    # First try to get document references from the patient record cache
+    cached_doc_refs = cached_resources_type('DocumentReference')
+    adi_entries = filter_doc_refs_or_compositions_by_category(cached_doc_refs, adi_category_codes)
+    adi_entries = adi_entries.select { |res| res.status == adi_status } if adi_status
 
-      adi_entries = fetch_adi_documents_by_patient(patient_id) if adi_entries.blank?
-
-      adis = adi_entries.map do |doc|
-        attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
-        compositions = build_compositions(attachment_bundle_entries)
-        AdvanceDirective.new(doc, compositions)
-      end
-
-      adis.sort_by(&:date).reverse.group_by(&:identifier)
+    # Only fetch ADIs directly if not found in patient record
+    if adi_entries.blank?
+      Rails.logger.info('ADIs not found in patient record cache, fetching directly')
+      adi_entries = fetch_adi_documents_by_patient(patient_id, AdvanceDirective.updated_at)
     end
+
+    adi_entries.each do |doc|
+      attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
+      compositions = build_compositions(attachment_bundle_entries)
+      AdvanceDirective.new(doc, compositions)
+    end
+
+    adis = filter_adis_by_status(patient_id)
+    adis.sort_by(&:date).reverse.group_by(&:identifier)
   rescue StandardError => e
     Rails.logger.error("Error fetching or parsing ADIs:\n #{e.message.inspect}")
     Rails.logger.error(e.backtrace.join("\n"))
     raise 'Error fetching or parsing ADIs. Check logs for detail.'
   end
 
-  def fetch_and_cache_adi(adi_id)
-    Rails.cache.fetch(cache_key_for_adi(adi_id)) do
-      doc = find_cached_resource('DocumentReference', adi_id) || fetch_document_reference(adi_id)
-      attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
-      compositions = build_compositions(attachment_bundle_entries)
-      AdvanceDirective.new(doc, compositions)
+  def filter_adis_by_status(patient_id)
+    adis = AdvanceDirective.filter_by_patient_id(patient_id)
+    if adi_status
+      adis.filter { |r| r.status == adi_status }
+    else
+      adis
     end
+  end
+
+  def get_adi(adi_id)
+    adi = AdvanceDirective.find(adi_id)
+    return adi if adi
+
+    # Try to find the document in the cached resources first
+    doc = find_cached_resource('DocumentReference', adi_id)
+
+    # If not found in cache, fetch directly from the server
+    unless doc
+      Rails.logger.info("ADI #{adi_id} not found in cache, fetching directly")
+      doc = fetch_document_reference(adi_id)
+    end
+
+    attachment_bundle_entries = get_structured_data_from_contents(doc.content) || []
+    compositions = build_compositions(attachment_bundle_entries)
+    AdvanceDirective.new(doc, compositions)
   rescue StandardError => e
     Rails.logger.error("Error fetching or parsing patient ADI #{adi_id}:\n #{e.message.inspect}")
     Rails.logger.error(e.backtrace.join("\n"))
@@ -129,7 +153,17 @@ class AdvanceDirectivesController < ApplicationController
 
   def retrieve_bundle_from_binary(binary_id, content_type)
     begin
-      fhir_binary = find_cached_resource('Binary', binary_id) || fetch_binary(binary_id)
+      # Try to find binary in cached resources first
+      fhir_binary = find_cached_resource('Binary', binary_id)
+
+      # If not found in cache, fetch directly
+      if fhir_binary
+        Rails.logger.info("Using cached Binary #{binary_id}")
+      else
+        Rails.logger.info("Binary #{binary_id} not found in cache, fetching directly")
+        fhir_binary = fetch_binary(binary_id)
+      end
+
       data = fhir_binary&.data
 
       return { pdf: data, pdf_binary_id: binary_id } if content_type == 'pdf'
@@ -140,15 +174,29 @@ class AdvanceDirectivesController < ApplicationController
 
     return if data.nil?
 
-    fhir_attachment_json = JSON(Base64.decode64(data))
-    fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
-    fhir_attachment_bundle.entry.map(&:resource)
+    begin
+      fhir_attachment_json = JSON(Base64.decode64(data))
+      fhir_attachment_bundle = FHIR::Bundle.new(fhir_attachment_json)
+      fhir_attachment_bundle.entry.map(&:resource)
+    rescue StandardError => e
+      Rails.logger.error "Error parsing binary data: #{e.message.inspect}"
+      Rails.logger.error "Binary type: #{fhir_binary&.contentType}"
+      []
+    end
   rescue StandardError => e
-    Rails.logger.error e.message.inspect
+    Rails.logger.error "Error in retrieve_bundle_from_binary: #{e.message.inspect}"
+    content_type == 'pdf' ? { pdf: nil, pdf_binary_id: binary_id } : []
   end
 
   def fetch_bundle_from_contents(bundle_id)
-    fhir_bundle = fetch_bundle(bundle_id)
+    fhir_bundle = find_cached_resource('Bundle', bundle_id)
+
+    # If not found in cache, fetch directly
+    if fhir_bundle.blank?
+      Rails.logger.info("Bundle #{bundle_id} not found in cache, fetching directly")
+      fhir_bundle = fetch_bundle(bundle_id)
+    end
+
     fhir_bundle.entry.map(&:resource)
   rescue StandardError => e
     Rails.logger.error "Failed to fetch ADI FHIR Bundle #{bundle_id}:\n #{e.message.inspect}"
@@ -169,12 +217,6 @@ class AdvanceDirectivesController < ApplicationController
   def adi_status
     status_map = { 'Superseded' => 'superseded', 'Current' => 'current' }
     status_map[params[:status]]
-  end
-
-  def clear_cache_if_query_changed(patient_id)
-    return unless session[:previous_queried_status].present? && params[:status] != session[:previous_queried_status]
-
-    Rails.cache.delete(cache_key_for_patient_adis(patient_id))
   end
 
   def extract_id_from_ref(ref)

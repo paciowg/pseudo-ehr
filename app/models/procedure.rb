@@ -3,11 +3,13 @@ class Procedure < Resource
   attr_reader :id, :fhir_resource, :status, :status_reason, :code, :performers, :date, :procedure_display,
               :reason_codes, :asserter, :encounter, :category, :reason_references, :body_sites,
               :outcome, :complications, :notes, :date_period, :based_on, :part_of, :location,
-              :follow_up, :used_reference, :used_code
+              :follow_up, :used_reference, :used_code, :patient_id, :patient
 
-  def initialize(fhir_procedure, bundle_entries)
+  def initialize(fhir_procedure, bundle_entries = [])
     @id = fhir_procedure.id
     @fhir_resource = fhir_procedure
+    @patient_id = @fhir_resource.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @status = @fhir_resource.status
     @status_reason = retrieve_status_reason
     @code = coding_string(@fhir_resource.code&.coding).presence || '--'
@@ -47,6 +49,8 @@ class Procedure < Resource
 
     # Handle notes
     @notes = retrieve_notes(bundle_entries)
+
+    self.class.update(self)
   end
 
   def performed_display

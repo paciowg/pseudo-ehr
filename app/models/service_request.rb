@@ -2,11 +2,13 @@
 class ServiceRequest < Resource
   attr_reader :id, :status, :intent, :category, :code, :priority, :occurence,
               :authored_on, :performer, :performer_reference, :requester,
-              :fhir_resource, :date, :reason
+              :fhir_resource, :date, :reason, :patient_id, :patient
 
   def initialize(fhir_service_request, bundle_entries = [])
     @id = fhir_service_request.id
     @fhir_resource = fhir_service_request
+    @patient_id = @fhir_resource.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @status = fhir_service_request.status&.capitalize
     @intent = fhir_service_request.intent&.capitalize
     @category = read_category(fhir_service_request.category)
@@ -19,6 +21,8 @@ class ServiceRequest < Resource
     @performer = parse_provider_name(fhir_service_request.performer.first, bundle_entries)
     @performer_reference = fhir_service_request.performer.first&.reference
     @requester = parse_provider_name(fhir_service_request.requester, bundle_entries)
+
+    self.class.update(self)
   end
 
   private

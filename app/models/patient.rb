@@ -1,7 +1,7 @@
 # Patient Model
 class Patient < Resource
   attr_reader :id, :fhir_resource, :first_name, :last_name, :name, :dob, :medical_record_number, :gender, :address,
-              :phone, :email, :race, :ethnicity, :marital_status, :birthsex, :language
+              :phone, :email, :race, :ethnicity, :marital_status, :birthsex, :language, :patient_id
 
   def initialize(fhir_patient)
     @fhir_resource = fhir_patient
@@ -9,12 +9,21 @@ class Patient < Resource
     extract_basic_attributes(fhir_patient)
     extract_contact_info(fhir_patient)
     extract_characteristics(fhir_patient)
+
+    self.class.update(self)
+  end
+
+  class << self
+    def filter_by_name(name)
+      all.filter { |patient| patient.name.downcase.include?(name.downcase) }
+    end
   end
 
   private
 
   def extract_basic_attributes(fhir_patient)
     @id = fhir_patient.id
+    @patient_id = @id
     @dob = fhir_patient.birthDate || '--'
     @gender = fhir_patient.gender || '--'
     @medical_record_number = extract_med_rec_num(fhir_patient.identifier)

@@ -3,7 +3,7 @@ class PatientsController < ApplicationController
   before_action :require_server, :delete_current_patient_id
 
   def index
-    @pagy, @patients = pagy_array(fetch_and_cache_patients, items: 10)
+    @pagy, @patients = pagy_array(get_patients, items: 10)
     flash.now[:notice] = 'No patient found' if @patients.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
@@ -11,13 +11,13 @@ class PatientsController < ApplicationController
   end
 
   def show
-    @patient = fetch_and_cache_patient(params[:id])
+    @patient = get_patient(params[:id])
     raise 'Unable to find patient' unless @patient
 
     session[:patient_id] = @patient.id
     retrieve_current_patient_resources
     set_resources_count
-    retrieve_practitioner_roles_and_orgs
+    retrieve_practitioner_roles
 
     respond_to do |format|
       format.html
@@ -31,31 +31,69 @@ class PatientsController < ApplicationController
   end
 
   def sync_patient_record
-    Rails.cache.clear
-    session[:patient_id] = params[:id]
-    record = retrieve_current_patient_resources
-    if record.present?
-      flash[:notice] = 'Patient record synced successfully!'
+    patient_id = params[:id]
+
+    clear_models_data_for_patient(patient_id)
+
+    # Check if we have existing data and a last sync time
+    if PatientRecordCache.patient_record_exists?(patient_id) &&
+       PatientRecordCache.get_last_sync_time(patient_id)
+
+      last_sync_time = PatientRecordCache.get_last_sync_time(patient_id)
+      Rails.logger.info("Last sync time for patient #{patient_id}: #{last_sync_time}")
+
+      # Fetch only resources that have changed since last sync
+      begin
+        Rails.logger.info("Fetching updates for patient #{patient_id} since #{last_sync_time}")
+        new_resources = fetch_single_patient_record(patient_id, 500, last_sync_time)
+
+        if new_resources.present?
+          # Update the existing record with new resources
+          PatientRecordCache.update_patient_record(patient_id, new_resources)
+          flash[:notice] = "Patient record synced successfully! Updated #{new_resources.size} resources."
+        else
+          flash[:notice] = 'Patient record synced successfully! No changes since last sync.'
+        end
+      rescue StandardError => e
+        Rails.logger.error("Error syncing patient record: #{e.message}")
+        # If there's an error with incremental sync, fall back to full sync
+        PatientRecordCache.clear_patient_record(patient_id)
+        retrieve_current_patient_resources
+        flash[:notice] = 'Patient record synced successfully (full sync)!'
+      end
     else
-      flash[:danger] = 'Failed to sync Patient record!'
+      # If no existing data or last sync time, do a full sync
+      Rails.logger.info("No existing data or last sync time for patient #{patient_id}, doing full sync")
+      PatientRecordCache.clear_patient_record(patient_id)
+      record = retrieve_current_patient_resources
+      if record.present?
+        flash[:notice] = 'Patient record synced successfully (full sync)!'
+      else
+        flash[:danger] = 'Failed to sync Patient record!'
+      end
     end
 
+    session[:patient_id] = patient_id
+
     respond_to do |format|
-      format.turbo_stream { redirect_back(fallback_location: patient_path(params[:id])) }
-      format.html { redirect_back(fallback_location: patient_path(params[:id])) }
+      format.turbo_stream { redirect_back(fallback_location: patient_path(patient_id)) }
+      format.html { redirect_back(fallback_location: patient_path(patient_id)) }
     end
   end
 
   private
 
-  def fetch_and_cache_patients
-    clear_cache_if_query_changed
-    session[:previous_query] = params[:query_id].present? || params[:query_name].present?
+  def get_patients
+    patients = filter_patients_by_query
+    return patients unless Patient.expired? || patients.blank?
 
-    Rails.cache.fetch(cache_key_for_patients) do
+    # If not in cache or expired, fetch from FHIR server
+    Rails.logger.info('Patients list not found in memory or expired, fetching from server')
+    begin
       bundle_entries = fetch_patients
+      bundle_entries.each { |entry| Patient.new(entry) }
 
-      bundle_entries.map { |entry| Patient.new(entry) }
+      filter_patients_by_query
     rescue StandardError => e
       Rails.logger.error("Error fetching or parsing FHIR Patients:\n #{e.message.inspect}")
       Rails.logger.error(e.backtrace.join("\n"))
@@ -63,26 +101,29 @@ class PatientsController < ApplicationController
     end
   end
 
-  def fetch_and_cache_patient(patient_id)
-    Rails.cache.fetch(cache_key_for_patient(patient_id)) do
-      patients = Rails.cache.read(cache_key_for_patients)
-      patient = patients&.find { |p| p.id == patient_id }
-      unless patient
-        fhir_patient = fetch_single_patient(patient_id)
-        patient = Patient.new(fhir_patient)
-      end
+  def get_patient(patient_id)
+    patient = Patient.find(patient_id)
+    return patient if patient
 
-      patient
+    begin
+      fhir_patient = fetch_single_patient(patient_id)
+      patient = Patient.new(fhir_patient)
     rescue StandardError => e
       Rails.logger.error("Error fetching or parsing patient:\n #{e.message.inspect}")
       Rails.logger.error(e.backtrace.join("\n"))
       raise 'Error fetching or parsing patient from FHIR server. Check logs.'
     end
+
+    patient
   end
 
-  def clear_cache_if_query_changed
-    return unless params[:query_id].present? || params[:query_name].present? || session[:previous_query]
-
-    Rails.cache.delete(cache_key_for_patients)
+  def filter_patients_by_query
+    if params[:query_id].present?
+      Patient.filter_by_patient_id(params[:query_id])
+    elsif params[:query_name].present?
+      Patient.filter_by_name(params[:query_name])
+    else
+      Patient.all
+    end
   end
 end

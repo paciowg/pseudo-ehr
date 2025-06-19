@@ -4,8 +4,7 @@ class GoalsController < ApplicationController
 
   # GET /patients/:patient_id/goals
   def index
-    @pagy, @goals = pagy_array(fetch_and_cache_goals(params[:patient_id]),
-                               items: 5)
+    @pagy, @goals = pagy_array(fetch_goals(params[:patient_id]), items: 5)
     flash.now[:notice] = 'Patient has no goals' if @goals.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
@@ -14,23 +13,31 @@ class GoalsController < ApplicationController
 
   private
 
-  def fetch_and_cache_goals(patient_id)
-    Rails.cache.fetch(cache_key_for_patient_goals(patient_id)) do
-      entries = retrieve_current_patient_resources
-      fhir_goals = cached_resources_type('Goal')
+  def fetch_goals(patient_id)
+    goals = Goal.filter_by_patient_id(patient_id)
+    return goals unless Goal.expired? || goals.blank?
 
-      if fhir_goals.blank?
-        entries = fetch_goals_by_patient(patient_id)
-        fhir_goals = entries.select { |entry| entry.resourceType == 'Goal' }
-      end
+    entries = retrieve_current_patient_resources
+    fhir_goals = cached_resources_type('Goal')
 
-      entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
-      fhir_goals.map { |entry| Goal.new(entry, entries) }
-    rescue StandardError => e
-      Rails.logger.error("Error fetching or parsing Goals:\n #{e.message.inspect}")
-      Rails.logger.error(e.backtrace.join("\n"))
-
-      raise "Error fetching or parsing patient's goals. Check the log for detail."
+    if fhir_goals.blank?
+      Rails.logger.info('Goals not found in patient record cache, fetching directly')
+      entries = fetch_goals_by_patient(patient_id, 500, Goal.updated_at)
+      fhir_goals = entries.select { |entry| entry.resourceType == 'Goal' }
     end
+
+    # Get practitioner roles for reference resolution
+    practitioner_roles = retrieve_practitioner_roles
+
+    # Combine entries and create Goal objects
+    entries = (entries + practitioner_roles).uniq
+    fhir_goals.each { |entry| Goal.new(entry, entries) }
+
+    Goal.filter_by_patient_id(patient_id)
+  rescue StandardError => e
+    Rails.logger.error("Error fetching or parsing Goals:\n #{e.message.inspect}")
+    Rails.logger.error(e.backtrace.join("\n"))
+
+    raise "Error fetching or parsing patient's goals. Check the log for detail."
   end
 end

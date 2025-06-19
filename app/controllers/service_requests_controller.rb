@@ -4,7 +4,7 @@ class ServiceRequestsController < ApplicationController
 
   # GET /patients/:patient_id/service_requests
   def index
-    @pagy, @service_requests = pagy_array(fetch_and_cache_service_requests(params[:patient_id]),
+    @pagy, @service_requests = pagy_array(fetch_service_requests(params[:patient_id]),
                                           items: 10)
     flash.now[:notice] = 'Patient has no Service Request yet' if @service_requests.empty?
   rescue StandardError => e
@@ -14,23 +14,27 @@ class ServiceRequestsController < ApplicationController
 
   private
 
-  def fetch_and_cache_service_requests(patient_id)
-    Rails.cache.fetch(cache_key_for_patient_service_requests(patient_id)) do
-      entries = retrieve_current_patient_resources
-      fhir_service_requests = cached_resources_type('ServiceRequest')
+  def fetch_service_requests(patient_id)
+    srs = ServiceRequest.filter_by_patient_id(patient_id)
+    return srs unless ServiceRequest.expired? || srs.blank?
 
-      if fhir_service_requests.blank?
-        entries = fetch_service_requests_by_patient(patient_id)
-        fhir_service_requests = entries.select { |entry| entry.resourceType == 'ServiceRequest' }
-      end
+    entries = retrieve_current_patient_resources
+    fhir_service_requests = cached_resources_type('ServiceRequest')
 
-      entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
-      fhir_service_requests.map { |entry| ServiceRequest.new(entry, entries) }
-    rescue StandardError => e
-      Rails.logger.error("Error fetching or parsing Service Request:\n #{e.message.inspect}")
-      Rails.logger.error(e.backtrace.join("\n"))
-
-      raise "Error fetching or parsing patient's Service Requests. Check the log for detail."
+    if fhir_service_requests.blank?
+      Rails.logger.info('Service requests not found in patient record cache, fetching directly')
+      entries = fetch_service_requests_by_patient(patient_id, 500, ServiceRequest.updated_at)
+      fhir_service_requests = entries.select { |entry| entry.resourceType == 'ServiceRequest' }
     end
+
+    entries = (entries + retrieve_practitioner_roles).uniq
+    fhir_service_requests.each { |entry| ServiceRequest.new(entry, entries) }
+
+    ServiceRequest.filter_by_patient_id(patient_id)
+  rescue StandardError => e
+    Rails.logger.error("Error fetching or parsing Service Request:\n #{e.message.inspect}")
+    Rails.logger.error(e.backtrace.join("\n"))
+
+    raise "Error fetching or parsing patient's Service Requests. Check the log for detail."
   end
 end

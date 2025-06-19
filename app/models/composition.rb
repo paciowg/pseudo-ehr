@@ -4,12 +4,15 @@ class Composition < Resource
   include ActiveModel::Serializers::JSON
 
   attr_reader :id, :identifier, :status, :type, :category, :date, :author, :title, :custodian,
-              :subject, :section
+              :subject, :section, :fhir_resource, :patient_id, :patient
 
   #-----------------------------------------------------------------------------
   # TODO: Get api keys to read code values from https://cts.nlm.nih.gov/fhir/login.html
-  def initialize(fhir_composition, fhir_bundle)
+  def initialize(fhir_composition, fhir_bundle = [])
     @id = fhir_composition.id
+    @fhir_resource = fhir_composition
+    @patient_id = @fhir_resource.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @identifier = fhir_composition.identifier&.value || '--'
     @status = fhir_composition.status
     @type = coding_string(fhir_composition.type&.coding)
@@ -20,8 +23,16 @@ class Composition < Resource
     @custodian = get_custodian(fhir_composition.custodian, fhir_bundle)
     fhir_patient = get_object_from_bundle(fhir_composition.subject, fhir_bundle)
     @fhir_bundle = fhir_bundle
-    @subject = Patient.new(fhir_patient) if fhir_patient
+    @subject = @patient
     fill_sections(fhir_composition.section, fhir_bundle)
+
+    self.class.update(self)
+  end
+
+  class << self
+    def tocs_by_patient(patient_id)
+      filter_by_patient_id(patient_id).select { |c| c.category.include?('18761-7') }
+    end
   end
 
   private

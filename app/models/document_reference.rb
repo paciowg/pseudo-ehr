@@ -1,11 +1,13 @@
 # DocumentReference Model
 class DocumentReference < Resource
   attr_reader :id, :fhir_resource, :status, :identifier, :type, :date, :full_date, :author, :context_period,
-              :category, :encounter, :title, :contents
+              :category, :encounter, :title, :contents, :patient_id, :patient
 
-  def initialize(fhir_document_reference, bundle_entries)
+  def initialize(fhir_document_reference, bundle_entries = [])
     @id = fhir_document_reference.id
     @fhir_resource = fhir_document_reference
+    @patient_id = @fhir_resource.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @status = @fhir_resource.status
     @category = fhir_document_reference.category&.map { |c| coding_string(c.coding) }&.join(', ').presence || '--'
     @type = coding_string(@fhir_resource.type&.coding)&.gsub('()', '').presence || '--'
@@ -18,6 +20,8 @@ class DocumentReference < Resource
     @contents = get_contents
     @title = @fhir_resource.description.presence || @fhir_resource.type&.text&.presence ||
              contents.first&.title.presence || '--'
+
+    self.class.update(self)
   end
 
   private

@@ -4,7 +4,7 @@ class MedicationRequestsController < ApplicationController
 
   # GET /patients/:patient_id/medication_requests
   def index
-    @medication_requests = fetch_patient_medication_requests(params[:patient_id])
+    @pagy, @medication_requests = pagy_array(fetch_patient_medication_requests(params[:patient_id]), items: 10)
     flash.now[:notice] = 'No Medication request found' if @medication_requests.empty?
   rescue StandardError => e
     Rails.logger.error e
@@ -15,22 +15,29 @@ class MedicationRequestsController < ApplicationController
   private
 
   def fetch_patient_medication_requests(patient_id)
-    Rails.cache.fetch(cache_key_for_patient_medication_requests(patient_id)) do
-      entries = retrieve_current_patient_resources
-      fhir_medication_requests = cached_resources_type('MedicationRequest')
+    med_requests = MedicationRequest.filter_by_patient_id(patient_id)
+    return sort_med_requests(med_requests) unless MedicationRequest.expired? || med_requests.blank?
 
-      if fhir_medication_requests.blank?
-        entries = fetch_medication_requests_by_patient(patient_id)
-        fhir_medication_requests = entries.select { |entry| entry.resourceType == 'MedicationRequest' }
-      end
+    entries = retrieve_current_patient_resources
+    fhir_medication_requests = cached_resources_type('MedicationRequest')
 
-      entries = (entries + retrieve_practitioner_roles_and_orgs).uniq
-      med_requests = fhir_medication_requests.map { |entry| MedicationRequests.new(entry, entries) }
-      med_requests.sort_by { |medreq| DateTime.parse(medreq.authored_on) || '' }.reverse
-    rescue StandardError => e
-      Rails.logger.error("Error fetching or parsing Medication Request:\n #{e.message.inspect}")
-      Rails.logger.error(e.backtrace.join("\n"))
-      raise "Error fetching or parsing patient's Medication Request. Check the log for detail."
+    if fhir_medication_requests.blank?
+      entries = fetch_medication_requests_by_patient(patient_id, 500, MedicationRequest.updated_at)
+      fhir_medication_requests = entries.select { |entry| entry.resourceType == 'MedicationRequest' }
     end
+
+    entries = (entries + retrieve_practitioner_roles).uniq
+    fhir_medication_requests.each { |entry| MedicationRequest.new(entry, entries) }
+
+    med_requests = MedicationRequest.filter_by_patient_id(patient_id)
+    sort_med_requests(med_requests)
+  rescue StandardError => e
+    Rails.logger.error("Error fetching or parsing Medication Request:\n #{e.message.inspect}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    raise "Error fetching or parsing patient's Medication Request. Check the log for detail."
+  end
+
+  def sort_med_requests(med_requests)
+    med_requests.sort_by { |medreq| DateTime.parse(medreq.authored_on) || '' }.reverse
   end
 end

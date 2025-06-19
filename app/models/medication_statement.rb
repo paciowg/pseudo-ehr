@@ -1,11 +1,13 @@
 # MedicationStatement Model
 class MedicationStatement < Resource
-  attr_reader :id, :fhir_resource, :status, :medication,
-              :date_asserted, :info_source, :reason, :dosage
+  attr_reader :id, :fhir_resource, :status, :medication, :patient_id,
+              :date_asserted, :info_source, :reason, :dosage, :patient
 
-  def initialize(fhir_medication_statement, bundle_entries)
+  def initialize(fhir_medication_statement, bundle_entries = [])
     @id = fhir_medication_statement.id
     @fhir_resource = fhir_medication_statement
+    @patient_id = @fhir_resource.subject&.reference&.split('/')&.last
+    @patient = Patient.find(@patient_id)
     @status = @fhir_resource.status
     @medication = coding_string(@fhir_resource.medicationCodeableConcept&.coding)
     @date_asserted = parse_date(@fhir_resource.dateAsserted)
@@ -13,6 +15,8 @@ class MedicationStatement < Resource
     Rails.logger.debug @fhir_resource.reasonCode
     @reason = coding_string(@fhir_resource.reasonCode.first.try(:coding))
     @dosage = @fhir_resource.dosage.map(&:text)&.join(', ')
+
+    self.class.update(self)
   end
 
   private

@@ -65,6 +65,7 @@ class SessionsController < ApplicationController
   def disconnect_server
     reset_session
     Rails.cache.clear
+    clear_all_data
     @client = nil
     if @current_server.authenticated_access?
       @current_server.update!(
