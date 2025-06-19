@@ -54,7 +54,7 @@ jobs:
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1.207.0
         with:
-          bundler-cache: true
+          bundler-cache: false # Change from true to false to bypass issue with github cache service
       # Add or replace any other lints here
       - name: Security audit dependencies
         run: bin/rails bundle:audit:update
