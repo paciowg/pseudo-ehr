@@ -21,7 +21,7 @@ class Composition < Resource
     @author = retrieve_author(fhir_composition.author, fhir_bundle)
     @title = fhir_composition.title
     @custodian = get_custodian(fhir_composition.custodian, fhir_bundle)
-    fhir_patient = get_object_from_bundle(fhir_composition.subject, fhir_bundle)
+    get_object_from_bundle(fhir_composition.subject, fhir_bundle)
     @fhir_bundle = fhir_bundle
     @subject = @patient
     fill_sections(fhir_composition.section, fhir_bundle)

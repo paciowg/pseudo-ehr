@@ -145,8 +145,8 @@ class ApplicationController < ActionController::Base
   end
 
   def clear_all_data
-    PATIENT_MODELS.each { |model| model.clear_data }
-    OTHER_MODELS.each { |model| model.clear_data }
+    PATIENT_MODELS.each(&:clear_data)
+    OTHER_MODELS.each(&:clear_data)
   end
 
   def set_resources_count

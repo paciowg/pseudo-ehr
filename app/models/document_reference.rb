@@ -18,7 +18,7 @@ class DocumentReference < Resource
                 parse_provider_name(author, bundle_entries)
               end&.delete('--')&.join(', ').presence || '--'
     @contents = get_contents
-    @title = @fhir_resource.description.presence || @fhir_resource.type&.text&.presence ||
+    @title = @fhir_resource.description.presence || @fhir_resource.type&.text.presence ||
              contents.first&.title.presence || '--'
 
     self.class.update(self)

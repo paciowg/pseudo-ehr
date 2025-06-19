@@ -45,7 +45,7 @@ class DiagnosticReport < Resource
 
   def get_media(bundle_entries)
     media_links = @fhir_resource.media.map { |m| m.link&.reference }.compact
-    return [] unless media_links.present?
+    return [] if media_links.blank?
 
     media_ids = media_links.map { |link| link.split('/').last }.compact
 
@@ -62,7 +62,7 @@ class DiagnosticReport < Resource
 
   def get_presented_forms
     forms = @fhir_resource.presentedForm
-    return [] unless forms.present?
+    return [] if forms.blank?
 
     forms.map do |form|
       Content.new(
@@ -74,7 +74,7 @@ class DiagnosticReport < Resource
 
   def get_results(bundle_entries)
     observation_refs = @fhir_resource.result&.map(&:reference)&.compact
-    return unless observation_refs.present?
+    return if observation_refs.blank?
 
     observation_ids = observation_refs.map { |ref| ref.split('/').last }.compact
 

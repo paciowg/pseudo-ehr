@@ -27,7 +27,7 @@ class MedicationRequest < Resource
     @reason_reference = @fhir_resource.reasonReference.map do |each|
       find_condition(each, bundle_entries)
     end&.compact&.join(', ').presence || '--'
-    @reported = !!@fhir_resource.reportedBoolean
+    @reported = !@fhir_resource.reportedBoolean.nil?
     @reported_reference = parse_provider_name(@fhir_resource.reportedReference, bundle_entries)
     @note = @fhir_resource.note.map(&:text)&.join(', ').presence || '--'
 

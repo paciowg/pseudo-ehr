@@ -88,7 +88,8 @@ RSpec.describe ApplicationController do
     context 'when no error' do
       before do
         allow(controller).to receive(:patient_id).and_return(patient_id)
-        allow(controller).to receive(:fetch_single_patient).with(patient_id).and_return(FHIR::Patient.new(id: patient_id))
+        allow(controller).to receive(:fetch_single_patient).with(patient_id)
+                                                           .and_return(FHIR::Patient.new(id: patient_id))
         allow(Rails.cache).to receive(:fetch).and_yield
       end
 

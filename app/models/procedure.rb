@@ -63,7 +63,7 @@ class Procedure < Resource
   private
 
   def retrieve_status_reason
-    return '--' unless @fhir_resource.statusReason.present?
+    return '--' if @fhir_resource.statusReason.blank?
 
     if @fhir_resource.statusReason.respond_to?(:coding)
       coding_string(@fhir_resource.statusReason.coding)
@@ -73,7 +73,7 @@ class Procedure < Resource
   end
 
   def retrieve_category
-    return '--' unless @fhir_resource.category.present?
+    return '--' if @fhir_resource.category.blank?
 
     @fhir_resource.category&.map do |cat|
       coding_string(cat.coding)
@@ -81,7 +81,7 @@ class Procedure < Resource
   end
 
   def format_period(period)
-    return '--' unless period&.start.present?
+    return '--' if period&.start.blank?
 
     start_date = parse_date(period.start)
     end_date = period.end.present? ? parse_date(period.end) : 'present'
@@ -90,7 +90,7 @@ class Procedure < Resource
   end
 
   def retrieve_encounter(bundle_entries)
-    return '--' unless @fhir_resource.encounter&.reference.present?
+    return '--' if @fhir_resource.encounter&.reference.blank?
 
     resource_type, resource_id = @fhir_resource.encounter.reference.split('/')
     encounter_resource = bundle_entries.find { |res| res.resourceType == resource_type && res.id == resource_id }
@@ -103,7 +103,7 @@ class Procedure < Resource
   end
 
   def retrieve_location(bundle_entries)
-    return '--' unless @fhir_resource.location&.reference.present?
+    return '--' if @fhir_resource.location&.reference.blank?
 
     resource_type, resource_id = @fhir_resource.location.reference.split('/')
     location_resource = bundle_entries.find { |res| res.resourceType == resource_type && res.id == resource_id }
@@ -114,7 +114,7 @@ class Procedure < Resource
   end
 
   def retrieve_based_on(bundle_entries)
-    return [] unless @fhir_resource.basedOn.present?
+    return [] if @fhir_resource.basedOn.blank?
 
     @fhir_resource.basedOn.map do |reference|
       resource_type, resource_id = reference.reference.split('/')
@@ -138,7 +138,7 @@ class Procedure < Resource
   end
 
   def retrieve_part_of(bundle_entries)
-    return [] unless @fhir_resource.partOf.present?
+    return [] if @fhir_resource.partOf.blank?
 
     @fhir_resource.partOf.map do |reference|
       resource_type, resource_id = reference.reference.split('/')
@@ -165,7 +165,7 @@ class Procedure < Resource
   end
 
   def retrieve_performers(bundle_entries)
-    return [] unless @fhir_resource.performer.present?
+    return [] if @fhir_resource.performer.blank?
 
     @fhir_resource.performer.map do |performer|
       {
@@ -177,7 +177,7 @@ class Procedure < Resource
   end
 
   def retrieve_reason_codes
-    return [] unless @fhir_resource.reasonCode.present?
+    return [] if @fhir_resource.reasonCode.blank?
 
     @fhir_resource.reasonCode.map do |code|
       coding_string(code.coding)
@@ -185,7 +185,7 @@ class Procedure < Resource
   end
 
   def retrieve_reason_references(bundle_entries)
-    return [] unless @fhir_resource.reasonReference.present?
+    return [] if @fhir_resource.reasonReference.blank?
 
     @fhir_resource.reasonReference.map do |reference|
       resource_type, resource_id = reference.reference.split('/')
@@ -217,7 +217,7 @@ class Procedure < Resource
   end
 
   def retrieve_complications
-    return [] unless @fhir_resource.complication.present?
+    return [] if @fhir_resource.complication.blank?
 
     if @fhir_resource.complication.first.respond_to?(:coding)
       @fhir_resource.complication.map { |c| coding_string(c.coding) }
@@ -227,13 +227,13 @@ class Procedure < Resource
   end
 
   def retrieve_follow_up
-    return [] unless @fhir_resource.followUp.present?
+    return [] if @fhir_resource.followUp.blank?
 
     @fhir_resource.followUp.map { |f| coding_string(f.coding) }
   end
 
   def retrieve_used_reference(bundle_entries)
-    return [] unless @fhir_resource.usedReference.present?
+    return [] if @fhir_resource.usedReference.blank?
 
     @fhir_resource.usedReference.map do |reference|
       resource_type, resource_id = reference.reference.split('/')
@@ -244,21 +244,19 @@ class Procedure < Resource
   end
 
   def retrieve_used_code
-    return [] unless @fhir_resource.usedCode.present?
+    return [] if @fhir_resource.usedCode.blank?
 
     @fhir_resource.usedCode.map { |c| coding_string(c.coding) }
   end
 
   def retrieve_notes(bundle_entries)
-    return [] unless @fhir_resource.note.present?
+    return [] if @fhir_resource.note.blank?
 
     @fhir_resource.note.map do |note|
       {
         author: note.authorString || (if note.authorReference
                                         parse_provider_name(note.authorReference,
                                                             bundle_entries)
-                                      else
-                                        nil
                                       end),
         time: note.time ? parse_date(note.time) : nil,
         text: note.text

@@ -351,10 +351,8 @@ class QuestionnaireResponse < Resource
     items_map = {}
     @items.each do |item|
       items_map[item[:link_id]] = item
-    end
 
-    # Organize items into a hierarchical structure
-    @items.each do |item|
+      # Organize items into a hierarchical structure
       if item[:parent_link_id].present? && items_map[item[:parent_link_id]].present?
         parent = items_map[item[:parent_link_id]]
         parent[:children] << item
