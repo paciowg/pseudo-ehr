@@ -1,8 +1,13 @@
+plugins:
+  - rubocop-rails
+  - rubocop-rspec
+
 require:
   - rubocop-capybara
   - rubocop-factory_bot
-  - rubocop-rails
-  - rubocop-rspec
+
+AllCops:
+  NewCops: enable
 
 RSpec/NestedGroups:
   Enabled: false
@@ -49,6 +54,9 @@ Metrics/MethodLength:
   Enabled: false
 
 Style/Documentation:
+  Enabled: false
+
+Style/SafeNavigationChainLength:
   Enabled: false
 
 Style/FrozenStringLiteralComment:

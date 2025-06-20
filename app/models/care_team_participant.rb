@@ -53,6 +53,6 @@ class CareTeamParticipant < Resource
   def retrieve_contact
     telecom_array = @fhir_resource.try(:telecom) || @fhir_resource.try(:contact)&.first&.telecom || []
     phone = format_phone(telecom_array)
-    phone != '--' ? phone : format_email(telecom_array)
+    phone == '--' ? format_email(telecom_array) : phone
   end
 end

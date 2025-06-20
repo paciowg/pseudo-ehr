@@ -5,7 +5,7 @@ class GoalsController < ApplicationController
   # GET /patients/:patient_id/goals
   def index
     @pagy, @goals = pagy_array(fetch_goals(params[:patient_id]), items: 5)
-    flash.now[:notice] = 'Patient has no goals' if @goals.empty?
+    flash.now[:notice] = I18n.t('controllers.goals.no_goals') if @goals.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
     @goals = []

@@ -6,7 +6,7 @@ class ServiceRequestsController < ApplicationController
   def index
     @pagy, @service_requests = pagy_array(fetch_service_requests(params[:patient_id]),
                                           items: 10)
-    flash.now[:notice] = 'Patient has no Service Request yet' if @service_requests.empty?
+    flash.now[:notice] = I18n.t('controllers.service_requests.no_requests') if @service_requests.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
     @service_requests = []

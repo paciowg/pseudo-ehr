@@ -31,3 +31,81 @@
 
 en:
   hello: "Hello world"
+
+  # Controller messages
+  controllers:
+    advance_directives:
+      no_adi_found: "No ADI found"
+      pmo_updated: "Successfully updated PMO"
+      pmo_update_error: "An error has occurred while updating the PMO"
+      living_will_revoked: "Successfully revoked Living Will"
+      living_will_revoke_error: "An error has occurred while revoking the living will"
+
+    application:
+      select_patient: "Please select a patient to proceed"
+
+    care_teams:
+      no_care_team: "Patient has no care team yet"
+      no_care_teams: "Patient has no care team yet"
+
+    conditions:
+      no_conditions: "Patient has no conditions"
+
+    diagnostic_reports:
+      no_reports: "No Diagnostic Report found"
+
+    document_references:
+      no_references: "No Document Reference found"
+
+    fhir_servers:
+      no_servers: "No Fhir Servers found."
+      server_deleted: "Server was successfully deleted."
+      server_not_found: "Cannot delete server with id %{id}. Server could not be found."
+
+    goals:
+      no_goals: "Patient has no goals"
+
+    medication_lists:
+      no_lists: "No Medication list found"
+
+    medication_requests:
+      no_requests: "No Medication request found"
+
+    nutrition_orders:
+      no_orders: "Patient has no Nutrition Order yet"
+
+    observations:
+      no_observations: "No observations found!"
+      not_found: "Observation not found"
+      observation_not_found: "Observation not found"
+      retrieval_error: "Unable to retrieve Observation. Check logs for detail."
+      retrieve_error: "Unable to retrieve Observation. Check logs for detail."
+
+    patients:
+      no_patients: "No patient found"
+      sync_no_changes: "Patient record synced successfully! No changes since last sync."
+      sync_success_full: "Patient record synced successfully (full sync)!"
+      sync_full: "Patient record synced successfully (full sync)!"
+      sync_failed: "Failed to sync Patient record!"
+
+    procedures:
+      no_procedures: "No Procedure found"
+
+    questionnaire_responses:
+      no_responses: "Patient has not answer any questionnaire yet"
+
+    service_requests:
+      no_requests: "Patient has no Service Request yet"
+
+    sessions:
+      connected: "Successfully connected"
+      authenticated: "Successfully authenticated with server."
+      auth_error: "Internal Error after authorization: Check the logs for detail."
+      disconnected: "Successfully disconnected client from server"
+      no_session: "No session available. Please connect to a fhir server to get started"
+
+    transition_of_cares:
+      fetch_error: "Error fetching or parsing TOC Composition. Check logs for detail."
+
+    welcome:
+      connected_to_server: "You are connected to FHIR Server: %{server_url}"

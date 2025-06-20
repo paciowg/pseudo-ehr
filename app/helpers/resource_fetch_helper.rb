@@ -46,7 +46,7 @@ module ResourceFetchHelper
     add_query(response.request)
 
     success = (CLIENT_BUNDLE_METHODS.include?(method) && response.resource.is_a?(FHIR::Bundle)) ||
-              (!CLIENT_BUNDLE_METHODS.include?(method) && response.resource.is_a?(resource_class))
+              (CLIENT_BUNDLE_METHODS.exclude?(method) && response.resource.is_a?(resource_class))
 
     return response if success
 

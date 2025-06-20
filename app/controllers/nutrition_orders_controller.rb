@@ -5,7 +5,7 @@ class NutritionOrdersController < ApplicationController
   # GET /patients/:patient_id/nutrition_orders
   def index
     @pagy, @nutrition_orders = pagy_array(fetch_nutrition_orders(params[:patient_id]), items: 10)
-    flash.now[:notice] = 'Patient has no Nutrition Order yet' if @nutrition_orders.empty?
+    flash.now[:notice] = I18n.t('controllers.nutrition_orders.no_orders') if @nutrition_orders.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
     @nutrition_orders = []

@@ -92,7 +92,7 @@ class ContentsController < ApplicationController
 
   def transfor_cda_to_html(raw_xml)
     doc = Nokogiri::XML(raw_xml)
-    xslt = Nokogiri::XSLT(File.read(Rails.root.join('public/CDA.xsl')))
+    xslt = Nokogiri::XSLT(Rails.public_path.join('CDA.xsl').read)
 
     xslt.transform(doc).to_html
   end

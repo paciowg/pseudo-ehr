@@ -34,6 +34,6 @@ class TransitionOfCaresController < ApplicationController
   rescue StandardError => e
     Rails.logger.error("Error fetching or parsing TOC Composition:\n #{e.message.inspect}")
     Rails.logger.error(e.backtrace.join("\n"))
-    raise 'Error fetching or parsing TOC Composition. Check logs for detail.'
+    raise I18n.t('controllers.transition_of_cares.fetch_error')
   end
 end

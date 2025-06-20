@@ -5,7 +5,7 @@ class DiagnosticReportsController < ApplicationController
   # GET /patients/:patient_id/diagnostic_report
   def index
     @pagy, @diagnostic_reports = pagy_array(fetch_patient_diagnostic_reports(params[:patient_id]), items: 10)
-    flash.now[:notice] = 'No Diagnostic Report found' if @diagnostic_reports.empty?
+    flash.now[:notice] = I18n.t('controllers.diagnostic_reports.no_reports') if @diagnostic_reports.empty?
   rescue StandardError => e
     Rails.logger.error e
     flash.now[:danger] = e.message

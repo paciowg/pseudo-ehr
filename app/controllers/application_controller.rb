@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   end
 
   def require_server
-    msg = 'No session available. Please connect to a fhir server to get started'
+    msg = I18n.t('controllers.sessions.no_session')
     set_client and return if server_present?
 
     reset_session
@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
 
     return unless @patient.nil?
 
-    flash[:danger] = 'Please select a patient to proceed'
+    flash[:danger] = I18n.t('controllers.application.select_patient')
     redirect_to patients_path
   end
 

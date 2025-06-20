@@ -77,6 +77,6 @@ class AdvanceDirective < Resource
   end
 
   def read_identifier
-    coding_string(@fhir_doc_ref.type&.coding).downcase.delete('[],().-:{}_;').split.join('')
+    coding_string(@fhir_doc_ref.type&.coding).downcase.delete('[],().-:{}_;').split.join
   end
 end

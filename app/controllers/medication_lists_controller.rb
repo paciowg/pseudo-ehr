@@ -5,7 +5,7 @@ class MedicationListsController < ApplicationController
   # GET /patients/:patient_id/medication_lists
   def index
     @medication_lists = fetch_patient_medication_lists(params[:patient_id])
-    flash.now[:notice] = 'No Medication list found' if @medication_lists.empty?
+    flash.now[:notice] = I18n.t('controllers.medication_lists.no_lists') if @medication_lists.empty?
   rescue StandardError => e
     Rails.logger.error e
     flash.now[:danger] = e.message

@@ -5,7 +5,7 @@ class AdvanceDirectivesController < ApplicationController
   # GET /patients/:patient_id/advance_directives
   def index
     @adis = get_adis(params[:patient_id])
-    flash.now[:notice] = 'No ADI found' if @adis.empty?
+    flash.now[:notice] = I18n.t('controllers.advance_directives.no_adi_found') if @adis.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
     @adis = []
@@ -34,13 +34,13 @@ class AdvanceDirectivesController < ApplicationController
 
     save_updated_data(bundle_entries, doc_ref)
 
-    flash[:success] = 'Successfully updated PMO'
+    flash[:success] = I18n.t('controllers.advance_directives.pmo_updated')
     PatientRecordCache.patient_records_last_sync[@patient.id] = 2.hours.ago
     AdvanceDirective.updated_at(2.hours.ago)
     redirect_to patient_advance_directives_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error updating PMO: #{e.message}" }
-    flash[:error] = 'An error has occurred while updating the PMO'
+    flash[:error] = I18n.t('controllers.advance_directives.pmo_update_error')
     redirect_to advance_directive_path, id: params[:id]
   end
 
@@ -52,13 +52,13 @@ class AdvanceDirectivesController < ApplicationController
     doc_ref.extension << revoke_extension('cancelled')
     @client.update(doc_ref, doc_ref.id)
 
-    flash[:success] = 'Successfully revoked Living Will'
+    flash[:success] = I18n.t('controllers.advance_directives.living_will_revoked')
     PatientRecordCache.patient_records_last_sync[@patient.id] = 2.hours.ago
     AdvanceDirective.updated_at(2.hours.ago)
     redirect_to patient_advance_directives_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.debug { "Error revoking Living Will: #{e.message}" }
-    flash[:error] = 'An error has occurred while revoking the living will'
+    flash[:error] = I18n.t('controllers.advance_directives.living_will_revoke_error')
     redirect_to advance_directive_path, id: params[:id]
   end
 

@@ -17,11 +17,11 @@ module ModelValueSet
     data = []
 
     (2..workbook.last_row).each do |row_number|
-      row = Hash[header.zip(workbook.row(row_number))]
+      row = header.zip(workbook.row(row_number)).to_h
       data << row
     end
 
-    Hash[data.map { |row| [row['Code']&.strip, row['Display']&.strip] }]
+    data.to_h { |row| [row['Code']&.strip, row['Display']&.strip] }
   end
 
   OBSERVATION_PFE_DOMAIN_DISPLAY = get_excel_data('observation-pfe-domain.xlsx').freeze
