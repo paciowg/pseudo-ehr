@@ -1,6 +1,6 @@
-# app/models/content.rb
-# Content Model
-class Content
+# app/models/content_attachment.rb
+# ContentAttachment Model
+class ContentAttachment
   attr_accessor :id, :title, :type, :data, :url, :creation_date
 
   def initialize(title: nil, type: nil, data: nil, url: nil, creation_date: nil)

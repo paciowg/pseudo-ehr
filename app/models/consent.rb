@@ -35,7 +35,7 @@ class Consent < Resource
     return if source&.attachment.blank?
 
     attachment = source.attachment
-    Content.new(
+    ContentAttachment.new(
       title: attachment.title || 'Consent Document',
       type: attachment.contentType,
       data: attachment.data,

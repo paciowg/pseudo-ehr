@@ -34,7 +34,7 @@ class DocumentReference < Resource
     end
 
     non_json_atchmts.map do |atchmt|
-      Content.new(
+      ContentAttachment.new(
         title: atchmt.title || description, type: atchmt.contentType, data: atchmt.data,
         url: atchmt.url, creation_date: parse_date(atchmt.creation)
       )
