@@ -1,3 +1,4 @@
+# app/models/content.rb
 # Content Model
 class Content
   attr_accessor :id, :title, :type, :data, :url, :creation_date
