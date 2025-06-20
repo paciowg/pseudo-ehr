@@ -5,7 +5,7 @@ class CareTeamsController < ApplicationController
   # GET /patients/:patient_id/care_teams
   def index
     @care_teams = get_care_teams(params[:patient_id])
-    flash.now[:notice] = 'Patient has no care team yet' if @care_teams.empty?
+    flash.now[:notice] = I18n.t('controllers.care_teams.no_care_teams') if @care_teams.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
     @care_teams = []

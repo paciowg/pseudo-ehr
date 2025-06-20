@@ -4,7 +4,7 @@ class PatientsController < ApplicationController
 
   def index
     @pagy, @patients = pagy_array(get_patients, items: 10)
-    flash.now[:notice] = 'No patient found' if @patients.empty?
+    flash.now[:notice] = I18n.t('controllers.patients.no_patients') if @patients.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
     @patients = []
@@ -52,14 +52,14 @@ class PatientsController < ApplicationController
           PatientRecordCache.update_patient_record(patient_id, new_resources)
           flash[:notice] = "Patient record synced successfully! Updated #{new_resources.size} resources."
         else
-          flash[:notice] = 'Patient record synced successfully! No changes since last sync.'
+          flash[:notice] = I18n.t('controllers.patients.sync_no_changes')
         end
       rescue StandardError => e
         Rails.logger.error("Error syncing patient record: #{e.message}")
         # If there's an error with incremental sync, fall back to full sync
         PatientRecordCache.clear_patient_record(patient_id)
         retrieve_current_patient_resources
-        flash[:notice] = 'Patient record synced successfully (full sync)!'
+        flash[:notice] = I18n.t('controllers.patients.sync_full')
       end
     else
       # If no existing data or last sync time, do a full sync
@@ -67,9 +67,9 @@ class PatientsController < ApplicationController
       PatientRecordCache.clear_patient_record(patient_id)
       record = retrieve_current_patient_resources
       if record.present?
-        flash[:notice] = 'Patient record synced successfully (full sync)!'
+        flash[:notice] = I18n.t('controllers.patients.sync_full')
       else
-        flash[:danger] = 'Failed to sync Patient record!'
+        flash[:danger] = I18n.t('controllers.patients.sync_failed')
       end
     end
 

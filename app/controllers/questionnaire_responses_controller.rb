@@ -6,7 +6,7 @@ class QuestionnaireResponsesController < ApplicationController
   def index
     @pagy, @questionnaire_responses = pagy_array(fetch_questionnaire_responses(params[:patient_id]),
                                                  items: 10)
-    flash.now[:notice] = 'Patient has not answer any questionnaire yet' if @questionnaire_responses.empty?
+    flash.now[:notice] = I18n.t('controllers.questionnaire_responses.no_responses') if @questionnaire_responses.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
     @questionnaire_responses = []

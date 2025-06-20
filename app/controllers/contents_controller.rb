@@ -1,7 +1,7 @@
 # app/controllers/contents_controller.rb
 class ContentsController < ApplicationController
   def show
-    @content = Content.find(params[:id])
+    @content = ContentAttachment.find(params[:id])
     @content = fetch_content_from_url(params[:url], params[:type]) if @content.nil? && params[:url].present?
 
     unless @content
@@ -43,7 +43,7 @@ class ContentsController < ApplicationController
   private
 
   def fetch_content_from_url(url, type)
-    content = Content.new(url: url)
+    content = ContentAttachment.new(url: url)
     full_url = content.full_url(session[:fhir_server_url])
 
     unless valid_url?(full_url)
@@ -92,7 +92,7 @@ class ContentsController < ApplicationController
 
   def transfor_cda_to_html(raw_xml)
     doc = Nokogiri::XML(raw_xml)
-    xslt = Nokogiri::XSLT(File.read(Rails.root.join('public/CDA.xsl')))
+    xslt = Nokogiri::XSLT(Rails.public_path.join('CDA.xsl').read)
 
     xslt.transform(doc).to_html
   end

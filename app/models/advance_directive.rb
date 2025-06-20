@@ -57,7 +57,7 @@ class AdvanceDirective < Resource
     end
 
     non_json_atchmts.map do |atchmt|
-      Content.new(
+      ContentAttachment.new(
         title: atchmt.title || description, type: atchmt.contentType, data: atchmt.data,
         url: atchmt.url, creation_date: parse_date(atchmt.creation)
       )
@@ -77,6 +77,6 @@ class AdvanceDirective < Resource
   end
 
   def read_identifier
-    coding_string(@fhir_doc_ref.type&.coding).downcase.delete('[],().-:{}_;').split.join('')
+    coding_string(@fhir_doc_ref.type&.coding).downcase.delete('[],().-:{}_;').split.join
   end
 end

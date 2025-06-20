@@ -83,14 +83,14 @@ class Observation < Resource
 
   def retrieve_category
     list = %w[clinical-test functional-status cognitive-status survey activity laboratory]
-    formatted_category = categories.select { |cat| list.include?(cat[:code]) }.map { |cat| cat[:code] }.sort.join(', ')
+    formatted_category = categories.select { |cat| list.include?(cat[:code]) }.pluck(:code).sort.join(', ')
 
     Observation.internal_category_dict[formatted_category] || 'Other'
   end
 
   def retrieve_domain
     list = %w[clinical-test functional-status cognitive-status survey activity laboratory]
-    domain = @category == 'Other' ? categories.last : categories.find { |cat| !list.include?(cat[:code]) }
+    domain = @category == 'Other' ? categories.last : categories.find { |cat| list.exclude?(cat[:code]) }
 
     if domain.blank?
       ''

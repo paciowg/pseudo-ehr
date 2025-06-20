@@ -146,7 +146,7 @@ module ModelHelper
     when 'Practitioner', 'Patient', 'RelatedPerson'
       format_name(provider_resource.name) => { first_name:, last_name: }
       "#{first_name} #{last_name}"
-    when 'Organization'
+    when 'Organization', 'Location'
       provider_resource.name
     when 'PractitionerRole'
       role = provider_resource.try(:code)&.first&.coding&.first&.display

@@ -15,7 +15,7 @@ class SessionsController < ApplicationController
   # POST /launch
   def launch_server
     # Where to redirect depends on the context of your app. Change as needed to match your logic.
-    flash[:success] = 'Successfully connected' unless @current_server.authenticated_access?
+    flash[:success] = I18n.t('controllers.sessions.connected') unless @current_server.authenticated_access?
     redirect_to patients_path and return unless @current_server.authenticated_access?
 
     state = SecureRandom.uuid
@@ -47,7 +47,7 @@ class SessionsController < ApplicationController
                code_verifier: session[:code_verifier] }
       @client = FhirClientService.new(**args).client
 
-      flash[:success] = 'Successfully authenticated with server.'
+      flash[:success] = I18n.t('controllers.sessions.authenticated')
       # Where to redirect depends on the context of your app. Change as needed to match your logic.
       # if withing patient or user context, the patient id or user id will be provided in the authentication response.
       redirect_to patients_path
@@ -57,7 +57,7 @@ class SessionsController < ApplicationController
     Rails.logger.error(e.backtrace.join("\n"))
 
     reset_session
-    flash[:danger] = 'Internal Error after authorization: Check the logs for detail.'
+    flash[:danger] = I18n.t('controllers.sessions.auth_error')
     redirect_to root_path
   end
 
@@ -75,7 +75,7 @@ class SessionsController < ApplicationController
       )
     end
     @current_server = nil
-    flash[:success] = 'Successfully disconnected client from server'
+    flash[:success] = I18n.t('controllers.sessions.disconnected')
     redirect_to root_path
   end
 

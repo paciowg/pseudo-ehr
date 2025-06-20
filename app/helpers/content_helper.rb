@@ -5,7 +5,6 @@ module ContentHelper
 
     badge_color = case content_type
                   when 'application/pdf' then 'red'
-                  when 'text/plain' then 'gray'
                   when 'text/html' then 'orange'
                   when %r{^image/} then 'green'
                   when 'application/json', 'application/fhir+json' then 'yellow'
@@ -77,7 +76,7 @@ module ContentHelper
 
   def parse_cda_document(xml_content)
     doc = Nokogiri::XML(xml_content)
-    xslt = Nokogiri::XSLT(File.read(Rails.root.join('public/CDA.xsl')))
+    xslt = Nokogiri::XSLT(Rails.public_path.join('CDA.xsl').read)
 
     xslt.transform(doc).to_html
   end

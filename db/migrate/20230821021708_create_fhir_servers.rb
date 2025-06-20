@@ -6,7 +6,7 @@ class CreateFhirServers < ActiveRecord::Migration[7.0]
       t.string :name, null: false
       t.string :client_id
       t.string :client_secret_digest
-      t.boolean :authenticated_access, default: false
+      t.boolean :authenticated_access, default: false, null: false
       t.string :token_url
       t.string :authorization_url
       t.string :scope

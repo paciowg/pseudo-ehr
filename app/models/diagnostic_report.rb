@@ -53,7 +53,7 @@ class DiagnosticReport < Resource
     media_attachments = medias.map(&:content).compact
 
     media_attachments.map do |ma|
-      Content.new(
+      ContentAttachment.new(
         title: ma.title, type: ma.contentType, data: ma.data,
         url: ma.url, creation_date: parse_date(ma.creation)
       )
@@ -65,7 +65,7 @@ class DiagnosticReport < Resource
     return [] if forms.blank?
 
     forms.map do |form|
-      Content.new(
+      ContentAttachment.new(
         title: form.title, type: form.contentType, data: form.data,
         url: form.url, creation_date: parse_date(form.creation)
       )

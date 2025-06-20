@@ -1,0 +1,160 @@
+<%# Partial for displaying QuestionnaireResponse resources in the transition of care view %>
+<div class="mt-2">
+  <% modal_id = "questionnaireResponseModal_#{SecureRandom.hex(4)}" %>
+  <button class="flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 focus:outline-none"
+    data-modal-target="<%= modal_id %>" data-modal-toggle="<%= modal_id %>">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+    Show questionnaire responses (<%= objects.length %>)
+  </button>
+
+  <!-- Questionnaire Response Modal -->
+  <div id="<%= modal_id %>" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-7xl max-h-full">
+      <!-- Modal content -->
+      <div class="relative bg-white rounded-lg shadow">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+          <h3 class="text-xl font-semibold text-gray-900">
+            Questionnaire Responses (<%= objects.length %>)
+          </h3>
+          <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="<%= modal_id %>">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
+        <!-- Modal body -->
+        <div class="p-4 md:p-5 space-y-4">
+          <% @questionnaire_responses = objects.map {|obj| obj[:resource]} %>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-500">
+              <thead class="text-xs uppercase bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Date</th>
+                  <th scope="col" class="px-4 py-3 min-w-[12rem]">Questionnaire</th>
+                  <th scope="col" class="px-4 py-3 hidden md:table-cell">Author</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Status</th>
+                </tr>
+              </thead>
+              <tbody data-accordion="table-column" class="divide-y divide-gray-200">
+                <% @questionnaire_responses.each do |response| %>
+                  <% identifier = response.id.to_s.downcase %>
+                  <tr class="bg-white hover:bg-gray-50 cursor-pointer transition"
+                    id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>"
+                    aria-expanded="false" aria-controls="table-column-body-<%= identifier %>">
+                    <td class="p-3 w-4">
+                      <svg data-accordion-icon class="w-5 h-5 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                    </td>
+                    <td class="px-4 py-3 font-medium text-gray-900"><%= response.formatted_date rescue response.date %></td>
+                    <td class="px-4 py-3 font-medium text-gray-900">
+                      <div class="flex flex-col">
+                        <span><%= response.questionnaire_title || response.name rescue 'Unknown questionnaire' %></span>
+                        <% if response.questionnaire && response.questionnaire != response.questionnaire_title %>
+                          <span class="text-xs text-gray-500 truncate max-w-xs" title="<%= response.questionnaire %>">
+                            <%= response.questionnaire.to_s.truncate(50) rescue '' %>
+                          </span>
+                        <% end %>
+                      </div>
+                    </td>
+                    <td class="px-4 py-3 hidden md:table-cell"><%= response.author || '--' %></td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <%
+                        status = response.status&.downcase rescue 'unknown'
+                        status_color = case status
+                          when 'completed' then 'green'
+                          when 'in-progress' then 'blue'
+                          when 'stopped' then 'yellow'
+                          when 'entered-in-error' then 'red'
+                          when 'amended' then 'purple'
+                          else 'gray'
+                        end
+                      %>
+                      <div class="w-fit bg-<%= status_color %>-100 text-<%= status_color %>-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        <%= response.status %>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="hidden" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
+                    <td class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
+                    <td class="p-4" colspan="4">
+                      <div class="bg-white rounded-lg shadow-sm p-4">
+                        <!-- Header Information -->
+                        <div class="mb-6">
+                          <h3 class="text-lg font-semibold text-gray-800 mb-2"><%= response.name rescue 'Questionnaire Response' %></h3>
+                          <p class="text-gray-600 mb-4"><%= response.description rescue 'No description available' %></p>
+                        </div>
+
+                        <!-- Questions and Answers -->
+                        <% if response.respond_to?(:items) && response.items.present? %>
+                          <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                              <thead class="bg-gray-50">
+                                <tr>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Question</th>
+                                  <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Answer</th>
+                                </tr>
+                              </thead>
+                              <tbody class="bg-white divide-y divide-gray-200">
+                                <% if response.respond_to?(:flattened_questions) && response.flattened_questions.present? %>
+                                  <% response.flattened_questions.each do |question| %>
+                                    <tr class="hover:bg-gray-50">
+                                      <td class="px-4 py-3 text-sm text-gray-500"><%= question[:text] || '--' %></td>
+                                      <td class="px-4 py-3 text-sm text-gray-500">
+                                        <% if question[:answers].present? %>
+                                          <div class="space-y-1">
+                                            <% question[:answers].each do |answer| %>
+                                              <div>
+                                                <% if answer[:value_type] == 'coding' && answer[:code].present? %>
+                                                  <span class="font-medium"><%= answer[:code] %></span>: <%= answer[:display] %>
+                                                <% else %>
+                                                  <%= answer[:display] %>
+                                                <% end %>
+                                              </div>
+                                            <% end %>
+                                          </div>
+                                        <% else %>
+                                          <span class="text-gray-400">No answer provided</span>
+                                        <% end %>
+                                      </td>
+                                    </tr>
+                                  <% end %>
+                                <% elsif response.respond_to?(:items_summary) && response.items_summary.present? %>
+                                  <% response.items_summary.each do |item| %>
+                                    <tr class="hover:bg-gray-50">
+                                      <td class="px-4 py-3 text-sm text-gray-500"><%= item[:question] || '--' %></td>
+                                      <td class="px-4 py-3 text-sm text-gray-500"><%= item[:answer] || 'No answer provided' %></td>
+                                    </tr>
+                                  <% end %>
+                                <% else %>
+                                  <tr>
+                                    <td colspan="2" class="px-4 py-3 text-sm text-gray-500 text-center">No questions or answers available</td>
+                                  </tr>
+                                <% end %>
+                              </tbody>
+                            </table>
+                          </div>
+                        <% else %>
+                          <p class="text-gray-500 italic">No questions or answers available for this response.</p>
+                        <% end %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 md:p-5 border-t border-gray-200 rounded-b">
+          <button data-modal-hide="<%= modal_id %>" type="button" class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-md text-sm px-5 py-2.5 text-center">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

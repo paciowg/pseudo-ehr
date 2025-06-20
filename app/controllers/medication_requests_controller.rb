@@ -5,7 +5,7 @@ class MedicationRequestsController < ApplicationController
   # GET /patients/:patient_id/medication_requests
   def index
     @pagy, @medication_requests = pagy_array(fetch_patient_medication_requests(params[:patient_id]), items: 10)
-    flash.now[:notice] = 'No Medication request found' if @medication_requests.empty?
+    flash.now[:notice] = I18n.t('controllers.medication_requests.no_requests') if @medication_requests.empty?
   rescue StandardError => e
     Rails.logger.error e
     flash.now[:danger] = e.message

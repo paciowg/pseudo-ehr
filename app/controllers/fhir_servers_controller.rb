@@ -11,16 +11,16 @@ class FhirServersController < ApplicationController
     else
       @pagy, @fhir_servers = pagy(FhirServer.order(:name), items: 10)
     end
-    flash.now[:danger] = 'No Fhir Servers found.' if @fhir_servers.empty?
+    flash.now[:danger] = I18n.t('controllers.fhir_servers.no_servers') if @fhir_servers.empty?
   end
 
   # DELETE /fhir_servers/:id
   def destroy
     server = FhirServer.find_by(id: params[:id])
     if server&.destroy
-      flash[:success] = 'Server was successfully deleted.'
+      flash[:success] = I18n.t('controllers.fhir_servers.server_deleted')
     else
-      flash[:danger] = "Cannot delete server with id #{params[:id]}. Server could not be found."
+      flash[:danger] = I18n.t('controllers.fhir_servers.server_not_found', id: params[:id])
     end
     redirect_to fhir_servers_path
   end

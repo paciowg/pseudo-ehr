@@ -9,7 +9,7 @@ class ObservationsController < ApplicationController
 
     @grouped_observations = Observation.group_by_category_and_domain(observations)
     @collection_observations = Observation.collections(observations)
-    flash.now[:notice] = 'No observations found!' if observations.blank?
+    flash.now[:notice] = I18n.t('controllers.observations.no_observations') if observations.blank?
   rescue StandardError => e
     flash.now[:danger] = e.message
     @grouped_observations = {}
@@ -61,13 +61,13 @@ class ObservationsController < ApplicationController
     @observation = Observation.new(resource, entries)
     return if @observation.present?
 
-    flash[:notice] = 'Observation not found'
+    flash[:notice] = I18n.t('controllers.observations.observation_not_found')
     redirect_to patient_observations_path, id: @patient.id
   rescue StandardError => e
     Rails.logger.error("Unable to retrieve or parse Observation:\n #{e.message.inspect}")
     Rails.logger.error(e.backtrace.join("\n"))
 
-    flash[:danger] = 'Unable to retrieve Observation. Check logs for detail.'
+    flash[:danger] = I18n.t('controllers.observations.retrieve_error')
     redirect_to patient_observations_path, id: @patient.id
   end
 end

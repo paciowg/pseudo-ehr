@@ -1,0 +1,140 @@
+<%# Partial for displaying MedicationRequest resources in the transition of care view %>
+<div class="mt-2">
+  <% modal_id = "medicationRequestModal_#{SecureRandom.hex(4)}" %>
+  <button class="flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 focus:outline-none"
+    data-modal-target="<%= modal_id %>" data-modal-toggle="<%= modal_id %>">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+    Show medication requests (<%= objects.length %>)
+  </button>
+
+  <!-- Medication Request Modal -->
+  <div id="<%= modal_id %>" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-7xl max-h-full">
+      <!-- Modal content -->
+      <div class="relative bg-white rounded-lg shadow">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+          <h3 class="text-xl font-semibold text-gray-900">
+            Medication Requests (<%= objects.length %>)
+          </h3>
+          <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="<%= modal_id %>">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
+        <!-- Modal body -->
+        <div class="p-4 md:p-5 space-y-4">
+          <% @medication_requests = objects.map {|obj| obj[:resource]} %>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Medication</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Authored on</th>
+                  <th scope="col" class="px-4 py-3 min-w-[6rem]">Clinical Status</th>
+                </tr>
+              </thead>
+              <tbody data-accordion="table-column">
+                <% @medication_requests.each do |request| %>
+                  <% identifier = request.id %>
+                  <% medication = request.medication.downcase rescue 'unknown medication' %>
+                  <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
+                    id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>"
+                    aria-expanded="false" aria-controls="table-column-body-<%= identifier %>">
+                    <td class="p-3 w-4">
+                      <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                    </td>
+                    <td><%= medication %></td>
+                    <td><%= request.authored_on %></td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <% color = request.status == 'active' ? 'green' : 'gray' %>
+                      <div class="w-fit bg-<%= color %>-100 text-<%= color %>-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
+                        <%= request.status %>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="hidden flex-1 overflow-x-auto w-full" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
+                    <td scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
+                    <td class="p-4 border-b" colspan="4">
+                      <% if request.requester != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Requested by:</b><span class="flex-1"><%= request.requester %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.authored_on != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Date requested:</b><span class="flex-1"><%= request.authored_on %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.intent != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Intent of Request:</b><span class="flex-1"><%= request.intent %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.status_reason != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Status Reason:</b><span class="flex-1"><%= request.status_reason %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.category != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Category:</b><span class="flex-1"><%= request.category %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.request_intent.present? && request.request_intent != "" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Request Reason:</b><span class="flex-1"><%= request.request_intent %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.procedure_intent != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Treatment Intent:</b><span class="flex-1"><%= request.procedure_intent %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.reason_reference != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Condition Reference:</b><span class="flex-1"><%= request.reason_reference %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.dosage_instruction != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Dosage Instructions:</b><span class="flex-1"><%= request.dosage_instruction %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.reported != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Reported:</b><span class="flex-1"><%= request.reported %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.reported_reference != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Reported Reference:</b><span class="flex-1"><%= request.reported_reference %></span></p>
+                        </div>
+                      <% end %>
+                      <% if request.note != "--" %>
+                        <div class="items-center mt-2">
+                          <p class="flex items-center py-2"><b class="w-32">Note:</b><span class="flex-1"><%= request.note %></span></p>
+                        </div>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 md:p-5 border-t border-gray-200 rounded-b">
+          <button data-modal-hide="<%= modal_id %>" type="button" class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-md text-sm px-5 py-2.5 text-center">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

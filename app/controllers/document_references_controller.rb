@@ -5,7 +5,7 @@ class DocumentReferencesController < ApplicationController
   # GET /patients/:patient_id/document_reference
   def index
     @document_references = fetch_patient_document_reference(params[:patient_id])
-    flash.now[:notice] = 'No Document Reference found' if @document_references.empty?
+    flash.now[:notice] = I18n.t('controllers.document_references.no_references') if @document_references.empty?
   rescue StandardError => e
     Rails.logger.error(e.backtrace.join("\n"))
     flash.now[:danger] = e.message

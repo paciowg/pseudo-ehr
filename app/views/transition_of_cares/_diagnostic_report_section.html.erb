@@ -1,0 +1,130 @@
+<%# Partial for displaying DiagnosticReport resources in the transition of care view %>
+<div class="mt-2">
+  <% modal_id = "diagnosticReportModal_#{SecureRandom.hex(4)}" %>
+  <button class="flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-800 focus:outline-none"
+    data-modal-target="<%= modal_id %>" data-modal-toggle="<%= modal_id %>">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+    Show diagnostic reports (<%= objects.length %>)
+  </button>
+
+  <!-- Diagnostic Report Modal -->
+  <div id="<%= modal_id %>" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-7xl max-h-full">
+      <!-- Modal content -->
+      <div class="relative bg-white rounded-lg shadow">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+          <h3 class="text-xl font-semibold text-gray-900">
+            Diagnostic Reports (<%= objects.length %>)
+          </h3>
+          <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="<%= modal_id %>">
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+        </div>
+        <!-- Modal body -->
+        <div class="p-4 md:p-5 space-y-4">
+    <% reports = objects.map {|obj| obj[:resource]} %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Performer</th>
+            <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attachments & Results</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% reports.each do |report| %>
+            <tr>
+              <td class="px-4 py-2 text-sm font-medium text-gray-900"><%= report.code %></td>
+              <td class="px-4 py-2 text-sm text-gray-700"><%= report.status %></td>
+              <td class="px-4 py-2 text-sm text-gray-700"><%= report.category %></td>
+              <td class="px-4 py-2 text-sm text-gray-700"><%= report.date %></td>
+              <td class="px-4 py-2 text-sm text-gray-700"><%= report.performer %></td>
+              <td class="px-4 py-2 text-sm text-gray-700">
+                <div class="flex flex-col space-y-2">
+                  <% if report.media.present? %>
+                    <div>
+                      <span class="font-medium">Media:</span>
+                      <div class="ml-2 flex flex-col space-y-1">
+                        <% report.media.each_with_index do |media, index| %>
+                          <%= render partial: 'shared/content_display_modal', locals: { content: media } %>
+                          <button class="text-indigo-600 hover:text-indigo-800 inline-flex items-center"
+                                  data-modal-target="<%= media.id %>"
+                                  data-modal-toggle="<%= media.id %>">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            View Media <%= index + 1 %>
+                          </button>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+
+                  <% if report.contents.present? %>
+                    <div>
+                      <span class="font-medium">Reports:</span>
+                      <div class="ml-2 flex flex-col space-y-1">
+                        <% report.contents.each_with_index do |content, index| %>
+                          <%= render partial: 'shared/content_display_modal', locals: { content: content } %>
+                          <button class="text-indigo-600 hover:text-indigo-800 inline-flex items-center"
+                                  data-modal-target="<%= content.id %>"
+                                  data-modal-toggle="<%= content.id %>">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            View Report <%= index + 1 %>
+                          </button>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+
+                  <% if report.results.present? %>
+                    <div>
+                      <span class="font-medium">Results:</span>
+                      <div class="ml-2">
+                        <ul class="list-disc list-inside">
+                          <% report.results.each do |result| %>
+                            <li>
+                              <%= result.code %>: <%= result.value %>
+                              <% if result.reference_range.present? %>
+                                (Ref: <%= result.reference_range %>)
+                              <% end %>
+                            </li>
+                          <% end %>
+                        </ul>
+                      </div>
+                    </div>
+                  <% end %>
+
+                  <% if !report.media.present? && !report.contents.present? && !report.results.present? %>
+                    --
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 md:p-5 border-t border-gray-200 rounded-b">
+          <button data-modal-hide="<%= modal_id %>" type="button" class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-md text-sm px-5 py-2.5 text-center">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

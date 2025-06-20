@@ -6,7 +6,7 @@ class ConditionsController < ApplicationController
   def index
     @pagy, @conditions = pagy_array(get_conditions(params[:patient_id]),
                                     items: 10)
-    flash.now[:notice] = 'Patient has no conditions' if @conditions.empty?
+    flash.now[:notice] = I18n.t('controllers.conditions.no_conditions') if @conditions.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
     @conditions = []

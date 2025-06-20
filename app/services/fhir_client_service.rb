@@ -26,8 +26,6 @@ class FhirClientService
     refresh_access_token if access_token_expired? && !new_session
     @client.set_bearer_token(@fhir_server.access_token) if @fhir_server.access_token.present?
     @client
-  rescue StandardError => e
-    raise e
   end
 
   private
