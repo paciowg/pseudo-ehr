@@ -77,6 +77,14 @@ class PatientRecordCache
       store_patient_record(patient_id, updated_resources)
     end
 
+    # Add a single resource to a patient record
+    def add_resource_to_patient_record(patient_id, resource)
+      records = get_patient_record(patient_id)
+      records ||= []
+      records << resource
+      store_patient_record(patient_id, records)
+    end
+
     # Get a grouped patient record from the cache
     def get_grouped_patient_record(patient_id)
       grouped_patient_records[patient_id]
