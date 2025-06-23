@@ -26,9 +26,9 @@ class TransitionOfCaresController < ApplicationController
         PatientRecordCache.add_resource_to_patient_record(patient_id, fhir_composition)
         entries = retrieve_current_patient_resources
         Composition.new(fhir_composition, entries)
-        flash[:success] = 'Transition of Care document created successfully.'
+        flash[:success] = I18n.t('controllers.transition_of_cares.create_success')
       else
-        flash[:danger] = 'Failed to create Transition of Care document.'
+        flash[:danger] = I18n.t('controllers.transition_of_cares.create_error')
       end
     rescue StandardError => e
       Rails.logger.error("Error creating TOC Composition: #{e.message}")
@@ -45,12 +45,12 @@ class TransitionOfCaresController < ApplicationController
   def sort_tocs_by_date(tocs)
     tocs.sort_by do |toc|
       if toc.date == '--'
-        Time.at(0)
+        Time.zone.at(0)
       else
         begin
           DateTime.strptime(toc.date, '%b %d, %Y')
         rescue ArgumentError
-          Time.at(0)
+          Time.zone.at(0)
         end
       end
     end.reverse
