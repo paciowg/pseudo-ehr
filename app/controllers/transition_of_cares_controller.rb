@@ -39,6 +39,72 @@ class TransitionOfCaresController < ApplicationController
     redirect_to patient_transition_of_cares_path(patient_id: patient_id)
   end
 
+  # PATCH /patients/:patient_id/transition_of_cares/:id
+  def update
+    begin
+      fhir_composition = Composition.find(params[:id])&.fhir_resource
+      fhir_composition ||= find_cached_resource('Composition', params[:id])
+
+      unless fhir_composition
+        flash[:danger] = I18n.t('controllers.transition_of_cares.not_found_error')
+        redirect_to patient_transition_of_cares_path(patient_id: patient_id)
+        return
+      end
+
+      fhir_composition.title = params[:toc][:title]
+      fhir_composition.date = Time.now.iso8601
+
+      # Clear existing sections and add updated ones
+      fhir_composition.section = []
+
+      # Add the selected sections
+      params[:toc][:sections].each do |section_params|
+        next unless section_params[:include] == '1'
+
+        section = FHIR::Composition::Section.new(
+          title: section_params[:title],
+          code: {
+            coding: [
+              {
+                system: section_params[:code_system],
+                code: section_params[:code],
+                display: section_params[:display]
+              }
+            ]
+          }
+        )
+
+        # Add entries to the section if provided
+        if section_params[:entries].present?
+          section.entry = section_params[:entries].map do |entry|
+            FHIR::Reference.new(reference: entry)
+          end
+        end
+
+        fhir_composition.section << section
+      end
+
+      response = client.update(fhir_composition, fhir_composition.id)
+      resource = response.resource
+
+      if resource.present?
+        # Update the cache with the updated composition
+        PatientRecordCache.update_patient_record(patient_id, [resource])
+        entries = retrieve_current_patient_resources
+        Composition.new(resource, entries)
+        flash[:success] = I18n.t('controllers.transition_of_cares.update_success')
+      else
+        flash[:danger] = I18n.t('controllers.transition_of_cares.update_error')
+      end
+    rescue StandardError => e
+      Rails.logger.error("Error updating TOC Composition: #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      flash[:danger] = "Error updating Transition of Care document: #{e.message}"
+    end
+
+    redirect_to patient_transition_of_cares_path(patient_id: patient_id)
+  end
+
   private
 
   # Sort TOCs from most recent to oldest

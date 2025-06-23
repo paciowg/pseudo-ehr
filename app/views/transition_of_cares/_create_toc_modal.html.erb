@@ -87,9 +87,16 @@
                           <%= check_box_tag "toc[sections][][entries][]", "AllergyIntolerance/#{ai.id}", false,
                               class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox allergy-entry" %>
                         </div>
-                        <label class="ml-2 text-xs font-medium text-gray-900">
-                          <%= ai.code&.text || "AllergyIntolerance/#{ai.id}" %>
-                        </label>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if ai.code&.text %>
+                              <%= ai.code.text %>
+                              <% if ai.recordedDate %>
+                                <span class="text-gray-500 ml-1">(<%= ai.recordedDate.to_date.strftime('%b %d, %Y') rescue ai.recordedDate %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "AllergyIntolerance/#{ai.id}" %>
+                            <% end %>
+                          </label>
                       </div>
                     <% end %>
                   </div>
@@ -104,23 +111,55 @@
                     <%= form.hidden_field "toc[sections][][title]", value: "Medications" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "10160-0" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "History of Medication use Narrative" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Medications" %>
                   </div>
                   <label for="section_medications" class="ml-2 text-sm font-medium text-gray-900">Medications</label>
                 </div>
                 <div class="mt-2">
                   <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
                   <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
-                    <% cached_resources_for_select('MedicationRequest').each do |mr| %>
-                      <div class="flex items-start mb-1">
-                        <div class="flex items-center h-5">
-                          <%= check_box_tag "toc[sections][][entries][]", "MedicationRequest/#{mr.id}", false,
-                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox medication-entry" %>
+                    <% if cached_resources_for_select('List').any? %>
+                      <h6 class="text-xs font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">Medication Lists</h6>
+                      <% cached_resources_for_select('List').each do |list| %>
+                        <div class="flex items-start mb-1">
+                          <div class="flex items-center h-5">
+                            <%= check_box_tag "toc[sections][][entries][]", "List/#{list.id}", false,
+                                class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox medication-list-entry" %>
+                          </div>
+                              <label class="ml-2 text-xs font-medium text-gray-900">
+                                <% if list.title %>
+                                  <%= list.title %>
+                                  <% if list.date %>
+                                    <span class="text-gray-500 ml-1">(<%= list.date.to_date.strftime('%b %d, %Y') rescue list.date %>)</span>
+                                  <% end %>
+                                <% else %>
+                                  <%= "Medication List/#{list.id}" %>
+                                <% end %>
+                              </label>
                         </div>
-                        <label class="ml-2 text-xs font-medium text-gray-900">
-                          <%= mr.medicationCodeableConcept&.text || "MedicationRequest/#{mr.id}" %>
-                        </label>
-                      </div>
+                      <% end %>
+                    <% end %>
+
+                    <% if cached_resources_for_select('MedicationRequest').any? %>
+                      <h6 class="text-xs font-semibold text-gray-700 mb-2 <%= 'mt-3' if cached_resources_for_select('List').any? %> border-b border-gray-200 pb-1">Medication Requests</h6>
+                      <% cached_resources_for_select('MedicationRequest').each do |mr| %>
+                        <div class="flex items-start mb-1">
+                          <div class="flex items-center h-5">
+                            <%= check_box_tag "toc[sections][][entries][]", "MedicationRequest/#{mr.id}", false,
+                                class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox medication-entry" %>
+                          </div>
+                              <label class="ml-2 text-xs font-medium text-gray-900">
+                                <% if mr.medicationCodeableConcept&.text %>
+                                  <%= mr.medicationCodeableConcept.text %>
+                                  <% if mr.authoredOn %>
+                                    <span class="text-gray-500 ml-1">(<%= mr.authoredOn.to_date.strftime('%b %d, %Y') rescue mr.authoredOn %>)</span>
+                                  <% end %>
+                                <% else %>
+                                  <%= "MedicationRequest/#{mr.id}" %>
+                                <% end %>
+                              </label>
+                        </div>
+                      <% end %>
                     <% end %>
                   </div>
                 </div>
@@ -132,9 +171,9 @@
                   <div class="flex items-center h-5">
                     <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_problems" }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Problems" %>
-                    <%= form.hidden_field "toc[sections][][code]", value: "11450-4" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "46019-6" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "Problem list - Reported" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Diseases or conditions Set" %>
                   </div>
                   <label for="section_problems" class="ml-2 text-sm font-medium text-gray-900">Problems</label>
                 </div>
@@ -147,9 +186,16 @@
                           <%= check_box_tag "toc[sections][][entries][]", "Condition/#{c.id}", false,
                               class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox condition-entry" %>
                         </div>
-                        <label class="ml-2 text-xs font-medium text-gray-900">
-                          <%= c.code&.text || "Condition/#{c.id}" %>
-                        </label>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if c.code&.text %>
+                              <%= c.code.text %>
+                              <% if c.recordedDate %>
+                                <span class="text-gray-500 ml-1">(<%= c.recordedDate.to_date.strftime('%b %d, %Y') rescue c.recordedDate %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "Condition/#{c.id}" %>
+                            <% end %>
+                          </label>
                       </div>
                     <% end %>
                   </div>
@@ -162,9 +208,9 @@
                   <div class="flex items-center h-5">
                     <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_procedures" }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Procedures" %>
-                    <%= form.hidden_field "toc[sections][][code]", value: "47519-4" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "28570-0" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "History of Procedures Document" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Procedure note" %>
                   </div>
                   <label for="section_procedures" class="ml-2 text-sm font-medium text-gray-900">Procedures</label>
                 </div>
@@ -177,9 +223,16 @@
                           <%= check_box_tag "toc[sections][][entries][]", "Procedure/#{p.id}", false,
                               class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox procedure-entry" %>
                         </div>
-                        <label class="ml-2 text-xs font-medium text-gray-900">
-                          <%= p.code&.text || "Procedure/#{p.id}" %>
-                        </label>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if p.code&.text %>
+                              <%= p.code.text %>
+                              <% if p.performedDateTime %>
+                                <span class="text-gray-500 ml-1">(<%= p.performedDateTime.to_date.strftime('%b %d, %Y') rescue p.performedDateTime %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "Procedure/#{p.id}" %>
+                            <% end %>
+                          </label>
                       </div>
                     <% end %>
                   </div>
@@ -191,10 +244,10 @@
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
                     <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_results" }, "1", "0" %>
-                    <%= form.hidden_field "toc[sections][][title]", value: "Results" %>
-                    <%= form.hidden_field "toc[sections][][code]", value: "30954-2" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Lab Test Results" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "19146-0" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "Relevant diagnostic tests and laboratory data" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: " Referral lab test results" %>
                   </div>
                   <label for="section_results" class="ml-2 text-sm font-medium text-gray-900">Results</label>
                 </div>
@@ -207,9 +260,83 @@
                           <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
                               class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox observation-entry" %>
                         </div>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if o.code&.text %>
+                              <%= o.code.text %>
+                              <% if o.effectiveDateTime %>
+                                <span class="text-gray-500 ml-1">(<%= o.effectiveDateTime.to_date.strftime('%b %d, %Y') rescue o.effectiveDateTime %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "Observation/#{o.id}" %>
+                            <% end %>
+                          </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Vital Signs Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_vital_signs" }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Vital Signs" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "LP30605-7" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Vital signs" %>
+                  </div>
+                  <label for="section_vital_signs" class="ml-2 text-sm font-medium text-gray-900">Vital signs</label>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% cached_resources_for_select('Observation').select {|o| o.category.include?('vital-signs')}.each do |o| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox observation-vital-entry" %>
+                        </div>
                         <label class="ml-2 text-xs font-medium text-gray-900">
                           <%= o.code&.text || "Observation/#{o.id}" %>
                         </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Immunizations Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_immunizations" }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Immunizations" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "82593-5" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Immunization summary report" %>
+                  </div>
+                  <label for="section_immunizations" class="ml-2 text-sm font-medium text-gray-900">Immunizations</label>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% cached_resources_for_select('Immunization').each do |i| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "Immunization/#{i.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox immunization-entry" %>
+                        </div>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if i.vaccine_code %>
+                              <%= i.vaccine_code %>
+                              <% if i.occurrenceDateTime %>
+                                <span class="text-gray-500 ml-1">(<%= i.occurrenceDateTime.to_date.strftime('%b %d, %Y') rescue i.occurrenceDateTime %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "Immunization/#{i.id}" %>
+                            <% end %>
+                          </label>
                       </div>
                     <% end %>
                   </div>
@@ -224,7 +351,7 @@
                     <%= form.hidden_field "toc[sections][][title]", value: "Advance Directives" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "42348-3" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "Advance directives" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Advance healthcare directives" %>
                   </div>
                   <label for="section_advance_directives" class="ml-2 text-sm font-medium text-gray-900">Advance Directives</label>
                 </div>
@@ -237,9 +364,16 @@
                           <%= check_box_tag "toc[sections][][entries][]", "DocumentReference/#{d.id}", false,
                               class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox docref-entry" %>
                         </div>
-                        <label class="ml-2 text-xs font-medium text-gray-900">
-                          <%= d.description || "DocumentReference/#{d.id}" %>
-                        </label>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if d.description %>
+                              <%= d.description %>
+                              <% if d.date %>
+                                <span class="text-gray-500 ml-1">(<%= d.date.to_date.strftime('%b %d, %Y') rescue d.date %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "DocumentReference/#{d.id}" %>
+                            <% end %>
+                          </label>
                       </div>
                     <% end %>
                   </div>
@@ -294,10 +428,12 @@
       // Map section IDs to their corresponding entry checkbox classes
       const sectionEntryMap = {
         'section_allergies': '.allergy-entry',
-        'section_medications': '.medication-entry',
+        'section_medications': '.medication-entry, .medication-list-entry',
         'section_problems': '.condition-entry',
         'section_procedures': '.procedure-entry',
         'section_results': '.observation-entry',
+        'section_vital_signs': '.observation-vital-entry',
+        'section_immunizations': '.immunization-entry',
         'section_advance_directives': '.docref-entry'
       };
 

@@ -119,7 +119,10 @@ module ResourceFetchHelper
   end
 
   def fetch_single_patient_record(patient_id, max_results = 500, since_time = nil)
-    search_params = { _sort: '-_lastUpdated', _maxresults: max_results, _count: max_results / 2 }
+    search_params = {
+      _sort: '-_lastUpdated', _maxresults: max_results, _count: max_results / 2,
+      _include: '*', _revinclude: '*', '_include:iterate': '*'
+    }
 
     # Add _since parameter if provided
     search_params[:_since] = since_time.iso8601 if since_time
