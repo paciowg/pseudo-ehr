@@ -90,6 +90,17 @@ RSpec.describe PatientsController do
   describe 'GET #show' do
     context 'when patient is successfully fetched' do
       before do
+        params = '_count=250&_include=*&_include:iterate=*&_maxresults=500&_revinclude=*&_sort=-_lastUpdated'
+        url = "#{fhir_server.base_url}/Patient/123/$everything?#{params}"
+        # Stub the FHIR server fetch patient record response
+        stub_request(:get, url)
+          .to_return(
+            status: 200,
+            body: FHIR::Bundle.new(entry: [FHIR::Bundle::Entry.new(resource: FHIR::Patient.new(id: patient_id))])
+            .to_json,
+            headers: { 'Content-Type' => 'application/fhir+json' }
+          )
+        # allow(controller).to receive(:retrieve_current_patient_resources).and_return([])
         get :show, params: { id: patient_id }
       end
 
