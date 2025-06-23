@@ -106,6 +106,8 @@ en:
 
     transition_of_cares:
       fetch_error: "Error fetching or parsing TOC Composition. Check logs for detail."
+      create_error: "Failed to create Transition of Care document."
+      create_success: "Transition of Care document created successfully."
 
     welcome:
       connected_to_server: "You are connected to FHIR Server: %{server_url}"
