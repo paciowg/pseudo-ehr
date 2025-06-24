@@ -5,7 +5,8 @@ class SampleDataController < ApplicationController
     @use_cases = load_use_cases
     @selected_file_path = params[:path]
 
-    if @selected_file_path && File.exist?(@selected_file_path)
+    # Validate that the file path is within the sample_use_cases directory
+    if @selected_file_path && valid_sample_file_path?(@selected_file_path) && File.exist?(@selected_file_path)
       @file_content = File.read(@selected_file_path)
       begin
         @json_content = JSON.pretty_generate(JSON.parse(@file_content))
@@ -47,22 +48,30 @@ class SampleDataController < ApplicationController
         fhir_server_url
       )
 
-      # Escape special characters in the URL and folder path
-      escaped_url = fhir_server_url.gsub(/[\\,]/, '\\\\\&')
-      escaped_folder = folder_path.gsub(/[\\ ,]/, '\\\\\&')
-
       # Run the rake task in the background
       Thread.new do
         # Update task status to running
         task_status.mark_running("Pushing data from #{folder_path} to #{fhir_server_url}")
 
-        # Execute the rake task
-        command = "bundle exec rake \"fhir:push[#{escaped_url},#{escaped_folder}]\""
-        Rails.logger.info "Executing command: #{command}"
+        # Execute the rake task using Rails runner to avoid command injection
+        output = ''
+        exit_status = 0
 
-        # Capture the output of the command
-        output = `#{command} 2>&1`
-        exit_status = $CHILD_STATUS.exitstatus
+        begin
+          # Use Rails runner to execute the rake task
+          require 'rake'
+          Rails.application.load_tasks
+
+          # Invoke the rake task directly
+          Rake::Task['fhir:push'].reenable
+          Rake::Task['fhir:push'].invoke(fhir_server_url, folder_path)
+
+          # Capture output from the task
+          output = 'Task completed successfully'
+        rescue StandardError => e
+          output = "Error: #{e.message}"
+          exit_status = 1
+        end
 
         if exit_status.zero?
           # Extract summary from output
@@ -89,6 +98,16 @@ class SampleDataController < ApplicationController
   end
 
   private
+
+  # Validate that the file path is within the sample_use_cases directory
+  def valid_sample_file_path?(file_path)
+    # Convert to absolute path and normalize
+    absolute_path = File.expand_path(file_path)
+    sample_dir = Rails.root.join('sample_use_cases').to_s
+
+    # Check if the path is within the sample_use_cases directory
+    absolute_path.start_with?(sample_dir) && absolute_path.exclude?('..')
+  end
 
   def load_use_cases
     use_cases = {}
