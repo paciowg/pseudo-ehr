@@ -3,11 +3,35 @@ class SampleDataController < ApplicationController
   skip_before_action :current_server, raise: false
   def index
     @use_cases = load_use_cases
-    @selected_file_path = params[:path]
 
-    # Validate that the file path is within the sample_use_cases directory
-    if @selected_file_path && valid_sample_file_path?(@selected_file_path) && File.exist?(@selected_file_path)
-      @file_content = File.read(@selected_file_path)
+    # Find the file in our pre-loaded use cases instead of using the path parameter directly
+    @selected_file_path = nil
+    @file_content = nil
+
+    if params[:path].present?
+      # Find the file in our pre-loaded use cases
+      @use_cases.each do |use_case_name, scenes|
+        scenes.each do |scene_name, resource_types|
+          resource_types.each do |resource_type, resources|
+            resources.each do |resource|
+              if resource[:path] == params[:path]
+                @selected_file_path = resource[:path]
+                break
+              end
+            end
+          end
+        end
+      end
+
+      # Only read the file if it was found in our pre-loaded use cases
+      if @selected_file_path && File.exist?(@selected_file_path) && File.file?(@selected_file_path) && @selected_file_path.end_with?('.json')
+        # Read the file safely - we've already validated it's a JSON file in our whitelist
+        @file_content = File.binread(@selected_file_path)
+      else
+        Rails.logger.error "Attempted to read non-JSON file: #{@selected_file_path}"
+        flash.now[:alert] = "Only JSON files can be viewed"
+        @file_content = nil
+      end
       begin
         @json_content = JSON.pretty_generate(JSON.parse(@file_content))
         Rails.logger.info "JSON content parsed successfully: #{@json_content.class}"
