@@ -66,8 +66,18 @@ class SampleDataController < ApplicationController
           Rake::Task['fhir:push'].reenable
           Rake::Task['fhir:push'].invoke(fhir_server_url, folder_path)
 
-          # Capture output from the task
-          output = 'Task completed successfully'
+          # Get the latest log file
+          log_dir = Rails.root.join('log/fhir_push_logs')
+          latest_log = Dir.glob(File.join(log_dir, '*.log')).max_by { |f| File.mtime(f) }
+
+          # Read the log file and extract the summary
+          if latest_log && File.exist?(latest_log)
+            log_content = File.read(latest_log)
+            summary_match = log_content.match(/Summary: .*/)
+            output = summary_match ? summary_match[0] : 'Task completed successfully'
+          else
+            output = 'Task completed successfully'
+          end
         rescue StandardError => e
           output = "Error: #{e.message}"
           exit_status = 1
