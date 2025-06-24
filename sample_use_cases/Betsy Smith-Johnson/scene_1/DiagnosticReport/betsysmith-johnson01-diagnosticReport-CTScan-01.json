@@ -1,0 +1,47 @@
+{
+  "resourceType": "DiagnosticReport",
+  "id": "betsysmith-johnson01-diagnosticReport-CTScan-01",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: DiagnosticReport betsysmith-johnson01-diagnosticReport-CTScan-01</b></p><a name=\"betsysmith-johnson01-diagnosticReport-CTScan-01\"> </a><a name=\"hcbetsysmith-johnson01-diagnosticReport-CTScan-01\"> </a><h2><span title=\"Codes:{http://loinc.org 68604-8}\">Radiology Diagnostic study note</span> (<span title=\"Codes:{http://loinc.org LP29684-5}\">Radiology</span>) </h2><table class=\"grid\"><tr><td>Subject</td><td>Smith-Johnson, Betsy Female, DoB: 1950-11-15 ( http://hl7.org/fhir/sid/us-medicare#United States Medicare Number#1PA3D58WH16)</td></tr><tr><td>Reported</td><td>2025-05-03 15:15:00+0000</td></tr><tr><td>Performer</td><td> <a href=\"PractitionerRole-PractitionerRole-Radiologist-PaulZawawi.html\">Paul Zawawi, MD</a></td></tr></table><p><b>Report Details</b></p></div>"
+  },
+  "status": "final",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://loinc.org",
+          "code": "LP29684-5",
+          "display": "Radiology"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "68604-8",
+        "display": "Radiology Diagnostic study note"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/patient-betsysmith-johnson01"
+  },
+  "issued": "2025-05-03T15:15:00.000+00:00",
+  "performer": [
+    {
+      "reference": "PractitionerRole/PractitionerRole-Radiologist-PaulZawawi",
+      "display": "Paul Zawawi, MD"
+    }
+  ],
+  "presentedForm": [
+    {
+      "contentType": "text/plain",
+      "data": "UmFkaW9sb2d5IFJlcG9ydA0KDQpQYXRpZW50IE5hbWU6IEJldHN5IFNtaXRoLUpvaG5zb24NCk1lZGljYWwgUmVjb3JkIE51bWJlcjogMTAyNzAyDQpEYXRlIG9mIEV4YW1pbmF0aW9uOiBNYXkgMywgMjAyNQ0KUmVmZXJyaW5nIFBoeXNpY2lhbjogUHJpeWEgU2Fya2FyLCBNRA0KUmFkaW9sb2dpc3Q6IFBhdWwgWmF3YXdpLCBNRA0KDQoNClByb2NlZHVyZToNCk5vbi1jb250cmFzdCBjb21wdXRlZCB0b21vZ3JhcGh5IChDVCkgb2YgdGhlIGhlYWQNCkNsaW5pY2FsIEhpc3Rvcnk6DQpUaGUgcGF0aWVudCwgQmV0c3kgU21pdGgtSm9obnNvbiwgd2FzIGFkbWl0dGVkIHRvIHRoZSBlbWVyZ2VuY3kgZGVwYXJ0bWVudCBhZnRlciBoZXIgc29uIGZvdW5kIGhlciBkaXNvcmllbnRlZCwgd2VhaywgYW5kIGV4aGliaXRpbmcgZGlmZmljdWx0eSB3aXRoIHNwZWVjaC4gQ2xpbmljYWwgY29uY2VybiBmb3IgYWN1dGUgbmV1cm9sb2dpY2FsIGV2ZW50LCBpbmNsdWRpbmcgcG9zc2libGUgc3Ryb2tlLg0KDQpGaW5kaW5nczoNCk5vbi1jb250cmFzdCBDVCBvZiB0aGUgaGVhZCBkZW1vbnN0cmF0ZXMgYSBoeXBvZGVuc2UgcmVnaW9uIGluIHRoZSBsZWZ0IG1pZGRsZSBjZXJlYnJhbCBhcnRlcnkgKE1DQSkgdGVycml0b3J5LiBUaGlzIGZpbmRpbmcgaXMgY29uc2lzdGVudCB3aXRoIGFuIGFjdXRlIGlzY2hlbWljIGluZmFyY3QuIE5vIGV2aWRlbmNlIG9mIGhlbW9ycmhhZ2UgaXMgaWRlbnRpZmllZC4gVGhlIHZlbnRyaWNsZXMgYW5kIHN1bGNpIGFyZSBhZ2UtYXBwcm9wcmlhdGUgd2l0aG91dCBzaWduaWZpY2FudCBtYXNzIGVmZmVjdCBvciBtaWRsaW5lIHNoaWZ0LiBObyBvdGhlciBhY3V0ZSBpbnRyYWNyYW5pYWwgYWJub3JtYWxpdGllcyBhcmUgbm90ZWQuDQpEZXNjcmlwdGlvbiBvZiBDVCBTY2FuIEltYWdlOg0KQXhpYWwgVmlldzogVGhlIENUIHNjYW4gd291bGQgc2hvdyBhIGh5cG9kZW5zZSAoZGFya2VyKSBhcmVhIGluIHRoZSBsZWZ0IG1pZGRsZSBjZXJlYnJhbCBhcnRlcnkgKE1DQSkgdGVycml0b3J5LiBUaGlzIGh5cG9kZW5zZSByZWdpb24gcmVwcmVzZW50cyB0aGUgYXJlYSBvZiBpc2NoZW1pYSBkdWUgdG8gcmVkdWNlZCBibG9vZCBmbG93LCBjb25zaXN0ZW50IHdpdGggYW4gYWN1dGUgaXNjaGVtaWMgaW5mYXJjdC4NClN5bW1ldHJ5OiBUaGUgcmlnaHQgTUNBIHRlcnJpdG9yeSB3b3VsZCBhcHBlYXIgbm9ybWFsLCB3aXRoIG5vIGh5cG9kZW5zZSBhcmVhcy4NCkhlbW9ycmhhZ2U6IFRoZXJlIHdvdWxkIGJlIG5vIGV2aWRlbmNlIG9mIGh5cGVyZGVuc2UgKGJyaWdodCkgYXJlYXMsIHJ1bGluZyBvdXQgaW50cmFjcmFuaWFsIGhlbW9ycmhhZ2UuDQpNaWRsaW5lIFN0cnVjdHVyZXM6IFRoZSBtaWRsaW5lIHN0cnVjdHVyZXMsIHN1Y2ggYXMgdGhlIGZhbHggY2VyZWJyaSwgd291bGQgYXBwZWFyIGludGFjdCwgd2l0aCBubyBldmlkZW5jZSBvZiBtaWRsaW5lIHNoaWZ0IG9yIG1hc3MgZWZmZWN0Lg0KVmVudHJpY2xlczogVGhlIGxhdGVyYWwgdmVudHJpY2xlcyB3b3VsZCBhcHBlYXIgbm9ybWFsIGluIHNpemUgYW5kIHNoYXBlLCB3aXRob3V0IGNvbXByZXNzaW9uIG9yIGRpc3RvcnRpb24uDQoNCkltcHJlc3Npb246DQpIeXBvZGVuc2UgcmVnaW9uIGluIHRoZSBsZWZ0IE1DQSB0ZXJyaXRvcnksIGNvbnNpc3RlbnQgd2l0aCBhbiBhY3V0ZSBpc2NoZW1pYyBpbmZhcmN0Lg0KTm8gZXZpZGVuY2Ugb2YgaW50cmFjcmFuaWFsIGhlbW9ycmhhZ2UuDQoNClJlY29tbWVuZGF0aW9uczoNCkNvcnJlbGF0ZSB3aXRoIGNsaW5pY2FsIGZpbmRpbmdzIGFuZCBjb25zaWRlciBmdXJ0aGVyIGV2YWx1YXRpb24gd2l0aCBNUkkgZm9yIGJldHRlciBjaGFyYWN0ZXJpemF0aW9uIG9mIHRoZSBpbmZhcmN0IGFuZCBhc3Nlc3NtZW50IG9mIHBlcmZ1c2lvbi4gTmV1cm9sb2d5IGNvbnN1bHRhdGlvbiBpcyByZWNvbW1lbmRlZCBmb3IgbWFuYWdlbWVudCBhbmQgdHJlYXRtZW50IHBsYW5uaW5nLg0KDQpFbGVjdHJvbmljYWxseSBTaWduZWQgQnk6DQpQYXVsIFphd2F3aSwgTUQNClJhZGlvbG9naXN0DQpEYXRlOiBNYXkgMywgMjAyNQ0KDQo=",
+      "title": "CT Scan Radiology Report for Betsy Smith-Johnson",
+      "creation": "2025-05-03T15:15:00.000+00:00"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "resourceType": "List",
+  "id": "betsysmith-johnson01-smp-med-list-1",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: List betsysmith-johnson01-smp-med-list-1</b></p><a name=\"betsysmith-johnson01-smp-med-list-1\"> </a><a name=\"hcbetsysmith-johnson01-smp-med-list-1\"> </a><h2>Betsy Smith Johnson Home Medication List</h2><table class=\"clstu\"><tr><td>Date: 2025-05-03 </td><td>Mode: Snapshot List </td><td>Status: Current </td><td>Code: Patient generated medication list [Identifier] Episode Pharmacy </td></tr><tr><td>Subject: <a href=\"Patient-patient-betsysmith-johnson01.html\">Betsy Johnson</a>Source: </td></tr></table><table class=\"grid\"><tr style=\"backgound-color: #eeeeee\"><td><b>Items</b></td></tr><tr><td><a href=\"MedicationStatement-betsysmith-johnson01-smp-medstmt-1-1.html\">Atorvastatin 40 mg</a></td></tr><tr><td><a href=\"MedicationStatement-betsysmith-johnson01-smp-medstmt-1-2.html\">Sertraline 25 mg</a></td></tr><tr><td><a href=\"MedicationStatement-betsysmith-johnson01-smp-medstmt-1-4.html\">Carvedilol 6.25 mg</a></td></tr><tr><td><a href=\"MedicationStatement-betsysmith-johnson01-smp-medstmt-1-5.html\">Glipizide 2.5 mg</a></td></tr><tr><td><a href=\"MedicationStatement-betsysmith-johnson01-smp-medstmt-1-6.html\">Calcium 500 mg</a></td></tr><tr><td><a href=\"MedicationStatement-betsysmith-johnson01-smp-medstmt-1-7.html\">Vitamin D 800 IU</a></td></tr><tr><td><a href=\"MedicationStatement-betsysmith-johnson01-smp-medstmt-1-8.html\">Tylenol (Acetaminophen) 650 mg</a></td></tr><tr><td><a href=\"MedicationStatement-betsysmith-johnson01-smp-medstmt-1-9.html\">Ferrous Sulfate 325 mg</a></td></tr></table></div>"
+  },
+  "status": "current",
+  "mode": "snapshot",
+  "title": "Betsy Smith Johnson Home Medication List",
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "104205-0",
+        "display": "Patient generated medication list [Identifier] Episode Pharmacy"
+      }
+    ],
+    "text": "Standard Medication List"
+  },
+  "subject": {
+    "reference": "Patient/patient-betsysmith-johnson01",
+    "display": "Betsy Johnson"
+  },
+  "date": "2025-05-03",
+  "source": {
+    "reference": "PractitionerRole/Role-IMMD-AnitaChu",
+    "display": "Anita M. Chu, MD"
+  },
+  "entry": [
+    {
+      "item": {
+        "reference": "MedicationStatement/betsysmith-johnson01-smp-medstmt-1-1",
+        "display": "Atorvastatin 40 mg"
+      }
+    },
+    {
+      "item": {
+        "reference": "MedicationStatement/betsysmith-johnson01-smp-medstmt-1-2",
+        "display": "Sertraline 25 mg"
+      }
+    },
+    {
+      "item": {
+        "reference": "MedicationStatement/betsysmith-johnson01-smp-medstmt-1-4",
+        "display": "Carvedilol 6.25 mg"
+      }
+    },
+    {
+      "item": {
+        "reference": "MedicationStatement/betsysmith-johnson01-smp-medstmt-1-5",
+        "display": "Glipizide 2.5 mg"
+      }
+    },
+    {
+      "item": {
+        "reference": "MedicationStatement/betsysmith-johnson01-smp-medstmt-1-6",
+        "display": "Calcium 500 mg"
+      }
+    },
+    {
+      "item": {
+        "reference": "MedicationStatement/betsysmith-johnson01-smp-medstmt-1-7",
+        "display": "Vitamin D 800 IU"
+      }
+    },
+    {
+      "item": {
+        "reference": "MedicationStatement/betsysmith-johnson01-smp-medstmt-1-8",
+        "display": "Tylenol (Acetaminophen) 650 mg"
+      }
+    },
+    {
+      "item": {
+        "reference": "MedicationStatement/betsysmith-johnson01-smp-medstmt-1-9",
+        "display": "Ferrous Sulfate 325 mg"
+      }
+    }
+  ]
+}
