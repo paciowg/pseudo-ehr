@@ -28,6 +28,7 @@ A Rails 7 application styled with Tailwind CSS that interacts with a FHIR server
 - **FHIR Server Integration**: Connects to FHIR servers to fetch and cache patient details.
 - **Patient Display**: Shows a list of patients and individual patient details.
 - **Server Authentication**: Handles FHIR servers that require [SMART-on-FHIR App Launch for Symmetric Client Auth](https://build.fhir.org/ig/HL7/smart-app-launch/example-app-launch-symmetric-auth.html#step-2-launch).
+- **Sample Data Management**: Browse and view sample FHIR resources organized by use case and scene, and load them into FHIR servers.
 
 ## Supported FHIR Resources
 
