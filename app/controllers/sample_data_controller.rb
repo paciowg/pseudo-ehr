@@ -10,9 +10,9 @@ class SampleDataController < ApplicationController
 
     if params[:path].present?
       # Find the file in our pre-loaded use cases
-      @use_cases.each do |use_case_name, scenes|
-        scenes.each do |scene_name, resource_types|
-          resource_types.each do |resource_type, resources|
+      @use_cases.each_value do |scenes|
+        scenes.each_value do |resource_types|
+          resource_types.each_value do |resources|
             resources.each do |resource|
               if resource[:path] == params[:path]
                 @selected_file_path = resource[:path]
@@ -24,12 +24,16 @@ class SampleDataController < ApplicationController
       end
 
       # Only read the file if it was found in our pre-loaded use cases
+      # rubocop:disable Layout/LineLength
       if @selected_file_path && File.exist?(@selected_file_path) && File.file?(@selected_file_path) && @selected_file_path.end_with?('.json')
+        # rubocop:enable Layout/LineLength
         # Read the file safely - we've already validated it's a JSON file in our whitelist
         @file_content = File.binread(@selected_file_path)
       else
         Rails.logger.error "Attempted to read non-JSON file: #{@selected_file_path}"
-        flash.now[:alert] = "Only JSON files can be viewed"
+        # rubocop:disable Rails/I18nLocaleTexts
+        flash.now[:alert] = 'Only JSON files can be viewed'
+        # rubocop:enable Rails/I18nLocaleTexts
         @file_content = nil
       end
       begin
