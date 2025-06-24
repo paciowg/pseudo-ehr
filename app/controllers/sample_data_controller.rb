@@ -49,7 +49,7 @@ class SampleDataController < ApplicationController
 
       # Escape special characters in the URL and folder path
       escaped_url = fhir_server_url.gsub(/[,]/, '\\\\\&')
-      escaped_folder = folder_path.gsub(/[ ,]/, '\\\\\&')
+      escaped_folder = folder_path.gsub(/[\\ ,]/, '\\\\\&')
 
       # Run the rake task in the background
       Thread.new do
