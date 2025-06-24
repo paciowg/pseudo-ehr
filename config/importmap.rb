@@ -7,3 +7,5 @@ pin '@hotwired/stimulus-loading', to: 'stimulus-loading.js', preload: true
 pin_all_from 'app/javascript/controllers', under: 'controllers'
 pin 'flowbite', to: 'https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.1/flowbite.turbo.min.js'
 pin 'debounce', to: 'https://ga.jspm.io/npm:debounce@1.2.1/index.js'
+pin '@rails/actioncable', to: 'actioncable.esm.js', preload: true
+pin_all_from 'app/javascript/channels', under: 'channels', preload: true

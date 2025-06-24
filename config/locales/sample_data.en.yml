@@ -1,0 +1,5 @@
+en:
+  sample_data:
+    push_data:
+      notice: "Started pushing data from %{folder_path} to %{fhir_server_url}. You'll be notified when the task completes."
+      alert: "FHIR server URL and folder path are required."

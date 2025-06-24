@@ -9,6 +9,52 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <!-- Add Highlight.js CSS and JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      .json-block {
+        white-space: pre-wrap; /* important: preserves line breaks and wrapping */
+        font-family: monospace;
+      }
+    </style>
+    <script>
+      document.addEventListener('turbo:load', function() {
+        hljs.highlightAll();
+      });
+
+      function toggleJson(button) {
+        const block = button.nextElementSibling;
+        const isHidden = block.classList.toggle('hidden');
+        button.textContent = isHidden ? 'Show JSON' : 'Hide JSON';
+        if (!isHidden) {
+          hljs.highlightElement(block.querySelector('code'));
+        }
+      }
+
+      function toggleSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        const icon = document.getElementById(sectionId + '-icon');
+
+        if (section) {
+          const isHidden = section.classList.toggle('hidden');
+          if (icon) {
+            // Rotate the icon 180 degrees when section is hidden
+            icon.style.transform = isHidden ? 'rotate(180deg)' : '';
+          }
+        }
+      }
+
+      document.addEventListener('turbo:load', function() {
+        // Initialize all sections as expanded
+        const allSections = document.querySelectorAll('[id^="use-case-"]:not([id$="-icon"]), [id^="scene-"]:not([id$="-icon"]), [id^="resource-"]:not([id$="-icon"])');
+        allSections.forEach(section => {
+          // Initially show all sections
+          section.classList.remove('hidden');
+        });
+      });
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   </head>
 
@@ -29,6 +75,7 @@
       <%= yield %>
     </main>
   </body>
+
   <!-- Inline JavaScript for Turbo Events -->
   <script>
     // Show the spinner and hide the frame content before a Turbo visit

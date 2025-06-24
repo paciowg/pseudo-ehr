@@ -2,3 +2,7 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 import 'flowbite';
+
+// Import ActionCable and channels
+import "@rails/actioncable"
+import "./channels/index"

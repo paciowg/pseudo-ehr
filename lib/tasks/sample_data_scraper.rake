@@ -1,7 +1,7 @@
 require 'nokogiri'
-require 'open-uri'
 require 'json'
 require 'fileutils'
+require 'net/http'
 
 namespace :sample_data do
   desc 'Scrape FHIR resources from the published IG page and organize them by scene and resource type'
@@ -20,12 +20,18 @@ namespace :sample_data do
     begin
       # Parse the IG page
       puts 'Fetching and parsing the IG page...'
-      doc = Nokogiri::HTML(URI.open(ig_url))
+      uri = URI.parse(ig_url)
+      response = Net::HTTP.get_response(uri)
+      doc = Nokogiri::HTML(response.body)
       puts 'Successfully parsed the IG page'
 
       # Extract the use case title from the page title
       page_title = doc.css('title').text.strip
-      use_case_title = page_title.include?(' - ') ? page_title.split(' - ')[0].strip : 'Betsy Smith-Johnson - Stroke Use Case'
+      use_case_title = if page_title.include?(' - ')
+                         page_title.split(' - ')[0].strip
+                       else
+                         'Betsy Smith-Johnson - Stroke Use Case'
+                       end
       puts "Use case title: #{use_case_title}"
 
       # Create directory for this use case
@@ -74,7 +80,9 @@ namespace :sample_data do
             puts "  Processing resource: #{resource_name} (#{resource_page_url})"
 
             # Navigate to the resource page
-            resource_page = Nokogiri::HTML(URI.open(resource_page_url))
+            uri = URI.parse(resource_page_url)
+            response = Net::HTTP.get_response(uri)
+            resource_page = Nokogiri::HTML(response.body)
 
             # Find the JSON tab link
             json_tab_link = resource_page.css('a').find { |a| a.text.strip.downcase == 'json' }
@@ -89,7 +97,8 @@ namespace :sample_data do
               puts "    Found JSON tab: #{json_tab_url}"
 
               # Navigate to the JSON tab
-              Nokogiri::HTML(URI.open(json_tab_url))
+              uri = URI.parse(json_tab_url)
+              Net::HTTP.get_response(uri)
 
               # Get the JSON directly by removing the .html suffix from the JSON tab URL
               json_url = json_tab_url.gsub('.html', '')
@@ -97,7 +106,9 @@ namespace :sample_data do
 
               begin
                 # Download the JSON file
-                resource_json = URI.open(json_url).read
+                uri = URI.parse(json_url)
+                response = Net::HTTP.get_response(uri)
+                resource_json = response.body
                 resource_data = JSON.parse(resource_json)
 
                 # Extract resource type

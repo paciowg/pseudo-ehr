@@ -1,4 +1,15 @@
 Rails.application.routes.draw do
+  # Mount ActionCable server
+  mount ActionCable.server => '/cable'
+
+  # Task Status routes
+  post 'task_statuses/:task_id/dismiss', to: 'task_statuses#dismiss'
+  resources :sample_data, only: [:index] do
+    collection do
+      get :load_data
+      post :push_data
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")

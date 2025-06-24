@@ -133,12 +133,7 @@ namespace :fhir do
             outcome = JSON.parse(response.body)
             if outcome['resourceType'] == 'OperationOutcome' && outcome['issue']
               # Extract error messages from OperationOutcome
-              issues = outcome['issue'].map do |issue|
-                severity = issue['severity'] || 'unknown'
-                code = issue['code'] || 'unknown'
-                details = issue['details'] ? (issue['details']['text'] || 'No details') : 'No details'
-                "#{severity} (#{code}): #{details}"
-              end
+              issues = extract_operation_outcome_issues(outcome)
 
               error_message = issues.join('; ')
             end
@@ -180,9 +175,9 @@ namespace :fhir do
     end
 
     log_message('Completed pushing FHIR resources', log_file)
-    log_message(
-      "Summary: #{successful_resources.size} succeeded, #{failed_resources.size} failed (out of #{resources.size} total resources)", log_file
-    )
+    summary = "Summary: #{successful_resources.size} succeeded, " \
+              "#{failed_resources.size} failed (out of #{resources.size} total resources)"
+    log_message(summary, log_file)
 
     if failed_resources.size.positive?
       log_message("\nFailed Resources (after #{max_retries} attempts):", log_file)
@@ -195,7 +190,8 @@ namespace :fhir do
     log_file.close
 
     puts 'Completed pushing FHIR resources'
-    puts "Summary: #{successful_resources.size} succeeded, #{failed_resources.size} failed (out of #{resources.size} total resources)"
+    puts "Summary: #{successful_resources.size} succeeded, " \
+         "#{failed_resources.size} failed (out of #{resources.size} total resources)"
     puts "Log file saved to: #{log_file_path}"
   end
 
@@ -224,6 +220,25 @@ namespace :fhir do
       obj.each_with_index do |value, index|
         extract_references(value, refs, path + [index])
       end
+    end
+  end
+
+  # Extract error messages from OperationOutcome
+  def extract_operation_outcome_issues(outcome)
+    outcome['issue'].map do |issue|
+      severity = issue['severity'] || 'unknown'
+      code = issue['code'] || 'unknown'
+      details = extract_issue_details(issue)
+      "#{severity} (#{code}): #{details}"
+    end
+  end
+
+  # Extract details from an issue
+  def extract_issue_details(issue)
+    if issue['details']
+      issue['details']['text'] || 'No details'
+    else
+      'No details'
     end
   end
 

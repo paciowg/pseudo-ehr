@@ -28,6 +28,15 @@
           <span class="text-sm text-gray-400 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">FHIR Servers</span>
         </button>
 
+        <button type="button" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-800 dark:hover:bg-gray-800 group"
+          data-action="click->menu#navigate" data-url="/sample_data" data-menu-target="item"
+        >
+          <svg class="w-5 h-5 my-2 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/>
+          </svg>
+          <span class="text-sm text-gray-400 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Sample Data</span>
+        </button>
+
 
         <% if patient_id.present? %>
         <div class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-800 dark:hover:bg-gray-800 group">
