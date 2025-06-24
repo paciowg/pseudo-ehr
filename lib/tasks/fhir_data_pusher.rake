@@ -1,19 +1,18 @@
 require 'json'
 require 'net/http'
 require 'uri'
-require 'set'
 require 'fileutils'
 require 'time'
 
 namespace :fhir do
   desc 'Push FHIR resources to a FHIR server in the correct dependency order'
-  task :push, [:server_url, :folder_path] => :environment do |t, args|
+  task :push, %i[server_url folder_path] => :environment do |_t, args|
     server_url = args[:server_url]
     folder_path = args[:folder_path]
 
     if server_url.nil? || folder_path.nil?
-      puts "Usage: bundle exec rake fhir:push[server_url,folder_path]"
-      puts "Example: bundle exec rake fhir:push[http://hapi.fhir.org/baseR4,sample_use_cases/Betsy\\ Smith-Johnson]"
+      puts 'Usage: bundle exec rake fhir:push[server_url,folder_path]'
+      puts 'Example: bundle exec rake fhir:push[http://hapi.fhir.org/baseR4,sample_use_cases/Betsy\\ Smith-Johnson]'
       exit 1
     end
 
@@ -21,9 +20,9 @@ namespace :fhir do
     server_url = server_url.chomp('/')
 
     # Create log file in the project's log directory
-    timestamp = Time.now.strftime("%Y%m%d_%H%M%S")
-    log_dir = Rails.root.join('log', 'fhir_push_logs')
-    FileUtils.mkdir_p(log_dir) unless Dir.exist?(log_dir)
+    timestamp = Time.zone.now.strftime('%Y%m%d_%H%M%S')
+    log_dir = Rails.root.join('log/fhir_push_logs')
+    FileUtils.mkdir_p(log_dir)
     log_file_path = "#{log_dir}/fhir_push_#{timestamp}.log"
     log_file = File.open(log_file_path, 'w')
 
@@ -44,33 +43,31 @@ namespace :fhir do
     dependencies = {}
 
     json_files.each do |file_path|
-      begin
-        json_content = File.read(file_path)
-        resource = JSON.parse(json_content)
+      json_content = File.read(file_path)
+      resource = JSON.parse(json_content)
 
-        # Skip if not a valid FHIR resource
-        next unless resource.is_a?(Hash) && resource['resourceType'] && resource['id']
+      # Skip if not a valid FHIR resource
+      next unless resource.is_a?(Hash) && resource['resourceType'] && resource['id']
 
-        resource_key = "#{resource['resourceType']}/#{resource['id']}"
-        resources[resource_key] = {
-          path: file_path,
-          data: resource
-        }
+      resource_key = "#{resource['resourceType']}/#{resource['id']}"
+      resources[resource_key] = {
+        path: file_path,
+        data: resource
+      }
 
-        # Initialize dependencies for this resource
-        dependencies[resource_key] = Set.new
+      # Initialize dependencies for this resource
+      dependencies[resource_key] = Set.new
 
-        # Extract references to other resources
-        extract_references(resource, dependencies[resource_key])
-      rescue => e
-        log_message("Error parsing #{file_path}: #{e.message}", log_file)
-      end
+      # Extract references to other resources
+      extract_references(resource, dependencies[resource_key])
+    rescue StandardError => e
+      log_message("Error parsing #{file_path}: #{e.message}", log_file)
     end
 
     log_message("Parsed #{resources.length} valid FHIR resources", log_file)
 
     # Remove dependencies that don't exist in our resource set
-    dependencies.each do |resource_key, refs|
+    dependencies.each_value do |refs|
       refs.select! { |ref| resources.key?(ref) }
     end
 
@@ -78,7 +75,7 @@ namespace :fhir do
     sorted_resources = topological_sort(resources.keys, dependencies)
 
     if sorted_resources.nil?
-      log_message("Error: Circular dependencies detected. Cannot determine a valid order to push resources.", log_file)
+      log_message('Error: Circular dependencies detected. Cannot determine a valid order to push resources.', log_file)
       log_file.close
       exit 1
     end
@@ -94,20 +91,16 @@ namespace :fhir do
     # First pass: try to push all resources
     resources_to_process = sorted_resources.dup
 
-    while !resources_to_process.empty?
+    until resources_to_process.empty?
       current_resource = resources_to_process.shift
 
       # Skip if this resource has already been successfully pushed
-      if successful_resources.include?(current_resource)
-        next
-      end
+      next if successful_resources.include?(current_resource)
 
       retry_counts[current_resource] ||= 0
 
       # Skip if we've already tried this resource too many times
-      if retry_counts[current_resource] >= max_retries
-        next
-      end
+      next if retry_counts[current_resource] >= max_retries
 
       retry_counts[current_resource] += 1
       attempt_num = retry_counts[current_resource]
@@ -147,9 +140,9 @@ namespace :fhir do
                 "#{severity} (#{code}): #{details}"
               end
 
-              error_message = issues.join("; ")
+              error_message = issues.join('; ')
             end
-          rescue => e
+          rescue StandardError => e
             # If we can't parse the response as JSON or extract the error message,
             # just use the response body as the error message
             error_message = "Error parsing response: #{e.message}. Raw response: #{response.body[0..500]}"
@@ -169,7 +162,7 @@ namespace :fhir do
             resources_to_process.push(current_resource)
           end
         end
-      rescue => e
+      rescue StandardError => e
         log_message("  Error: #{current_resource} - #{e.message}", log_file)
 
         # Add to failed resources if this was the last attempt
@@ -186,10 +179,12 @@ namespace :fhir do
       end
     end
 
-    log_message("Completed pushing FHIR resources", log_file)
-    log_message("Summary: #{successful_resources.size} succeeded, #{failed_resources.size} failed (out of #{resources.size} total resources)", log_file)
+    log_message('Completed pushing FHIR resources', log_file)
+    log_message(
+      "Summary: #{successful_resources.size} succeeded, #{failed_resources.size} failed (out of #{resources.size} total resources)", log_file
+    )
 
-    if failed_resources.size > 0
+    if failed_resources.size.positive?
       log_message("\nFailed Resources (after #{max_retries} attempts):", log_file)
       failed_resources.each do |failure|
         log_message("  #{failure[:resource_key]}: #{failure[:error]}", log_file)
@@ -199,7 +194,7 @@ namespace :fhir do
     log_message("\nLog file saved to: #{log_file_path}", log_file)
     log_file.close
 
-    puts "Completed pushing FHIR resources"
+    puts 'Completed pushing FHIR resources'
     puts "Summary: #{successful_resources.size} succeeded, #{failed_resources.size} failed (out of #{resources.size} total resources)"
     puts "Log file saved to: #{log_file_path}"
   end
@@ -207,7 +202,7 @@ namespace :fhir do
   # Helper method to log messages to both console and log file
   def log_message(message, log_file)
     puts message
-    log_file.puts "[#{Time.now.strftime('%Y-%m-%d %H:%M:%S')}] #{message}"
+    log_file.puts "[#{Time.zone.now.strftime('%Y-%m-%d %H:%M:%S')}] #{message}"
   end
 
   # Helper method to extract references from a FHIR resource
@@ -215,7 +210,7 @@ namespace :fhir do
     case obj
     when Hash
       # Check if this is a reference
-      if obj['reference'] && obj['reference'].is_a?(String) && !obj['reference'].start_with?('#')
+      if obj['reference'].is_a?(String) && !obj['reference'].start_with?('#')
         # Add to references if it's not an internal reference
         refs.add(obj['reference'])
       end
@@ -235,13 +230,13 @@ namespace :fhir do
   # Perform topological sort on the dependency graph
   def topological_sort(nodes, edges)
     # Create a copy of the edges to avoid modifying the original
-    edges = edges.transform_values { |v| v.clone }
+    edges = edges.transform_values(&:clone)
 
     # Find nodes with no dependencies
     result = []
     no_deps = nodes.select { |node| edges[node].empty? }
 
-    while !no_deps.empty?
+    until no_deps.empty?
       # Add a node with no dependencies to the result
       node = no_deps.shift
       result << node
@@ -251,9 +246,7 @@ namespace :fhir do
         deps.delete(node)
 
         # If a node has no more dependencies, add it to no_deps
-        if deps.empty? && !result.include?(dependent)
-          no_deps << dependent
-        end
+        no_deps << dependent if deps.empty? && result.exclude?(dependent)
       end
     end
 
