@@ -175,6 +175,31 @@ The Pseudo-EHR application follows the standard Rails structure with a few custo
   rails db:migrate
   ```
 
+- **Scrape FHIR sample data**:
+
+  ```bash
+  bundle exec rake sample_data:scrape
+  ```
+
+  This rake task scrapes and downloads Betsy Smith-Johnson sample FHIR resources from the [PACIO sample data depo FSH](https://build.fhir.org/ig/paciowg/sample-data-fsh/pacio_persona_betsySmithJohnson.html). It organizes the JSON files by scene and resource type in the `sample_use_cases` folder. The task is also configured to run automatically via a GitHub Actions workflow that checks daily for changes in the sample-data-fsh repository.
+
+- **Push FHIR resources to a server**:
+
+  ```bash
+  bundle exec rake fhir:push[server_url,folder_path]
+  ```
+
+  This rake task pushes FHIR resources to a FHIR server in the correct dependency order. It takes two arguments:
+  - `server_url`: The base URL of the FHIR server
+  - `folder_path`: The path to the folder containing the FHIR resources to push
+
+  Example:
+  ```bash
+  bundle exec rake fhir:push[http://hapi.fhir.org/baseR4,sample_use_cases/Betsy\ Smith-Johnson]
+  ```
+
+  The task analyzes resource dependencies to ensure referenced resources are pushed before the resources that reference them. It generates a detailed log report in the project's `log/fhir_push_logs` directory that includes information about successful uploads and any errors encountered, including error messages extracted from FHIR OperationOutcome resources.
+
 ## Contributing
 
 Please read the [**Contributing to PseudoEHR**](CONTRIBUTING.md) guide and our [**Style Guidelines**](STYLE_GUIDELINES.md).
