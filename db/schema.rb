@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_01_204128) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_24_033040) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -29,5 +29,17 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_01_204128) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["base_url"], name: "index_fhir_servers_on_base_url", unique: true
+  end
+
+  create_table "task_statuses", force: :cascade do |t|
+    t.string "task_id"
+    t.string "task_type"
+    t.string "status"
+    t.text "message"
+    t.string "folder_path"
+    t.string "server_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["task_id"], name: "index_task_statuses_on_task_id", unique: true
   end
 end
