@@ -55,7 +55,6 @@ All searches are performed using the `_include=*` parameter to retrieve and incl
 - Ruby version 3.1.2 or higher
 - Rails 7
 - PostgreSQL
-- Memcached
 
 ## Technologies Used
 
@@ -65,12 +64,11 @@ All searches are performed using the `_include=*` parameter to retrieve and incl
 - **Tailwind CSS**: Used for styling the UI.
 - **FHIR Integration**: For interacting with FHIR servers, focusing on patient data.
 - **PostgreSQL**: The relational database used.
-- **Memcached**: For caching data retrieved from the FHIR server.
 - **RSpec**: Testing framework for unit and feature tests.
 
 ## Installation
 
-Make sure to start PostgreSQL and Memcached before running the server.
+Make sure to start PostgreSQL before running the server.
 
 1. **Clone the Repository**
 
