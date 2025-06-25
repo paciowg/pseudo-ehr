@@ -1,6 +1,7 @@
 require 'English'
 class SampleDataController < ApplicationController
   skip_before_action :current_server, raise: false
+  before_action :delete_current_patient_id
   def index
     @use_cases = load_use_cases
 
