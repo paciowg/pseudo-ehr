@@ -7,6 +7,7 @@ class PfeObservationBuilder
   EXT_DEVICE_USE = 'http://hl7.org/fhir/us/pacio-pfe/StructureDefinition/device-patient-used'.freeze
 
   PFE_SINGLE_OBS_PROFILE = 'http://hl7.org/fhir/us/pacio-pfe/StructureDefinition/pfe-observation-single'.freeze
+  PFE_COLLECTION_PROFILE = 'http://hl7.org/fhir/us/pacio-pfe/StructureDefinition/pfe-collection'.freeze
 
   def initialize(qr, questionnaire) # rubocop:disable Naming/MethodParameterName
     @qr = qr
@@ -18,24 +19,48 @@ class PfeObservationBuilder
   def build
     return [] if @qr.item.blank?
 
-    extract_observations(@qr.item)
+    collection = build_collection()
+    extract_observations(@qr.item, collection)
   end
 
   private
 
   # Recursively extract observations from all leaf items
-  def extract_observations(items)
-    items.flat_map do |item|
+  def extract_observations(items, collection)
+    obs = items.flat_map do |item|
       if item.item.present?
-        extract_observations(item.item)
+        new_collection = build_collection(item)
+        collection.hasMember << { reference: "OBservation/#{new_collection.id}" }
+        extract_observations(item.item, new_collection)
       else
-        build_observations(item)
+        build_observations(item, collection)
       end
     end.compact
+    obs << collection
+  end
+
+  # Build collection for grouping answer observations
+  def build_collection(item = nil, collection = nil)
+    code = item.nil? ? [] : @link_id_map[item.linkId] || []
+    obs = FHIR::Observation.new(
+      id: SecureRandom.uuid,
+      status: 'final',
+      category: build_category_slice,
+      code: { codgin: code },
+      subject: @qr.subject,
+      effectiveTimeDate: @qr.authored,
+      performer: Array(@qr.author).compact,
+      derivedFrom: [{ reference: "QuestionnaireResponse/#{@qr.id}" }],
+      meta: { profile: [PFE_COLLECTION_PROFILE] }
+    )
+
+    add_extensions(obs)
+    collection.hasMember << { reference: "Observation/#{obs.id}" } unless collection.nil?
+    obs
   end
 
   # Build one observation per answer
-  def build_observations(item)
+  def build_observations(item, collection)
     return if item&.answer.blank?
 
     item.answer.map do |answer|
@@ -53,6 +78,7 @@ class PfeObservationBuilder
 
       set_answer_value(obs, answer)
       add_extensions(obs)
+      collection.hasMember << { reference: "Observation/#{obs.id}" } unless collection.nil?
       obs
     end
   end
@@ -134,6 +160,7 @@ class PfeObservationBuilder
 
   def traverse_items(items, map)
     items.each do |item|
+      map[item.linkId] = item.code
       if item.item.present?
         traverse_items(item.item, map)
       else
