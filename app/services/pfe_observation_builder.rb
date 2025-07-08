@@ -76,7 +76,7 @@ class PfeObservationBuilder
         meta: { profile: [PFE_SINGLE_OBS_PROFILE] }
       )
 
-      set_answer_value(obs, answer)
+      set_answer_value(obs, answer, item.linkId)
       add_extensions(obs)
       collection.hasMember << { reference: "Observation/#{obs.id}" } unless collection.nil?
       obs
@@ -84,7 +84,7 @@ class PfeObservationBuilder
   end
 
   # Set the correct value[x] based on answer type
-  def set_answer_value(obs, answer)
+  def set_answer_value(obs, answer, link_id)
     if answer.valueCoding.present?
       obs.valueCodeableConcept = FHIR::CodeableConcept.new(coding: [answer.valueCoding])
     elsif answer.valueString.present?
@@ -98,10 +98,42 @@ class PfeObservationBuilder
     elsif answer.valueBoolean.present?
       obs.valueBoolean = answer.valueBoolean
     elsif answer.valueDecimal.present?
-      obs.valueDecimal = answer.valueDecimal
+      obs.valueQuantity = build_quantity(answer.valueDecimal, link_id)
     elsif answer.valueTime.present?
       obs.valueTime = answer.valueTime
     end
+  end
+
+  def build_quantity(value, link_id)
+    unit_coding = find_unit_coding_for_link_id(link_id)
+
+    if unit_coding
+      FHIR::Quantity.new(
+        value: value,
+        unit: unit_coding.display,
+        code: unit_coding.code,
+        system: unit_coding.system
+      )
+    else
+      FHIR::Quantity.new(value: value)
+    end
+  end
+
+  def find_unit_coding_for_link_id(link_id)
+    find_unit_in_items(@questionnaire.item, link_id)
+  end
+
+  def find_unit_in_items(items, link_id)
+    items.each do |item|
+      if item.linkId == link_id
+        ext = item.extension&.find { |e| e.url == 'http://hl7.org/fhir/StructureDefinition/questionnaire-unit' }
+        return ext.valueCoding if ext&.valueCoding.present?
+      elsif item.item.present?
+        found_unit = find_unit_in_items(item.item, link_id)
+        return found_unit if found_unit.present?
+      end
+    end
+    nil
   end
 
   # Add extensions if available (event-location and device-use)
