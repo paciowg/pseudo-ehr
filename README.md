@@ -55,7 +55,6 @@ All searches are performed using the `_include=*` parameter to retrieve and incl
 - Ruby version 3.1.2 or higher
 - Rails 7
 - PostgreSQL
-- Memcached
 
 ## Technologies Used
 
@@ -65,12 +64,11 @@ All searches are performed using the `_include=*` parameter to retrieve and incl
 - **Tailwind CSS**: Used for styling the UI.
 - **FHIR Integration**: For interacting with FHIR servers, focusing on patient data.
 - **PostgreSQL**: The relational database used.
-- **Memcached**: For caching data retrieved from the FHIR server.
 - **RSpec**: Testing framework for unit and feature tests.
 
 ## Installation
 
-Make sure to start PostgreSQL and Memcached before running the server.
+Make sure to start PostgreSQL before running the server.
 
 1. **Clone the Repository**
 
@@ -182,7 +180,7 @@ The Pseudo-EHR application follows the standard Rails structure with a few custo
   bundle exec rake sample_data:scrape
   ```
 
-  This rake task scrapes and downloads Betsy Smith-Johnson sample FHIR resources from the [PACIO sample data depo FSH](https://build.fhir.org/ig/paciowg/sample-data-fsh/pacio_persona_betsySmithJohnson.html). It organizes the JSON files by scene and resource type in the `sample_use_cases` folder. The task is also configured to run automatically via a GitHub Actions workflow that checks daily for changes in the sample-data-fsh repository.
+  This rake task scrapes and downloads Betsy Smith-Johnson sample FHIR resources from the [PACIO sample data depo FSH](https://build.fhir.org/ig/paciowg/sample-data-fsh/pacio_persona_betsySmithJohnson.html). It organizes the JSON files by scene and resource type in the `sample_use_cases` folder. The task is automatically run when loading sample data through the application, with a 5-hour cache to prevent excessive scraping operations.
 
 - **Push FHIR resources to a server**:
 
