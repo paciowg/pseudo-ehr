@@ -19,7 +19,7 @@ class PfeObservationBuilder
   def build
     return [] if @qr.item.blank?
 
-    collection = build_collection()
+    collection = build_collection
     extract_observations(@qr.item, collection)
   end
 
