@@ -41,7 +41,11 @@ class PfeObservationBuilder
 
   # Build collection for grouping answer observations
   def build_collection(item = nil, collection = nil)
-    code = item.nil? ? [] : @link_id_map[item.linkId] || []
+    code = if item.nil?
+             @questionnaire.code.presence || []
+           else
+             @link_id_map[item.linkId].presence || default_obs_coding(item)
+           end
     obs = FHIR::Observation.new(
       id: SecureRandom.uuid,
       status: 'final',
@@ -68,7 +72,7 @@ class PfeObservationBuilder
         id: SecureRandom.uuid,
         status: 'final',
         category: build_category_slice,
-        code: { coding: @link_id_map[item.linkId] || [] },
+        code: { coding: @link_id_map[item.linkId] || default_obs_coding(item) },
         subject: @qr.subject,
         effectiveDateTime: @qr.authored,
         performer: Array(@qr.author).compact,
@@ -78,9 +82,26 @@ class PfeObservationBuilder
 
       set_answer_value(obs, answer, item.linkId)
       add_extensions(obs)
+
+      if collection.code&.coding.blank?
+        collection.code = FHIR::CodeableConcept.new(coding: @link_id_map[item.linkId] || default_obs_coding(item))
+      end
+
       collection.hasMember << { reference: "Observation/#{obs.id}" } unless collection.nil?
       obs
     end
+  end
+
+  def default_obs_coding(item)
+    return [] if item.blank?
+
+    [
+      {
+        system: 'http://loinc.org', # default to loinc
+        code: item.linkId&.delete_prefix('/'),
+        display: item.text
+      }
+    ]
   end
 
   # Set the correct value[x] based on answer type
@@ -192,7 +213,8 @@ class PfeObservationBuilder
 
   def traverse_items(items, map)
     items.each do |item|
-      map[item.linkId] = item.code
+      map[item.linkId] = item.code.presence || default_obs_coding(item)
+
       traverse_items(item.item, map) if item.item.present?
     end
   end
