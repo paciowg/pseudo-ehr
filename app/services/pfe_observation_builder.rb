@@ -161,11 +161,7 @@ class PfeObservationBuilder
   def traverse_items(items, map)
     items.each do |item|
       map[item.linkId] = item.code
-      if item.item.present?
-        traverse_items(item.item, map)
-      else
-        map[item.linkId] = item.code
-      end
+      traverse_items(item.item, map) if item.item.present?
     end
   end
 end
