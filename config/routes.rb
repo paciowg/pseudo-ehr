@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Defines the root path route ("/")
+  root 'welcome#index'
   # Mount ActionCable server
   mount ActionCable.server => '/cable'
 
@@ -10,10 +14,9 @@ Rails.application.routes.draw do
       post :push_data
     end
   end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Defines the root path route ("/")
-  root 'welcome#index'
+  namespace :api do
+    resources :questionnaire_responses, only: [:create]
+  end
   resources :sessions, only: [:new]
   resources :patients, only: %i[show index] do
     post :sync_patient_record, on: :member
@@ -39,6 +42,7 @@ Rails.application.routes.draw do
   get 'patients/:patient_id/observations/:id', to: 'observations#show', as: 'patient_observation'
   get 'patients/:patient_id/conditions', to: 'conditions#index', as: 'patient_conditions'
   get 'patients/:patient_id/goals', to: 'goals#index', as: 'patient_goals'
+  get 'patients/:patient_id/detected_issues', to: 'detected_issues#index', as: 'patient_detected_issues'
   get 'patients/:patient_id/transition_of_cares', to: 'transition_of_cares#index', as: 'patient_transition_of_cares'
   post 'patients/:patient_id/transition_of_cares', to: 'transition_of_cares#create'
   patch 'patients/:patient_id/transition_of_cares/:id', to: 'transition_of_cares#update',

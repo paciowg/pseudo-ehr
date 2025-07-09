@@ -11,7 +11,8 @@ class FhirClientService
   end
 
   def connect(new_session, code, redirect_url, code_verifier)
-    @client = FHIR::Client.new(@fhir_server.base_url).tap(&:use_r4)
+    base_url = @fhir_server.is_a?(String) ? @fhir_server : @fhir_server.base_url
+    @client = FHIR::Client.new(base_url).tap(&:use_r4)
     # msg = "Couldn't connect to server: unable to fetch capability statement. Verify the base URL is correct."
     # capability_statement = begin
     #   @client&.capability_statement
@@ -20,7 +21,7 @@ class FhirClientService
     # end
 
     # raise msg if new_session && capability_statement.nil?
-    return @client unless @fhir_server.authenticated_access
+    return @client unless @fhir_server.try(:authenticated_access)
 
     authenticate_fhir_server(code, redirect_url, code_verifier) if code.present?
     refresh_access_token if access_token_expired? && !new_session
