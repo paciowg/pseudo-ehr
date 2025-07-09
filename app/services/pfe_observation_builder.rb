@@ -30,7 +30,7 @@ class PfeObservationBuilder
     obs = items.flat_map do |item|
       if item.item.present?
         new_collection = build_collection(item)
-        collection.hasMember << { reference: "OBservation/#{new_collection.id}" }
+        collection.hasMember << { reference: "Observation/#{new_collection.id}" }
         extract_observations(item.item, new_collection)
       else
         build_observations(item, collection)
