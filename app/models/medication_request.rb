@@ -21,15 +21,15 @@ class MedicationRequest < Resource
     @authored_on = parse_date(@fhir_resource.authoredOn)
     @requester = parse_provider_name(@fhir_resource.requester, bundle_entries).presence || '--'
     @category = @fhir_resource.category&.map { |c| coding_string(c.coding) }&.join(', ').presence || '--'
-    @reason = coding_string(@fhir_resource.reasonCode.first.coding)
-    @dosage_instruction = @fhir_resource.dosageInstruction.map(&:text)&.join(', ')
+    @reason = coding_string(@fhir_resource.reasonCode.first&.coding)
+    @dosage_instruction = @fhir_resource.dosageInstruction&.map(&:text)&.join(', ').presence || ''
     @procedure_intent = coding_string(read_extension(@fhir_resource.extension))
-    @reason_reference = @fhir_resource.reasonReference.map do |each|
+    @reason_reference = @fhir_resource.reasonReference&.map do |each|
       find_condition(each, bundle_entries)
     end&.compact&.join(', ').presence || '--'
     @reported = !@fhir_resource.reportedBoolean.nil?
     @reported_reference = parse_provider_name(@fhir_resource.reportedReference, bundle_entries)
-    @note = @fhir_resource.note.map(&:text)&.join(', ').presence || '--'
+    @note = @fhir_resource.note&.map(&:text)&.join(', ').presence || '--'
 
     self.class.update(self)
   end
