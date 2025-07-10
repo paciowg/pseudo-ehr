@@ -1,0 +1,2828 @@
+---
+BlockL1-b11:
+  display: Body functions
+  definition: Body functions are the physiological functions of body systems (including
+    psychological functions). Impairments are problems in body function or structure
+    as a significant deviation or loss. Broad ranges of percentages are provided for
+    those cases in which calibrated assessment instruments or other standards are
+    available to quantify the impairment in body function. For example, when "no impairment"
+    or "complete impairment" in body function is coded, this scaling may have margin
+    of error of up to 5%. "Moderate impairment" is generally up to half of the scale
+    of total impairment. The percentages are to be calibrated in different domains
+    with reference to population standards as percentiles. For this quantification
+    to be used in a uniform manner, assessment procedures need to be developed through
+    research. For a further explanation of coding conventions in ICF, refer to Annex
+    2.
+BlockL2-b11:
+  display: Mental functions
+  definition: 'This chapter is about the functions of the brain: both global mental
+    functions, such as consciousness, energy and drive, and specific mental functions,
+    such as memory, language and calculation mental functions.'
+b110:
+  display: Consciousness functions
+  definition: General mental functions of the state of awareness and alertness, including
+    the clarity and continuity of the wakeful state.
+b1100:
+  display: State of consciousness
+  definition: Mental functions that when altered produce states such as clouding of
+    consciousness, stupor or coma. Mental functions that produce consciousness, and
+    when altered produce states such as clouding of consciousness, stupor or coma.
+b1101:
+  display: Continuity of consciousness
+  definition: Mental functions that produce sustained wakefulness, alertness and awareness
+    and, when disrupted, may produce fugue, trance or other similar states.
+b1102:
+  display: Quality of consciousness
+  definition: Mental functions that when altered effect changes in the character of
+    wakeful, alert and aware sentience, such as druginduced altered states or delirium.
+    Mental functions that produce wakefulness, alertness and awareness sentience,
+    when altered effect changes in the character of the quality of consciousness.
+b114:
+  display: Orientation functions
+  definition: General mental functions of knowing and ascertaining one's relation
+    to time to place, to self, to others, to objects, and to space.
+b1140:
+  display: Orientation to time
+  definition: Mental functions that produce awareness of time of the day, day of the
+    week, date, month and year.
+b1141:
+  display: Orientation to place
+  definition: Mental functions that produce awareness of one's location, such as one's
+    immediate surroundings, one's town or country.
+b1142:
+  display: Orientation to person
+  definition: Mental functions that produce awareness of one's own identity and of
+    individuals in the immediate environment.
+b11420:
+  display: Orientation to self
+  definition: Mental functions that produce awareness of one's own identity.
+b11421:
+  display: Orientation to others
+  definition: Mental functions that produce awareness of the identity of other individuals
+    in one's immediate environment.
+b1143:
+  display: Orientation to objects
+  definition: Mental functions that produce awareness of objects or features of objects.
+b1144:
+  display: Orientation to space
+  definition: Mental functions that produce awareness of one's body in relationship
+    to the immediate physical space.
+b117:
+  display: Intellectual functions
+  definition: General mental functions, required to understand and constructively
+    integrate the various mental functions including all cognitive functions and their
+    development over the life span.
+b122:
+  display: Global psychosocial functions
+  definition: General mental functions, as they develop over the life span, required
+    to understand and constructively integrate the mental functions that lead to the
+    formation of the personal skills needed to establish reciprocal social interactions,
+    in terms of both meaning and purpose.
+b126:
+  display: Temperament and personality functions
+  definition: General mental functions of constitutional disposition of the individual
+    to react in a particular way to situations, including the set of mental characteristics
+    that makes the individual distinct from others.
+b1260:
+  display: Extraversion
+  definition: Mental functions that produce a personal disposition that is outgoing,
+    sociable and demonstrative, as contrasted to being shy, restricted and inhibited.
+b1261:
+  display: Agreeableness
+  definition: Mental functions that produce a personal disposition that is cooperative,
+    amicable, and accomodating, as contrasted to being unfriendly, oppositional and
+    defiant.
+b1262:
+  display: Conscientiousness
+  definition: Mental functions that produce a personal disposition such as in being
+    hard-working, methodical and scrupulous, as contrasted to mental functions producing
+    dispositions such as being lazy, unreliable and irresponsible.
+b1263:
+  display: Psychic stability
+  definition: Mental functions that produce a personal disposition that is even-tempered,
+    calm and composed, as contrasted to being irritable, worried, erratic and moody.
+b1264:
+  display: Openness to experience
+  definition: Mental functions that produce a personal disposition that is curious,
+    imaginative, inquisitive and experience-seeking, as contrasted to being stagnant,
+    inattentive and emotionally inexpressive.
+b1265:
+  display: Optimism
+  definition: Mental functions that produce a personal disposition that is cheerful,
+    buoyant and hopeful, as contrasted to being downhearted, gloomy and despairing.
+b1266:
+  display: Confidence
+  definition: Mental functions that produce a personal disposition that is self-assured,
+    bold and assertive, as contrasted to being timid, insecure and self effacing.
+b1267:
+  display: Trustworthiness
+  definition: Mental functions that produce a personal disposition that is dependable
+    and principled, as contrasted to being deceitful and antisocial.
+b130:
+  display: Energy and drive functions
+  definition: General mental functions of physiological and psychological mechanisms
+    that cause the individual to move towards satisfy specific needs and general goals
+    in a persistent manner.
+b1300:
+  display: Energy level
+  definition: Mental functions that produce vigour and stamina.
+b1301:
+  display: Motivation
+  definition: Mental functions that produce the incentive to act; the conscious or
+    unconscious driving force for action.
+b1302:
+  display: Appetite
+  definition: Mental functions that produce a natural longing or desire, especially
+    the natural and recurring desire for food and drink.
+b1303:
+  display: Craving
+  definition: Mental functions that produce the urge to consume substances, including
+    substances that can be abused.
+b1304:
+  display: Impulse control
+  definition: Mental functions that regulate and resist sudden intense urges to do
+    something.
+b134:
+  display: Sleep functions
+  definition: General mental functions of periodic, reversible and selective physical
+    and mental disengagement from one's immediate environment accompanied by characteristic
+    physiological changes.
+b1340:
+  display: Amount of sleep
+  definition: Mental functions involved in the time spent in the state of sleep in
+    the diurnal cycle or circadian rhythm.
+b1341:
+  display: Onset of sleep
+  definition: Mental functions that produce the transition between wakefulness and
+    sleep.
+b1342:
+  display: Maintenance of sleep
+  definition: Mental functions that sustain the state of being asleep.
+b1343:
+  display: Quality of sleep
+  definition: Mental functions that produce the natural sleep leading to optimal physical
+    and mental rest and relaxation.
+b1344:
+  display: Functions involving the sleep cycle
+  definition: Mental functions that produce rapid eye movement (REM) sleep (associated
+    with dreaming) and non-rapid eye movement sleep (NREM) (characterized by the traditional
+    concept of sleep as a time of decreased physiological and psychological activity).
+b140:
+  display: Attention functions
+  definition: Specific mental functions of focusing on an external stimulus or internal
+    experience for the required period of time.
+b1400:
+  display: Sustaining attention
+  definition: Mental functions that produce concentration for the period of time required.
+b1401:
+  display: Shifting attention
+  definition: Mental functions that permit refocusing concentration from one stimulus
+    to another.
+b1402:
+  display: Dividing attention
+  definition: Mental functions that permit focusing on two or more stimuli at the
+    same time.
+b1403:
+  display: Sharing attention
+  definition: Mental functions that permit focusing on the same stimulus by two or
+    more people, such as a child and a caregiver both focusing on a toy.
+b144:
+  display: Memory functions
+  definition: Specific mental functions of registering and storing information and
+    retrieving it as needed.
+b1440:
+  display: Short-term memory
+  definition: Mental functions that produce a temporary, disruptable memory store
+    of around 30 seconds duration from which information is lost if not consolidated
+    into long-term memory.
+b1441:
+  display: Long-term memory
+  definition: Mental functions that produce a memory system permitting the long-term
+    storage of information from short-term memory and both autobiographical memory
+    for past events and semantic memory for language and facts.
+b1442:
+  display: Retrieval and processing of memory
+  definition: Specific mental functions of recalling information stored in long-term
+    memory and bringing it into awareness.
+b1443:
+  display: Working memory
+  definition: Mental functions that compare and process information retrieved from
+    both short-term and long-term memory.
+b147:
+  display: Psychomotor functions
+  definition: Specific mental functions of control over both motor and psychological
+    events at the body level.
+b1470:
+  display: Psychomotor control
+  definition: Mental functions that regulate the speed of behaviour or response time
+    that involves both motor and psychological components, such as in disruption of
+    control producing psychomotor retardation (moving and speaking slowly; decrease
+    in gesturing and spontaneity) or psychomotor excitement (excessive behavioural
+    and cognitive activity, usually nonproductive and often in response to inner tension
+    as in toe-tapping, hand-wringing, agitation, or restlessness).
+b1471:
+  display: Quality of psychomotor functions
+  definition: Mental functions that produce nonverbal behaviour in the proper sequence
+    and character of its subcomponents, such as hand and eye coordination, or gait.
+b152:
+  display: Emotional functions
+  definition: Specific mental functions related to the feeling and affective components
+    of the processes of the mind.
+b1520:
+  display: Appropriateness of emotion
+  definition: Mental functions that produce congruence of feeling or affect with the
+    situation, such as happiness at receiving good news.
+b1521:
+  display: Regulation of emotion
+  definition: Mental functions that control the experience and display of affect.
+b1522:
+  display: Range of emotion
+  definition: Mental functions that produce the spectrum of experience of arousal
+    of affect or feelings such as love, hate, anxiousness, sorrow, joy, fear and anger.
+b156:
+  display: Perceptual functions
+  definition: Specific mental functions of recognizing and interpreting sensory stimuli.
+b1560:
+  display: Auditory perception
+  definition: Mental functions involved in discriminating sounds, tones, pitches and
+    other acoustic stimuli.
+b1561:
+  display: Visual perception
+  definition: Mental functions involved in discriminating shape, size, colour and
+    other ocular stimuli.
+b1562:
+  display: Olfactory perception
+  definition: Mental functions involved in distinguishing differences in smells.
+b1563:
+  display: Gustatory perception
+  definition: Mental functions involved in distinguishing differences in tastes, such
+    as sweet, sour, salty and bitter stimuli, detected by the tongue.
+b1564:
+  display: Tactile perception
+  definition: Mental functions involved in distinguishing differences in texture,
+    such as rough or smooth stimuli, detected by touch.
+b1565:
+  display: Visuospatial perception
+  definition: Mental function involved in distinguishing by sight the relative position
+    of objects in the environment or in relation to oneself.
+b160:
+  display: Thought functions
+  definition: Specific mental functions related to the ideational component of the
+    mind.
+b1600:
+  display: Pace of thought
+  definition: Mental functions that govern speed of the thinking process.
+b1601:
+  display: Form of thought
+  definition: Mental functions that organize the thinking process as to its coherence
+    and logic.
+b1602:
+  display: Content of thought
+  definition: Mental functions consisting of the ideas that are present in the thinking
+    process and what is being conceptualized.
+b1603:
+  display: Control of thought
+  definition: Mental functions that provide volitional control of thinking and are
+    recognized as such by the person.
+b164:
+  display: Higher-level cognitive functions
+  definition: Specific mental functions especially dependent on the frontal lobes
+    of the brain, including complex goal-directed behaviours such as decision-making,
+    abstract thinking, planning and carrying out plans, mental flexibility, and deciding
+    which behaviours are appropriate under what circumstances; often called executive
+    functions.
+b1640:
+  display: Abstraction
+  definition: Mental functions of creating general ideas, qualities or characteristics
+    out of, and distinct from, concrete realities, specific objects or actual instances.
+b1641:
+  display: Organization and planning
+  definition: Mental functions of coordinating parts into a whole, of systematizing;
+    the mental function involved in developing a method of proceeding or acting.
+b1642:
+  display: Time management
+  definition: Mental functions of ordering events in chronological sequence, allocating
+    amounts of time to events and activities.
+b1643:
+  display: Cognitive flexibility
+  definition: Mental functions of changing strategies, or shifting mental sets, especially
+    as involved in problem-solving.
+b1644:
+  display: Insight
+  definition: Mental functions of awareness and understanding of oneself and one's
+    behaviour.
+b1645:
+  display: Judgement
+  definition: Mental functions involved in discriminating between and evaluating different
+    options, such as those involved in forming an opinion.
+b1646:
+  display: Problem Solving
+  definition: Mental functions of identifying, analysing, and integrating incongruent
+    or conflicting information into a solution.
+b167:
+  display: Mental functions of language
+  definition: Specific mental functions of recognizing and using signs, symbols and
+    other components of a language.
+b1670:
+  display: Reception of language
+  definition: Specific mental functions of decoding messages in spoken, written or
+    other forms, such as sign language, to obtain their meaning.
+b16700:
+  display: Reception of spoken language
+  definition: Mental functions of decoding spoken messages to obtain their meaning.
+b16701:
+  display: Reception of written language
+  definition: Mental functions of decoding written messages to obtain their meaning.
+b16702:
+  display: Reception of sign language
+  definition: Mental functions of decoding messages in languages that use signs made
+    by hands and other movements, in order to obtain their meaning.
+b16703:
+  display: Reception of body language
+  definition: Mental functions of decoding messages in body gestures made by hands
+    and other movements, in order to obtain their meaning.
+b1671:
+  display: Expression of language
+  definition: Specific mental functions necessary to produce meaningful messages in
+    spoken, written, signed or other forms of language.
+b16710:
+  display: Expression of spoken language
+  definition: Mental functions necessary to produce meaningful spoken messages.
+b16711:
+  display: Expression of written language
+  definition: Mental functions necessary to produce meaningful written messages.
+b16712:
+  display: Expression of sign language
+  definition: Mental functions to produce meaningful messages in languages that use
+    signs made by hands and other movements.
+b16713:
+  display: Expression of body language
+  definition: Mental functions necessary to produce messages using gestures made by
+    hands and other movements.
+b1672:
+  display: Integrative language functions
+  definition: Mental functions that organize semantic and symbolic meaning, grammatical
+    structure and ideas for the production of messages in spoken, written or other
+    forms of language.
+b172:
+  display: Calculation functions
+  definition: Specific mental functions of determination, approximation and manipulation
+    of mathematical symbols and processes.
+b1720:
+  display: Simple calculation
+  definition: Mental functions of computing with numbers, such as addition, subtraction,
+    multiplication and division.
+b1721:
+  display: Complex calculation
+  definition: Mental functions of translating word problems into arithmetic procedures,
+    translating mathematical formulas into arithmetic procedures, and other complex
+    manipulations involving numbers.
+b176:
+  display: Mental function of sequencing complex movements
+  definition: Specific mental functions of sequencing and co-ordinating complex, purposeful
+    movements.
+b180:
+  display: Experience of self and time functions
+  definition: Specific mental functions related to the awareness of one's identity,
+    one's body, one's position in the reality of one's environment and of time.
+b1800:
+  display: Experience of self
+  definition: Specific mental functions of being aware of one's own identity and one's
+    position in the reality of one's environment around oneself.
+b1801:
+  display: Body image
+  definition: Specific mental functions related to the representation and awareness
+    of one's body.
+b1802:
+  display: Experience of time
+  definition: Specific mental functions of the subjective experiences related to the
+    length and passage of time.
+BlockL2-b21:
+  display: Sensory functions and pain
+  definition: This chapter is about the functions of the senses, seeing, hearing,
+    tasting and so on, as well as the sensation of pain.
+b210:
+  display: Seeing functions
+  definition: Sensory functions relating to sensing the presence of light and sensing
+    the form, size, shape and colour of the visual stimuli.
+b2100:
+  display: Visual acuity functions
+  definition: Seeing functions of sensing form and contour, both binocular and monocular,
+    for both distant and near vision.
+b21000:
+  display: Binocular acuity of distant vision
+  definition: Seeing functions of sensing size, form and contour using both eyes for
+    objects distant from the eye.
+b21001:
+  display: Monocular acuity of distant vision
+  definition: Seeing functions of sensing size, form and contour using either right
+    or left eye alone, for objects distant from the eye.
+b21002:
+  display: Binocular acuity of near vision
+  definition: Seeing functions of sensing size, form and contour, using both eyes,
+    for objects close to the eye.
+b21003:
+  display: Monocular acuity of near vision
+  definition: Seeing functions of sensing size, form and contour, using either right
+    or left eye alone, for objects close to the eye.
+b2101:
+  display: Visual field functions
+  definition: Seeing functions related to the entire area that can be seen with fixation
+    of gaze.
+b2102:
+  display: Quality of vision
+  definition: Seeing functions involving light sensitivity, colour vision, contrast
+    sensitivity and the overall quality of the picture.
+b21020:
+  display: Light sensitivity
+  definition: Seeing functions of sensing a minimum amount of light (light minimum),
+    and the minimum difference in intensity (light difference).
+b21021:
+  display: Colour vision
+  definition: Seeing functions of differentiating and matching colours.
+b21022:
+  display: Contrast sensitivity
+  definition: Seeing functions of separating figure from ground, involving the minimum
+    amount of luminance required.
+b21023:
+  display: Visual picture quality
+  definition: Seeing functions involving the quality of the picture.
+b215:
+  display: Functions of structures adjoining the eye
+  definition: Functions of structures in and around the eye that facilitate seeing
+    functions.
+b2150:
+  display: Functions of internal muscles of the eye
+  definition: Functions of the muscles inside the eye, such as the iris, that adjust
+    the shape and size of the pupil and lens of the eye.
+b2151:
+  display: Functions of the eyelid
+  definition: Functions of the eyelid, such as the protective reflex.
+b2152:
+  display: Functions of external muscles of the eye
+  definition: Functions of the muscles that are used to look in different directions,
+    to follow an object as it moves across the visual field, to produce saccadic jumps
+    to catch up with a moving target, and to fix the eye.
+b2153:
+  display: Functions of lachrymal glands
+  definition: Functions of the tear glands and ducts.
+b220:
+  display: Sensations associated with the eye and adjoining structures
+  definition: Sensations of tired, dry and itching eye and related feelings.
+b230:
+  display: Hearing functions
+  definition: Sensory functions relating to sensing the presence of sounds and discriminating
+    the location, pitch, loudness and quality of sounds.
+b2300:
+  display: Sound detection
+  definition: Sensory functions relating to sensing the presence of sounds.
+b2301:
+  display: Sound discrimination
+  definition: Sensory functions relating to sensing the presence of sound involving
+    the differentiation of ground and binaural synthesis, separation and blending.
+b2302:
+  display: Localization of sound source
+  definition: Sensory functions relating to determining the location of the source
+    of sound.
+b2303:
+  display: Lateralization of sound
+  definition: Sensory functions relating to determining whether the sound is coming
+    from right or the left side.
+b2304:
+  display: Speech discrimination
+  definition: Sensory functions relating to determining spoken language and distinguishing
+    it from other sounds.
+b235:
+  display: Vestibular functions
+  definition: Sensory functions of the inner ear related to position, balance and
+    movement.
+b2350:
+  display: Vestibular function of position
+  definition: Sensory functions of the inner ear related to determining the position
+    of the body.
+b2351:
+  display: Vestibular function of balance
+  definition: Sensory functions of the inner ear related to determining the balance
+    of the body.
+b2352:
+  display: Vestibular function of determination of movement
+  definition: Sensory functions of the inner ear related to determining movement of
+    the body, including its direction and speed.
+b240:
+  display: Sensations associated with hearing and vestibular function
+  definition: Sensations of dizziness, falling, tinnitus and vertigo.
+b2400:
+  display: Ringing in ears or tinnitus
+  definition: Sensation of low-pitched rushing, hissing or ringing in the ear.
+b2401:
+  display: Dizziness
+  definition: Sensation of motion involving either oneself or one's environment; sensation
+    of rotating, swaying or tilting.
+b2402:
+  display: Sensation of falling
+  definition: Sensation of losing one's grip and falling.
+b2403:
+  display: Nausea associated with dizziness or vertigo
+  definition: Sensation of wanting to vomit that arises from dizziness or vertigo.
+b2404:
+  display: Irritation in the ear
+  definition: Sensation of itching or other similar sensations in the ear.
+b2405:
+  display: Aural pressure
+  definition: Sensation of pressure in the ear.
+b250:
+  display: Taste function
+  definition: Sensory functions of sensing qualities of bitterness, sweetness, sourness
+    and saltiness
+b255:
+  display: Smell function
+  definition: Sensory functions of sensing odours and smells.
+b260:
+  display: Proprioceptive function
+  definition: Sensory functions of sensing the relative position of body parts.
+b265:
+  display: Touch function
+  definition: Sensory functions of sensing surfaces and their texture or quality.
+b270:
+  display: Sensory functions related to temperature and other stimuli
+  definition: Sensory functions of sensing temperature, vibration, pressure and noxious
+    stimulus.
+b2700:
+  display: Sensitivity to temperature
+  definition: Sensory functions of sensing cold and heat.
+b2701:
+  display: Sensitivity to vibration
+  definition: Sensory functions of sensing shaking or oscillation.
+b2702:
+  display: Sensitivity to pressure
+  definition: Sensory functions of sensing pressure against or on the skin.
+b2703:
+  display: Sensitivity to a noxious stimulus
+  definition: Sensory functions of sensing painful or uncomfortable sensations.
+b280:
+  display: Sensation of pain
+  definition: Sensation of unpleasant feeling indicating potential or actual damage
+    to some body structure.
+b2800:
+  display: Generalized pain
+  definition: Sensation of unpleasant feeling indicating potential or actual damage
+    to some body structure felt all over, or throughout the body.
+b2801:
+  display: Pain in body part
+  definition: Sensation of unpleasant feeling indicating potential or actual damage
+    to some body structure felt in a specific part, or parts, of the body.
+b28010:
+  display: Pain in head and neck
+  definition: Sensation of unpleasant feeling indicating potential or actual damage
+    to some body structure felt in the head and neck.
+b28011:
+  display: Pain in chest
+  definition: Sensation of unpleasant feeling indicating potential or actual damage
+    to some body structure felt in the chest.
+b28012:
+  display: Pain in stomach or abdomen
+  definition: Sensation of unpleasant feeling indicating potential or actual damage
+    to some body structure felt in the stomach or abdomen.
+b28013:
+  display: Pain in back
+  definition: Sensation of unpleasant feeling indicating potential or actual damage
+    to some body structure felt in the back.
+b28014:
+  display: Pain in upper limb
+  definition: Sensation of unpleasant feeling indicating potential or actual damage
+    to some body structure felt in either one or both upper limbs, including hands.
+b28015:
+  display: Pain in lower limb
+  definition: Sensation of unpleasant feeling indicating potential or actual damage
+    to some body structure felt in either one or both lower limbs, including feet.
+b28016:
+  display: Pain in joints
+  definition: Sensation of unpleasant feeling indicating potential or actual damage
+    to some body structure felt in one or more joints, including small and big joints.
+b2802:
+  display: Pain in multiple body parts
+  definition: Unpleasant sensation indicating potential or actual damage to some body
+    structure located in several body parts.
+b2803:
+  display: Radiating pain in a dermatome
+  definition: Unpleasant sensation indicating potential or actual damage to some body
+    structure located in areas of skin served by the same nerve root.
+b2804:
+  display: Radiating pain in a segment or region
+  definition: Unpleasant sensation indicating potential or actual damage to some body
+    structure located in areas of skin in different body parts not served by the same
+    nerve root.
+BlockL2-b31:
+  display: Voice and speech functions
+  definition: This chapter is about the functions of producing sounds and speech.
+b310:
+  display: Voice functions
+  definition: Functions of the production of various sounds by the passage of air
+    through the larynx.
+b3100:
+  display: Production of voice
+  definition: Functions of the production of sound made through coordination of the
+    larynx and surrounding muscles with the respiratory system.
+b3101:
+  display: Quality of voice
+  definition: Functions of the production of characteristics of voice including pitch,
+    resonance and other features.
+b320:
+  display: Articulation functions
+  definition: Functions of the production of speech sounds.
+b330:
+  display: Fluency and rhythm of speech functions
+  definition: Functions of the production of flow and tempo of speech.
+b3300:
+  display: Fluency of speech
+  definition: Functions of the production of smooth, uninterrupted flow of speech.
+b3301:
+  display: Rhythm of speech
+  definition: Functions of the modulated, tempo and stress patterns in speech.
+b3302:
+  display: Speed of speech
+  definition: Functions of the rate of speech production.
+b3303:
+  display: Melody of speech
+  definition: Functions of modulation of pitch patterns in speech.
+b340:
+  display: Alternative vocalization functions
+  definition: Functions of the production of other manners of vocalization.
+b3400:
+  display: Production of tones
+  definition: Functions of production of musical vocal sounds.
+b3401:
+  display: Making a range of sounds
+  definition: Functions of production of a variety of vocalizations.
+BlockL2-b41:
+  display: Functions of the cardiovascular, haematological, immunological and respiratory
+    systems
+  definition: This chapter is about the functions involved in the cardiovascular system
+    (functions of the heart and blood vessels), the haematological and immunological
+    systems (functions of blood production and immunity), and the respiratory system
+    (functions of respiration and exercise tolerance).
+b410:
+  display: Heart functions
+  definition: Functions of pumping the blood in adequate or required amounts and pressure
+    throughout the body.
+b4100:
+  display: Heart rate
+  definition: Functions related to the number of times the heart contracts every minute.
+b4101:
+  display: Heart rhythm
+  definition: Functions related to the regularity of the beating of the heart.
+b4102:
+  display: Contraction force of ventricular muscles
+  definition: Functions related to the amount of blood pumped by the ventricular muscles
+    during every beat.
+b4103:
+  display: Blood supply to the heart
+  definition: Functions related to the volume of blood available to the heart muscle.
+b415:
+  display: Blood vessel functions
+  definition: Functions of transporting blood throughout the body.
+b4150:
+  display: Functions of arteries
+  definition: Functions related to blood flow in the arteries.
+b4151:
+  display: Functions of capillaries
+  definition: Functions related to blood flow in the capillaries.
+b4152:
+  display: Functions of veins
+  definition: Functions related to blood flow in the veins, and the functions of valves
+    of veins.
+b420:
+  display: Blood pressure functions
+  definition: Functions of maintaining the pressure of blood within the arteries.
+b4200:
+  display: Increased blood pressure
+  definition: Functions related to a rise in systolic or diastolic blood pressure
+    above normal for the age.
+b4201:
+  display: Decreased blood pressure
+  definition: Functions related to a fall in systolic or diastolic blood pressure
+    below normal for the age.
+b4202:
+  display: Maintenance of blood pressure
+  definition: Functions related to maintaining an appropriate blood pressure in response
+    to changes in the body.
+b430:
+  display: Haematological system functions
+  definition: Functions of blood production, oxygen and metabolite carriage, and clotting.
+b4300:
+  display: Production of blood
+  definition: Functions related to the production of blood and all its constituents.
+b4301:
+  display: Oxygen-carrying functions of the blood
+  definition: Functions related to the blood's capacity to carry oxygen throughout
+    the body.
+b4302:
+  display: Metabolite-carrying functions of the blood
+  definition: Functions related to the blood's capacity to carry metabolites throughout
+    the body.
+b4303:
+  display: Clotting functions
+  definition: Functions related to the coagulation of blood, such as at a site of
+    injury.
+b435:
+  display: Immunological system functions
+  definition: Functions of the body related to protection against foreign substances,
+    including infections, by specific and non-specific immune responses.
+b4350:
+  display: Immune response
+  definition: Functions of the body's response of sensitization to foreign substances,
+    including infections.
+b43500:
+  display: Specific immune response
+  definition: Functions of the body's response of sensitization to a specific foreign
+    substance.
+b43501:
+  display: Non-specific immune response
+  definition: Functions of the body's general response of sensitization to foreign
+    substances, including infections.
+b4351:
+  display: Hypersensitivity reactions
+  definition: Functions of the body's response of increased sensitization to foreign
+    substances, such as in sensitivities to different antigens.
+b4352:
+  display: Functions of lymphatic vessels
+  definition: Functions related to vascular channels that transport lymph.
+b4353:
+  display: Functions of lymph nodes
+  definition: Functions related to glands along the course of lymphatic vessels.
+b440:
+  display: Respiration functions
+  definition: Functions of inhaling air into the lungs, the exchange of gases between
+    air and blood, and exhaling air.
+b4400:
+  display: Respiration rate
+  definition: Functions related to the number of breaths taken per minute.
+b4401:
+  display: Respiratory rhythm
+  definition: Functions related to the periodicity and regularity of breathing.
+b4402:
+  display: Depth of respiration
+  definition: Functions related to the volume of expansion of the lungs during breathing.
+b445:
+  display: Respiratory muscle functions
+  definition: Functions of the muscles involved in breathing.
+b4450:
+  display: Functions of the thoracic respiratory muscles
+  definition: Functions of the thoracic muscles involved in breathing.
+b4451:
+  display: Functions of the diaphragm
+  definition: Functions of the diaphragm as involved in breathing.
+b4452:
+  display: Functions of accessory respiratory muscles
+  definition: Functions of the additional muscles involved in breathing.
+b450:
+  display: Additional functions of the respiratory system
+  definition: Additional functions related to breathing, such as producing and transporting
+    secretion, coughing, sneezing and yawning.
+b4500:
+  display: Functions of breathing through the mouth
+  definition:
+b4501:
+  display: Functions of coughing
+  definition:
+b4502:
+  display: Functions of sneezing
+  definition:
+b4503:
+  display: Functions of yawning
+  definition:
+b4504:
+  display: Functions related to mucus
+  definition:
+b45040:
+  display: Production of mucus
+  definition: Functions of producing mucus of upper and lower airways.
+b45041:
+  display: Transportation of mucus
+  definition: Functions of transportation of mucus of upper and lower airways.
+b455:
+  display: Exercise tolerance functions
+  definition: Functions related to respiratory and cardiovascular capacity as required
+    for enduring physical exertion.
+b4550:
+  display: General physical endurance
+  definition: Functions related to the general level of tolerance of physical exercise
+    or stamina.
+b4551:
+  display: Aerobic capacity
+  definition: Functions related to the extent to which a person can exercise without
+    getting out of breath.
+b4552:
+  display: Fatiguability
+  definition: Functions related to susceptibility to fatigue, at any level of exertion.
+b460:
+  display: Sensations associated with cardiovascular and respiratory functions
+  definition: Sensations such as missing a heart beat, palpitation and shortness of
+    breath.
+BlockL2-b51:
+  display: Functions of the digestive, metabolic and endocrine systems
+  definition: This chapter is about the functions of ingestion, digestion and elimination,
+    as well as functions involved in metabolism and the endocrine glands.
+b510:
+  display: Ingestion functions
+  definition: Functions related to taking in and manipulating solids or liquids through
+    the mouth into the body.
+b5100:
+  display: Sucking
+  definition: Functions of drawing food or liquids into the mouth by a suction force
+    produced by movements of the cheeks, lips and tongue.
+b5101:
+  display: Biting
+  definition: Functions of cutting into, piercing or tearing off food with the front
+    teeth.
+b5102:
+  display: Chewing
+  definition: Functions of crushing, grinding and masticating food with the back teeth
+    (e.g. molars).
+b5103:
+  display: Manipulation of food in the mouth
+  definition: Functions of moving food around the mouth with the teeth and tongue.
+b5104:
+  display: Salivation
+  definition: Function of the production of saliva within the mouth.
+b5105:
+  display: Swallowing
+  definition: Functions of clearing substances, such as food, drink and saliva through
+    the oral cavity, pharynx and oesophagus into the stomach at an appropriate rate
+    and speed.
+b51050:
+  display: Oral swallowing
+  definition: Function of clearing substances through the oral cavity at an appropriate
+    rate and speed.
+b51051:
+  display: Pharyngeal swallowing
+  definition: Function of clearing substances through the pharynx at an appropriate
+    rate and speed.
+b51052:
+  display: Oesophageal swallowing
+  definition: Function of clearing substances through the oesophagus at an appropriate
+    rate and speed.
+b5106:
+  display: Functions of expelling the contents of the stomach, oesophagus or pharynx
+  definition: Functions of moving substances such as food, liquid, medications, objects
+    intentionally or unintentionally swallowed in the reverse direction to ingestion,
+    such as in regurgitation and vomiting.
+b51060:
+  display: Vomiting
+  definition:
+b51061:
+  display: Regurgitating
+  definition:
+b515:
+  display: Digestive functions
+  definition: Functions of transporting food through the gastrointestinal tract, breakdown
+    of food and absorption of nutrients.
+b5150:
+  display: Transport of food through stomach and intestines
+  definition: Peristalsis and related functions that mechanically move food through
+    stomach and intestines.
+b5151:
+  display: Breakdown of food
+  definition: Functions of mechanically reducing food to smaller particles in the
+    gastrointestinal tract.
+b5152:
+  display: Absorption of nutrients
+  definition: Functions of passing food and drink nutrients into the blood stream
+    from along the intestines.
+b5153:
+  display: Tolerance to food
+  definition: Functions of accepting suitable food and drink for digestion and rejecting
+    what is unsuitable.
+b520:
+  display: Assimilation functions
+  definition: Functions by which nutrients are converted into components of the living
+    body.
+b525:
+  display: Defecation functions
+  definition: Functions of elimination of wastes and undigested food as faeces and
+    related functions.
+b5250:
+  display: Elimination of faeces
+  definition: Functions of the elimination of waste from the rectum, including the
+    functions of contraction of the abdominal muscles in doing so.
+b5251:
+  display: Faecal consistency
+  definition: Consistency of faeces such as hard, firm, soft or watery.
+b5252:
+  display: Frequency of defecation
+  definition: Functions involved in the frequency of defecation.
+b5253:
+  display: Faecal continence
+  definition: Functions involved in voluntary control over the elimination function.
+b5254:
+  display: Flatulence
+  definition: Functions involved in the expulsion of excessive amounts of air or gases
+    from the intestines.
+b530:
+  display: Weight maintenance functions
+  definition: Functions of maintaining appropriate body weight, including weight gain
+    during the developmental period.
+b535:
+  display: Sensations associated with the digestive system
+  definition: Sensations arising from eating, drinking and related digestive functions.
+b5350:
+  display: Sensation of nausea
+  definition: Sensation of needing to vomit.
+b5351:
+  display: Feeling bloated
+  definition: Sensation of distension of the stomach or abdomen.
+b5352:
+  display: Sensation of abdominal cramp
+  definition: Sensation of spasmodic or painful muscular contractions of the smooth
+    muscles of the gastrointestinal tract.
+b540:
+  display: General metabolic functions
+  definition: Functions of regulation of essential components of the body such as
+    carbohydrates, proteins and fats, the conversion of one to another, and their
+    breakdown into energy.
+b5400:
+  display: Basal metabolic rate
+  definition: Functions involved in oxygen consumption of the body at specified conditions
+    of rest and temperature.
+b5401:
+  display: Carbohydrate metabolism
+  definition: Functions involved in the process by which carbohydrates in the diet
+    are stored and broken down into glucose and subsequently into carbon dioxide and
+    water.
+b5402:
+  display: Protein metabolism
+  definition: Functions involved in the process by which proteins in the diet are
+    converted to amino acids and broken down further in the body.
+b5403:
+  display: Fat metabolism
+  definition: Functions involved in the process by which fat in the diet is stored
+    and broken down in the body.
+b545:
+  display: Water, mineral and electrolyte balance functions
+  definition: Functions of the regulation of water, minerals and electrolytes in the
+    body.
+b5450:
+  display: Water balance
+  definition: Functions involved in maintaining the level or amount of water in the
+    body.
+b54500:
+  display: Water retention
+  definition: Functions involved in keeping water in the body.
+b54501:
+  display: Maintenance of water balance
+  definition: Functions involved in maintaining the optimal amount of water in the
+    body.
+b5451:
+  display: Mineral balance
+  definition: Functions involved in maintaining an equilibrium between intake, storage,
+    utilization and excretion of minerals in the body.
+b5452:
+  display: Electrolyte balance
+  definition: Functions involved in maintaining an equilibrium between intake, storage,
+    utilization and excretion of electrolytes in the body.
+b550:
+  display: Thermoregulatory functions
+  definition: Functions of the regulation of body temperature.
+b5500:
+  display: Body temperature
+  definition: Functions involved in regulating the core temperature of the body.
+b5501:
+  display: Maintenance of body temperature
+  definition: Functions involved in maintaining optimal body temperature as environmental
+    temperature changes.
+b555:
+  display: Endocrine gland functions
+  definition: Functions of production and regulation of hormonal levels in the body,
+    including cyclical changes.
+b5550:
+  display: Pubertal functions
+  definition: Functions associated with the onset of puberty and manifestations of
+    primary and secondary sexual characteristics.
+b55500:
+  display: Body and pubic hair development
+  definition: Functions associated with development body and pubic hair.
+b55501:
+  display: Breast and nipple development
+  definition: Functions associated with breast and nipple development.
+b55502:
+  display: Penis, testes and scrotum development
+  definition: Functions associated with development of penis, testes and scrotum.
+BlockL2-b61:
+  display: Genitourinary and reproductive functions
+  definition: This chapter is about the functions of urination and the reproductive
+    functions, including sexual and procreative functions.
+b610:
+  display: Urinary excretory functions
+  definition: Functions of filtration and collection of the urine.
+b6100:
+  display: Filtration of urine
+  definition: Functions of filtration of urine by the kidneys.
+b6101:
+  display: Collection of urine
+  definition: Functions of collection and storage of urine by the ureters and bladder.
+b620:
+  display: Urination functions
+  definition: Functions of discharge of urine from the urinary bladder.
+b6200:
+  display: Urination
+  definition: Functions of voiding the urinary bladder.
+b6201:
+  display: Frequency of urination
+  definition: Functions involved in the number of times urination occurs.
+b6202:
+  display: Urinary continence
+  definition: Functions of control over urination.
+b630:
+  display: Sensations associated with urinary functions
+  definition: Sensations arising from voiding and related urinary functions.
+b640:
+  display: Sexual functions
+  definition: Mental and physical functions related to the sexual act, including the
+    arousal, preparatory, orgasmic and resolution stages.
+b6400:
+  display: Functions of sexual arousal phase
+  definition: Functions of sexual interest and excitement.
+b6401:
+  display: Functions of sexual preparatory phase
+  definition: Functions of engaging in sexual intercourse.
+b6402:
+  display: Functions of orgasmic phase
+  definition: Functions of reaching orgasm.
+b6403:
+  display: Functions of sexual resolution phase
+  definition: Functions of satisfaction after orgasm and accompanying relaxation.
+b650:
+  display: Menstruation functions
+  definition: Functions associated with the menstrual cycle, including regularity
+    of menstruation and discharge of menstrual fluids.
+b6500:
+  display: Regularity of menstrual cycle
+  definition: Functions involved in the regularity of the menstrual cycle.
+b6501:
+  display: Interval between menstruation
+  definition: Functions relating to the length of time between two menstrual cycles.
+b6502:
+  display: Extent of menstrual bleeding
+  definition: Functions involved in the quantity of menstrual flow.
+b6503:
+  display: Onset of menstruation
+  definition: Functions related to the onset of the first menstruation (menarche).
+b6504:
+  display: Cessation of menstruation
+  definition: Functions related to the temporary or permanent cessation of the menstruation.
+b660:
+  display: Procreation functions
+  definition: Functions associated with fertility, pregnancy, childbirth and lactation.
+b6600:
+  display: Functions related to fertility
+  definition: Functions related to the ability to produce gametes for procreation.
+b6601:
+  display: Functions related to pregnancy
+  definition: Functions involved in becoming pregnant and being pregnant.
+b6602:
+  display: Functions related to childbirth
+  definition: Functions involved during childbirth.
+b6603:
+  display: Lactation
+  definition: Functions involved in the production of milk and making it available
+    to the child.
+b670:
+  display: Sensations associated with genital and reproductive functions
+  definition: Sensations associated with sexual intercourse, menstruation, and related
+    genital or reproductive functions.
+b6700:
+  display: Sensations associated with sexual intercourse
+  definition: Sensations associated with sexual arousal, preparation, intercourse,
+    orgasm and resolution.
+b6701:
+  display: Sensations associated with the menstrual cycle
+  definition: Sensations involved with menstruation, including pre- and post-menstrual
+    phases.
+b6702:
+  display: Sensations associated with menopause
+  definition: Sensations associated with the cessation of menstrual cycle.
+b6703:
+  display: Sensations associated with genital functions
+  definition: Functions associated with arousal of the genitals.
+BlockL2-b71:
+  display: Neuromusculoskeletal and movement-related functions
+  definition: This chapter is about the functions of movement and mobility, including
+    functions of joints, bones, reflexes and muscles.
+b710:
+  display: Mobility of joint functions
+  definition: Functions of the range and ease of movement of a joint.
+b7100:
+  display: Mobility of a single joint
+  definition: Functions of the range and ease of movement of one joint.
+b7101:
+  display: Mobility of several joints
+  definition: Functions of the range and ease of movement of more than one joint.
+b7102:
+  display: Mobility of joints generalized
+  definition: Functions of the range and ease of movement of joints throughout the
+    body.
+b715:
+  display: Stability of joint functions
+  definition: Functions of the maintenance of structural integrity of the joints.
+b7150:
+  display: Stability of a single joint
+  definition: Functions of the maintenance of structural integrity of one joint.
+b7151:
+  display: Stability of several joints
+  definition: Functions of the maintenance of structural integrity of more than one
+    joint.
+b7152:
+  display: Stability of joints generalized
+  definition: Functions of the maintenance of structural integrity of joints throughout
+    the body.
+b720:
+  display: Mobility of bone functions
+  definition: Functions of the range and ease of movement of the scapula, pelvis,
+    carpal and tarsal bones.
+b7200:
+  display: Mobility of scapula
+  definition: Functions of the range and ease of movement of the scapula.
+b7201:
+  display: Mobility of pelvis
+  definition: Functions of the range and ease of movement of the pelvis.
+b7202:
+  display: Mobility of carpal bones
+  definition: Functions of the range and ease of movement of the carpal bones.
+b7203:
+  display: Mobility of tarsal bones
+  definition: Functions of the range and ease of movement of the tarsal bones.
+b730:
+  display: Muscle power functions
+  definition: Functions related to the force generated by the contraction of a muscle
+    or muscle groups.
+b7300:
+  display: Power of isolated muscles and muscle groups
+  definition: Functions related to the force generated by the contraction of specific
+    and isolated muscles and muscle groups.
+b7301:
+  display: Power of muscles of one limb
+  definition: Functions related to the force generated by the contraction of the muscles
+    and muscle groups of one arm or leg.
+b7302:
+  display: Power of muscles of one side of the body
+  definition: Functions related to the force generated by the contraction of the muscles
+    and muscle groups found on the left or right side of the body.
+b7303:
+  display: Power of muscles in lower half of the body
+  definition: Functions related to the force generated by the contraction of the muscles
+    and muscle groups found in the lower half of the body.
+b7304:
+  display: Power of muscles of all limbs
+  definition: Functions related to the force generated by the contraction of muscles
+    and muscle groups of all four limbs.
+b7305:
+  display: Power of muscles of the trunk
+  definition: Functions related to the force generated by the contraction of muscles
+    and muscle groups in the trunk.
+b7306:
+  display: Power of all muscles of the body
+  definition: Functions related to the force generated by the contraction of all muscles
+    and muscle groups of the body.
+b735:
+  display: Muscle tone functions
+  definition: Functions related to the tension present in the resting muscles and
+    the resistance offered when trying to move the muscles passively.
+b7350:
+  display: Tone of isolated muscles and muscle groups
+  definition: Functions related to the tension present in the resting isolated muscles
+    and muscle groups and the resistance offered when trying to move those muscles
+    passively.
+b7351:
+  display: Tone of muscles of one limb
+  definition: Functions related to the tension present in the resting muscles and
+    muscle groups in one arm or leg and the resistance offered when trying to move
+    those muscles passively.
+b7352:
+  display: Tone of muscles of one side of body
+  definition: Functions related to the tension present in the resting muscles and
+    muscle groups of the right or left side of the body and the resistance offered
+    when trying to move those muscles passively.
+b7353:
+  display: Tone of muscles of lower half of body
+  definition: Functions related to the tension present in the resting muscles and
+    muscle groups in the lower half of the body and the resistance offered when trying
+    to move those muscles passively.
+b7354:
+  display: Tone of muscles of all limbs
+  definition: Functions related to the tension present in the resting muscles and
+    muscle groups in all four limbs and the resistance offered when trying to move
+    those muscles passively.
+b7355:
+  display: Tone of muscles of trunk
+  definition: Functions related to the tension present in the resting muscles and
+    muscle groups of the trunk and the resistance offered when trying to move those
+    muscles passively.
+b7356:
+  display: Tone of all muscles of the body
+  definition: Functions related to the tension present in the resting muscles and
+    muscle groups of the whole body and the resistance offered when trying to move
+    those muscles passively.
+b740:
+  display: Muscle endurance functions
+  definition: Functions related to sustaining muscle contraction for the required
+    period of time.
+b7400:
+  display: Endurance of isolated muscles
+  definition: Functions related to sustaining muscle contraction of isolated muscles
+    for the required period of time.
+b7401:
+  display: Endurance of muscle groups
+  definition: Functions related to sustaining muscle contraction of isolated muscle
+    groups for the required period of time.
+b7402:
+  display: Endurance of all muscles of the body
+  definition: Functions related to sustaining muscle contraction of all muscles of
+    the body for the required period of time.
+b750:
+  display: Motor reflex functions
+  definition: Functions of involuntary contraction of muscles automatically induced
+    by specific stimuli.
+b7500:
+  display: Stretch motor reflex
+  definition: Functions of involuntary contractions of muscles automatically induced
+    by stretching.
+b7501:
+  display: Reflexes generated by noxious stimuli
+  definition: Functions of involuntary contractions of muscles automatically induced
+    by painful or other noxious stimuli.
+b7502:
+  display: Reflexes generated by other exteroceptive stimuli
+  definition: Functions of involuntary contractions of muscles automatically induced
+    by external stimuli other than noxious stimuli.
+b755:
+  display: Involuntary movement reaction functions
+  definition: Functions of involuntary contractions of large muscles or the whole
+    body induced by body position, balance and threatening stimuli.
+b760:
+  display: Control of voluntary movement functions
+  definition: Functions associated with control over and coordination of voluntary
+    movements.
+b7600:
+  display: Control of simple voluntary movements
+  definition: Functions associated with control over and coordination of simple or
+    isolated voluntary movements.
+b7601:
+  display: Control of complex voluntary movements
+  definition: Functions associated with control over and coordination of complex voluntary
+    movements.
+b7602:
+  display: Coordination of voluntary movements
+  definition: Functions associated with coordination of simple and complex voluntary
+    movements, performing movements in an orderly combination.
+b7603:
+  display: Supportive functions of arm or leg
+  definition: Functions associated with control over and coordination of voluntary
+    movements by placing weight either on the arms (elbows or hands) or on the legs
+    (knees or feet).
+b761:
+  display: Spontaneous movements
+  definition: Functions associated with frequency, fluency and complexity of total
+    and individual body-part movements such as infant spontaneous movements and patterns
+    of movement.
+b7610:
+  display: General movements
+  definition: Repertoire and quality of age-specific general spontaneous movements
+    such as "writhing" movements and "fidgety" movements in early life.
+b7611:
+  display: Specific spontaneous movements
+  definition: Repertoire and quality of other spontaneous movements normally present
+    in the first postnatal months, such as arm and leg movements toward midline, finger
+    movements and kicking.
+b765:
+  display: Involuntary movement functions
+  definition: Functions of unintentional, non- or semi-purposive involuntary contractions
+    of a muscle or group of muscles.
+b7650:
+  display: Involuntary contractions of muscles
+  definition: Functions of unintentional, non- or semi-purposive involuntary contractions
+    of a muscle or group of muscles, such as those involved in part of a psychological
+    dysfunction.
+b7651:
+  display: Tremor
+  definition: Functions of alternating contraction and relaxation of a group of muscles
+    around a joint, resulting in shakiness.
+b7652:
+  display: Tics and mannerisms
+  definition: Functions of repetitive, quasi-purposive, involuntary contractions of
+    a group of muscles.
+b7653:
+  display: Stereotypies and motor perseveration
+  definition: Functions of spontaneous, non-purposive movements such as repetively
+    rocking to and fro and nodding the head or wiggling.
+b770:
+  display: Gait pattern functions
+  definition: Functions of movement patterns associated with walking, running or other
+    whole body movements.
+b780:
+  display: Sensations related to muscles and movement functions
+  definition: Sensations associated with the muscles or muscle groups of the body
+    and their movement.
+b7800:
+  display: Sensation of muscle stiffness
+  definition: Sensation of tightness or stiffness of muscles.
+b7801:
+  display: Sensation of muscle spasm
+  definition: Sensation of involuntary contraction of a muscle or a group of muscles.
+BlockL2-b81:
+  display: Functions of the skin and related structures
+  definition: This chapter is about the functions of skin, nails and hair.
+b810:
+  display: Protective functions of the skin
+  definition: Functions of the skin for protecting the body from physical, chemical
+    and biological threats.
+b820:
+  display: Repair functions of the skin
+  definition: Functions of the skin for repairing breaks and other damage to the skin.
+b830:
+  display: Other functions of the skin
+  definition: Functions of the skin other than protection and repair, such as cooling
+    and sweat secretion.
+b840:
+  display: Sensation related to the skin
+  definition: Sensations related to the skin such as itching, burning sensation and
+    tingling.
+b850:
+  display: Functions of hair
+  definition: Functions of the hair, such as protection, coloration and appearance.
+b860:
+  display: Functions of nails
+  definition: Functions of the nails, such as protection, scratching and appearance.
+BlockL1-d11:
+  display: Activities and participation
+  definition: 'Activity is the execution of a task or action by an individual. Participation
+    is involvement in a life situation. Activity limitations are difficulties an individual
+    may have in executing activities. Participation restrictions are problems an individual
+    may experience in involvement in life situations. The domains for the Activities
+    and Participation component are given in a single list that covers the full range
+    of life areas (from basic learning and watching to composite areas such as social
+    tasks). This component can be used to dedefinition activities (a) or participation
+    (p) or both. The two qualifiers for the Activities and Participation component
+    are the performance qualifier and the capacity qualifier. The performance qualifier
+    describes what an individual does in his or her current environment. Because the
+    current environment brings in a societal context, performance as recorded by this
+    qualifier can also be understood as "involvement in a life situation" or "the
+    lived experience" of people in the actual context in which they live. This context
+    includes the environmental factors - all aspects of the physical, social and attitudinal
+    world, which can be coded using the Environmental Factors component. The capacity
+    qualifier describes an individual''s ability to execute a task or an action. This
+    qualifier identifies the highest probable level of functioning that a person may
+    reach in a given domain at a given moment. Capacity is measured in a uniform or
+    standard environment, and thus reflects the environmentally adjusted ability of
+    the individual. The Environmental Factors component can be used to describe the
+    features of this uniform or standard environment. Both capacity and performance
+    qualifiers can be used with and without assistive devices or personal assistance,
+    and in accordance with the following scale:'
+BlockL2-d11:
+  display: Learning and applying knowledge
+  definition: This chapter is about learning, applying the knowledge that is learned,
+    thinking, solving problems, and making decisions.
+d110:
+  display: Watching
+  definition: Using the sense of seeing intentionally to experience visual stimuli,
+    such as visually tracking an object, watching a sporting event, people, or children
+    playing.
+d115:
+  display: Listening
+  definition: Using the sense of hearing intentionally to experience auditory stimuli,
+    such as listening to a radio, to the human voice, to music, to a lecture, or to
+    a story told.
+d120:
+  display: Other purposeful sensing
+  definition: Using the body's other basic senses intentionally to experience stimuli,
+    such as touching and feeling textures, tasting sweets or smelling flowers.
+d1200:
+  display: Mouthing
+  definition: Exploring objects using mouth or lips.
+d1201:
+  display: Touching
+  definition: Exploring objects using hands, fingers or other limbs or body parts
+d1202:
+  display: Smelling
+  definition: Exploring objects by bringing them to the nose or the nose to objects.
+d1203:
+  display: Tasting
+  definition: Exploring the taste of food or liquid by biting, chewing, sucking.
+d130:
+  display: Copying
+  definition: Imitating or mimicking as a basic component of learning, such as copying
+    a facial expression, a gesture, a sound or the letters of an alphabet.
+d131:
+  display: Learning through actions with objects
+  definition: Learning through simple actions on a single object, two or more objects,
+    symbolic and pretend play, such as in hitting an object, banging blocks and playing
+    with dolls or cars.
+d1310:
+  display: Learning through simple actions with a single object
+  definition: Simple actions with a single object or toy by manipulating, banging,
+    moving, dropping, etc.
+d1311:
+  display: Learning through actions by relating objects
+  definition: Simple actions relating two or more objects, toys or other materials
+    without regard for the specific features of the objects, toys or materials.
+d1312:
+  display: Learning through actions by relating object with regard to specific features
+  definition: Actions relating two or more objects, toys or materials with regard
+    to specific features, e.g., lid on box, cup on saucer.
+d1313:
+  display: Learning by relating symbolically to objects
+  definition: Relating to objects, toys or materials symbolically, such as feeding
+    or dressing a doll or using a simulated environment.
+d132:
+  display: Acquiring language
+  definition: Developing the competence to represent persons, objects, events, feelings
+    through words, symbols, phrases and sentences.
+d1320:
+  display: Acquiring single words or meaningful symbols
+  definition: Learning words or meaningful symbols such as graphic or manual signs
+    or symbols.
+d1321:
+  display: Combining words into phrases
+  definition: Learning to combine words into phrases.
+d1322:
+  display: Acquiring syntax
+  definition: Learning to produce appropriately constructed sentences or set of sentences.
+d133:
+  display: Acquiring additional language
+  definition: Developing the competence to represent persons, objects, events, feelings
+    through words, symbols, phrases and sentences, such as in an additional language
+    or signing.
+d135:
+  display: Rehearsing
+  definition: Repeating a sequence of events or symbols as a basic component of learning,
+    such as counting by tens or practising the recitation of a rhyme with gestures
+    or cords on a musical instrument.
+d137:
+  display: Acquiring concepts
+  definition: Developing competence to understand and use basic and complex concepts
+    related to characteristics, properties and features defining things, persons or
+    events.
+d1370:
+  display: Acquiring basic concepts
+  definition: Learning to use such concepts as size, form, quantity, length, same,
+    opposite.
+d1371:
+  display: Acquiring complex concepts
+  definition: Learning to use such concepts as classification, grouping, reversibility,
+    seriation.
+d138:
+  display: Acquiring information
+  definition: Obtaining facts about persons, things and events, such as asking why,
+    what, where and how, asking for names.
+d140:
+  display: Learning to read
+  definition: Developing the competence to read written material (including Braille
+    and other symbols) with fluency and accuracy, such as recognizing characters and
+    alphabet letters, sounding out written words with correct pronunciation, and understanding
+    written words and phrases.
+d1400:
+  display: Acquiring skills to recognize symbols
+  definition: Learning basic actions of deciphering symbols such as figures and icons,
+    characters, alphabet letters and words.
+d1401:
+  display: Acquiring skills to sound out written words
+  definition: Learning basic actions of sounding out characters, alfphabet letters
+    symbols and words with correct pronunciation.
+d1402:
+  display: Acquiring skills to understanding written words and phrases
+  definition: Learning basic actions to grasp the meaning of written words and texts.
+d145:
+  display: Learning to write
+  definition: Developing the competence to produce symbols that represent sounds,
+    words or phrases in order to convey meaning (including Braille writing, and other
+    symbols), such as spelling and effectively using correct grammar.
+d1450:
+  display: Acquiring skills to use writing implements
+  definition: Learning basic actions of writing down symbols or alphabet letters,
+    such as holding a pencil, chalk or brush, writing a character or a symbol on a
+    of piece paper, using a brailler, keyboard or peripheral device( mouse).
+d1451:
+  display: Acquiring skills to write symbols, characters and alphabet letters
+  definition: Learning basic actions to transpose a sound (morpheme) into a symbol
+    or a character (grapheme).
+d1452:
+  display: Acquiring skills to write words and phrases
+  definition: Learning basic actions to transpose spoken words or ideas into written
+    words or phrases.
+d150:
+  display: Learning to calculate
+  definition: Developing the competence to manipulate numbers and perform simple and
+    complex mathematical operations, such as using mathematical signs for addition
+    and subtraction and applying the correct mathematical operation to a problem.
+d1500:
+  display: Acquiring skills of numeracy
+  definition: Learning elementary skills of numeracy such as counting, ordering and
+    grouping.
+d1501:
+  display: Acquiring skills to recognize numerals, arithmetic signs and symbols
+  definition: Learning to recognize and use numbers.
+d1502:
+  display: Acquiring skills in using basic operations
+  definition: Learning to recognize symbols related to and use operations of addition,
+    subtraction, multiplication and division.
+d155:
+  display: Acquiring skills
+  definition: Developing basic and complex competencies in integrated sets of actions
+    or tasks so as to initiate and follow through with the acquisition of a skill,
+    such as manipulating tools or toys or playing games.
+d1550:
+  display: Acquiring basic skills
+  definition: Learning elementary, purposeful actions, such as learning to use simple
+    tools, such as pencils or eating utensils.
+d1551:
+  display: Acquiring complex skills
+  definition: Learning integrated sets of actions so as to follow rules, and to sequence
+    and coordinate one's movements, such as learning to play games (e.g. football
+    or chess) and to use a building tool.
+d160:
+  display: Focusing attention
+  definition: Intentionally focusing on specific stimuli, such as by filtering out
+    distracting noises.
+d1600:
+  display: Focusing attention on the person
+  definition: Intentionally attending to features of other persons such as their face,
+    touch or voice.
+d1601:
+  display: Focusing attention on the environment
+  definition: Intentionally attending to some element of the environment such as changes
+    in the quality quantity or intensity of physical or social stimuli.
+d163:
+  display: Thinking
+  definition: Formulating and manipulating ideas, concepts, and images, whether goal-oriented
+    or not, either alone or with others, such as creating fiction, proving a theorem,
+    playing with ideas, brainstorming, meditating, pondering, speculating, or reflecting.
+d166:
+  display: Reading
+  definition: Performing activities involved in the comprehension and interpretation
+    of written language (e.g. books, instructions or newspapers in text or Braille),
+    for the purpose of obtaining general knowledge or specific information.
+d170:
+  display: Writing
+  definition: Using or producing symbols or language to convey information, such as
+    producing a written record of events or ideas or drafting a letter.
+d1700:
+  display: Using general skills and strategies of the writing process
+  definition: Applying words which convey appropriate meaning, employing conventional
+    sentence structure.
+d1701:
+  display: Using grammatical and mechanical conventions in written compositions
+  definition: Applying standard spelling, punctuation and proper case forms etc.
+d1702:
+  display: Using general skills and strategies to complete compositions
+  definition: Applying words and sentences to convey complex meaning and abstract
+    ideas.
+d172:
+  display: Calculating
+  definition: Performing computations by applying mathematical principles to solve
+    problems that are described in words and producing or displaying the results,
+    such as computing the sum of three numbers or finding the result of dividing one
+    number by another.
+d1720:
+  display: Using skills and strategies to perform simple numeric calculations
+  definition: Perform simple numeric operations such as counting, grouping, ordering
+    and arithmetic calculations.
+d1721:
+  display: Using skills and strategies to perform complex numeric operations and calculations
+  definition: Applying mathematical procedures and methods such as algebra, calculus
+    and geometry to solve problems.
+d175:
+  display: Solving problems
+  definition: Finding solutions to questions or situations by identifying and analysing
+    issues, developing options and solutions, evaluating potential effects of solutions,
+    and executing a chosen solution, such as in resolving a dispute between two people.
+d1750:
+  display: Solving simple problems
+  definition: Finding solutions to a simple problem involving a single issue or question,
+    by identifying and analysing the issue, developing solutions, evaluating the potential
+    effects of the solutions and executing a chosen solution.
+d1751:
+  display: Solving complex problems
+  definition: Finding solutions to a complex problem involving multiple and interrelated
+    issues, or several related problems, by identifying and analysing the issue, developing
+    solutions, evaluating the potential effects of the solutions and executing a chosen
+    solution.
+d177:
+  display: Making decisions
+  definition: Making a choice among options, implementing the choice, and evaluating
+    the effects of the choice, such as selecting and purchasing a specific item, or
+    deciding to undertake and undertaking one task from among several tasks that need
+    to be done.
+BlockL2-d21:
+  display: General tasks and demands
+  definition: This chapter is about general aspects of carrying out single or multiple
+    tasks, organizing routines and handling stress. These items can be used in conjunction
+    with more specific tasks or actions to identify the underlying features of the
+    execution of tasks under different circumstances.
+d210:
+  display: Undertaking a single task
+  definition: Carrying out simple or complex and coordinated actions related to the
+    mental and physical components of a single task, such as initiating a task, organizing
+    time, space and materials for a task, pacing task performance, and carrying out,
+    completing, and sustaining a task.
+d2100:
+  display: Undertaking a simple task
+  definition: Preparing, initiating and arranging the time and space required for
+    a simple task; executing a simple task with a single major component, such as
+    reading a book, writing a letter, or making one's bed.
+d2101:
+  display: Undertaking a complex task
+  definition: Preparing, initiating and arranging the time and space for a single
+    complex task; executing a complex task with more than one component, which may
+    be carried out in sequence or simultaneously, such as arranging the furniture
+    in one's home or completing an assignment for school.
+d2102:
+  display: Undertaking a single task independently
+  definition: Preparing, initiating and arranging the time and space for a simple
+    or complex task; managing and executing a task on one's own and without the assistance
+    of others.
+d2103:
+  display: Undertaking a single task in a group
+  definition: Preparing, initiating and arranging the time and space for a single
+    task, simple or complex; managing and executing a task with people who are involved
+    in some or all steps of the task.
+d220:
+  display: Undertaking multiple tasks
+  definition: Carrying out simple or complex and coordinated actions as components
+    of multiple, integrated and complex tasks in sequence or simultaneously.
+d2200:
+  display: Carrying out multiple tasks
+  definition: Preparing, initiating and arranging the time and space needed for several
+    tasks, and managing and executing several tasks, together or sequentially.
+d2201:
+  display: Completing multiple tasks
+  definition: Completing several tasks, together or sequentially.
+d2202:
+  display: Undertaking multiple tasks independently
+  definition: Preparing, initiating and arranging the time and space for multiple
+    tasks, and managing and executing several tasks together or sequentially, on one's
+    own and without the assistance of others.
+d2203:
+  display: Undertaking multiple tasks in a group
+  definition: Preparing, initiating and arranging the time and space for multiple
+    tasks, and managing and executing several tasks together or sequentially with
+    others who are involved in some or all steps of the multiple tasks.
+d230:
+  display: Carrying out daily routine
+  definition: Carrying out simple or complex and coordinated actions in order to plan,
+    manage and complete the requirements of day-to-day procedures or duties, such
+    as budgeting time and making plans for separate activities throughout the day.
+d2301:
+  display: Managing daily routine
+  definition: Carrying out simple or complex and coordinated actions in order to plan
+    and manage the requirements of day-to-day procedures or duties.
+d2302:
+  display: Completing the daily routine
+  definition: Carrying out simple or complex and coordinated actions in order to complete
+    the requirements of usual day-to-day procedures or duties, such as getting dressed,
+    eating breakfast, leaving for school or work and returning home at the end of
+    the day.
+d2303:
+  display: Managing one's own activity level
+  definition: Carrying out actions and behaviours to arrange the requirements in energy
+    and time day-to-day procedures or duties.
+d2304:
+  display: Adapting to changes in daily routine
+  definition: Interrupting and shifting tasks and actions in response to new requirements
+    or making a transition from a usual pattern of activities to a new set of activities
+    as a means of fulfilling daily tasks.
+d240:
+  display: Handling stress and other psychological demands
+  definition: Carrying out simple or complex and coordinated actions to manage and
+    control the psychological demands required to carry out tasks demanding significant
+    responsibilities and involving stress, distraction, or crises, such as driving
+    a vehicle during heavy traffic or taking care of many children.
+d2400:
+  display: Handling responsibilities
+  definition: Carrying out simple or complex and coordinated actions to manage the
+    duties of task performance and to assess the requirements of these duties.
+d2401:
+  display: Handling stress
+  definition: Carrying out simple or complex and coordinated actions to cope with
+    pressure, emergencies or stress associated with task performance.
+d2402:
+  display: Handling crisis
+  definition: Carrying out simple or complex and coordinated actions to cope with
+    decisive turning points in a situation or times of acute danger or difficulty.
+BlockL2-d31:
+  display: Communication
+  definition: This chapter is about general and specific features of communicating
+    by language, signs and symbols, including receiving and producing messages, carrying
+    on conversations, and using communication devices and techniques.
+d310:
+  display: Communicating with - receiving - spoken messages
+  definition: Comprehending literal and implied meanings of messages in spoken language,
+    such as understanding that a statement asserts a fact or is an idiomatic expression.
+d3101:
+  display: Communicating with - receiving - simple spoken messages
+  definition: Comprehending the literal meaning conveyed by simple spoken messages.
+d3102:
+  display: Communicating with - receiving - complex spoken messages
+  definition: Comprehending the literal and implied meaning conveyed by complex spoken
+    messages.
+d315:
+  display: Communicating with - receiving - nonverbal messages
+  definition: Comprehending the literal and implied meanings of messages conveyed
+    by gestures, symbols and drawings, such as realizing that a child is tired when
+    she rubs her eyes or that a warning bell means that there is a fire.
+d3150:
+  display: Communicating with - receiving - body gestures
+  definition: Comprehending the meaning conveyed by facial expressions, hand movements
+    or signs, body postures, and other forms of body language.
+d3151:
+  display: Communicating with - receiving - general signs and symbols
+  definition: Comprehending the meaning represented by public signs and symbols, such
+    as traffic signs, warning symbols, musical or scientific notations, and icons.
+d3152:
+  display: Communicating with - receiving - drawings and photographs
+  definition: Comprehending the meaning represented by drawings (e.g. line drawings,
+    graphic designs, paintings, three-dimensional representations, pictograms), graphs,
+    charts and photographs, such as understanding that an upward line on a height
+    chart indicates that a child is growing.
+d320:
+  display: Communicating with - receiving - formal sign language messages
+  definition: Receiving and comprehending messages in formal sign language with literal
+    and implied meaning.
+d325:
+  display: Communicating with - receiving - written messages
+  definition: Comprehending the literal and implied meanings of messages that are
+    conveyed through written language (including Braille), such as following political
+    events in the daily newspaper or understanding the intent of religious scripture.
+d330:
+  display: Speaking
+  definition: Producing words, phrases and longer passages in spoken messages with
+    literal and implied meaning, such as expressing a fact or telling a story in oral
+    language.
+d331:
+  display: Non-speech vocal expression
+  definition: Vocalising when aware of another person in the proximal environment,
+    such as making a sound when the mother is close; babbling; babbling in turn-taking
+    activities. Vocalising in response to speech through imitating speech-sounds in
+    a turn taking procedure.
+d332:
+  display: Singing
+  definition: Producing tones in a sequence resulting in a melody to convey messages.
+d335:
+  display: Producing nonverbal messages
+  definition: Using gestures, symbols and drawings to convey messages, such as shaking
+    one's head to indicate disagreement or drawing a picture or diagram to convey
+    a fact or complex idea.
+d3350:
+  display: Producing body language
+  definition: Conveying messages by intentional movements of the body, such as facial
+    gestures (e.g. smiling, frowning, wincing), by arm and hand movements, and by
+    postures (e.g. embracing to indicate affection or pointing to receive attention
+    or an object).
+d3351:
+  display: Producing signs and symbols
+  definition: Conveying meaning by using signs and symbols (e.g. icons, Bliss board,
+    scientific symbols) and symbolic notation systems, such as using musical notation
+    to convey a melody.
+d3352:
+  display: Producing drawings and photographs
+  definition: Conveying meaning by drawing, painting, sketching, and making diagrams,
+    pictures or photographs, such as drawing a map to give someone directions to a
+    location.
+d340:
+  display: Producing messages in formal sign language
+  definition: Conveying, with formal sign language, literal and implied meaning.
+d345:
+  display: Writing messages
+  definition: Producing the literal and implied meanings of messages that are conveyed
+    through written language, such as writing a letter to a friend.
+d350:
+  display: Conversation
+  definition: Starting, sustaining and ending an interchange of thoughts and ideas,
+    carried out by means of spoken, written, signed or other forms of language, with
+    one or more people one knows or who are strangers, in formal or casual settings.
+d3500:
+  display: Starting a conversation
+  definition: Beginning an interchange, such as initiating turn-taking activity through
+    eye-contact or other means, that leads to communication or dialogue, such as by
+    introducing oneself, expressing customary greetings, or by introducing a topic
+    or asking questions.
+d3501:
+  display: Sustaining a conversation
+  definition: Continuing an interchange by taking turns in vocalising, speaking or
+    signing, by adding ideas, introducing a new topic or retrieving a topic that has
+    been previously mentioned.
+d3502:
+  display: Ending a conversation
+  definition: Finishing a dialogue or interchange with customary termination statements
+    or expressions and by bringing closure to the topic under discussion.
+d3503:
+  display: Conversing with one person
+  definition: Initiating, maintaining, shaping and terminating a dialogue or interchange
+    with one person, such as in discussing the weather with a friend.
+d3504:
+  display: Conversing with many people
+  definition: Initiating, maintaining, shaping and terminating a dialogue or interchange
+    with more than one individual, such as in starting and participating in a group
+    interchange.
+d355:
+  display: Discussion
+  definition: Starting, sustaining and ending an examination of a matter, with arguments
+    for or against, or debate carried out by means of spoken, written, sign or other
+    forms of language, with one or more people one knows or who are strangers, in
+    formal or casual settings.
+d3550:
+  display: Discussion with one person
+  definition: Initiating, maintaining, shaping or terminating an argument or debate
+    with one person.
+d3551:
+  display: Discussion with many people
+  definition: Initiating, maintaining, shaping or terminating an argument or debate
+    with more than one individual.
+d360:
+  display: Using communication devices and techniques
+  definition: Using devices, techniques and other means for the purposes of communicating,
+    such as calling a friend on the telephone.
+d3600:
+  display: Using telecommunication devices
+  definition: Using telephones, computers and other electronic devices as a means
+    of telecommunication.
+d3601:
+  display: Using writing machines
+  definition: Using machines for writing, such as typewriters, computers and Braille
+    writers, as a means of communication.
+d3602:
+  display: Using communication techniques
+  definition: Performing actions and tasks involved in techniques for communicating,
+    such as reading lips.
+BlockL2-d41:
+  display: Mobility
+  definition: This chapter is about moving by changing body position or location or
+    by transferring from one place to another, by carrying, moving or manipulating
+    objects, by walking, running or climbing, and by using various forms of transportation.
+d410:
+  display: Changing basic body position
+  definition: Getting into and out of a body position and moving from one location
+    to another, such as getting up out of a chair to lie down on a bed, and getting
+    into and out of positions of sitting, standing, kneeling or squatting.
+d4100:
+  display: Lying down
+  definition: Getting into and out of a lying down position or changing body position,
+    from horizontal to any other position, such as standing up or sitting down.
+d4101:
+  display: Squatting
+  definition: Getting into and out of the seated or crouched posture on one's haunches
+    with knees closely drawn up or sitting on one's heels, such as may be necessary
+    in toilets that are at floor level, or changing body position from squatting to
+    any other position, such as standing up.
+d4102:
+  display: Kneeling
+  definition: Getting into and out of a position where the body is supported by the
+    knees with legs bent, such as during prayers, or changing body position from kneeling
+    to any other position, such as standing up.
+d4103:
+  display: Sitting
+  definition: Getting into and out of a seated position and changing body position
+    from sitting down to any other position, such as standing up or lying down.
+d4104:
+  display: Standing
+  definition: Getting into and out of a standing position or changing body position
+    from standing to any other position, such as lying down or sitting down.
+d4105:
+  display: Bending
+  definition: Tilting the back downwards or to the side, at the torso, such as in
+    bowing or reaching down for an object.
+d4106:
+  display: Shifting the body's centre of gravity
+  definition: Adjusting or moving the weight of the body from one position to another
+    while sitting, standing or lying, such as moving from one foot to another while
+    standing.
+d4107:
+  display: Rolling over
+  definition: Moving the body from one position to another while lying such as turning
+    from side to side or from stomach to back.
+d415:
+  display: Maintaining body position
+  definition: Staying in the same body position as required, such as remaining seated
+    or remaining standing for carrying out a task, in play, work or school.
+d4150:
+  display: Maintaining a lying position
+  definition: Staying in a lying position for some time as required, such as remaining
+    in a prone position in a bed.
+d4151:
+  display: Maintaining a squatting position
+  definition: Staying in a squatting position such as when sitting on the floor without
+    a seat.
+d4152:
+  display: Maintaining a kneeling position
+  definition: Staying in a kneeling position where the body is supported by the knees
+    with legs bent for some time such as during prayers in church.
+d4153:
+  display: Maintaining a sitting position
+  definition: Staying in a seated position, on a seat or the floor, for some time
+    such as when sitting at a desk or table.
+d4154:
+  display: Maintaining a standing position
+  definition: Staying in a standing position for some time such as when standing in
+    a queue.
+d4155:
+  display: Maintaining head position
+  definition: Controlling the position of the head and supporting its weight for a
+    determined period of time.
+d420:
+  display: Transferring oneself
+  definition: Moving from one surface to another, such as sliding along a bench or
+    moving from a bed to a chair, without changing body position.
+d4200:
+  display: Transferring oneself while sitting
+  definition: Moving from a sitting position on one seat to another seat on the same
+    or a different level, such as moving from a chair to a bed.
+d4201:
+  display: Transferring oneself while lying
+  definition: Moving from one lying position to another on the same or a different
+    level, such as moving from one bed to another.
+d430:
+  display: Lifting and carrying objects
+  definition: Raising up an object or taking something from one place to another,
+    such as when lifting a cup or toy or carrying a box, or a child from one room
+    to another.
+d4300:
+  display: Lifting
+  definition: Raising up an object in order to move it from a lower to a higher level,
+    such as when lifting a glass from the table.
+d4301:
+  display: Carrying in the hands
+  definition: Taking or transporting an object from one place to another using the
+    hands, such as when carrying a drinking glass or a suitcase.
+d4302:
+  display: Carrying in the arms
+  definition: Taking or transporting an object from one place to another using the
+    arms and hands, such as when carrying a pet or a child or other large object.
+d4303:
+  display: Carrying on shoulders, hip and back
+  definition: Taking or transporting an object from one place to another using the
+    shoulders, hip or back, or some combination of these, such as when carrying a
+    large parcel or school-bag.
+d4304:
+  display: Carrying on the head
+  definition: Taking or transporting an object from one place to another using the
+    head, such when as carrying a container of water on the head.
+d4305:
+  display: Putting down objects
+  definition: Using hands, arms or other parts of the body to place an object down
+    on a surface or place, such as when lowering a container of water to the ground.
+d435:
+  display: Moving objects with lower extremities
+  definition: Performing coordinated actions aimed at moving an object by using the
+    legs and feet, such as kicking a ball or pushing pedals on a bicycle.
+d4350:
+  display: Pushing with lower extremities
+  definition: Using the legs and feet to exert a force on an object to move it away,
+    such as pushing a chair away with a foot.
+d4351:
+  display: Kicking
+  definition: Using the legs and feet to propel something away, such as kicking a
+    ball.
+d440:
+  display: Fine hand use
+  definition: Performing the coordinated actions of handling objects, picking up,
+    manipulating and releasing them using one's hand, fingers and thumb, such as required
+    to lift coins off a table or turn a dial or knob.
+d4400:
+  display: Picking up
+  definition: Lifting or taking up a small object with hands and fingers, such as
+    when picking up a pencil.
+d4401:
+  display: Grasping
+  definition: Using one or both hands to seize and hold something, such as when grasping
+    a tool or a door knob.
+d4402:
+  display: Manipulating
+  definition: Using fingers and hands to exert control over, direct or guide something,
+    such as when handling coins or other small objects, such as scissors, shoe laces,
+    pencils, chop sticks, knives and forks.
+d4403:
+  display: Releasing
+  definition: Using fingers and hands to let go or set free something so that it falls
+    or changes position, such as when dropping an item of clothing or a piece of food
+    for a pet.
+d445:
+  display: Hand and arm use
+  definition: Performing the coordinated actions required to move objects or to manipulate
+    them by using hands and arms, such as when turning door handles or throwing or
+    catching an object.
+d4450:
+  display: Pulling
+  definition: Using fingers, hands and arms to bring an object towards oneself, or
+    to move it from place to place, such as when pulling on a string or pulling a
+    door closed.
+d4451:
+  display: Pushing
+  definition: Using fingers, hands and arms to move something from oneself, or to
+    move it from place to place, such as when pushing a toy or an animal away.
+d4452:
+  display: Reaching
+  definition: Using the hands and arms to extend outwards and touch and grasp something,
+    such as when reaching across a table or desk for a book.
+d4453:
+  display: Turning or twisting the hands or arms
+  definition: Using fingers, hands or arms to rotate, turn or bend an object, as is
+    required to open a jar or use tools such as toothbrush or screwdriver.
+d4454:
+  display: Throwing
+  definition: Using fingers, hands and arms to lift something and propel it with some
+    force through the air, such as when tossing a ball.
+d4455:
+  display: Catching
+  definition: Using fingers, hands and arms to grasp a moving object in order to bring
+    it to a stop and hold it, such as when catching a ball.
+d446:
+  display: Fine foot use
+  definition: Performing the coordinated actions to move or manipulate objects using
+    one's foot and toes.
+d450:
+  display: Walking
+  definition: Moving along a surface on foot, step by step, so that one foot is always
+    on the ground, such as when strolling, sauntering, walking forwards, backwards,
+    or sideways.
+d4500:
+  display: Walking short distances
+  definition: Walking for less than a kilometre, such as walking around rooms or hallways,
+    within a building or for short distances outside.
+d4501:
+  display: Walking long distances
+  definition: Walking for more than a kilometre, such as across a village or town,
+    between villages or across open areas.
+d4502:
+  display: Walking on different surfaces
+  definition: Walking on sloping, uneven, or moving surfaces, such as on grass, gravel
+    or ice and snow, or walking aboard a ship, train or other vehicle.
+d4503:
+  display: Walking around obstacles
+  definition: Walking in ways required to avoid moving and immobile objects, people,
+    animals, and vehicles, such as walking around a marketplace or shop, around or
+    through traffic or other crowded areas.
+d451:
+  display: Going up and down stairs
+  definition: Moving upwards and downwards so that at least one foot is always on
+    the ground such as ascending and descending stairs or curbs.
+d455:
+  display: Moving around
+  definition: Moving the whole body from one place to another by means other than
+    walking, such as climbing over a rock or running down a street, skipping, scampering,
+    jumping, somersaulting or running around obstacles.
+d4550:
+  display: Crawling
+  definition: Moving the whole body in a prone position from one place to another
+    on hands, or hands and arms, and knees.
+d4551:
+  display: Climbing
+  definition: Moving the whole body upwards or downwards, over surfaces or objects,
+    such as climbing steps, rocks, ladders or stairs, curbs or other objects.
+d4552:
+  display: Running
+  definition: Moving with quick steps so that both feet may be simultaneously off
+    the ground.
+d4553:
+  display: Jumping
+  definition: Moving up off the ground by bending and extending the legs, such as
+    jumping on one foot, hopping, skipping and jumping or diving into water.
+d4554:
+  display: Swimming
+  definition: Propelling the whole body through water by means of limb and body movements
+    without taking support from the ground underneath.
+d460:
+  display: Moving around in different locations
+  definition: Walking and moving around in various places and situations, such as
+    walking between rooms in a house, within a building, or down the street of a town.
+d4600:
+  display: Moving around within the home
+  definition: Walking and moving around in one's home, within a room, between rooms,
+    and around the whole residence or living area.
+d4601:
+  display: Moving around within buildings other than home
+  definition: Walking and moving around within buildings other than one's residence,
+    such as moving around other people's homes, other private buildings, community
+    and public buildings and enclosed areas.
+d4602:
+  display: Moving around outside the home and other buildings
+  definition: Walking and moving around close to or far from one's home and other
+    buildings, without the use of transportation, public or private, such as walking
+    for short or long distances around a town or village.
+d465:
+  display: Moving around using equipment
+  definition: Moving the whole body from place to place, on any surface or space,
+    by using specific devices designed to facilitate moving or create other ways of
+    moving around, such as with skates, skis, or scuba equipment, or moving down the
+    street in a self-propelled wheelchair or a walker.
+d470:
+  display: Using transportation
+  definition: Using transportation to move around as a passenger, such as being driven
+    in a car, bus, rickshaw, jitney, pram or stroller, wheelchair, animal-powered
+    vehicle, private or public taxi, train, tram, subway, boat or aircraft and using
+    humans for transportation.
+d4700:
+  display: Using human-powered vehicles
+  definition: Being transported as a passenger by a mode of transportation powered
+    by one or more people, such as riding in a pram or stroller, wheelchair propelled
+    by another, rickshaw or rowboat.
+d4701:
+  display: Using private motorized transportation
+  definition: Being transported as a passenger by private motorized vehicle over land,
+    sea or air, such as by car, taxi or privately owned aircraft or boat.
+d4702:
+  display: Using public motorized transportation
+  definition: Being transported as a passenger by a motorized vehicle over land, sea
+    or air designed for public transportation, such as being a passenger on a bus,
+    train, subway or aircraft.
+d4703:
+  display: Using humans for transportation
+  definition: Being transported by another person, such as being crried in he arms,
+    in a sheet, in a backpack or a transportation device.
+d475:
+  display: Driving
+  definition: Being in control of and moving a vehicle or the animal that draws it,
+    travelling under one's own direction or having at one's disposal any form of transportation
+    appropriate for age, such as a car , bicycle, boat or animal powered vehicles.
+d4750:
+  display: Driving human-powered transportation
+  definition: Driving a human-powered vehicle, such as a bicycle, tricycle, or rowboat.
+d4751:
+  display: Driving motorized vehicles
+  definition: Driving a vehicle with a motor, such as an automobile, motorcycle, motorboat
+    or aircraft.
+d4752:
+  display: Driving animal-powered vehicles
+  definition: Driving a vehicle powered by an animal, such as a horse-drawn cart or
+    carriage.
+d480:
+  display: Riding animals for transportation
+  definition: Travelling on the back of an animal, such as a horse, ox, camel or elephant.
+BlockL2-d51:
+  display: Self-care
+  definition: This chapter is about caring for oneself, washing and drying oneself,
+    caring for one's body and body parts, dressing, eating and drinking, and looking
+    after one's health.
+d510:
+  display: Washing oneself
+  definition: Washing and drying one's whole body, or body parts, using water and
+    appropriate cleaning and drying materials or methods, such as bathing, showering,
+    washing hands and feet, face and hair, and drying with a towel.
+d5100:
+  display: Washing body parts
+  definition: Applying water, soap and other substances to body parts, such as hands,
+    face, feet, hair or nails, in order to clean them.
+d5101:
+  display: Washing whole body
+  definition: Applying water, soap and other substances to the whole body in order
+    to clean oneself, such as taking a bath or shower.
+d5102:
+  display: Drying oneself
+  definition: Using a towel or other means for drying some part or parts of one's
+    body, or the whole body, such as after washing.
+d520:
+  display: Caring for body parts
+  definition: Looking after those parts of the body, such as skin, face, teeth, scalp,
+    nails and genitals, that require more than washing and drying.
+d5200:
+  display: Caring for skin
+  definition: Looking after the texture and hydration of one's skin, such as by removing
+    calluses or corns and using moisturizing lotions or cosmetics.
+d5201:
+  display: Caring for teeth
+  definition: Looking after dental hygiene, such as by brushing teeth, flossing, and
+    taking care of a dental prosthesis or orthosis.
+d5202:
+  display: Caring for hair
+  definition: Looking after the hair on the head and face, such as by combing, styling,
+    shaving, or trimming
+d5203:
+  display: Caring for fingernails
+  definition: Cleaning, trimming or polishing the nails of the fingers.
+d5204:
+  display: Caring for toenails
+  definition: Cleaning, trimming or polishing the nails of the toes.
+d5205:
+  display: Caring for nose
+  definition: Cleaning the nose, looking after nasal hygiene.
+d530:
+  display: Toileting
+  definition: Planning and carrying out the elimination of human waste (menstruation,
+    urination and defecation), and clean oneself afterwards.
+d5300:
+  display: Regulating urination
+  definition: Coordinating and managing urination, such as by indicating need, getting
+    into the proper position, choosing and getting to an appropriate place for urination,
+    manipulating clothing before and after urination, and cleaning oneself after urination.
+d5301:
+  display: Regulating defecation
+  definition: Coordinating and managing defecation such as by indicating need, getting
+    into the proper position, choosing and getting to an appropriate place for defecation,
+    manipulating clothing before and after defecation, and cleaning oneself after
+    defecation.
+d5302:
+  display: Menstrual care
+  definition: Coordinating, planning and caring for menstruation, such as by anticipating
+    menstruation and using sanitary towels and napkins.
+d540:
+  display: Dressing
+  definition: Carrying out the coordinated actions and tasks of putting on and taking
+    off clothes and footwear in sequence and in keeping with climatic and social conditions,
+    such as by putting on, adjusting and removing shirts, skirts, blouses, pants,
+    undergarments, saris, kimono, tights, hats, gloves, coats, shoes, boots, sandals
+    and slippers.
+d5400:
+  display: Putting on clothes
+  definition: Carrying out the coordinated tasks of putting clothes on various parts
+    of the body, such as putting clothes on over the head, over the arms and shoulders,
+    and on the lower and upper halves of the body; putting on gloves and headgear.
+d5401:
+  display: Taking off clothes
+  definition: Carrying out the coordinated tasks of taking clothes off various parts
+    of the body, such as pulling clothes off and over the head, off the arms and shoulders,
+    and off the lower and upper halves of the body; taking off gloves and headgear.
+d5402:
+  display: Putting on footwear
+  definition: Carrying out the coordinated tasks of putting on socks, stockings and
+    footwear.
+d5403:
+  display: Taking off footwear
+  definition: Carrying out the coordinated tasks of taking off socks, stockings and
+    footwear.
+d5404:
+  display: Choosing appropriate clothing
+  definition: Following implicit or explicit dress codes and conventions of one's
+    society or culture and dressing in keeping with climatic conditions.
+d550:
+  display: Eating
+  definition: Carrying out the coordinated tasks and actions of eating food that has
+    been served, bringing it to the mouth and consuming it in culturally acceptable
+    ways, cutting or breaking food into pieces, opening containers and packets, using
+    eating implements, having meals, feasting or dining.
+d560:
+  display: Drinking
+  definition: Taking hold of a drink, bringing it to the mouth, and consuming the
+    drink in culturally acceptable ways, mixing, stirring and pouring liquids for
+    drinking, opening bottles and cans, drinking through a straw or drinking running
+    water such as from a tap or a spring; feeding from the breast.
+d570:
+  display: Looking after one's health
+  definition: Ensuring physical comfort, health and physical and mental well-being,
+    such as by maintaining a balanced diet, and an appropriate level of physical activity,
+    keeping warm or cool, avoiding harms to health, following safe sex practices,
+    including such as using condoms, getting immunizations and regular physical examinations.
+d5700:
+  display: Ensuring one's physical comfort
+  definition: Caring for oneself by being aware that one needs to ensure, and ensuring,
+    that one's body is in a comfortable position, that one is not feeling too hot,
+    cold or wet, and that one has adequate lighting.
+d5701:
+  display: Managing diet and fitness
+  definition: Caring for oneself by being aware of the need and by selecting and consuming
+    nutritious foods and maintaining physical fitness.
+d5702:
+  display: Maintaining one's health
+  definition: Caring for oneself by being aware of the need and doing what is required
+    to look after one's health, both to respond to risks to health and to prevent
+    ill-health, such as by seeking assistance (professional and non professional);
+    following medical and other health advice; and managing risks to health such as
+    injuries, communicable diseases, drug-taking and sexual transmitted diseases.
+BlockL2-d61:
+  display: Domestic life
+  definition: This chapter is about carrying out domestic and everyday actions and
+    tasks. Areas of domestic life include, caring for one's belongings and space,
+    acquiring food, clothing and other necessities, household cleaning and repairing,
+    caring for personal and other household objects, and assisting others.
+d610:
+  display: Acquiring a place to live
+  definition: Buying, renting, furnishing and arranging a room, house, apartment or
+    other dwelling.
+d6100:
+  display: Buying a place to live
+  definition: Acquiring ownership of a house, apartment or other dwelling.
+d6101:
+  display: Renting a place to live
+  definition: Acquiring the use of a house, apartment or other dwelling belonging
+    to another in exchange for payment.
+d6102:
+  display: Furnishing a place to live
+  definition: Equipping and arranging a living space with furniture, fixtures and
+    other fittings and decorating rooms, arranging ones own space, room.
+d620:
+  display: Acquisition of goods and services
+  definition: Selecting, procuring and transporting all goods and services required
+    for daily living, such as selecting, procuring, transporting and storing food,
+    drink, clothing, cleaning materials, fuel, household items, utensils, cooking
+    ware, play and recreational materials, domestic appliances and tools; procuring
+    utilities and other household services, and picking up and delivering paper mail
+    or packages.
+d6200:
+  display: Shopping
+  definition: Obtaining, in exchange for money, goods and services required for daily
+    living (including instructing and supervising an intermediate to do the shopping),
+    such as selecting food, drink, cleaning materials, household items, play and recreational
+    materials or clothing in a shop or market; comparing quality and price of the
+    items required, negotiating and paying for selected goods or services and transporting
+    goods.
+d6201:
+  display: Gathering daily necessities
+  definition: Obtaining, without exchange of money, goods and services required for
+    daily living (including instructing and supervising an intermediate to gather
+    daily necessities), such as by harvesting vegetable and fruits, getting water
+    and fuel and picking up and delivering paper mail or packages.
+d630:
+  display: Preparing meals
+  definition: Planning, organizing, cooking and serving simple and complex meals for
+    oneself and others, such as by making a menu, selecting edible food and drink,
+    getting together ingredients for preparing meals,cooking with heat and preparing
+    cold foods and drinks, and serving the food.
+d6300:
+  display: Preparing simple meals
+  definition: Planning, organizing, cooking and serving meals with small number of
+    ingredients that require easy methods of preparation and serving, such as making
+    a snack or small meal, and transforming food ingredients by cutting and stirring,
+    boiling and heating food such as rice or potatoes.
+d6301:
+  display: Preparing complex meals
+  definition: Planning, organizing, cooking and serving meals with large number of
+    ingredients that require complex methods of preparation and serving, such as planning
+    a meal with serveral dishes, and transforming food ingredients by combined actions
+    of peeling, slicing, mixing, kneading, stirring, presenting and serving food in
+    a manner appropriate to the occasion and culture.
+d640:
+  display: Doing housework
+  definition: Managing a household by cleaning the house, washing clothes, using household
+    appliances, storing food and disposing of garbage, such as by sweeping, mopping,
+    washing counters, walls and other surfaces; collecting and disposing of household
+    garbage; tidying rooms, closets and drawers; collecting, washing, drying, folding
+    and ironing clothes; cleaning footwear; using brooms, brushes and vacuum cleaners;
+    using washing machines, dryers and irons.
+d6400:
+  display: Washing and drying clothes and garments
+  definition: Washing clothes and garments by hand and hanging them out to dry in
+    the air.
+d6401:
+  display: Cleaning cooking area and utensils
+  definition: Cleaning up after cooking, such as by washing dishes, pans, pots and
+    cooking utensils, and cleaning tables and floors around cooking and eating area.
+d6402:
+  display: Cleaning living area
+  definition: Cleaning the living areas of the household, such as by tidying and dusting,
+    sweeping, swabbing, mopping floors, cleaning windows and walls, cleaning bathrooms
+    and toilets, cleaning household furnishings.
+d6403:
+  display: Using household appliances
+  definition: Using all kinds of household appliances, such as washing machines, driers,
+    irons, vacuum cleaners, dishwashers.
+d6404:
+  display: Storing daily necessities
+  definition: Storing food, drinks, clothes and other household goods required for
+    daily living; preparing food for conservation by canning, salting or refrigerating,
+    keeping food fresh and out of the reach of animals.
+d6405:
+  display: Disposing of garbage
+  definition: Disposing of household garbage such as by collecting trash and rubbish
+    around the house, preparing garbage for disposal, using garbage disposal appliances;
+    burning garbage.
+d650:
+  display: Caring for household objects
+  definition: Maintaining and repairing household and other personal objects, including
+    play material, house and contents, clothes, play and recreational materials, vehicles
+    and assistive devices, and caring for plants and animals, such as painting or
+    wallpapering rooms, fixing furniture, repairing plumbing, ensuring the proper
+    working order of vehicles, watering plants, grooming and feeding pets and domestic
+    animals and taking care of entrances, walkways and driveways.
+d6500:
+  display: Making and repairing clothes
+  definition: Making and repairing clothes, such as by sewing, producing or mending
+    clothes; reattaching buttons and fasteners; ironing clothes, fixing and polishing
+    footwear.
+d6501:
+  display: Maintaining dwelling and furnishings
+  definition: Repairing and taking care of dwelling, its exterior, interior and contents,
+    such as by painting, repairing fixtures and furniture, and using required tools
+    for repair work.
+d6502:
+  display: Maintaining domestic appliances
+  definition: Repairing and taking care of all domestic appliances for cooking, cleaning
+    and repairing, such as by oiling and repairing tools and maintaining the washing
+    machine.
+d6503:
+  display: Maintaining vehicles
+  definition: Repairing and taking care of motorized and non-motorized vehicles for
+    personal use, including bicycles, carts, automobiles and boats.
+d6504:
+  display: Maintaining assistive devices
+  definition: Repairing and taking care of assistive devices such as prostheses, orthoses
+    and specialized tools and aids for housekeeping and personal care; maintaining
+    and repairing aids for personal mobility such as canes, walkers, wheelchairs and
+    scooters; and maintaining communication and recreational aids.
+d6505:
+  display: Taking care of plants, indoors and outdoors
+  definition: Taking care of plants inside and outside the house, such as by planting,
+    watering and fertilizing plants; gardening and growing foods for personal use.
+d6506:
+  display: Taking care of animals
+  definition: Taking care of domestic animals and pets, such as by feeding, cleaning,
+    grooming and exercising pets; watching over the health of animals or pets; planning
+    for the care of animals or pets in one's absence.
+d6507:
+  display: Taking care of walkways and driveways
+  definition: Taking care of domestic pathways such as walkways and driveways or entrances
+    to houses (covered or uncovered) for example removing snow, leaves, rubble or
+    sand from enrances as well as spreading sand or other material.
+d660:
+  display: Assisting others
+  definition: Assisting household members and others with their learning, communicating,
+    self-care, movement, within the house or outside; being concerned about the well-being
+    of household members and others.
+d6600:
+  display: Assisting others with self-care
+  definition: Assisting household members and others in performing self-care, including
+    helping others with eating, bathing and dressing; taking care of children or members
+    of the household who are sick or have difficulties with basic self-care; helping
+    others with their toileting.
+d6601:
+  display: Assisting others in movement
+  definition: Assisting household members and others in movements and in moving outside
+    the home, such as in the neighbourhood or city, to or from school, place of employment
+    or other destination.
+d6602:
+  display: Assisting others in communication
+  definition: Assisting household members and others with their communication, such
+    as by helping with speaking, writing or readings.
+d6603:
+  display: Assisting others in interpersonal relations
+  definition: Assisting household members and others with their interpersonal interactions,
+    such as by helping them to initiate, maintain or terminate relationships.
+d6604:
+  display: Assisting others in nutrition
+  definition: Assisting household members and others with their nutrition, such as
+    by helping them to prepare and eat meals.
+d6605:
+  display: Assisting others in health maintenance
+  definition: Assisting household members and others with formal and informal health
+    care, such as by ensuring that a child gets regular medical check-ups, or that
+    an elderly relative takes required medication.
+BlockL2-d71:
+  display: Interpersonal interactions and relationships
+  definition: This chapter is about carrying out the actions and tasks required for
+    basic and complex interactions with people (strangers, friends, relatives, family
+    members and lovers) in a contextually and socially appropriate manner.
+d710:
+  display: Basic interpersonal interactions
+  definition: Interacting with people in a contextually and socially appropriate manner,
+    such as by showing consideration and esteem when appropriate, or responding to
+    the feelings of others.
+d7100:
+  display: Respect and warmth in relationships
+  definition: Showing and responding to consideration and esteem, in a contextually
+    and socially appropriate manner.
+d7101:
+  display: Appreciation in relationships
+  definition: Showing and responding to satisfaction and gratitude, in a contextually
+    and socially appropriate manner.
+d7102:
+  display: Tolerance in relationships
+  definition: Showing and responding to understanding and acceptance of behaviour,
+    in a contextually and socially appropriate manner.
+d7103:
+  display: Criticism in relationships
+  definition: Providing and responding to implicit and explicit differences of opinion
+    or disagreement, in a contextually and socially appropriate manner.
+d7104:
+  display: Social cues in relationships
+  definition: Giving and reacting appropriately to signs and hints that occur in social
+    interactions.
+d7105:
+  display: Physical contact in relationships
+  definition: Making and responding to bodily contact with others, in a contextually
+    and socially appropriate manner.
+d7106:
+  display: Differentiation of familiar persons
+  definition: Showing differential responses to individuals, such as by reaching out
+    for the familiar person and differentiating them from strangers and reacting in
+    an appropriate manner.
+d720:
+  display: Complex interpersonal interactions
+  definition: Maintaining and managing interactions with other people, in a contextually
+    and socially appropriate manner, such as by regulating emotions and impulses,
+    controlling verbal and physical aggression, acting independently in social interactions,
+    and acting in accordance with social rules and conventions, when for example playing,
+    studying or working with others.
+d7200:
+  display: Forming relationships
+  definition: Beginning and maintaining interactions with others for a short or long
+    period of time, in a contextually and socially appropriate manner, such as by
+    introducing oneself, finding and establishing friendships and professional relationships,
+    starting a relationship that may become permanent, romantic or intimate.
+d7201:
+  display: Terminating relationships
+  definition: Bringing interactions to a close in a contextually and socially appropriate
+    manner, such as by ending temporary relationships at the end of a visit, ending
+    long-term relationships with friends when moving to a new town or ending relationships
+    with work colleagues, professional colleagues and service providers, and ending
+    romantic or intimate relationships.
+d7202:
+  display: Regulating behaviours within interactions
+  definition: Regulating emotions and impulses, verbal aggression and physical aggression
+    in interactions with others, in a contextually and socially appropriate manner.
+d7203:
+  display: Interacting according to social rules
+  definition: Acting independently in social interactions and complying with social
+    conventions governing one's role, position or other social status in interactions
+    with others.
+d7204:
+  display: Maintaining social space
+  definition: Being aware of and maintaining a distance between oneself and others
+    that is contextually, socially and culturally appropriate.
+d730:
+  display: Relating with strangers
+  definition: Engaging in temporary contacts and links with strangers for specific
+    purposes, such as asking for directions or making a purchase. Engaging in temporary
+    contacts and links with strangers for specific purposes, such as when asking for
+    information, directions or making a purchase.
+d740:
+  display: Formal relationships
+  definition: Creating and maintaining specific relationships in formal settings,
+    such as with teachers, employers, professionals or service providers.
+d7400:
+  display: Relating with persons in authority
+  definition: Creating and maintaining formal relations with people in positions of
+    power of a higher rank or prestige relative to one's own position, such as an
+    employer.
+d7401:
+  display: Relating with subordinates
+  definition: Creating and maintaining formal relations with people in positions of
+    lower rank or prestige relative to one's own social position, such as an employee
+    or servant.
+d7402:
+  display: Relating with equals
+  definition: Creating and maintaining formal relations with people in the same position
+    of authority, rank or prestige relative to one's own social position.
+d750:
+  display: Informal social relationships
+  definition: Entering into relationships with others, such as casual relationships
+    with people living in the same community or residence, or with co-workers, students,
+    playmates, people with similar backgrounds or professions.
+d7500:
+  display: Informal relationships with friends
+  definition: Creating and maintaining friendship relationships that are characterized
+    by mutual esteem an common interests.
+d7501:
+  display: Informal relationships with neighbours
+  definition: Creating and maintaining informal relationships with people who live
+    in nearby dwellings or living areas.
+d7502:
+  display: Informal relationships with acquaintances
+  definition: Creating and maintaining informal relationships with people whom one
+    knows but who are not close friends.
+d7503:
+  display: Informal relationships with co-inhabitants
+  definition: Creating and maintaining informal relationships with people who are
+    co-inhabitants of a house or other dwelling, privately or publicly run, for any
+    purpose.
+d7504:
+  display: Informal relationships with peers
+  definition: Creating and maintaining informal relationships with people who share
+    the same age, interest or other common feature.
+d760:
+  display: Family relationships
+  definition: Creating and maintaining kinship relationships, such as those with members
+    of the nuclear family, extended family, foster and adopted family and step-relationships,
+    more distant relationships such as second cousins, or legal guardians.
+d7600:
+  display: Parent-child relationships
+  definition: Becomming and being a parent, both natural and adoptive, such as by
+    having a child and relating to it as a parent or creating and maintaining a parental
+    relationships with an adoptive child, and providing physical, intellectual and
+    emotional nurture to one's natural or adoptive child.
+d7601:
+  display: Child-parent relationships
+  definition: Creating and maintaining relationships with one's parent, such as a
+    young child obeying his or her parents or an adult child taking care of his or
+    her elderly parents.
+d7602:
+  display: Sibling relationships
+  definition: Creating and maintaining a brotherly or sisterly relationship with a
+    person who shares one or both parents by birth, adoption or marriage.
+d7603:
+  display: Extended family relationships
+  definition: Creating and maintaining a family relationship with members of one's
+    extended family, such as with cousins, aunts and uncles and grandparents.
+d770:
+  display: Intimate relationships
+  definition: Creating and maintaining close or romantic relationships between individuals,
+    such as husband and wife, lovers or sexual partners.
+d7700:
+  display: Romantic relationships
+  definition: Creating and maintaining a relationship based on emotional and physical
+    attraction, potentially leading to long-term intimate relationships.
+d7701:
+  display: Spousal relationships
+  definition: Creating and maintaining an intimate relationship of a legal nature
+    with another person, such as in a legal marriage, including becoming and being
+    a legally maried wife or husband or an unmarried spouse.
+d7702:
+  display: Sexual relationships
+  definition: Creating and maintaining a relationship of a sexual nature, with a spouse
+    or other partner.
+BlockL2-d81:
+  display: Major life areas
+  definition: This chapter is about carrying out the tasks and actions required to
+    engage in education, work and employment and to conduct economic transactions.
+d810:
+  display: Informal education
+  definition: Learning at home or in some other non-institutional setting, such as
+    learning crafts and other skills from parents or family members, or home schooling.
+d815:
+  display: Preschool education
+  definition: Learning at an initial level of organized instruction, designed primarily
+    to introduce a child to the school-type environment and prepare it for compulsory
+    education, such as by acquiring skills in a day-care or similar setting as preparation
+    for advancement to school.
+d820:
+  display: School education
+  definition: Gaining admission to school, education, engaging in all school-related
+    responsibilities and privileges, and learning the course material, subjects and
+    other curriculum requirements in a primary or secondary education programme, including
+    attending school regularly, working cooperatively with other students, taking
+    directions from teachers, organizing, studying and completing assigned tasks and
+    projects, and advancing to other stages of education.
+d825:
+  display: Vocational training
+  definition: Engaging in all activities of a vocational programme and learning the
+    curriculum material for preparation for employment in a trade, job or profession.
+d830:
+  display: Higher education
+  definition: Engaging in the activities of advanced educational programmes in universities,
+    colleges and professional schools and learning all aspects of the curriculum required
+    for degrees, diplomas, certificates and other accreditations, such as completing
+    a university bachelor's or master's course of study, medical school or other professional
+    school.
+d835:
+  display: Education life
+  definition: 'Engaging in aspects of life of education institutions, such as university
+    and school related associations, including: clubs, sports, related civic bodies
+    (e.g. school council), and other institutionally-organized initiatives that are
+    not part of the academic curriculum.'
+d840:
+  display: Apprenticeship (work preparation)
+  definition: Engaging in programmes related to preparation for employment, such as
+    performing the tasks required of an apprenticeship, internship, articling and
+    in-service training.
+d845:
+  display: Acquiring, keeping and terminating a job
+  definition: Seeking, finding and choosing employment, being hired and accepting
+    employment, maintaining and advancing through a job, trade, occupation or profession,
+    and leaving a job in an appropriate manner.
+d8450:
+  display: Seeking employment
+  definition: Locating and choosing a job, in a trade, profession or other form of
+    employment, and performing the required tasks to get hired, such as showing up
+    at the place of employment or participating in a job interview.
+d8451:
+  display: Maintaining a job
+  definition: Performing job-related tasks to keep an occupation, trade, profession
+    or other form of employment, and obtaining promotion and other advancements in
+    employment.
+d8452:
+  display: Terminating a job
+  definition: Leaving or quitting a job in the appropriate manner.
+d850:
+  display: Remunerative employment
+  definition: Engaging in all aspects of work, as an occupation, trade, profession
+    or other form of employment, for payment, as an employee, full or part time, or
+    self-employed, such as seeking employment and getting a job, doing the required
+    tasks of the job, attending work on time as required, supervising other workers
+    or being supervised, and performing required tasks alone or in groups.
+d8500:
+  display: Self employment
+  definition: Engaging in remunerative work sought or generated by the individual,
+    or contracted from others without a formal employment relationship, such as migratory
+    agricultural work, working as a free-lance writer or consultant, short-term contract
+    work, working as an artist or crafts person, owning and running a shop or other
+    business.
+d8501:
+  display: Part-time employment
+  definition: Engaging in all aspects of work for payment on a part-time basis, as
+    an employee, such as seeking employment and getting a job, doing the tasks required
+    of the job, attending work on time as required, supervising other workers or being
+    supervised, and performing required tasks alone or in groups.
+d8502:
+  display: Full-time employment
+  definition: Engaging in all aspects of work for payment on a full-time basis, as
+    an employee, such as seeking employment and getting a job, doing the required
+    tasks of the job, attending work on time as required, supervising other workers
+    or being supervised, and performing required tasks alone or in groups.
+d855:
+  display: Non-remunerative employment
+  definition: Engaging in all aspects of work in which pay is not provided, full-time
+    or part-time, including organized work activities, doing the required tasks of
+    the job, attending work on time as required, supervising other workers or being
+    supervised, and performing required tasks alone or in groups, such as volunteer
+    work, charity work, working for a community or religious group without remuneration,
+    working around the home without remuneration.
+d860:
+  display: Basic economic transactions
+  definition: Engaging in any form of simple economic transaction, such as using money
+    to purchase food or bartering, exchanging goods or services; or saving money.
+d865:
+  display: Complex economic transactions
+  definition: Engaging in any form of complex economic transaction that involves the
+    exchange of capital or property, and the creation of profit or economic value,
+    such as buying a business, factory, or equipment, maintaining a bank account,
+    or trading in commodities.
+d870:
+  display: Economic self-sufficiency
+  definition: Having command over economic resources, from private or public sources,
+    in order to ensure economical security for present and future needs.
+d8700:
+  display: Personal economic resources
+  definition: Having command over personal or private economic resources, in order
+    to ensure economical security for present and future needs.
+d8701:
+  display: Public economic entitlements
+  definition: Having command over public economic resources, in order to ensure economical
+    security for present and future needs.
+BlockL2-d91:
+  display: Community, social and civic life
+  definition: This chapter is about the actions and tasks required to engage in organized
+    social life outside the family, in community, social and civic areas of life.
+d910:
+  display: Community life
+  definition: Engaging in aspects of community social life, such as engaging in charitable
+    organizations, services clubs or professional social organizations.
+d9100:
+  display: Informal associations
+  definition: Engaging in social or community associations organized by people with
+    common interests, such as local social clubs or ethics groups.
+d9101:
+  display: Formal associations
+  definition: Engaging in professional or other exclusive social groups, such as associations
+    of lawyers, physicians, or academics.
+d9102:
+  display: Ceremonies
+  definition: Engaging in non-religious rites or social ceremonies, such as marriages,
+    funerals or initiation ceremonies.
+d920:
+  display: Recreation and leisure
+  definition: Engaging in any form of play, recreational or leisure activity, such
+    as informal or organized play and sports, programmes of physical fitness, relaxation,
+    amusement or diversion, going to art galleries, museums, cinemas or theatres;
+    engaging in crafts or hobbies, reading for enjoyment, playing musical instruments;
+    sightseeings, tourism and travelling for pleasure.
+d9200:
+  display: Play
+  definition: Engaging in games with rules or unstructured or unorganized games and
+    spontaneous recreation, such as playing chess or cards or children's play.
+d9201:
+  display: Sports
+  definition: Engaging in competitive and informal or formally organized games or
+    athletic events, performed alone or in a group, such as bowling, gymnastics or
+    soccer.
+d9202:
+  display: Arts and culture
+  definition: Engaging in, or appreciating, fine arts or cultural events, such as
+    going to the theatre, cinema, museum or art gallery, or acting in a play, reading,
+    being read to, dancing, singing or playing a musical instrument for enjoyment.
+d9203:
+  display: Crafts
+  definition: Engaging in handicrafts, such as pottery or knitting.
+d9204:
+  display: Hobbies
+  definition: Engaging in pastimes such as stamp collecting, coins or antiques.
+d9205:
+  display: Socializing
+  definition: Engaging in informal or casual gatherings with others, such as visiting
+    friends or relatives or meeting informally in public places.
+d930:
+  display: Religion and spirituality
+  definition: Engaging in religious or spiritual activities, organizations and practices
+    for self-fulfilment, finding meaning, religious or spiritual value and establishing
+    connection with a divine power, such as is involved in attending a church, temple,
+    mosque or synagogue, praying or chanting for a religious purpose, and spiritual
+    contemplation.
+d9300:
+  display: Organized religion
+  definition: Engaging in organized religious ceremonies, activities and events.
+d9301:
+  display: Spirituality
+  definition: Engaging in spiritual activities or events, outside of a organized religion.
+d940:
+  display: Human rights
+  definition: Enjoying all nationally and internationally recognized rights that are
+    accorded to people by virtue of their humanity alone, such as human rights as
+    recognized by the United Nations Universal Declaration of Human Rights (1948),
+    the United Nations Convention on the Rights of the Child (1989), the United Nations
+    Standard Rules for the Equalization of Opportunities for Persons with Disabilities
+    (1993), and the United Nations Convention on the Rights of Persons with Disabilities
+    (2006); the right to self-determination or autonomy; and the right to control
+    over one's destiny.
+d950:
+  display: Political life and citizenship
+  definition: Engaging in the social, political, governmental life of a citizen, having
+    legal status as a citizen and enjoying the rights, protections, privileges and
+    duties associated with that role, such as the right to vote and run for political
+    office, to form political associations, enjoying the rights and freedoms associated
+    with citizenship (e.g. the rights of freedom of speech, association, religion,
+    protections against unreasonable search and seizure, the right to counsel, to
+    a trial and other legal rights and protections against discrimination); having
+    legal standing as a citizen.

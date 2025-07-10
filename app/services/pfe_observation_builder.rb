@@ -13,7 +13,7 @@ class PfeObservationBuilder
     @qr = qr
     @questionnaire = questionnaire
     @link_id_map = extract_link_id_map(questionnaire)
-    @domain_code = extract_domain_code
+    # @domain_code_details = extract_domain_code
   end
 
   def build
@@ -49,7 +49,7 @@ class PfeObservationBuilder
     obs = FHIR::Observation.new(
       id: SecureRandom.uuid,
       status: 'final',
-      category: build_category_slice,
+      category: build_category_slice(item),
       code: { codgin: code },
       subject: @qr.subject,
       effectiveTimeDate: @qr.authored,
@@ -71,7 +71,7 @@ class PfeObservationBuilder
       obs = FHIR::Observation.new(
         id: SecureRandom.uuid,
         status: 'final',
-        category: build_category_slice,
+        category: build_category_slice(item),
         code: { coding: @link_id_map[item.linkId] || default_obs_coding(item) },
         subject: @qr.subject,
         effectiveDateTime: @qr.authored,
@@ -85,6 +85,7 @@ class PfeObservationBuilder
 
       if collection.code&.coding.blank?
         collection.code = FHIR::CodeableConcept.new(coding: @link_id_map[item.linkId] || default_obs_coding(item))
+        collection.category = build_category_slice(item)
       end
 
       collection.hasMember << { reference: "Observation/#{obs.id}" } unless collection.nil?
@@ -181,27 +182,54 @@ class PfeObservationBuilder
   end
 
   # Extract the PFEDomain code from the Questionnaire.code list
-  def extract_domain_code
-    domain_code = @questionnaire.code&.find do |coding|
-      coding.system == PFE_DOMAIN_CATEGORY_URL
-    end
 
-    domain_code&.code || 'unknown'
+  def extract_domain_code(_item)
+    # fix return to be removed
+    { code: 'unknown', display: 'Unknown' }
+    # TODO: WIP. code infered using openai semantic. pending reviewing generated map for accuracy
+    # candidate = item&.text.presence ||
+    #             @questionnaire.code&.first&.display.presence ||
+    #             @questionnaire.item&.first&.text
+
+    # PfeCategoryCodeDetector.detect_domain(candidate)
+  end
+
+  # Extract the PFE us-core category code
+  def extract_us_core_code(_item)
+    # TODO: same comment as in extract_domain_code
+    { code: 'functional-status', display: 'Functional Status' }
+    # code = (@link_id_map[item&.linkId].presence || default_obs_coding(item)).first
+
+    # candidate = code.present? ? (code.try(:display).presence || code[:display].presence || code['display']) : ''
+
+    # PfeCategoryCodeDetector.detect_us_core_category(candidate)
   end
 
   # Create the required category slices
-  def build_category_slice
-    [
+  def build_category_slice(item)
+    domain_code_details = extract_domain_code(item)
+    us_core_code_details = extract_us_core_code(item)
+
+    category = [
       FHIR::CodeableConcept.new(coding: [
-                                  { system: US_CORE_CATEGORY_URL, code: ' functional-status' }
+                                  { system: US_CORE_CATEGORY_URL, code: us_core_code_details[:code],
+                                    display: us_core_code_details[:display] }
                                 ]),
       FHIR::CodeableConcept.new(coding: [
                                   { system: SURVEY_CATEGORY_URL, code: 'survey' }
-                                ]),
-      FHIR::CodeableConcept.new(coding: [
-                                  { system: PFE_DOMAIN_CATEGORY_URL, code: @domain_code }
                                 ])
     ]
+
+    if domain_code_details[:code] != 'unknown'
+      category << FHIR::CodeableConcept.new(coding: [
+                                              {
+                                                system: PFE_DOMAIN_CATEGORY_URL,
+                                                code: domain_code_details[:code],
+                                                display: domain_code_details[:display]
+                                              }
+                                            ])
+    end
+    category
   end
 
   # Extract LOINC codes from Questionnaire items
