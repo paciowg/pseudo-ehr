@@ -52,16 +52,14 @@ class QuestionnaireResponse < Resource
 
   private
 
-  def parse_identifier(identifiers)
-    return [] if identifiers.blank?
+  def parse_identifier(identifier)
+    return if identifier.blank?
 
-    identifiers.map do |identifier|
-      {
-        system: identifier.system,
-        value: identifier.value,
-        type: identifier.type&.coding&.first&.display || identifier.type&.text
-      }
-    end
+    {
+      system: identifier.system,
+      value: identifier.value,
+      type: identifier.type&.coding&.first&.display || identifier.type&.text
+    }
   end
 
   def extract_questionnaire_title
