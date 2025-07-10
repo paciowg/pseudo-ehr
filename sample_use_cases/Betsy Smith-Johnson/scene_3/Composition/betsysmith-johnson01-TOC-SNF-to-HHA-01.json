@@ -4,11 +4,11 @@
   "language": "en-US",
   "text": {
     "status": "generated",
-    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p class=\"res-header-id\"><b>Generated Narrative: Composition betsysmith-johnson01-TOC-SNF-to-HHA-01</b></p><a name=\"betsysmith-johnson01-TOC-SNF-to-HHA-01\"> </a><a name=\"hcbetsysmith-johnson01-TOC-SNF-to-HHA-01\"> </a><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Language: en-US</p></div><p><b>identifier</b>: <code>http://id.example.org</code>/TOC-20250702-SNF-to-HHA</p><p><b>status</b>: Final</p><p><b>type</b>: <span title=\"Codes:{http://loinc.org 81218-0}\">Discharge summary - recommended C-CDA R2.1 sections</span></p><p><b>category</b>: <span title=\"Codes:{http://loinc.org 18761-7}\">Transfer Summary Note</span></p><p><b>date</b>: 2025-07-02 13:00:58-0400</p><p><b>author</b>: <a href=\"PractitionerRole-PractitionerRole-MD-HemaOnko.html\">PractitionerRole Internal Medicine Physician</a></p><p><b>title</b>: Betsy Smith Johnson Transitions of Care Document - SNF to Home Health</p><p><b>custodian</b>: <a href=\"Organization-org-Motor-City-Skilled-Nursing-Facility.html\">Organization Motor City Skilled Nursing Facility</a></p></div>"
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p class=\"res-header-id\"><b>Generated Narrative: Composition betsysmith-johnson01-TOC-SNF-to-HHA-01</b></p><a name=\"betsysmith-johnson01-TOC-SNF-to-HHA-01\"> </a><a name=\"hcbetsysmith-johnson01-TOC-SNF-to-HHA-01\"> </a><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Language: en-US</p></div><p><b>identifier</b>: <code>http://id.example.org</code>/TOC-20250701-SNF-to-HHA</p><p><b>status</b>: Final</p><p><b>type</b>: <span title=\"Codes:{http://loinc.org 81218-0}\">Discharge summary - recommended C-CDA R2.1 sections</span></p><p><b>category</b>: <span title=\"Codes:{http://loinc.org 18761-7}\">Transfer Summary Note</span></p><p><b>date</b>: 2025-07-01 13:00:58-0400</p><p><b>author</b>: <a href=\"PractitionerRole-PractitionerRole-MD-HemaOnko.html\">PractitionerRole Internal Medicine Physician</a></p><p><b>title</b>: Betsy Smith Johnson Transitions of Care Document - SNF to Home Health</p><p><b>custodian</b>: <a href=\"Organization-org-Motor-City-Skilled-Nursing-Facility.html\">Organization Motor City Skilled Nursing Facility</a></p></div>"
   },
   "identifier": {
     "system": "http://id.example.org",
-    "value": "TOC-20250702-SNF-to-HHA"
+    "value": "TOC-20250701-SNF-to-HHA"
   },
   "status": "final",
   "type": {
@@ -35,7 +35,7 @@
     "reference": "Patient/patient-betsysmith-johnson01",
     "display": "Betsy Smith-Johnson"
   },
-  "date": "2025-07-02T13:00:58.000-04:00",
+  "date": "2025-07-01T13:00:58.000-04:00",
   "author": [
     {
       "reference": "PractitionerRole/PractitionerRole-MD-HemaOnko"
@@ -90,7 +90,10 @@
       },
       "entry": [
         {
-          "reference": "List/betsysmith-johnson01-smp-med-list-3"
+          "reference": "List/bsj1-smp-medListNew-2"
+        },
+        {
+          "reference": "List/bsj1-smp-medListNew-3"
         }
       ]
     },

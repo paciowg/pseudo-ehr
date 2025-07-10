@@ -4,11 +4,11 @@
   "language": "en-US",
   "text": {
     "status": "generated",
-    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p class=\"res-header-id\"><b>Generated Narrative: Composition betsysmith-johnson01-TOC-Hosp-to-SNF-01</b></p><a name=\"betsysmith-johnson01-TOC-Hosp-to-SNF-01\"> </a><a name=\"hcbetsysmith-johnson01-TOC-Hosp-to-SNF-01\"> </a><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Language: en-US</p></div><p><b>identifier</b>: <code>http://id.example.org</code>/TOC-20250503-Hospital-to-SNF</p><p><b>status</b>: Final</p><p><b>type</b>: <span title=\"Codes:{http://loinc.org 81218-0}\">Discharge summary - recommended C-CDA R2.1 sections</span></p><p><b>category</b>: <span title=\"Codes:{http://loinc.org 18761-7}\">Transfer Summary Note</span></p><p><b>date</b>: 2025-05-04 12:30:58-0400</p><p><b>author</b>: <a href=\"PractitionerRole-PractitionerRole-Physician-PriyaSarkar.html\">PractitionerRole Emergency Medicine Physician</a></p><p><b>title</b>: Betsy Smith Johnson Transitions of Care Document - Hospital to SNF</p><p><b>custodian</b>: <a href=\"Organization-org-ED-Metro-Hospital.html\">Organization Metro Hospital Emergency Department</a></p></div>"
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\"><p class=\"res-header-id\"><b>Generated Narrative: Composition betsysmith-johnson01-TOC-Hosp-to-SNF-01</b></p><a name=\"betsysmith-johnson01-TOC-Hosp-to-SNF-01\"> </a><a name=\"hcbetsysmith-johnson01-TOC-Hosp-to-SNF-01\"> </a><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Language: en-US</p></div><p><b>identifier</b>: <code>http://id.example.org</code>/TOC-20250504-Hospital-to-SNF</p><p><b>status</b>: Final</p><p><b>type</b>: <span title=\"Codes:{http://loinc.org 81218-0}\">Discharge summary - recommended C-CDA R2.1 sections</span></p><p><b>category</b>: <span title=\"Codes:{http://loinc.org 18761-7}\">Transfer Summary Note</span></p><p><b>date</b>: 2025-05-04 12:30:58-0400</p><p><b>author</b>: <a href=\"PractitionerRole-PractitionerRole-Physician-PriyaSarkar.html\">PractitionerRole Emergency Medicine Physician</a></p><p><b>title</b>: Betsy Smith Johnson Transitions of Care Document - Hospital to SNF</p><p><b>custodian</b>: <a href=\"Organization-org-ED-Metro-Hospital.html\">Organization Metro Hospital Emergency Department</a></p></div>"
   },
   "identifier": {
     "system": "http://id.example.org",
-    "value": "TOC-20250503-Hospital-to-SNF"
+    "value": "TOC-20250504-Hospital-to-SNF"
   },
   "status": "final",
   "type": {
@@ -86,31 +86,10 @@
       },
       "entry": [
         {
-          "reference": "List/betsysmith-johnson01-smp-med-list-2B"
+          "reference": "List/bsj1-smp-medListNew-0"
         },
         {
-          "reference": "MedicationRequest/betsysmith-johnson01-smp-medrx-2-10",
-          "display": "atorvastatin 40 mg"
-        },
-        {
-          "reference": "MedicationRequest/betsysmith-johnson01-smp-medrx-2-14",
-          "display": "metformin 500 mg"
-        },
-        {
-          "reference": "MedicationRequest/betsysmith-johnson01-smp-medrx-2-18",
-          "display": "Ferrous Gluconate 325 mg"
-        },
-        {
-          "reference": "MedicationRequest/betsysmith-johnson01-smp-medrx-2-21",
-          "display": "Peg 3350 (PRN)"
-        },
-        {
-          "reference": "MedicationRequest/betsysmith-johnson01-smp-medrx-2B-25c",
-          "display": "acetaminophen 325 MG Oral Tablet (PRN)"
-        },
-        {
-          "reference": "MedicationRequest/betsysmith-johnson01-smp-medrx-2-23",
-          "display": "ondansetron 4 MG Oral Tablet"
+          "reference": "List/bsj1-smp-medListNew-1"
         }
       ]
     },
@@ -185,13 +164,19 @@
           "reference": "DiagnosticReport/betsysmith-johnson01-diagnosticReport-CTScan-01"
         },
         {
-          "reference": "DiagnosticReport/betsysmith-johnson01-diagnosticReport-CTScan-02"
-        },
-        {
           "reference": "DiagnosticReport/betsysmith-johnson01-diagnosticReport-MRI-01"
         },
         {
           "reference": "QuestionnaireResponse/betsysmith-johnson01-qr-strokescale-01"
+        },
+        {
+          "reference": "DiagnosticReport/betsysmith-johnson01-lipid-panel-01"
+        },
+        {
+          "reference": "DiagnosticReport/betsysmith-johnson01-diagnosticReport-coag-01"
+        },
+        {
+          "reference": "Observation/betsysmith-johnson01-Lab-Hemoglobin-02"
         }
       ]
     },
