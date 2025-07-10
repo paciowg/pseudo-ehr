@@ -56,9 +56,9 @@ class QuestionnaireResponse < Resource
     return if identifier.blank?
 
     {
-      system: identifier.system,
-      value: identifier.value,
-      type: identifier.type&.coding&.first&.display || identifier.type&.text
+      system: identifier.try(:system),
+      value: identifier.try(:value),
+      type: identifier.try(:type)&.coding&.first&.display || identifier.try(:type)&.text
     }
   end
 

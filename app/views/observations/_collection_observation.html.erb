@@ -9,12 +9,15 @@
         <p class="mt-1 mr-3 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Performer</b>: <%= observation_collection.performer%></p>
         <p class="mt-1 mr-3 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Organization</b>: <%= observation_collection.organization%></p>
         <p class="mt-1 mr-3 text-sm font-normal text-gray-500 dark:text-gray-400"><b>Event Location</b>: <%= observation_collection.location%></p>
-        <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
-          <b>Derived From</b>:
-          <% observation_collection.derived_from.each_with_index do |item, index| %>
-            <%= link_to item[:name], item[:path], class: 'link' %><%if index < observation_collection.derived_from.length - 1 %>, <% end %>
-          <% end %>
-        </p>
+
+        <% if observation_collection.derived_from.present? %>
+          <p class="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
+            <b>Derived From</b>:
+            <% observation_collection.derived_from.each_with_index do |item, index| %>
+              <%= link_to item[:name], item[:path], class: 'link' %><%if index < observation_collection.derived_from.length - 1 %>, <% end %>
+            <% end %>
+          </p>
+        <% end %>
       </div>
     </caption>
     <thead class="text-md text-white uppercase bg-gray-900">

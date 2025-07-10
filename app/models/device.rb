@@ -8,7 +8,13 @@ class Device < Resource
   def initialize(fhir_device, bundle_entries = [])
     @id = fhir_device.id
     @fhir_resource = fhir_device
-    @identifier = fhir_device.identifier&.map { |id| "#{id.system}: #{id.value}" }&.join(', ')
+    @identifier = if fhir_device.identifier.respond_to?(:map)
+                    fhir_device.identifier&.map do |id|
+                      "#{id.system}: #{id.value}"
+                    end&.join(', ')
+                  else
+                    '--'
+                  end
     @patient_id = @fhir_resource.patient&.reference&.split('/')&.last
     @patient = Patient.find(@patient_id)
     @definition = parse_provider_name(fhir_device.definition, bundle_entries)

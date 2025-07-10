@@ -111,7 +111,7 @@ class Observation < Resource
   end
 
   def retrieve_code
-    obs_code = @fhir_resource.code & coding&.first
+    obs_code = @fhir_resource.code&.coding&.first
     code = obs_code&.code
     display = obs_code&.display
 
