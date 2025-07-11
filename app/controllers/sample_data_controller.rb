@@ -178,7 +178,7 @@ class SampleDataController < ApplicationController
     use_case_dirs = Rails.root.glob('sample_use_cases/*').select { |f| File.directory?(f) }
 
     use_case_dirs.each do |use_case_dir|
-      use_case_name = File.basename(use_case_dir)
+      use_case_name = File.basename(use_case_dir).to_s.humanize.titleize
       use_cases[use_case_name] = {}
 
       # Get all scene directories

@@ -1,6 +1,11 @@
 {
   "resourceType": "DiagnosticReport",
   "id": "betsysmith-johnson01-diagnosticReport-CTScan-02",
+  "meta": {
+    "versionId": "4",
+    "lastUpdated": "2025-06-18T23:53:02.000+00:00",
+    "source": "#twOksC6VkHxOYHbz"
+  },
   "text": {
     "status": "generated",
     "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: DiagnosticReport betsysmith-johnson01-diagnosticReport-CTScan-02</b></p><a name=\"betsysmith-johnson01-diagnosticReport-CTScan-02\"> </a><a name=\"hcbetsysmith-johnson01-diagnosticReport-CTScan-02\"> </a><h2><span title=\"Codes:{http://loinc.org 68604-8}\">Radiology Diagnostic study note</span> (<span title=\"Codes:{http://loinc.org LP29684-5}\">Radiology</span>) </h2><table class=\"grid\"><tr><td>Subject</td><td>Smith-Johnson, Betsy Female, DoB: 1950-11-15 ( http://hl7.org/fhir/sid/us-medicare#United States Medicare Number#1PA3D58WH16)</td></tr><tr><td>Reported</td><td>2025-05-03 15:15:30+0000</td></tr><tr><td>Performer</td><td> <a href=\"PractitionerRole-PractitionerRole-Radiologist-PaulZawawi.html\">Paul Zawawi, MD</a></td></tr></table><p><b>Report Details</b></p></div>"

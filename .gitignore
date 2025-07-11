@@ -44,3 +44,6 @@ app/assets/builds
 
 /config/credentials/production.key
 .env
+
+# Ignore data
+data
