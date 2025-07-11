@@ -46,3 +46,4 @@ app/assets/builds
 
 # Ignore additional credential in .env
 .env
+data
