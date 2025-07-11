@@ -1,0 +1,21 @@
+{
+  "resourceType": "Location",
+  "id": "org-Loc-SNF-Happy-Nursing-Facility",
+  "meta": {
+    "versionId": "11",
+    "lastUpdated": "2025-01-08T01:37:39.000+00:00",
+    "source": "#8dHRuCvpXGWRB4Dq"
+  },
+  "status": "active",
+  "name": "Happy Nursing Facility",
+  "address": {
+    "text": "32935 1st Ave S, Federal Way, WA 98003",
+    "line": [
+      "32935 1st Ave S"
+    ],
+    "city": "Federal Way",
+    "state": "WA",
+    "postalCode": "98003",
+    "country": "US"
+  }
+}
