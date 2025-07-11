@@ -118,7 +118,7 @@ module ResourceFetchHelper
     end
   end
 
-  def fetch_single_patient_record(patient_id, max_results = 500, since_time = nil)
+  def fetch_single_patient_record(patient_id, max_results = 2000, since_time = nil)
     search_params = {
       _sort: '-_lastUpdated', _maxresults: max_results, _count: max_results / 2,
       _include: '*', _revinclude: '*', '_include:iterate': '*'

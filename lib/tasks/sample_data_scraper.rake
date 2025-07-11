@@ -26,12 +26,8 @@ namespace :sample_data do
       puts 'Successfully parsed the IG page'
 
       # Extract the use case title from the page title
-      page_title = doc.css('title').text.strip
-      use_case_title = if page_title.include?(' - ')
-                         page_title.split(' - ')[0].strip
-                       else
-                         'Betsy Smith-Johnson - Stroke Use Case'
-                       end
+      page_title = doc.css('title').text.strip.presence || 'Betsy Smith-Johnson - Stroke Use Case'
+      use_case_title = page_title.parameterize.underscore
       puts "Use case title: #{use_case_title}"
 
       # Create directory for this use case

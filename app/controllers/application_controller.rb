@@ -97,9 +97,7 @@ class ApplicationController < ActionController::Base
   end
 
   def cached_resources_type(type)
-    # Use a hash to store cached resources by type
-    @cached_resources ||= {}
-    @cached_resources[type] ||= grouped_current_patient_record[type] || []
+    grouped_current_patient_record[type] || []
   end
 
   def find_cached_resource(resource_type, resource_id)

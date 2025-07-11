@@ -3,7 +3,7 @@ class CareTeamParticipant < Resource
   attr_reader :id, :name, :role, :organization, :contact, :fhir_resource
 
   def initialize(name, role, fhir_resource, bundle_entries = [])
-    @id = fhir_resource.id
+    @id = fhir_resource.try(:id) || SecureRandom.hex(16)
     @fhir_resource = fhir_resource
     @name = name || retrieve_provider_name
     @role = role || retrieve_provider_role
