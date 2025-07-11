@@ -94,7 +94,7 @@ RSpec.describe ResourceFetchHelper, type: :helper do
 
   describe '#fetch_single_patient_record' do
     it 'fetches patient records and handles pagination' do
-      params = '_count=250&_include=*&_include:iterate=*&_maxresults=500&_revinclude=*&_sort=-_lastUpdated'
+      params = '_count=1000&_include=*&_include:iterate=*&_maxresults=2000&_revinclude=*&_sort=-_lastUpdated'
       url = "#{fhir_server.base_url}/Patient/123/$everything?#{params}"
       # Stub the FHIR server fetch patient record response
       stub_request(:get, url)
