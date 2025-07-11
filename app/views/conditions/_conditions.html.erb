@@ -17,7 +17,7 @@
               </thead>
               <tbody data-accordion="table-column">
                 <% @conditions.each do |condition| %>
-                  <% identifier = condition.id.downcase %>
+                  <% identifier = condition.id.downcase.gsub(/[[:punct:]\s]/, '') %>
                   <% type = condition.type.gsub('-', '_').camelize(:lower) %>
                   <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
                     id="table-column-header-<%= identifier %>" data-accordion-target="#table-column-body-<%= identifier %>"
