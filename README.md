@@ -210,7 +210,7 @@ This application uses RSpec for testing. You can find tests in the `spec/` folde
   Example:
 
   ```bash
-  bundle exec rake fhir:push[http://hapi.fhir.org/baseR4,sample_use_cases/Betsy\ Smith-Johnson]
+  bundle exec rake fhir:push[http://hapi.fhir.org/baseR4,sample_use_cases/betsy_smith_johnson_stroke_use_case_pacio_sample_data_depot_v0_1_0]
   ```
 
   The task analyzes resource dependencies to ensure referenced resources are pushed before the resources that reference them. It generates a detailed log report in the project's `log/fhir_push_logs` directory that includes information about successful uploads and any errors encountered, including error messages extracted from FHIR OperationOutcome resources.

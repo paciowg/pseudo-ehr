@@ -3,7 +3,7 @@ class Observation < Resource
   attr_reader :id, :status, :category, :domain, :code, :effective_date_time,
               :performer, :derived_from, :measurement, :measurement_interpretation,
               :location, :organization, :members, :fhir_resource, :patient_id,
-              :patient
+              :patient, :reference_range, :body_site, :local_mentod, :device, :notes
 
   def initialize(fhir_observation, bundle_entries = [])
     @fhir_resource = fhir_observation
@@ -19,12 +19,19 @@ class Observation < Resource
                    parse_provider_name(performer, bundle_entries)
                  end&.join(',').presence || '--'
     @organization = retrieve_org(fhir_observation.performer, bundle_entries)
-    @derived_from = retrieve_derived_from(fhir_observation.derivedFrom, fhir_observation.subject)
+    @derived_from = retrieve_derived_from(fhir_observation.derivedFrom)
     value_quantity = fhir_observation.valueQuantity.presence || fhir_observation.valueCodeableConcept
     @measurement = retrieve_mesearement(value_quantity)
     @measurement_interpretation = fhir_observation.try(:interpretation)&.map(&:text)&.join(', ').presence || '--'
     @location = retrieve_location(bundle_entries)
     @members = retrieve_members(fhir_observation.hasMember, bundle_entries)
+    @body_site = retrieve_body_site
+    @local_method = retrieve_method
+    @device = @fhir_resource.device.try(:display).presence || '--'
+    # TODO: parse ref range and update app/views/shared/_observation_modal.html.erb
+    @reference_range = '--'
+    # TODO: parse note and update app/views/shared/_observation_modal.html.erb
+    @notes = []
 
     self.class.update(self)
   end
@@ -35,6 +42,10 @@ class Observation < Resource
 
   def effective
     parse_date(@effective_date_time)
+  end
+
+  def issued
+    parse_date(@fhir_resource.issued)
   end
 
   def self.collections(observations)
@@ -100,11 +111,27 @@ class Observation < Resource
   end
 
   def retrieve_code
-    obs_code = @fhir_resource.code.coding.first
-    code = obs_code.code
-    display = obs_code.display
+    obs_code = @fhir_resource.code&.coding&.first
+    code = obs_code&.code
+    display = obs_code&.display
 
-    display.present? ? "#{display} (#{code})" : code
+    display.present? ? "#{display} (#{code})" : (code.presence || '--')
+  end
+
+  def retrieve_body_site
+    site = @fhir_resource.bodySite&.coding&.first
+    code = site&.code
+    display = site&.display
+
+    display.present? ? "#{display} (#{code})" : (code.presence || '--')
+  end
+
+  def retrieve_method
+    meth = @fhir_resource.try(:local_method).try(:coding).try(:first)
+    code = meth.try(:code)
+    display = meth.try(:display)
+
+    display.present? ? "#{display} (#{code})" : (code.presence || '--')
   end
 
   def retrieve_org(performer, bundle_entries)
@@ -128,12 +155,13 @@ class Observation < Resource
     ref_resource&.name || 'Not provided'
   end
 
-  def retrieve_derived_from(fhir_derived_from, patient_ref)
-    patient_id = patient_ref.reference.split('/').last
-    fhir_derived_from.map do |elmt|
+  def retrieve_derived_from(fhir_derived_from)
+    return [] if @patient_id.blank? || fhir_derived_from.blank?
+
+    fhir_derived_from&.map do |elmt|
       resource_type, id = elmt.reference.split('/')
       name = "#{resource_type}-#{id} "
-      path = "/patients/#{patient_id}/#{resource_type.downcase}s/#{id}"
+      path = "/patients/#{@patient_id}/#{resource_type.downcase}s/#{id}"
       { name:, path: }
     end
   end

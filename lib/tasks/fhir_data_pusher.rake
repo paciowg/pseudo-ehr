@@ -72,7 +72,8 @@ namespace :fhir do
     end
 
     # Perform topological sort to determine the order of resources to push
-    sorted_resources = topological_sort(resources.keys, dependencies)
+    # (in some cases, for some reason topology function takes forever to complete, hence commented for now )
+    sorted_resources = resources.keys # topological_sort(resources.keys, dependencies)
 
     if sorted_resources.nil?
       log_message('Error: Circular dependencies detected. Cannot determine a valid order to push resources.', log_file)

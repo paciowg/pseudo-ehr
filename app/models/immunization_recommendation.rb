@@ -10,7 +10,13 @@ class ImmunizationRecommendation < Resource
     @patient = Patient.find(@patient_id)
     @date = parse_date(fhir_immunization_recommendation.date)
     @authority = parse_provider_name(fhir_immunization_recommendation.authority, bundle_entries)
-    @identifier = fhir_immunization_recommendation.identifier&.map { |id| "#{id.system}: #{id.value}" }&.join(', ')
+    @identifier = if fhir_immunization_recommendation.identifier.respond_to?(:map)
+                    fhir_immunization_recommendation.identifier&.map do |id|
+                      "#{id.system}: #{id.value}"
+                    end&.join(', ')
+                  else
+                    '--'
+                  end
     @recommendation = get_recommendations(fhir_immunization_recommendation.recommendation, bundle_entries)
 
     self.class.update(self)
