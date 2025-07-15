@@ -162,6 +162,27 @@
           "reference": "Condition/betsysmith-johnson01-Condition-ComplexRegime-01"
         }
       ]
+    },
+    {
+      "title": "Betsy Smith Johnson Discharge Summary and Additional Instructions",
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "18842-5",
+            "display": "Discharge summary"
+          }
+        ]
+      },
+      "text": {
+        "status": "additional",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Discharge Summary for Betsy Smith Johnson</div>"
+      },
+      "entry": [
+        {
+          "reference": "DocumentReference/BSJ1-documentReference-SNF-dischargeSummary-01"
+        }
+      ]
     }
   ]
 }
