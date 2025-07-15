@@ -1,5 +1,5 @@
 OpenAI.configure do |config|
-  config.access_token = ENV.fetch('OPENAI_ACCESS_TOKEN')
+  config.access_token = 'add_your_key' # ENV.fetch('OPENAI_ACCESS_TOKEN')
   # Optional, used for admin endpoints, created here: https://platform.openai.com/settings/organization/admin-keys
   # config.admin_token = ENV.fetch('OPENAI_ADMIN_TOKEN')
   # Optional
