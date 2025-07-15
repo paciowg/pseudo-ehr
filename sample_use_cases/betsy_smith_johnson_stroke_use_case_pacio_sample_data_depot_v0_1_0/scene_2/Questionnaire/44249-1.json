@@ -492,6 +492,13 @@
     },
     {
       "linkId": "14372",
+      "code": [
+        {
+          "system": "http://loinc.org",
+          "code": "44261-6",
+          "display": "Patient health questionnaire 9 item total score"
+        }
+      ],
       "text": "Patient health questionnaire 9 item total score",
       "type": "decimal"
     }
