@@ -30,7 +30,6 @@ A Rails 7 application styled with Tailwind CSS that interacts with a FHIR server
 * **Server Authentication**: Handles FHIR servers that require [SMART-on-FHIR App Launch for Symmetric Client Auth](https://build.fhir.org/ig/HL7/smart-app-launch/example-app-launch-symmetric-auth.html#step-2-launch).
 * **Sample Data Management**: Browse and view sample FHIR resources organized by use case and scene, and load them into FHIR servers.
 * **QuestionnaireResponse Transformation**: Convert QuestionnaireResponse into PFE Observation Bundles.
-* **AI-Assisted PFE Domain Detection**: Uses OpenAI semantic matching to determine correct PFE domain codes when transforming QuestionnaireResponse to PFE Observation.
 
 ## Supported FHIR Resources
 
@@ -67,7 +66,6 @@ All searches are performed using the `_include=*` parameter to retrieve and incl
 * **FHIR Integration**: For interacting with FHIR servers, focusing on patient data.
 * **PostgreSQL**: The relational database used.
 * **RSpec**: Testing framework for unit and feature tests.
-* **OpenAI API**: Semantic matching of PFE domain descriptions to standardized domain codes. Used in the conversion of QuestionnaireResponse to PFE Observation.
 
 ## Installation
 
@@ -99,15 +97,6 @@ Make sure to start PostgreSQL before running the server.
    > > `rails db:seed` will persist the default servers commonly used in PACIO
    > > tracks and this app has been tested against
 
-4. **Environment Setup**
-
-   To enable semantic matching with OpenAI, add your OpenAI API key to the `.env` file:
-
-   ```bash
-   OPENAI_ACCESS_TOKEN=your_openai_api_key_here
-   ```
-
-   Without this key, PFE domain detection will fall back to a default `unknown` code.
 
 ## Usage
 
