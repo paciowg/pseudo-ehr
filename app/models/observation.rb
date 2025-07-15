@@ -20,8 +20,7 @@ class Observation < Resource
                  end&.join(',').presence || '--'
     @organization = retrieve_org(fhir_observation.performer, bundle_entries)
     @derived_from = retrieve_derived_from(fhir_observation.derivedFrom)
-    value_quantity = fhir_observation.valueQuantity.presence || fhir_observation.valueCodeableConcept
-    @measurement = retrieve_mesearement(value_quantity)
+    @measurement = retrieve_mesearement
     @measurement_interpretation = fhir_observation.try(:interpretation)&.map(&:text)&.join(', ').presence || '--'
     @location = retrieve_location(bundle_entries)
     @members = retrieve_members(fhir_observation.hasMember, bundle_entries)
@@ -166,8 +165,13 @@ class Observation < Resource
     end
   end
 
-  def retrieve_mesearement(value_quantity)
-    if value_quantity.respond_to?(:coding)
+  def retrieve_mesearement
+    value_quantity = @fhir_resource.valueQuantity.presence || @fhir_resource.valueCodeableConcept
+    if @fhir_resource.valueString.present?
+      @fhir_resource.valueString
+    elsif @fhir_resource.valueDateTime.present?
+      parse_date(@fhir_resource.valueDateTime)
+    elsif value_quantity.respond_to?(:coding)
       qty_coding = value_quantity.coding.first
       code = qty_coding&.code
       display = qty_coding&.display
