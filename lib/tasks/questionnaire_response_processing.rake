@@ -20,11 +20,14 @@ namespace :fhir do
     failure_log = []
 
     responses.each do |qr|
+      file_path = output_dir.join("bundle-#{qr.id}.json")
+      next if File.exist?(file_path)
+
       processor = QuestionnaireResponseProcessor.new(qr.to_hash, fhir_server: fhir_server)
       result = processor.call(submit: false)
 
       if result.success? && result.bundle
-        File.write(output_dir.join("bundle-#{qr.id}.json"), result.bundle.to_json)
+        File.write(file_path, result.bundle.to_json)
         success_count += 1
       else
         failure_log << { id: qr.id, error: result.error.as_json }

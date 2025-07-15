@@ -98,8 +98,8 @@
                         <ul class="list-disc list-inside">
                           <% report.results.each do |result| %>
                             <li>
-                              <%= result.code %>: <%= result.value %>
-                              <% if result.reference_range.present? %>
+                              <%= result.code %>: <%= result.measurement %>
+                              <% if result.reference_range.present? && result.reference_range != '--'  %>
                                 (Ref: <%= result.reference_range %>)
                               <% end %>
                             </li>

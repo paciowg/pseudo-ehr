@@ -1,0 +1,464 @@
+
+'14363':
+  pfe_domain_icf_code:
+    - b1301
+  us_core_category: cognitive-status
+'14364':
+  pfe_domain_icf_code:
+    - b126
+    - b152
+  us_core_category: cognitive-status
+'14365':
+  pfe_domain_icf_code:
+    - b134
+  us_core_category: cognitive-status
+'14366':
+  pfe_domain_icf_code:
+    - b1300
+  us_core_category: cognitive-status
+'14367':
+  pfe_domain_icf_code:
+    - b1302
+  us_core_category: cognitive-status
+'14368':
+  pfe_domain_icf_code:
+    - b1800
+    - b126
+  us_core_category: cognitive-status
+'14369':
+  pfe_domain_icf_code:
+    - b140
+  us_core_category: cognitive-status
+'14370':
+  pfe_domain_icf_code:
+    - b16710
+  us_core_category: cognitive-status
+44253-3:
+  pfe_domain_icf_code:
+    - b16710
+  us_core_category: cognitive-status
+44252-5:
+  pfe_domain_icf_code:
+    - b140
+  us_core_category: cognitive-status
+44258-2:
+  pfe_domain_icf_code:
+    - b1800
+    - b126
+  us_core_category: cognitive-status
+44251-7:
+  pfe_domain_icf_code:
+    - b1302
+  us_core_category: cognitive-status
+44254-1:
+  pfe_domain_icf_code:
+    - b1300
+  us_core_category: cognitive-status
+44259-0:
+  pfe_domain_icf_code:
+    - b134
+  us_core_category: cognitive-status
+44255-8:
+  pfe_domain_icf_code:
+    - b126
+    - b152
+  us_core_category: cognitive-status
+44250-9:
+  pfe_domain_icf_code:
+    - b1301
+  us_core_category: cognitive-status
+'14371':
+  pfe_domain_icf_code:
+    - b152
+    - b160
+  us_core_category: cognitive-status
+'44260-8':
+  pfe_domain_icf_code:
+    - b152
+    - b160
+  us_core_category: cognitive-status
+'14372':
+  pfe_domain_icf_code:
+    - BlockL2-b11
+  us_core_category: cognitive-status
+'97479':
+    pfe_domain_icf_code:
+      - b1440
+    us_core_category: cognitive-status
+'97481':
+  pfe_domain_icf_code:
+  - b1140
+  us_core_category: cognitive-status
+'97482':
+  pfe_domain_icf_code:
+    - b1140
+  us_core_category: cognitive-status
+'97483':
+  pfe_domain_icf_code:
+    - b1140
+  us_core_category: cognitive-status
+'97485':
+  pfe_domain_icf_code:
+    - b1440
+  us_core_category: cognitive-status
+'97486':
+  pfe_domain_icf_code:
+    - b1440
+  us_core_category: cognitive-status
+'97487':
+  pfe_domain_icf_code:
+    - b1440
+  us_core_category: cognitive-status
+'97488':
+  pfe_domain_icf_code:
+    - BlockL2-b11
+  us_core_category: cognitive-status
+'52731-7':
+    pfe_domain_icf_code:
+      - b1440
+    us_core_category: cognitive-status
+'52732-5':
+  pfe_domain_icf_code:
+  - b1140
+  us_core_category: cognitive-status
+'52733-3':
+  pfe_domain_icf_code:
+    - b1140
+  us_core_category: cognitive-status
+'54609-3':
+  pfe_domain_icf_code:
+    - b1140
+  us_core_category: cognitive-status
+'52735-8':
+  pfe_domain_icf_code:
+    - b1440
+  us_core_category: cognitive-status
+'52736-6':
+  pfe_domain_icf_code:
+    - b1440
+  us_core_category: cognitive-status
+'52737-4':
+  pfe_domain_icf_code:
+    - b1440
+  us_core_category: cognitive-status
+'54614-3':
+  pfe_domain_icf_code:
+    - BlockL2-b11
+  us_core_category: cognitive-status
+'57492':
+  pfe_domain_icf_code:
+    - d640
+    - d750
+  us_core_category: cognitive-status
+'44261-6':
+  pfe_domain_icf_code:
+    - b152
+  us_core_category: cognitive-status
+'44249-1':
+  pfe_domain_icf_code:
+    - b152
+  us_core_category: cognitive-status
+'52491-8':
+  pfe_domain_icf_code:
+    - b144
+  us_core_category: cognitive-status
+'90473-0':
+  pfe_domain_icf_code:
+    - b144
+  us_core_category: functional-status
+70184-7:
+  pfe_domain_icf_code:
+  - b1100
+  us_core_category: cognitive-status
+70185-4:
+  pfe_domain_icf_code:
+    - b1140
+    - b11420
+  us_core_category: cognitive-status
+70186-2:
+  pfe_domain_icf_code:
+    - b147
+  us_core_category: cognitive-status
+70188-8:
+  pfe_domain_icf_code:
+    - b2100
+  us_core_category: functional-status
+70187-0:
+  pfe_domain_icf_code:
+    - b210
+    - b215
+  us_core_category: functional-status
+70189-6:
+  pfe_domain_icf_code:
+    - b7300
+    - b7350
+  us_core_category: functional-status
+70190-4:
+  pfe_domain_icf_code:
+    - b7301
+    - b7351
+  us_core_category: functional-status
+70191-2:
+  pfe_domain_icf_code:
+    - b7301
+    - b7351
+  us_core_category: functional-status
+70192-0:
+  pfe_domain_icf_code:
+  - b760
+  us_core_category: functional-status
+70193-8:
+  pfe_domain_icf_code:
+  - b2703
+  us_core_category: functional-status
+70194-6:
+  pfe_domain_icf_code:
+    - d310
+    - d315
+    - d345
+  us_core_category: cognitive-status
+70195-3:
+  pfe_domain_icf_code:
+    - d330
+  us_core_category: cognitive-status
+70196-1:
+  pfe_domain_icf_code:
+    -
+  us_core_category: cognitive-status
+72089-6:
+  pfe_domain_icf_code:
+    -
+  us_core_category: functional-status
+95019-6:
+  pfe_domain_icf_code:
+  - d550
+  us_core_category: functional-status
+95018-8:
+  pfe_domain_icf_code:
+  - d5201
+  us_core_category: functional-status
+95017-0:
+  pfe_domain_icf_code:
+  - d530
+  us_core_category: functional-status
+95015-4:
+  pfe_domain_icf_code:
+  - d510
+  us_core_category: functional-status
+95014-7:
+  pfe_domain_icf_code:
+  - d5400
+  - d5401
+  us_core_category: functional-status
+95013-9:
+  pfe_domain_icf_code:
+  - d5400
+  - d5401
+  us_core_category: functional-status
+95012-1:
+  pfe_domain_icf_code:
+  - d5402
+  - d5403
+  us_core_category: functional-status
+45606-1:
+  pfe_domain_icf_code:
+  - d520
+  us_core_category: functional-status
+89398-2:
+  pfe_domain_icf_code:
+  - d4107
+  us_core_category: functional-status
+89394-1:
+  pfe_domain_icf_code:
+  - d410
+  us_core_category: functional-status
+85927-2:
+  pfe_domain_icf_code:
+  - d410
+  us_core_category: functional-status
+89392-5:
+  pfe_domain_icf_code:
+  - d410
+  us_core_category: functional-status
+89414-7:
+  pfe_domain_icf_code:
+  - d420
+  us_core_category: functional-status
+89390-9:
+  pfe_domain_icf_code:
+  - d420
+  us_core_category: functional-status
+101325-9:
+  pfe_domain_icf_code:
+  - d420
+  us_core_category: functional-status
+89412-1:
+  pfe_domain_icf_code:
+  - d420
+  us_core_category: functional-status
+89385-9:
+  pfe_domain_icf_code:
+  - d4500
+  us_core_category: functional-status
+89381-8:
+  pfe_domain_icf_code:
+  - d450
+  us_core_category: functional-status
+89383-4:
+  pfe_domain_icf_code:
+  - d4501
+  us_core_category: functional-status
+89379-2:
+  pfe_domain_icf_code:
+  - d4502
+  us_core_category: functional-status
+89420-4:
+  pfe_domain_icf_code:
+  - d451
+  us_core_category: functional-status
+89416-2:
+  pfe_domain_icf_code:
+  - d451
+  us_core_category: functional-status
+89418-8:
+  pfe_domain_icf_code:
+  - d451
+  us_core_category: functional-status
+89402-2:
+  pfe_domain_icf_code:
+  - d4400
+  us_core_category: functional-status
+95738-1:
+  pfe_domain_icf_code:
+  - d465
+  us_core_category: functional-status
+86677-2:
+  pfe_domain_icf_code:
+  - b5105
+  us_core_category: cognitive-status
+95737-3:
+  pfe_domain_icf_code:
+  - d330
+  us_core_category: cognitive-status
+54602-8:
+  pfe_domain_icf_code:
+  - d310
+  us_core_category: cognitive-status
+mbi:
+  pfe_domain_icf_code:
+    - d138
+  us_core_category: functional-status
+first_name:
+  pfe_domain_icf_code:
+    - d138
+  us_core_category: functional-status
+last_name:
+  pfe_domain_icf_code:
+  - d138
+  us_core_category: functional-status
+date_of_birth:
+  pfe_domain_icf_code:
+  - d138
+  us_core_category: functional-status
+pcg_first_name:
+  pfe_domain_icf_code:
+  - d138
+  us_core_category: functional-status
+pcg_last_name:
+  pfe_domain_icf_code:
+  - d138
+  us_core_category: functional-status
+assessment_date:
+  pfe_domain_icf_code:
+  - d138
+  us_core_category: functional-status
+ask_more:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+enough_time:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+stressed:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+embarrassed:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+angry:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+affects_relationships:
+  pfe_domain_icf_code:
+  - d760
+  - d750
+  us_core_category: cognitive-status
+afraid_future:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+dependent:
+  pfe_domain_icf_code:
+  - d660
+  us_core_category: cognitive-status
+strained:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+health_suffered:
+  pfe_domain_icf_code:
+  - b1300
+  us_core_category: cognitive-status
+privacy:
+  pfe_domain_icf_code:
+  - d760
+  us_core_category: cognitive-status
+social_life:
+  pfe_domain_icf_code:
+  - d750
+  us_core_category: cognitive-status
+uncomfortable:
+  pfe_domain_icf_code:
+  - d750
+  us_core_category: cognitive-status
+expectation:
+  pfe_domain_icf_code:
+  - d660
+  us_core_category: cognitive-status
+enough_money:
+  pfe_domain_icf_code:
+  - e165
+  us_core_category: cognitive-status
+much_longer:
+  pfe_domain_icf_code:
+  - b1301
+  us_core_category: cognitive-status
+lost_control:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+leave_care:
+  pfe_domain_icf_code:
+  - b1301
+  us_core_category: cognitive-status
+uncertain:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+do_more:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+better_job:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+overall_burden:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+

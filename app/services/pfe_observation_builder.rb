@@ -13,7 +13,6 @@ class PfeObservationBuilder
     @qr = qr
     @questionnaire = questionnaire
     @link_id_map = extract_link_id_map(questionnaire)
-    @domain_code = extract_domain_code
   end
 
   def build
@@ -29,37 +28,36 @@ class PfeObservationBuilder
   def extract_observations(items, collection)
     obs = items.flat_map do |item|
       if item.item.present?
-        new_collection = build_collection(item)
-        collection.hasMember << { reference: "Observation/#{new_collection.id}" }
-        extract_observations(item.item, new_collection)
+        extract_observations(item.item, collection)
       else
         build_observations(item, collection)
       end
     end.compact
+
+    collection.category = obs.flat_map(&:category).uniq if collection.category.flat_map(&:coding).any? do |c|
+      c.code == 'unknown'
+    end
+    collection.category.reject! { |cat| cat.coding&.any? { |c| c.code == 'unknown' } }
+
     obs << collection
+    obs.uniq
   end
 
   # Build collection for grouping answer observations
-  def build_collection(item = nil, collection = nil)
-    code = if item.nil?
-             @questionnaire.code.presence || []
-           else
-             @link_id_map[item.linkId].presence || default_obs_coding(item)
-           end
+  def build_collection
     obs = FHIR::Observation.new(
-      id: SecureRandom.uuid,
+      id: "#{@qr.id}-#{SecureRandom.hex(4)}", # SecureRandom.uuid
       status: 'final',
-      category: build_category_slice,
-      code: { codgin: code },
+      code: { coding: @questionnaire.code },
+      category: PfeCategoryCodeExtractor.extract(@questionnaire.code.first&.code),
       subject: @qr.subject,
-      effectiveTimeDate: @qr.authored,
+      effectiveDateTime: @qr.authored,
       performer: Array(@qr.author).compact,
       derivedFrom: [{ reference: "QuestionnaireResponse/#{@qr.id}" }],
       meta: { profile: [PFE_COLLECTION_PROFILE] }
     )
 
     add_extensions(obs)
-    collection.hasMember << { reference: "Observation/#{obs.id}" } unless collection.nil?
     obs
   end
 
@@ -67,12 +65,13 @@ class PfeObservationBuilder
   def build_observations(item, collection)
     return if item&.answer.blank?
 
+    item_link_id = item.linkId.to_s.delete_prefix('/')
     item.answer.map do |answer|
       obs = FHIR::Observation.new(
-        id: SecureRandom.uuid,
+        id: "#{@qr.id}-#{SecureRandom.hex(4)}", # SecureRandom.uuid,
         status: 'final',
-        category: build_category_slice,
-        code: { coding: @link_id_map[item.linkId] || default_obs_coding(item) },
+        category: PfeCategoryCodeExtractor.extract(item_link_id),
+        code: { coding: @link_id_map[item_link_id] || default_obs_coding(item) },
         subject: @qr.subject,
         effectiveDateTime: @qr.authored,
         performer: Array(@qr.author).compact,
@@ -80,14 +79,14 @@ class PfeObservationBuilder
         meta: { profile: [PFE_SINGLE_OBS_PROFILE] }
       )
 
-      set_answer_value(obs, answer, item.linkId)
+      set_answer_value(obs, answer, item_link_id)
       add_extensions(obs)
 
       if collection.code&.coding.blank?
-        collection.code = FHIR::CodeableConcept.new(coding: @link_id_map[item.linkId] || default_obs_coding(item))
+        collection.code = FHIR::CodeableConcept.new(coding: @link_id_map[item_link_id] || default_obs_coding(item))
       end
 
-      collection.hasMember << { reference: "Observation/#{obs.id}" } unless collection.nil?
+      collection.hasMember << { reference: "Observation/#{obs.id}" }
       obs
     end
   end
@@ -146,7 +145,7 @@ class PfeObservationBuilder
 
   def find_unit_in_items(items, link_id)
     items.each do |item|
-      if item.linkId == link_id
+      if item.linkId.to_s.delete_prefix('/') == link_id&.delete_prefix('/')
         ext = item.extension&.find { |e| e.url == 'http://hl7.org/fhir/StructureDefinition/questionnaire-unit' }
         return ext.valueCoding if ext&.valueCoding.present?
       elsif item.item.present?
@@ -180,30 +179,6 @@ class PfeObservationBuilder
     # }
   end
 
-  # Extract the PFEDomain code from the Questionnaire.code list
-  def extract_domain_code
-    domain_code = @questionnaire.code&.find do |coding|
-      coding.system == PFE_DOMAIN_CATEGORY_URL
-    end
-
-    domain_code&.code || 'unknown'
-  end
-
-  # Create the required category slices
-  def build_category_slice
-    [
-      FHIR::CodeableConcept.new(coding: [
-                                  { system: US_CORE_CATEGORY_URL, code: ' functional-status' }
-                                ]),
-      FHIR::CodeableConcept.new(coding: [
-                                  { system: SURVEY_CATEGORY_URL, code: 'survey' }
-                                ]),
-      FHIR::CodeableConcept.new(coding: [
-                                  { system: PFE_DOMAIN_CATEGORY_URL, code: @domain_code }
-                                ])
-    ]
-  end
-
   # Extract LOINC codes from Questionnaire items
   def extract_link_id_map(questionnaire)
     map = {}
@@ -213,7 +188,7 @@ class PfeObservationBuilder
 
   def traverse_items(items, map)
     items.each do |item|
-      map[item.linkId] = item.code.presence || default_obs_coding(item)
+      map[item.linkId.to_s.delete_prefix('/')] = item.code.presence || default_obs_coding(item)
 
       traverse_items(item.item, map) if item.item.present?
     end
