@@ -10,12 +10,39 @@ class PfeCategoryCodeExtractor
     'cognitive-status' => 'Cognitive Status'
   }.freeze
 
+  COLLECTION_DOMAIN_MAP = {
+    'BlockL2-d41' => %w[89398-2 89394-1 85927-2 89392-5 89414-7 89390-9 101325-9 89412-1 89385-9 89381-8 89379-2
+                        89416-2 89418-8 89402-2 95738-1],
+    'BlockL2-d51' => %w[95018-8 95017-0 95015-4 95014-7 89387-5 95013-9 89406-3 45606-1],
+    'BlockL2-b51' => %w[86677-2],
+    'BlockL2-d31' => %w[95737-3 54602-8],
+    'BlockL2-b11' => %w[70184-7 70185-4 70187-0 70189-6 70190-4 70191-2 70192-0 70193-8 70195-3],
+    'b152' => %w[ask_more enough_time stressed embarrassed angry afraid_future strained 44250-9 44255-8 4259-0
+                 44254-1 44251-7 44258-2 44252-5 44253-3 44260-8 69722-7 14372 44261-6],
+    'b144' => %w[52731-7 54510-3 52732-5 54609-3 52493-4 52735-8 52736-6 52737-4 54614-3]
+  }.freeze
+
   class << self
     def extract(link_id)
       link_id = link_id.to_s.delete_prefix('/')
       category_mapping = load_pfe_category_mapping
 
       extracted_categories = category_mapping[link_id].presence || {}
+      category_slice(extracted_categories)
+    end
+
+    def collection_category_slice(members)
+      all_cat = members&.flat_map(&:code)&.flat_map(&:coding)&.map(&:code)&.uniq.presence || []
+      domain_code = COLLECTION_DOMAIN_MAP.max_by { |_, items| (items & all_cat).size }&.first
+
+      us_core_code = members&.flat_map(&:category)
+                            &.flat_map(&:coding)
+                            &.select { |c| c.system == US_CORE_CATEGORY_URL }
+                            &.map(&:code)&.group_by(&:itself)&.transform_values(&:size)
+                            &.max_by { |_, count| count }&.first
+
+      extracted_categories = { 'us_core_category' => us_core_code, 'pfe_domain_icf_code' => domain_code }
+
       category_slice(extracted_categories)
     end
 

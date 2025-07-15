@@ -19,28 +19,25 @@ class PfeObservationBuilder
     return [] if @qr.item.blank?
 
     collection = build_collection
-    extract_observations(@qr.item, collection)
+    observations = extract_observations(@qr.item, collection)
+
+    collection.category = PfeCategoryCodeExtractor.collection_category_slice(observations)
+    collection.category.reject! { |cat| cat.coding&.any? { |c| c.code == 'unknown' } }
+
+    observations << collection
   end
 
   private
 
   # Recursively extract observations from all leaf items
   def extract_observations(items, collection)
-    obs = items.flat_map do |item|
+    items.flat_map do |item|
       if item.item.present?
         extract_observations(item.item, collection)
       else
         build_observations(item, collection)
       end
-    end.compact
-
-    collection.category = obs.flat_map(&:category).uniq if collection.category.flat_map(&:coding).any? do |c|
-      c.code == 'unknown'
-    end
-    collection.category.reject! { |cat| cat.coding&.any? { |c| c.code == 'unknown' } }
-
-    obs << collection
-    obs.uniq
+    end.compact.uniq
   end
 
   # Build collection for grouping answer observations
@@ -61,34 +58,34 @@ class PfeObservationBuilder
     obs
   end
 
-  # Build one observation per answer
+  # Build one observation per item.
+  # TODO: handle parsing obs value for item with multiple answers
   def build_observations(item, collection)
     return if item&.answer.blank?
 
     item_link_id = item.linkId.to_s.delete_prefix('/')
-    item.answer.map do |answer|
-      obs = FHIR::Observation.new(
-        id: "#{@qr.id}-#{SecureRandom.hex(4)}", # SecureRandom.uuid,
-        status: 'final',
-        category: PfeCategoryCodeExtractor.extract(item_link_id),
-        code: { coding: @link_id_map[item_link_id] || default_obs_coding(item) },
-        subject: @qr.subject,
-        effectiveDateTime: @qr.authored,
-        performer: Array(@qr.author).compact,
-        derivedFrom: [{ reference: "QuestionnaireResponse/#{@qr.id}" }],
-        meta: { profile: [PFE_SINGLE_OBS_PROFILE] }
-      )
+    answer = item.answer.first
+    obs = FHIR::Observation.new(
+      id: "#{@qr.id}-#{item_link_id&.camelize}", # SecureRandom.uuid,
+      status: 'final',
+      category: PfeCategoryCodeExtractor.extract(item_link_id),
+      code: { coding: @link_id_map[item_link_id] || default_obs_coding(item) },
+      subject: @qr.subject,
+      effectiveDateTime: @qr.authored,
+      performer: Array(@qr.author).compact,
+      derivedFrom: [{ reference: "QuestionnaireResponse/#{@qr.id}" }],
+      meta: { profile: [PFE_SINGLE_OBS_PROFILE] }
+    )
 
-      set_answer_value(obs, answer, item_link_id)
-      add_extensions(obs)
+    set_answer_value(obs, answer, item_link_id)
+    add_extensions(obs)
 
-      if collection.code&.coding.blank?
-        collection.code = FHIR::CodeableConcept.new(coding: @link_id_map[item_link_id] || default_obs_coding(item))
-      end
-
-      collection.hasMember << { reference: "Observation/#{obs.id}" }
-      obs
+    if collection.code&.coding.blank?
+      collection.code = FHIR::CodeableConcept.new(coding: @link_id_map[item_link_id] || default_obs_coding(item))
     end
+
+    collection.hasMember << { reference: "Observation/#{obs.id}" }
+    obs
   end
 
   def default_obs_coding(item)
@@ -104,6 +101,7 @@ class PfeObservationBuilder
   end
 
   # Set the correct value[x] based on answer type
+  # TODO: handle parsing obs value for item with multiple answers
   def set_answer_value(obs, answer, link_id)
     if answer.valueCoding.present?
       obs.valueCodeableConcept = FHIR::CodeableConcept.new(coding: [answer.valueCoding])

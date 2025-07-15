@@ -164,7 +164,7 @@
   us_core_category: cognitive-status
 '90473-0':
   pfe_domain_icf_code:
-    - b144
+    - BlockL2-d41
   us_core_category: functional-status
 70184-7:
   pfe_domain_icf_code:
