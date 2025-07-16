@@ -18,7 +18,7 @@
   "subjectType": [
     "Patient"
   ],
-  "date": "2025-07-13T04:16:16+00:00",
+  "date": "2025-07-15T20:44:39+00:00",
   "publisher": "MITRE",
   "contact": [
     {
@@ -492,6 +492,13 @@
     },
     {
       "linkId": "14372",
+      "code": [
+        {
+          "system": "http://loinc.org",
+          "code": "44261-6",
+          "display": "Patient health questionnaire 9 item total score"
+        }
+      ],
       "text": "Patient health questionnaire 9 item total score",
       "type": "decimal"
     }
