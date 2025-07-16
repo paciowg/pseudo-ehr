@@ -1,0 +1,49 @@
+{
+  "resourceType": "ServiceRequest",
+  "id": "4230",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "2025-07-15T14:06:20.000+00:00",
+    "source": "#xeLsGLxPwXx6ICtF",
+    "profile": [
+      "http://hl7.org/fhir/us/eltss/StructureDefinition/ServiceRequest-eltss"
+    ]
+  },
+  "status": "active",
+  "intent": "plan",
+  "code": {
+    "text": "Speech-Language Therapy to support memory and speech challenges in communicating"
+  },
+  "quantityRatio": {
+    "numerator": {
+      "value": 3,
+      "unit": "times"
+    },
+    "denominator": {
+      "value": 1,
+      "unit": "per week"
+    }
+  },
+  "subject": {
+    "reference": "Patient/patient-betsysmith-johnson01",
+    "display": "Betsy Smith-Johnson"
+  },
+  "occurrenceTiming": {
+    "repeat": {
+      "boundsPeriod": {
+        "start": "2025-07-02",
+        "end": "2025-09-02"
+      }
+    }
+  },
+  "performer": [
+    {
+      "reference": "HealthcareService/4229"
+    }
+  ],
+  "note": [
+    {
+      "text": "Cognitive-communication therapy, swallowing therapy, and articulation therapy."
+    }
+  ]
+}

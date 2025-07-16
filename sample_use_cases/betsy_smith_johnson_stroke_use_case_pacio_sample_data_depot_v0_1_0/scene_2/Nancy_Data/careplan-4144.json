@@ -1,0 +1,95 @@
+{
+  "resourceType": "CarePlan",
+  "id": "4144",
+  "meta": {
+    "versionId": "4",
+    "lastUpdated": "2025-07-15T14:06:20.000+00:00",
+    "source": "#xeLsGLxPwXx6ICtF",
+    "profile": [
+      "http://hl7.org/fhir/us/eLTSS/StructureDefinition/CarePlan-eltss"
+    ]
+  },
+  "status": "active",
+  "intent": "plan",
+  "title": "Post stroke recovery plan",
+  "description": "Care plan for Betsy as she transitions to home health",
+  "subject": {
+    "reference": "Patient/patient-betsysmith-johnson01",
+    "display": "Betsy Smith-Johnson"
+  },
+  "period": {
+    "start": "2025-07-02",
+    "end": "2025-09-02"
+  },
+  "author": {
+    "reference": "Practitioner/fdd4b9d3-4255-4368-a3f9-4b973ab40216",
+    "display": "Dr. Hema Onko"
+  },
+  "addresses": [
+    {
+      "reference": "Condition/4219",
+      "display": "Physical Therapy"
+    },
+    {
+      "reference": "Condition/4220",
+      "display": "Occupational Therapy"
+    },
+    {
+      "reference": "Condition/4221",
+      "display": "Speech-Language Therapy"
+    },
+    {
+      "reference": "Condition/4222",
+      "display": "Nutrition and dietary support"
+    }
+  ],
+  "supportingInfo": [
+    {
+      "reference": "Observation/4217",
+      "display": "Focus on function and comfort"
+    },
+    {
+      "reference": "Observation/4145",
+      "display": "Patient is motivated to engage in therapies so she can return home."
+    },
+    {
+      "reference": "Observation/4146",
+      "display": "Patient has been able to manage multiple chronic conditions relatively well in the past."
+    },
+    {
+      "reference": "Observation/4147",
+      "display": "Son of the patient and his wife share a house with the patient and provide support."
+    },
+    {
+      "reference": "RiskAssessment/4223",
+      "display": "Provide education and resources to the son and daughter-in-law that can support their caregiver roles."
+    },
+    {
+      "reference": "RiskAssessment/4224",
+      "display": "Have clear plans for removing hypoglycemics, provide dietary supplements, and re-enforce her wish not to have artificial feeding."
+    }
+  ],
+  "goal": [
+    {
+      "reference": "Goal/4218",
+      "display": "Remain at home for as long as possible, reduce hospitalizations, avoid surgery and other invasive testing and treatments."
+    }
+  ],
+  "activity": [
+    {
+      "reference": {
+        "reference": "ServiceRequest/4226"
+      }
+    },
+    {
+      "reference": {
+        "reference": "ServiceRequest/4228"
+      }
+    },
+    {
+      "reference": {
+        "reference": "ServiceRequest/4230"
+      }
+    }
+  ]
+}

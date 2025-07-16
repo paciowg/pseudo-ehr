@@ -3,7 +3,7 @@
   "id": "betsysmith-johnson01-diagnosticReport-MRI-01",
   "text": {
     "status": "generated",
-    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: DiagnosticReport betsysmith-johnson01-diagnosticReport-MRI-01</b></p><a name=\"betsysmith-johnson01-diagnosticReport-MRI-01\"> </a><a name=\"hcbetsysmith-johnson01-diagnosticReport-MRI-01\"> </a><h2><span title=\"Codes:{http://loinc.org 68604-8}\">Radiology Diagnostic study note</span> (<span title=\"Codes:{http://loinc.org LP29684-5}\">Radiology</span>) </h2><table class=\"grid\"><tr><td>Subject</td><td>Smith-Johnson, Betsy Female, DoB: 1950-11-15 ( http://hl7.org/fhir/sid/us-medicare#United States Medicare Number#1PA3D58WH16)</td></tr><tr><td>Reported</td><td>2025-05-04 08:30:00+0000</td></tr><tr><td>Performer</td><td> <a href=\"PractitionerRole-PractitionerRole-Radiologist-PaulZawawi.html\">Paul Zawawi, MD</a></td></tr></table><p><b>Report Details</b></p></div>"
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: DiagnosticReport betsysmith-johnson01-diagnosticReport-MRI-01</b></p><a name=\"betsysmith-johnson01-diagnosticReport-MRI-01\"> </a><a name=\"hcbetsysmith-johnson01-diagnosticReport-MRI-01\"> </a><h2><span title=\"Codes:{http://loinc.org 68604-8}\">Radiology Diagnostic study note</span> (<span title=\"Codes:{http://loinc.org LP29684-5}\">Radiology</span>) </h2><table class=\"grid\"><tr><td>Subject</td><td>Smith-Johnson, Betsy Female, DoB: 1950-11-15 ( http://hl7.org/fhir/sid/us-medicare#United States Medicare Number#1PA3D58WH16)</td></tr><tr><td>When For</td><td>2025-05-03 15:15:00+0000</td></tr><tr><td>Reported</td><td>2025-05-04 08:30:00+0000</td></tr><tr><td>Performer</td><td> <a href=\"PractitionerRole-PractitionerRole-Radiologist-PaulZawawi.html\">Paul Zawawi, MD</a></td></tr></table><p><b>Report Details</b></p></div>"
   },
   "status": "final",
   "category": [
@@ -29,6 +29,7 @@
   "subject": {
     "reference": "Patient/patient-betsysmith-johnson01"
   },
+  "effectiveDateTime": "2025-05-03T15:15:00.000+00:00",
   "issued": "2025-05-04T08:30:00.000+00:00",
   "performer": [
     {
