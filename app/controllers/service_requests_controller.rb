@@ -15,7 +15,7 @@ class ServiceRequestsController < ApplicationController
   private
 
   def fetch_service_requests(patient_id)
-    srs = ServiceRequest.filter_by_patient_id(patient_id)
+    srs = ServiceRequest.filter_by_patient_id(patient_id).reject { |sr| sr.code == '--' }
     return srs unless ServiceRequest.expired? || srs.blank?
 
     entries = retrieve_current_patient_resources
@@ -30,7 +30,7 @@ class ServiceRequestsController < ApplicationController
     entries = (entries + retrieve_practitioner_roles).uniq
     fhir_service_requests.each { |entry| ServiceRequest.new(entry, entries) }
 
-    ServiceRequest.filter_by_patient_id(patient_id)
+    ServiceRequest.filter_by_patient_id(patient_id).reject { |sr| sr.code == '--' }
   rescue StandardError => e
     Rails.logger.error("Error fetching or parsing Service Request:\n #{e.message.inspect}")
     Rails.logger.error(e.backtrace.join("\n"))
