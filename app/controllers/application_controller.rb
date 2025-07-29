@@ -153,7 +153,7 @@ class ApplicationController < ActionController::Base
     @care_team_count = cached_resources_type('CareTeam').size
     @condition_count = cached_resources_type('Condition').size
     @goal_count = cached_resources_type('Goal').size
-    @medication_list_count = cached_resources_type('List').size
+    @medication_list_count = cached_resources_type('List').select { |l| l.code.present? }.size
     @medication_requests_count = cached_resources_type('MedicationRequest').size
     @procedures_count = cached_resources_type('Procedure').size
     @diagnostic_reports_count = cached_resources_type('DiagnosticReport').size

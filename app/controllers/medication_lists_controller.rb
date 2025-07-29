@@ -19,12 +19,12 @@ class MedicationListsController < ApplicationController
     return sort_list(med_list) unless MedicationList.expired? || med_list.blank?
 
     entries = retrieve_current_patient_resources
-    fhir_lists = cached_resources_type('List')
+    fhir_lists = cached_resources_type('List').select { |l| l.code.present? }
 
     if fhir_lists.blank?
       Rails.logger.info('Medication lists not found in patient record cache, fetching directly')
       entries = fetch_lists_by_patient(patient_id, 500, MedicationList.updated_at)
-      fhir_lists = entries.select { |entry| entry.resourceType == 'List' }
+      fhir_lists = entries.select { |entry| entry.resourceType == 'List' && entry.code.present? }
     end
 
     practitioner_roles = retrieve_practitioner_roles
