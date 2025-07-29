@@ -19,11 +19,6 @@ export default class extends Controller {
         'Transfer Summary'
     }
 
-    // Check all section checkboxes
-    this.sectionCheckboxTargets.forEach(checkbox => {
-      checkbox.checked = true
-    })
-
     // Map section IDs to their corresponding entry checkbox classes
     const sectionEntryMap = {
       'section_allergies': '.allergy-entry',
@@ -36,19 +31,22 @@ export default class extends Controller {
       'section_advance_directives': '.docref-entry'
     }
 
-    // Check each section
+    // Check sections with entries and select up to 5 entries per section
     Object.keys(sectionEntryMap).forEach(sectionId => {
       const checkbox = document.getElementById(sectionId)
-      if (checkbox && checkbox.checked) {
+      if (checkbox) {
 
         // Get entries for this section
         const entrySelector = sectionEntryMap[sectionId]
         const entryCheckboxes = Array.from(document.querySelectorAll(entrySelector))
 
-        // Select up to 5 entries
-        const numToSelect = Math.min(5, entryCheckboxes.length)
-        for (let i = 0; i < numToSelect; i++) {
-          entryCheckboxes[i].checked = true
+        if (entryCheckboxes.length > 0) {
+          checkbox.checked = true
+          // Select up to 5 entries
+          const numToSelect = Math.min(5, entryCheckboxes.length)
+          for (let i = 0; i < numToSelect; i++) {
+            entryCheckboxes[i].checked = true
+          }
         }
       }
     })
