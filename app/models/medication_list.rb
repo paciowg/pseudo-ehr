@@ -10,7 +10,7 @@ class MedicationList < Resource
     @patient = Patient.find(@patient_id)
     @status = @fhir_resource.status
     @title = @fhir_resource.title
-    @code = coding_string(@fhir_resource.code.coding)
+    @code = coding_string(@fhir_resource&.code&.coding)
     @date = parse_date(@fhir_resource.date)
     @medication_statements = read_medication_statements(bundle_entries)
 

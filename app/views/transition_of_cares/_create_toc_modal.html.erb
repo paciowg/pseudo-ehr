@@ -1,5 +1,5 @@
 <!-- Modal for creating a new TOC -->
-<div id="createTocResourceModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+<div id="createTocResourceModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full" data-controller="toc-form">
   <div class="relative w-full max-w-4xl max-h-full">
     <!-- Modal content -->
     <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -19,15 +19,15 @@
       <!-- Modal body -->
       <div class="p-4 md:p-5 space-y-4 max-h-[70vh] overflow-y-auto">
         <div class="flex justify-end mb-4">
-          <button type="button" id="auto-fill-btn" class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+          <button type="button" id="auto-fill-btn" class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" data-action="click->toc-form#autoFill">
             Auto-Fill Form
           </button>
         </div>
-        <%= form_with url: patient_transition_of_cares_path(patient_id: @patient.id), method: :post, id: "toc-form", class: "space-y-6" do |form| %>
+        <%= form_with url: patient_transition_of_cares_path(patient_id: @patient.id), method: :post, id: "toc-form", class: "space-y-6", data: { action: "submit->toc-form#validateOnSubmit", toc_form_target: "form" } do |form| %>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label for="toc_title" class="block mb-2 text-sm font-medium text-gray-900">Title</label>
-              <%= form.text_field "toc[title]", id: "toc_title", class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5", placeholder: "Transfer Summary", required: true %>
+              <%= form.text_field "toc[title]", id: "toc_title", class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5", placeholder: "Transfer Summary", required: true, data: { toc_form_target: "title", patient_name: @patient.name } %>
             </div>
 
             <div>
@@ -70,7 +70,7 @@
               <div class="border border-gray-200 rounded-lg p-4">
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
-                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_allergies" }, "1", "0" %>
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_allergies", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Allergies and Intolerances" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "48765-2" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
@@ -85,7 +85,7 @@
                       <div class="flex items-start mb-1">
                         <div class="flex items-center h-5">
                           <%= check_box_tag "toc[sections][][entries][]", "AllergyIntolerance/#{ai.id}", false,
-                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox allergy-entry" %>
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox allergy-entry", data: { toc_form_target: "entryCheckbox" } %>
                         </div>
                           <label class="ml-2 text-xs font-medium text-gray-900">
                             <% if ai.code&.text %>
@@ -107,7 +107,7 @@
               <div class="border border-gray-200 rounded-lg p-4">
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
-                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_medications" }, "1", "0" %>
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_medications", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Medications" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "10160-0" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
@@ -124,7 +124,7 @@
                         <div class="flex items-start mb-1">
                           <div class="flex items-center h-5">
                             <%= check_box_tag "toc[sections][][entries][]", "List/#{list.id}", false,
-                                class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox medication-list-entry" %>
+                                class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox medication-list-entry", data: { toc_form_target: "entryCheckbox" } %>
                           </div>
                               <label class="ml-2 text-xs font-medium text-gray-900">
                                 <% if list.title %>
@@ -146,7 +146,7 @@
                         <div class="flex items-start mb-1">
                           <div class="flex items-center h-5">
                             <%= check_box_tag "toc[sections][][entries][]", "MedicationRequest/#{mr.id}", false,
-                                class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox medication-entry" %>
+                                class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox medication-entry", data: { toc_form_target: "entryCheckbox" } %>
                           </div>
                               <label class="ml-2 text-xs font-medium text-gray-900">
                                 <% if mr.medicationCodeableConcept&.text %>
@@ -169,7 +169,7 @@
               <div class="border border-gray-200 rounded-lg p-4">
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
-                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_problems" }, "1", "0" %>
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_problems", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Problems" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "46019-6" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
@@ -184,7 +184,7 @@
                       <div class="flex items-start mb-1">
                         <div class="flex items-center h-5">
                           <%= check_box_tag "toc[sections][][entries][]", "Condition/#{c.id}", false,
-                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox condition-entry" %>
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox condition-entry", data: { toc_form_target: "entryCheckbox" } %>
                         </div>
                           <label class="ml-2 text-xs font-medium text-gray-900">
                             <% if c.code&.text %>
@@ -206,7 +206,7 @@
               <div class="border border-gray-200 rounded-lg p-4">
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
-                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_procedures" }, "1", "0" %>
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_procedures", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Procedures" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "28570-0" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
@@ -221,7 +221,7 @@
                       <div class="flex items-start mb-1">
                         <div class="flex items-center h-5">
                           <%= check_box_tag "toc[sections][][entries][]", "Procedure/#{p.id}", false,
-                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox procedure-entry" %>
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox procedure-entry", data: { toc_form_target: "entryCheckbox" } %>
                         </div>
                           <label class="ml-2 text-xs font-medium text-gray-900">
                             <% if p.code&.text %>
@@ -243,7 +243,7 @@
               <div class="border border-gray-200 rounded-lg p-4">
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
-                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_results" }, "1", "0" %>
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_results", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Lab Test Results" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "19146-0" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
@@ -258,7 +258,7 @@
                       <div class="flex items-start mb-1">
                         <div class="flex items-center h-5">
                           <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
-                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox observation-entry" %>
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox observation-entry", data: { toc_form_target: "entryCheckbox" } %>
                         </div>
                           <label class="ml-2 text-xs font-medium text-gray-900">
                             <% if o.code&.text %>
@@ -280,7 +280,7 @@
               <div class="border border-gray-200 rounded-lg p-4">
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
-                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_vital_signs" }, "1", "0" %>
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_vital_signs", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Vital Signs" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "LP30605-7" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
@@ -295,7 +295,7 @@
                       <div class="flex items-start mb-1">
                         <div class="flex items-center h-5">
                           <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
-                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox observation-vital-entry" %>
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox observation-vital-entry", data: { toc_form_target: "entryCheckbox" } %>
                         </div>
                         <label class="ml-2 text-xs font-medium text-gray-900">
                           <%= o.code&.text || "Observation/#{o.id}" %>
@@ -310,7 +310,7 @@
               <div class="border border-gray-200 rounded-lg p-4">
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
-                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_immunizations" }, "1", "0" %>
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_immunizations", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Immunizations" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "82593-5" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
@@ -325,7 +325,7 @@
                       <div class="flex items-start mb-1">
                         <div class="flex items-center h-5">
                           <%= check_box_tag "toc[sections][][entries][]", "Immunization/#{i.id}", false,
-                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox immunization-entry" %>
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox immunization-entry", data: { toc_form_target: "entryCheckbox" } %>
                         </div>
                           <label class="ml-2 text-xs font-medium text-gray-900">
                             <% if i.vaccine_code %>
@@ -347,7 +347,7 @@
               <div class="border border-gray-200 rounded-lg p-4">
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
-                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_advance_directives" }, "1", "0" %>
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_advance_directives", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Advance Directives" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "42348-3" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
@@ -362,7 +362,7 @@
                       <div class="flex items-start mb-1">
                         <div class="flex items-center h-5">
                           <%= check_box_tag "toc[sections][][entries][]", "DocumentReference/#{d.id}", false,
-                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox docref-entry" %>
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox docref-entry", data: { toc_form_target: "entryCheckbox" } %>
                         </div>
                           <label class="ml-2 text-xs font-medium text-gray-900">
                             <% if d.description %>
@@ -381,14 +381,14 @@
               </div>
             </div>
 
-            <div class="mt-4 text-sm text-red-600 hidden" id="section-error">
+            <div class="mt-4 text-sm text-red-600 hidden" id="section-error" data-toc-form-target="sectionError">
               Please select at least 4 sections for the TOC document.
             </div>
           </div>
 
           <div class="flex justify-end border-t border-gray-200 pt-4">
             <div>
-              <button type="button" id="cancel-toc-btn" data-modal-hide="createTocResourceModal" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-indigo-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 mr-2">
+              <button type="button" id="cancel-toc-btn" data-modal-hide="createTocResourceModal" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-indigo-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 mr-2" data-action="click->toc-form#clearForm">
                 Cancel
               </button>
               <button type="submit" id="submit-toc-btn" class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
@@ -402,119 +402,4 @@
   </div>
 </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('toc-form');
-    const autoFillBtn = document.getElementById('auto-fill-btn');
-    const submitBtn = document.getElementById('submit-toc-btn');
-    const cancelBtn = document.getElementById('cancel-toc-btn');
-    const sectionCheckboxes = document.querySelectorAll('.section-checkbox');
-    const sectionError = document.getElementById('section-error');
-
-    // Auto-fill form
-    autoFillBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      console.log('Auto-fill button clicked');
-
-      // Fill in basic fields
-      document.getElementById('toc_title').value = 'Transfer Summary for <%= @patient.name %>';
-
-      // Check all section checkboxes
-      sectionCheckboxes.forEach(checkbox => {
-        checkbox.checked = true;
-      });
-
-      // Check entries checkboxes (up to 5 per section)
-      // Map section IDs to their corresponding entry checkbox classes
-      const sectionEntryMap = {
-        'section_allergies': '.allergy-entry',
-        'section_medications': '.medication-entry, .medication-list-entry',
-        'section_problems': '.condition-entry',
-        'section_procedures': '.procedure-entry',
-        'section_results': '.observation-entry',
-        'section_vital_signs': '.observation-vital-entry',
-        'section_immunizations': '.immunization-entry',
-        'section_advance_directives': '.docref-entry'
-      };
-
-      // Check each section
-      Object.keys(sectionEntryMap).forEach(sectionId => {
-        const checkbox = document.getElementById(sectionId);
-        if (checkbox && checkbox.checked) {
-          console.log(`Processing section ${sectionId}`);
-
-          // Get entries for this section
-          const entrySelector = sectionEntryMap[sectionId];
-          const entryCheckboxes = Array.from(document.querySelectorAll(entrySelector));
-          console.log(`Found ${entryCheckboxes.length} entries for section ${sectionId}`);
-
-          // Select up to 5 entries
-          const numToSelect = Math.min(5, entryCheckboxes.length);
-          for (let i = 0; i < numToSelect; i++) {
-            entryCheckboxes[i].checked = true;
-            console.log(`Checked entry ${i} for section ${sectionId}`);
-          }
-        }
-      });
-
-      // Select options in remaining selects (for author and custodian)
-      document.querySelectorAll('select').forEach(select => {
-        if (select.options.length > 1) {
-          select.options[1].selected = true;
-        }
-      });
-
-      validateForm();
-      return false;
-    });
-
-    // Validate form on submit
-    form.addEventListener('submit', function(e) {
-      if (!validateForm()) {
-        e.preventDefault();
-      }
-    });
-
-    // Validate when sections are checked/unchecked
-    sectionCheckboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', validateForm);
-    });
-
-    // Clear form when cancel button is clicked
-    cancelBtn.addEventListener('click', function() {
-      // Clear title field
-      document.getElementById('toc_title').value = '';
-
-      // Reset all selects to first option
-      document.querySelectorAll('select').forEach(select => {
-        select.selectedIndex = 0;
-      });
-
-      // Uncheck all section checkboxes
-      sectionCheckboxes.forEach(checkbox => {
-        checkbox.checked = false;
-      });
-
-      // Uncheck all entry checkboxes
-      document.querySelectorAll('.entry-checkbox').forEach(checkbox => {
-        checkbox.checked = false;
-      });
-
-      // Hide any error messages
-      sectionError.classList.add('hidden');
-    });
-
-    function validateForm() {
-      // Check if at least 4 sections are selected
-      const checkedSections = document.querySelectorAll('.section-checkbox:checked').length;
-
-      if (checkedSections < 4) {
-        sectionError.classList.remove('hidden');
-        return false;
-      } else {
-        sectionError.classList.add('hidden');
-        return true;
-      }
-    }
-  });
-</script>
+<!-- Stimulus controller handles all JavaScript functionality -->

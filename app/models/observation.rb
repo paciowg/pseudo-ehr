@@ -92,15 +92,19 @@ class Observation < Resource
   private
 
   def retrieve_category
-    list = %w[clinical-test functional-status cognitive-status survey activity laboratory]
-    formatted_category = categories.select { |cat| list.include?(cat[:code]) }.pluck(:code).sort.join(', ')
+    category_codes = categories.reject do |cat|
+      cat[:system] == 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-category-cs'
+    end.pluck(:code).sort
 
-    Observation.internal_category_dict[formatted_category] || 'Other'
+    formatted_categories = category_codes.map do |code|
+      self.class.internal_category_dict[code] || self.class.category_dict[code] || code
+    end.compact.uniq
+
+    formatted_categories.join(', ').presence || 'Other'
   end
 
   def retrieve_domain
-    list = %w[clinical-test functional-status cognitive-status survey activity laboratory]
-    domain = @category == 'Other' ? categories.last : categories.find { |cat| list.exclude?(cat[:code]) }
+    domain = categories.find { |cat| cat[:system] == 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-category-cs' }
 
     if domain.blank?
       ''
@@ -197,9 +201,10 @@ class Observation < Resource
 
   def categories
     @categories = @fhir_resource.category.map do |category|
-      code = category.coding.first.code
-      display = category.coding.first.display
-      { code:, display: }
+      code = category.coding.first&.code
+      display = category.coding.first&.display
+      system = category.coding.first&.system
+      { code:, display:, system: }
     end.compact
   end
 end

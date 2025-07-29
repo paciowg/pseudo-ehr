@@ -67,7 +67,7 @@ class SessionsController < ApplicationController
     Rails.cache.clear
     clear_all_data
     @client = nil
-    if @current_server.authenticated_access?
+    if @current_server&.authenticated_access?
       @current_server.update!(
         access_token: nil,
         refresh_token: nil,

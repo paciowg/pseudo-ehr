@@ -69,7 +69,7 @@ class QuestionnaireResponseProcessor
     {
       request: {
         method: 'PUT',
-        url: resource_type
+        url: "#{resource_type}/#{resource.id}"
       },
       resource: resource
     }

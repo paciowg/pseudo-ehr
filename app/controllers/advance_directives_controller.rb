@@ -81,7 +81,6 @@ class AdvanceDirectivesController < ApplicationController
     # First try to get document references from the patient record cache
     cached_doc_refs = cached_resources_type('DocumentReference')
     adi_entries = filter_doc_refs_or_compositions_by_category(cached_doc_refs, adi_category_codes)
-    adi_entries = adi_entries.select { |res| res.status == adi_status } if adi_status
 
     # Only fetch ADIs directly if not found in patient record
     if adi_entries.blank?
