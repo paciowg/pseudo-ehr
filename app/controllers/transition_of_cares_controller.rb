@@ -166,7 +166,7 @@ class TransitionOfCaresController < ApplicationController
 
     # Add the selected sections
     toc_params[:sections].each do |section_params|
-      next unless section_params[:include] == '1'
+      next unless section_params[:include] == '1' && section_params[:entries].present?
 
       section = FHIR::Composition::Section.new(
         title: section_params[:title],
@@ -182,10 +182,8 @@ class TransitionOfCaresController < ApplicationController
       )
 
       # Add entries to the section if provided
-      if section_params[:entries].present?
-        section.entry = section_params[:entries].map do |entry|
-          FHIR::Reference.new(reference: entry)
-        end
+      section.entry = section_params[:entries].map do |entry|
+        FHIR::Reference.new(reference: entry)
       end
 
       composition.section << section
