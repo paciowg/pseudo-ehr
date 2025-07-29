@@ -14,9 +14,7 @@ class DocumentReference < Resource
     @identifier = read_identifier
     @date = parse_date(@fhir_resource.date).presence || '--'
     @full_date = @fhir_resource.date.presence || '--'
-    @author = @fhir_resource.author&.map do |author|
-                parse_provider_name(author, bundle_entries)
-              end&.delete('--')&.join(', ').presence || '--'
+    @author = get_authors(bundle_entries)
     @contents = get_contents
     @title = @fhir_resource.description.presence || @fhir_resource.type&.text.presence ||
              contents.first&.title.presence || '--'
@@ -25,6 +23,15 @@ class DocumentReference < Resource
   end
 
   private
+
+  def get_authors(bundle_entries)
+    author = @fhir_resource.author&.map do |author|
+      parse_provider_name(author, bundle_entries)
+    end
+    author&.delete('--')
+
+    author&.uniq&.compact&.join(', ').presence || '--'
+  end
 
   def get_contents
     attachements = @fhir_resource.content.map(&:attachment)
