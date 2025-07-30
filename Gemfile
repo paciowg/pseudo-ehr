@@ -47,6 +47,8 @@ gem 'bootsnap', require: false
 
 # Read excel
 gem 'roo'
+# Write excel
+gem 'caxlsx'
 
 # Use Sass to process CSS
 # gem "sassc-rails"
