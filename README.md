@@ -220,6 +220,16 @@ This application uses RSpec for testing. You can find tests in the `spec/` folde
 
   Submits all bundles in `tmp/fhir_bundles/` as FHIR transaction bundles to the specified server. Logs outcomes for each submission.
 
+* **Extract conformance requirements from a capability statement**:
+
+  ```bash
+  bundle exec rake "capability_statement:extract_requirements[path/to/capability_statement.json]"
+  ```
+
+  Extracts conformance requirements from a FHIR capability statement JSON file and writes them to an Excel file in the `./requirements` directory. The Excel file is named based on the capability statement title (in snake case) and includes columns for URL, requirement, conformance level (SHALL, SHOULD, MAY), and actor (server/client).
+
+  Note: The generated requirements file should be reviewed and corrected by a human to ensure accuracy, as the automated extraction may not capture all nuances of the capability statement.
+
 * **Generate PFE domain mapping**:
 
   ```bash
