@@ -134,9 +134,11 @@ module ModelHelper
   #-----------------------------------------------------------------------------
 
   def parse_provider_name(provider_ref, bundle_entries)
+    return '--' if provider_ref.blank?
+
     display = provider_ref.try(:display)
     return display if display.present?
-    return '--' unless provider_ref.try(:reference)
+    return '--' unless provider_ref.try(:reference) && bundle_entries.is_a?(Array) && bundle_entries.any?
 
     resource_type, resource_id = provider_ref.reference.split('/')
     provider_resource = bundle_entries.find { |res| res.resourceType == resource_type && res.id == resource_id }
@@ -160,6 +162,53 @@ module ModelHelper
       format_name(practitioner.name) => { first_name:, last_name: }
       name = "#{first_name} #{last_name}"
       role.present? ? "#{name} | #{role}" : name
+    when 'Device'
+      device_name = provider_resource.try(:deviceName)&.first&.name
+      return device_name if device_name.present?
+
+      type = provider_resource.try(:type)&.coding&.first&.display
+      manufacturer = provider_resource.try(:manufacturer)
+      [type, manufacturer].compact.join(' | ').presence || '--'
+    else
+      '--'
     end
+  end
+
+  #-----------------------------------------------------------------------------
+
+  def parse_codeable_concept(codeable_concept)
+    return '--' if codeable_concept.nil?
+
+    coding = codeable_concept.coding&.first
+    return codeable_concept.text.presence || '--' if coding.nil?
+
+    code = coding.code
+    code_system = coding.system
+    text = codeable_concept.text
+    text ||= coding.display
+
+    system_name = system_mapping(code_system) if code_system
+    code = "#{system_name}##{code}" if system_name && code
+
+    if text && code
+      "#{text} (#{code})"
+    else
+      text.presence || code.presence || '--'
+    end
+  end
+
+  def system_mapping(system_uri)
+    return unless system_uri
+
+    {
+      'http://loinc.org' => 'LOINC',
+      'http://snomed.info/sct' => 'SNOMED',
+      'http://www.nlm.nih.gov/research/umls/rxnorm' => 'RxNorm',
+      'http://hl7.org/fhir/sid/icd-10' => 'ICD-10',
+      'http://hl7.org/fhir/sid/icd-9' => 'ICD-9',
+      'http://terminology.hl7.org/CodeSystem/observation-category' => 'FHIR Observation Category',
+      'http://terminology.hl7.org/CodeSystem/condition-category' => 'FHIR Condition Category',
+      'http://terminology.hl7.org/CodeSystem/v3-ActCode' => 'HL7 v3 ActCode'
+    }[system_uri]
   end
 end
