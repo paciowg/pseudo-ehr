@@ -47,6 +47,8 @@ gem 'bootsnap', require: false
 
 # Read excel
 gem 'roo'
+# Write excel
+gem 'caxlsx'
 
 # Use Sass to process CSS
 # gem "sassc-rails"
@@ -56,6 +58,12 @@ gem 'roo'
 
 # Ruby client for accessing memcached servers
 gem 'dalli'
+
+# OpenAI: you will need an api key in the env
+gem 'ruby-openai'
+
+# Load env file
+gem 'dotenv-rails'
 
 # Ruby FHIR client for accessing FHIR servers
 gem 'fhir_client'

@@ -12,12 +12,15 @@
       <p><b>Performer</b>: <%= @observation.performer %></p><br>
       <p><b>Value</b>: <%= @observation.measurement %></p><br>
       <p><b>Value Interpretation</b>: <%= @observation.measurement_interpretation %></p><br>
-      <p>
-        <b>Derived From</b>:
-        <% @observation.derived_from.each_with_index do |item, index| %>
-          <%= link_to item[:name], item[:path], class: 'link' %><%if index < @observation.derived_from.length - 1 %>, <% end %>
-        <% end %>
-      </p>
+
+      <% if @observation.derived_from.present? %>
+        <p>
+          <b>Derived From</b>:
+          <% @observation.derived_from.each_with_index do |item, index| %>
+            <%= link_to item[:name], item[:path], class: 'link' %><%if index < @observation.derived_from.length - 1 %>, <% end %>
+          <% end %>
+        </p>
+      <% end %>
     </div>
   <% end %>
 </div>

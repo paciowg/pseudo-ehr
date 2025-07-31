@@ -27,10 +27,9 @@ module ModelValueSet
   OBSERVATION_PFE_DOMAIN_DISPLAY = get_excel_data('observation-pfe-domain.xlsx').freeze
   OBSERVATION_CATEGORY_DISPLAY = get_excel_data('us-core-observation-category.xlsx').freeze
   OBSERVATION_INTERNAL_CATEGORY_DISPLAY = {
-    'clinical-test, functional-status' => 'Clinical Test & Functional Status',
-    'functional-status, survey' => 'Survey & Functional Status',
-    'cognitive-status, survey' => 'Survey & Cognitive Status',
-    'activity' => 'Activity',
-    'laboratory' => 'Laboratory'
+    'clinical-test' => 'Clinical Test',
+    'functional-status' => 'Functional Status',
+    'cognitive-status' => 'Cognitive Status',
+    'survey' => 'Survey'
   }.freeze
 end

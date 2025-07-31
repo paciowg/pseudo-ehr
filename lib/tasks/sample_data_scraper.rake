@@ -4,7 +4,7 @@ require 'fileutils'
 require 'net/http'
 
 namespace :sample_data do
-  desc 'Scrape FHIR resources from the published IG page and organize them by scene and resource type'
+  desc 'Scrape FHIR resources from the published Sample data persona page and organize them by scene and resource type'
   task scrape: :environment do
     puts 'Starting to scrape FHIR resources...'
 
@@ -26,12 +26,8 @@ namespace :sample_data do
       puts 'Successfully parsed the IG page'
 
       # Extract the use case title from the page title
-      page_title = doc.css('title').text.strip
-      use_case_title = if page_title.include?(' - ')
-                         page_title.split(' - ')[0].strip
-                       else
-                         'Betsy Smith-Johnson - Stroke Use Case'
-                       end
+      page_title = doc.css('title').text.strip.presence || 'Betsy Smith-Johnson - Stroke Use Case'
+      use_case_title = page_title.parameterize.underscore
       puts "Use case title: #{use_case_title}"
 
       # Create directory for this use case
@@ -40,7 +36,7 @@ namespace :sample_data do
 
       # Find all scene data summary sections
       puts 'Looking for scene data summary sections...'
-      scene_headers = doc.css('h2, h3, h4').select { |h| h.text.strip.match(/Scene \d+ Sample Data Summary/i) }
+      scene_headers = doc.css('h2, h3, h4').select { |h| h.text.strip.match(/Scene \d+ FHIR Resources/i) }
       puts "Found #{scene_headers.length} scene data summary sections"
 
       scene_headers.each do |scene_header|

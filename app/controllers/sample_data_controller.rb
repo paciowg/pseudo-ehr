@@ -1,6 +1,7 @@
 require 'English'
 class SampleDataController < ApplicationController
   skip_before_action :current_server, raise: false
+  before_action :delete_current_patient_id
   def index
     @use_cases = load_use_cases
 
@@ -148,13 +149,37 @@ class SampleDataController < ApplicationController
   end
 
   def load_use_cases
+    # NOTE: Uncomment this if we want to scrape data from the sample data depo
+    # Check if we need to run the scrape task (every 5 hours)
+    # last_scrape_time = Rails.cache.read('last_sample_data_scrape_time')
+
+    # if last_scrape_time.nil? || Time.zone.now - last_scrape_time > 5.hours
+    #   # Run the sample_data:scrape rake task to ensure the data is up-to-date
+    #   begin
+    #     Rails.logger.info 'Running sample_data:scrape rake task'
+    #     require 'rake'
+    #     Rails.application.load_tasks
+    #     Rake::Task['sample_data:scrape'].reenable
+    #     Rake::Task['sample_data:scrape'].invoke
+
+    #     # Update the last scrape time in cache
+    #     Rails.cache.write('last_sample_data_scrape_time', Time.zone.now)
+    #     Rails.logger.info 'Completed sample_data:scrape rake task'
+    #   rescue StandardError => e
+    #     Rails.logger.error "Error running sample_data:scrape rake task: #{e.message}\n#{e.backtrace.join("\n")}"
+    #     # Continue with loading existing data even if scraping fails
+    #   end
+    # else
+    #   Rails.logger.info "Skipping sample_data:scrape rake task, last run at #{last_scrape_time}"
+    # end
+
     use_cases = {}
 
     # Get all use case directories
     use_case_dirs = Rails.root.glob('sample_use_cases/*').select { |f| File.directory?(f) }
 
     use_case_dirs.each do |use_case_dir|
-      use_case_name = File.basename(use_case_dir)
+      use_case_name = File.basename(use_case_dir).to_s.humanize.titleize
       use_cases[use_case_name] = {}
 
       # Get all scene directories

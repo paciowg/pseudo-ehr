@@ -13,6 +13,7 @@ class QuestionnaireResponseProcessor
     bundle.entry << build_entry('QuestionnaireResponse', qr)
 
     observations = PfeObservationBuilder.new(qr, questionnaire).build
+
     observations.each do |obs|
       bundle.entry << build_entry('Observation', obs)
     end
@@ -50,7 +51,7 @@ class QuestionnaireResponseProcessor
 
     # TODO: to be removed. none of the QR has a valid questionnaire url
     # this hack is to use a known url for QR BSJ1-QuestionnaireResponse-GlobalAlliant-01
-    if @questionnaire_response_hash[:id] == 'BSJ1-QuestionnaireResponse-GlobalAlliant-01'
+    if url&.downcase&.include?('zbi')
       url = 'https://gw.interop.community/cmspqrs/open/Questionnaire/questionnaire-ZBI22'
     end
 
@@ -68,7 +69,7 @@ class QuestionnaireResponseProcessor
     {
       request: {
         method: 'PUT',
-        url: resource_type
+        url: "#{resource_type}/#{resource.id}"
       },
       resource: resource
     }

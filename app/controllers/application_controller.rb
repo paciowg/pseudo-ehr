@@ -97,9 +97,7 @@ class ApplicationController < ActionController::Base
   end
 
   def cached_resources_type(type)
-    # Use a hash to store cached resources by type
-    @cached_resources ||= {}
-    @cached_resources[type] ||= grouped_current_patient_record[type] || []
+    grouped_current_patient_record[type] || []
   end
 
   def find_cached_resource(resource_type, resource_id)
@@ -155,7 +153,7 @@ class ApplicationController < ActionController::Base
     @care_team_count = cached_resources_type('CareTeam').size
     @condition_count = cached_resources_type('Condition').size
     @goal_count = cached_resources_type('Goal').size
-    @medication_list_count = cached_resources_type('List').size
+    @medication_list_count = cached_resources_type('List').select { |l| l.code.present? }.size
     @medication_requests_count = cached_resources_type('MedicationRequest').size
     @procedures_count = cached_resources_type('Procedure').size
     @diagnostic_reports_count = cached_resources_type('DiagnosticReport').size
