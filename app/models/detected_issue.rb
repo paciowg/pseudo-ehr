@@ -1,58 +1,88 @@
 class DetectedIssue < Resource
-  attr_reader :id, :fhir_resource, :status, :author, :severity, :detail, 
-              :reference, :implicated, :evidence, :mitigations, :patient_id, :patient
+  attr_reader :id, :fhir_resource, :status, :author, :severity, :detail, :code,
+              :reference, :implicated, :evidences, :mitigations, :patient_id, :patient,
+              :identified_date_time, :identified_period
 
   def initialize(fhir_detected_issue, bundle_entries = [])
     @fhir_resource = fhir_detected_issue
     @id = fhir_detected_issue.id
-    @patient_id = @fhir_resource.subject&.reference&.split('/')&.last
+    @patient_id = @fhir_resource.patient&.reference&.split('/')&.last
     @patient = Patient.find(@patient_id)
-    @author = parse_author(@fhir_resource.author, bundle_entries)
+    @author = parse_provider_name(@fhir_resource.author, bundle_entries)
     @status = fhir_detected_issue.status
     @severity = fhir_detected_issue.severity
     @detail = fhir_detected_issue.detail
+    @code = parse_codeable_concept(fhir_detected_issue.code)
     @reference = fhir_detected_issue.reference
-    @implicated = parse_implicated(@fhir_resource.implicated, bundle_entries)
-    @evidence = parse_evidence
-    @mitigations = parse_mitigations
+    @implicated = parse_implicated
+    @evidences = parse_evidences
+    @mitigations = parse_mitigations(bundle_entries)
+    @identified_date_time = fhir_detected_issue.identifiedDateTime
+    @identified_period = fhir_detected_issue.identifiedPeriod
 
     self.class.update(self)
   end
 
+  def identified_date
+    return parse_date(identified_date_time) if identified_date_time.present?
+
+    if identified_period.present?
+      start_date = parse_date(identified_period.start)
+      end_date = parse_date(identified_period.end)
+
+      return "#{start_date} - #{end_date}" if valid_date?(start_date) && valid_date?(end_date)
+      return "From #{start_date}" if valid_date?(start_date)
+      return "Until #{end_date}" if valid_date?(end_date)
+    end
+
+    '--'
+  rescue StandardError
+    '--'
+  end
+
   private
 
-  def read_author(author, bundle_entries)
-    resource = get_object_from_bundle(author.reference, bundle_entries)
-    resource.resourceType.constantize.new(resource, bundle_entries) unless resource.nil?
+  def parse_implicated
+    # implicated is an array of references to any resource that is relevant to the issue
+    # We cannot constantize here because we don't know if the resource type is defined in our app
+    # For simplicity, we will just return the display string if available, otherwise the reference
+    @fhir_resource.implicated&.map do |ref|
+      if ref.display.present?
+        ref.display
+      elsif ref.reference.present?
+        ref.reference
+      end
+    end&.compact || []
   end
 
-  def parse_implicated(implicated, bundle_entries)
-    resource = get_object_from_bundle(implicated.reference, bundle_entries)
-    resource.resourceType.constantize.new(resource, bundle_entries) unless resource.nil?
+  def parse_evidences
+    @fhir_resource.evidence&.flat_map do |evidence|
+      codes = evidence.code&.map { |c| parse_codeable_concept(c) } || []
+      codes.delete('--')
+
+      details = evidence.detail&.map do |ref|
+        if ref.display.present?
+          ref.display
+        elsif ref.reference.present?
+          ref.reference
+        end
+      end&.compact || []
+
+      codes.presence || details
+    end&.compact || []
   end
 
-  def parse_evidence
-    @fhir_resource.evidence.map do |evidence|
-      code = evidence.code.coding.first&.code
-      display = evidence.code.coding.first&.display
+  def parse_mitigations(bundle_entries)
+    @fhir_resource.mitigation&.map do |mitigation|
+      action = parse_codeable_concept(mitigation.action)
+      author = parse_provider_name(mitigation.author, bundle_entries)
+      date = parse_date(mitigation.date)
 
-      formatted_evidence = "#{display} (#{code})"
-      resource = get_object_from_bundle(evidence.detail, bundle_entries)
-      detail = resource.resourceType.constantize.new(resource, bundle_entries) unless resource.nil?
-      { code: formatted_evidence, detail: detail }
-    end&.compact
+      { action:, date:, author: }
+    end&.compact || []
   end
 
-  def parse_mitigations
-    @fhir_resource.mitigation.map do |mitigation|
-      code = mitigation.action.coding.first&.code
-      display = mitigation.action.coding.first&.display
-
-      formatted_mitigation = "#{display} (#{code})"
-      resource = get_object_from_bundle(mitigation.author, bundle_entries)
-      author = resource.resourceType.constantize.new(resource, bundle_entries) unless resource.nil?
-      { code: formatted_mitigation, date: mitigation.date, author: author }
-    end&.compact
+  def valid_date?(date)
+    date.present? && date != '--'
   end
 end
-
