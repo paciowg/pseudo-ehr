@@ -51,6 +51,9 @@ en:
     conditions:
       no_conditions: "Patient has no conditions"
 
+    detected_issues:
+      no_detected_issues: "Patient has no detected issues"
+
     diagnostic_reports:
       no_reports: "No Diagnostic Report found"
 

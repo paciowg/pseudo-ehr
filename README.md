@@ -35,25 +35,31 @@ A Rails 7 application styled with Tailwind CSS that interacts with a FHIR server
 
 The application is able to query (read/search) and display the following FHIR resources:
 
-* **Patient**
-* **Organization**
-* **Location**
-* **PractitionerRole**
-* **DocumentReference**
-* **Composition**
-* **Observation**
-* **Condition**
-* **ServiceRequest**
-* **NutritionOrder**
-* **Goal**
+
 * **CareTeam**
-* **List**
+* **Composition**
+* **Condition**
+* **DetectedIssue**
+* **DiagnosticReport**
+* **DocumentReference**
+* **Goal**
+* **List** (Medication)
+* **Location**
+* **MedicationRequest**
+* **NutritionOrder**
+* **Observation**
+* **Organization**
+* **Patient**
+* **PractitionerRole**
+* **Procedure**
+* **QuestionnaireResponse**
+* **ServiceRequest**
 
 All searches are performed using the `_include=*` parameter to retrieve and include related resources.
 
 ## Prerequisites
 
-* Ruby version 3.1.2 or higher
+* Ruby version 3.3.6
 * Rails 7
 * PostgreSQL
 
@@ -118,6 +124,7 @@ This app has been tested with the following FHIR servers:
 
 | Server Name                                 | Base URL                                  | Tested IGs    |
 | ------------------------------------------- | ----------------------------------------- | ------------- |
+| PACIO Sandbox | `https://gw.interop.community/paciosandbox/open` | PFE, SMP, TOC |
 | Michigan Health Information Network (MiHIN) | `https://gw.interop.community/MiHIN/open` | PFE, SMP, TOC |
 | MaxMD FHIR Server                           | `https://qa-rr-fhir2.maxmddirect.com`     | ADI           |
 

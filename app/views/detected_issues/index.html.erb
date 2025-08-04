@@ -1,0 +1,205 @@
+<!-- app/views/detected_issues/index.html.erb -->
+<div class="xl:mt-6 lg:mt-10 md:mt-12 sm:mt-32 lg:ml-64 w-full lg:w-3/4 h-full" data-controller="detected-issue-filters">
+  <div class="sm:flex sm:items-center w-11/12">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900">
+        Detected Issues
+        <span class="inline-flex items-center justify-center w-4 h-4 ms-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+          <%= @detected_issue_count %>
+        </span>
+      </h1>
+    </div>
+    <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <button type="button" disabled
+        class="block rounded-md bg-gray-400 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm cursor-not-allowed">
+        Add new issue
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter controls -->
+  <div class="w-11/12 flex flex-col-reverse md:flex-row items-start md:items-center justify-between md:space-x-4 p-4 border-b dark:border-gray-700">
+    <div class="grid grid-cols-1 md:grid-cols-2 w-full lg:w-2/3 md:gap-4">
+      <div class="w-full">
+        <label for="issue-status" class="sr-only">Filter By Status</label>
+        <select id="issue-status" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+          data-action="change->detected-issue-filters#filterByStatus" data-detected-issue-filters-target="statusFilter"
+        >
+          <option value="all">All Statuses</option>
+          <option value="preliminary">Preliminary</option>
+          <option value="registered">Registered</option>
+          <option value="amended">Amended</option>
+          <option value="final">Final</option>
+          <option value="entered-in-error">Entered in Error</option>
+          <option value="unknown">Unknown</option>
+        </select>
+      </div>
+      <div class="w-full mt-4 md:mt-0">
+        <label for="issue-severity" class="sr-only">Filter By Severity</label>
+        <select id="issue-severity" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+          data-action="change->detected-issue-filters#filterBySeverity" data-detected-issue-filters-target="severityFilter"
+        >
+          <option value="all">All Severities</option>
+          <option value="high">High</option>
+          <option value="moderate">Moderate</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detected Issues Table -->
+  <div class="mt-8 flow-root w-11/12">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <% if @detected_issues.empty? %>
+          <h1 class="text-center">No Detected Issues Found!</h1>
+        <% else %>
+          <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Issue</th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Identified Date</th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Status</th>
+                <th scope="col" class="px-4 py-3 min-w-[6rem]">Severity</th>
+              </tr>
+            </thead>
+            <tbody data-accordion="table-column">
+              <% @detected_issues.each do |issue| %>
+                <% identifier = issue.id.downcase.gsub(/[[:punct:]\s]/, '') %>
+                <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
+                  id="table-column-header-<%= identifier %>"
+                  data-accordion-target="#table-column-body-<%= identifier %>"
+                  aria-expanded="false"
+                  aria-controls="table-column-body-<%= identifier %>"
+                  data-detected-issue-filters-target="issueRow"
+                  data-status="<%= issue.status&.downcase || 'unknown' %>"
+                  data-severity="<%= issue.severity&.downcase || 'unknown' %>"
+                >
+                  <td class="p-3 w-4">
+                    <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </td>
+                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= issue.code || 'Unspecified Issue' %></td>
+                  <td class="px-4 py-3 text-gray-900 whitespace-nowrap dark:text-white"><%= issue.identified_date %></td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <% status_color = case issue.status&.downcase
+                      when 'final' then 'green'
+                      when 'registered' then 'blue'
+                      when 'amended' then 'amber'
+                      when 'preliminary' then 'yellow'
+                      when 'entered-in-error' then 'red'
+                      else 'gray'
+                      end
+                    %>
+                    <div class="w-fit bg-<%= status_color %>-100 text-<%= status_color %>-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
+                      <%= issue.status&.titleize || 'Unknown' %>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <% severity_color = case issue.severity&.downcase
+                      when 'high' then 'red'
+                      when 'moderate' then 'yellow'
+                      when 'low' then 'blue'
+                      else 'gray'
+                      end
+                    %>
+                    <div class="w-fit bg-<%= severity_color %>-100 text-<%= severity_color %>-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
+                      <%= issue.severity&.titleize || 'Unknown' %>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="hidden flex-1 overflow-x-auto w-full"
+                  id="table-column-body-<%= identifier %>"
+                  aria-labelledby="table-column-header-<%= identifier %>"
+                  data-detected-issue-filters-target="issueDetails"
+                  data-status="<%= issue.status&.downcase || 'unknown' %>"
+                  data-severity="<%= issue.severity&.downcase || 'unknown' %>"
+                >
+                  <td scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
+                  <td class="p-4 border-b" colspan="4">
+                    <% if issue.detail.present? && issue.detail != '--' %>
+                      <div class="items-center">
+                        <p class="flex items-center py-2"><b class="w-32">Detail:</b><span class="flex-1"><%= issue.detail %></span></p>
+                      </div>
+                    <% end %>
+
+                    <% if issue.author.present? && issue.author != '--' %>
+                      <div class="items-center mt-2">
+                        <p class="flex items-center py-2"><b class="w-32">Author:</b><span class="flex-1"><%= issue.author %></span></p>
+                      </div>
+                    <% end %>
+
+                    <% if issue.reference.present? && issue.reference != '--' %>
+                      <div class="items-center mt-2">
+                        <p class="flex items-center py-2"><b class="w-32">Reference:</b><span class="flex-1"><%= issue.reference %></span></p>
+                      </div>
+                    <% end %>
+
+                    <% if issue.implicated.present? %>
+                      <div class="items-center my-2">
+                        <h6 class="mb-2 py-2 text-base leading-none font-medium text-gray-900">Implicated Resources</h6>
+                        <ul class="max-w-xl space-y-1 list-disc list-inside">
+                          <% issue.implicated.each do |resource| %>
+                            <li><%= resource %></li>
+                          <% end %>
+                        </ul>
+                      </div>
+                    <% end %>
+
+                    <% if issue.evidences.present? %>
+                      <div class="items-center my-2">
+                        <h6 class="mb-2 py-2 text-base leading-none font-medium text-gray-900">Evidence</h6>
+                        <ul class="max-w-xl space-y-1 list-disc list-inside">
+                          <% issue.evidences.each do |evidence| %>
+                            <li><%= evidence %></li>
+                          <% end %>
+                        </ul>
+                      </div>
+                    <% end %>
+
+                    <% if issue.mitigations.present? %>
+                      <div class="items-center my-2">
+                        <h6 class="mb-2 py-2 text-base leading-none font-medium text-gray-900">Mitigations</h6>
+                        <ul class="max-w-xl space-y-1 list-none list-inside">
+                          <% issue.mitigations.each do |mitigation| %>
+                            <li class="mb-2">
+                              <p><strong>Action:</strong> <%= mitigation[:action] %></p>
+                              <% if mitigation[:date].present? && mitigation[:date] != '--' %>
+                                <p><strong>Date:</strong> <%= mitigation[:date] %></p>
+                              <% end %>
+                              <% if mitigation[:author].present? && mitigation[:author] != '--' %>
+                                <p><strong>Author:</strong> <%= mitigation[:author] %></p>
+                              <% end %>
+                            </li>
+                          <% end %>
+                        </ul>
+                      </div>
+                    <% end %>
+
+                    <div class="flex items-center space-x-3 mt-4">
+                      <button type="button" disabled class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-gray-400 rounded-lg cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                          <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                        </svg>
+                        Edit
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+          <br />
+          <% if @pagy %>
+            <%= raw pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
+          <% end %>
+          <br />
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
