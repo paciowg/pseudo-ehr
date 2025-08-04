@@ -1,32 +1,40 @@
-<div
-  class="block max-w-xl p-6 h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-700 dark:text-white">
-    Demographics
-  </h5>
-  <div class="flex flex-wrap -mx-3 my-6 font-normal text-gray-700 dark:text-gray-400">
-    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-      <label class="block uppercase tracking-wide text-gray-500 text-xs font-bold mb-1" for="grid-first-name">
-        Race
-      </label>
-      <span class="appearance-none block w-full text-gray-900 mb-3 leading-tigh">
-        <%= @patient.race%>
-      </span>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <!-- Race Section -->
+  <div class="bg-amber-50 dark:bg-gray-700 p-4 rounded-lg h-32">
+    <div class="flex items-center mb-3">
+      <svg class="w-5 h-5 text-amber-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+      </svg>
+      <h6 class="text-md font-medium text-amber-700 dark:text-amber-300">Race</h6>
     </div>
-    <div class="w-full md:w-1/2 px-3">
-      <label class="block uppercase tracking-wide text-gray-500 text-xs font-bold mb-1" for="grid-last-name">
-        Ethnicity
-      </label>
-      <span class="appearance-none block w-full text-gray-900 mb-3 leading-tigh">
-        <%= @patient.ethnicity%>
-      </span>
+    <div class="pl-7 overflow-auto">
+      <p class="text-gray-800 dark:text-white font-medium text-sm md:text-base"><%= @patient.race %></p>
     </div>
-    <div class="w-full md:w-1/2 px-3">
-      <label class="block uppercase tracking-wide text-gray-500 text-xs font-bold mb-1" for="grid-last-name">
-        Language
-      </label>
-      <span class="appearance-none block w-full text-gray-900 mb-3 leading-tigh">
-        <%= @patient.language%>
-      </span>
+  </div>
+
+  <!-- Ethnicity Section -->
+  <div class="bg-orange-50 dark:bg-gray-700 p-4 rounded-lg h-32">
+    <div class="flex items-center mb-3">
+      <svg class="w-5 h-5 text-orange-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <h6 class="text-md font-medium text-orange-700 dark:text-orange-300">Ethnicity</h6>
+    </div>
+    <div class="pl-7 overflow-auto">
+      <p class="text-gray-800 dark:text-white font-medium text-sm md:text-base"><%= @patient.ethnicity %></p>
+    </div>
+  </div>
+
+  <!-- Language Section -->
+  <div class="bg-rose-50 dark:bg-gray-700 p-4 rounded-lg h-32">
+    <div class="flex items-center mb-3">
+      <svg class="w-5 h-5 text-rose-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+      </svg>
+      <h6 class="text-md font-medium text-rose-700 dark:text-rose-300">Language</h6>
+    </div>
+    <div class="pl-7 overflow-auto">
+      <p class="text-gray-800 dark:text-white font-medium text-sm md:text-base"><%= @patient.language %></p>
     </div>
   </div>
 </div>
