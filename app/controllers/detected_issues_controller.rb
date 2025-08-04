@@ -3,7 +3,7 @@ class DetectedIssuesController < ApplicationController
 
   # GET /patients/:patient_id/detected_issues
   def index
-    @detected_issues = fetch_patient_detected_issues(params[:patient_id])
+    @pagy, @detected_issues = pagy_array(fetch_patient_detected_issues(params[:patient_id]), items: 10)
     flash.now[:notice] = I18n.t('controllers.detected_issues.no_detected_issues') if @detected_issues.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
@@ -14,7 +14,7 @@ class DetectedIssuesController < ApplicationController
 
   def fetch_patient_detected_issues(patient_id)
     detected_issues = DetectedIssue.filter_by_patient_id(patient_id)
-    return detected_issues unless DetectedIssue.expired? || detected_issues.blank?
+    return sort_detected_issues(detected_issues) unless DetectedIssue.expired? || detected_issues.blank?
 
     entries = retrieve_current_patient_resources
     fhir_detected_issues = cached_resources_type('DetectedIssue')
@@ -32,11 +32,16 @@ class DetectedIssuesController < ApplicationController
     entries = (entries + practitioner_roles).uniq
     fhir_detected_issues.each { |entry| DetectedIssue.new(entry, entries) }
 
-    DetectedIssue.filter_by_patient_id(patient_id)
+    detected_issues = DetectedIssue.filter_by_patient_id(patient_id)
+    sort_detected_issues(detected_issues)
   rescue StandardError => e
     Rails.logger.error("Error fetching or parsing DetectedIssues:\n #{e.message.inspect}")
     Rails.logger.error(e.backtrace.join("\n"))
 
     raise "Error fetching or parsing patient's detected issues. Check the log for detail."
+  end
+
+  def sort_detected_issues(detected_issues)
+    detected_issues.sort_by { |di| di.identified_date_time || di.identified_period&.start || '' }.reverse
   end
 end
