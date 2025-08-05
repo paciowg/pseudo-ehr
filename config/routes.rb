@@ -15,8 +15,11 @@ Rails.application.routes.draw do
     end
   end
   namespace :api do
-    resources :questionnaire_responses, only: [:create]
+    post 'convert_qr_to_pfe_and_submit',
+         to: 'questionnaire_response_processing#convert_qr_to_pfe_and_submit',
+         as: :convert_qr_to_pfe_and_submit
   end
+
   resources :sessions, only: [:new]
   resources :patients, only: %i[show index update] do
     post :sync_patient_record, on: :member

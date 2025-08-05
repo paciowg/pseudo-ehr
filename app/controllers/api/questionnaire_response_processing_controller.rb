@@ -1,10 +1,10 @@
 module Api
-  # Controller for processing incoming QuestionnaireResponses and converting them
+  # Controller for processing incoming an QuestionnaireResponse and converting it
   # into PFE FHIR Observations, then posting the results to an external FHIR server.
-  class QuestionnaireResponsesController < ApplicationController
+  class QuestionnaireResponseProcessingController < ApplicationController
     skip_before_action :current_server, raise: false
 
-    def create
+    def convert_qr_to_pfe_and_submit
       if fhir_server_params.blank? || questionnaire_response_params.blank?
         return render json: {
           error: 'Missing required parameter(s): fhir_server, questionnaire_response'
@@ -19,9 +19,9 @@ module Api
       result = processor.call
 
       if result.success?
-        head :created
+        render json: result.to_json, status: :ok
       else
-        render json: result.error.as_json, status: :unprocessable_entity
+        render json: result.to_json, status: :unprocessable_entity
       end
     end
 
