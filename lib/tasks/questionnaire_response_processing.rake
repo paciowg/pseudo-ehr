@@ -64,14 +64,7 @@ namespace :fhir do
     bundles.each do |path|
       bundle = FHIR.from_contents(File.read(path))
 
-      client.begin_transaction
-      bundle.entry.each do |entry|
-        client.add_transaction_request(
-          entry.request.local_method,
-          nil,
-          entry.resource
-        )
-      end
+      client.transaction_bundle = bundle
       response = client.end_transaction
 
       if response.code.to_i < 400

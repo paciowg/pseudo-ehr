@@ -7,28 +7,33 @@ class QuestionnaireResponseProcessor
   end
 
   def call(submit: true)
-    bundle = FHIR::Bundle.new(type: 'transaction')
-
     qr = build_questionnaire_response
-    bundle.entry << build_entry('QuestionnaireResponse', qr)
+
+    @client.begin_transaction
+    @client.add_transaction_request('PUT', "QuestionnaireResponse/#{qr.id}", qr)
 
     observations = PfeObservationBuilder.new(qr, questionnaire).build
 
     observations.each do |obs|
-      bundle.entry << build_entry('Observation', obs)
+      @client.add_transaction_request('PUT', "Observation/#{obs.id}", obs)
     end
 
     if submit
-      reply = @client.transaction(bundle)
-      if reply.code.to_i < 400
-        Result.new(success?: true)
-      else
-        outcome = build_operation_outcome("FHIR server returned #{reply.code}: #{reply.body}")
-        Result.new(success?: false, error: outcome)
-      end
+      submit_transaction
     else
       # “Build-only” mode: hand the bundle back for later submission
-      Result.new(success?: true, bundle: bundle)
+      Result.new(success?: true, bundle: @client.transaction_bundle)
+    end
+  rescue StandardError => e
+    Result.new(success?: false, error: e.message)
+  end
+
+  def submit_transaction
+    reply = @client.end_transaction
+    if reply.code.to_i < 400
+      Result.new(success?: true, code: reply.code, resource: reply.resource)
+    else
+      Result.new(success?: false, code: reply.code, error: reply.try(:error), resource: reply.resource)
     end
   rescue StandardError => e
     Result.new(success?: false, error: e.message)
@@ -63,27 +68,5 @@ class QuestionnaireResponseProcessor
     rescue RestClient::Exception, StandardError => e
       raise "Unexpected error fetching Questionnaire from #{url}: #{e.message}"
     end
-  end
-
-  def build_entry(resource_type, resource)
-    {
-      request: {
-        method: 'PUT',
-        url: "#{resource_type}/#{resource.id}"
-      },
-      resource: resource
-    }
-  end
-
-  def build_operation_outcome(message, severity: 'error', code: 'exception')
-    FHIR::OperationOutcome.new(
-      issue: [
-        {
-          severity: severity,
-          code: code,
-          diagnostics: message
-        }
-      ]
-    )
   end
 end
