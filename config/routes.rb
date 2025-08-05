@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     resources :questionnaire_responses, only: [:create]
   end
   resources :sessions, only: [:new]
-  resources :patients, only: %i[show index] do
+  resources :patients, only: %i[show index update] do
     post :sync_patient_record, on: :member
   end
   resources :fhir_servers, only: %i[index destroy]

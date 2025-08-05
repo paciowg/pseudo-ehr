@@ -90,6 +90,9 @@ en:
       sync_success_full: "Patient record synced successfully (full sync)!"
       sync_full: "Patient record synced successfully (full sync)!"
       sync_failed: "Failed to sync Patient record!"
+      not_found_error: "Patient not found"
+      update_success: "Patient information updated successfully"
+      update_error: "Error updating patient information"
 
     procedures:
       no_procedures: "No Procedure found"
