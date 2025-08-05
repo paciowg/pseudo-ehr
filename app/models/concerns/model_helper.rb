@@ -122,6 +122,22 @@ module ModelHelper
 
     text.compact.empty? ? '--' : text.compact.join(', ')
   end
+
+  def marital_status_code_mapping(code)
+    mapping = {
+      'A' => 'Annulled',
+      'D' => 'Divorced',
+      'I' => 'Interlocutory',
+      'L' => 'Legally Separated',
+      'M' => 'Married',
+      'P' => 'Polygamous',
+      'S' => 'Never Married',
+      'T' => 'Domestic partner',
+      'W' => 'Widowed',
+      'UNK' => 'Unknown'
+    }
+    mapping[code] || code || '--'
+  end
   #-----------------------------------------------------------------------------
 
   def parse_date(date_string)

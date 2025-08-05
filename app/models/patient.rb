@@ -1,7 +1,7 @@
 # Patient Model
 class Patient < Resource
   attr_reader :id, :fhir_resource, :first_name, :last_name, :name, :dob, :medical_record_number, :gender, :address,
-              :phone, :email, :race, :ethnicity, :marital_status, :birthsex, :language, :patient_id
+              :phone, :email, :race, :ethnicity, :marital_status, :birthsex, :language, :patient_id, :emergency_contacts
 
   def initialize(fhir_patient)
     @fhir_resource = fhir_patient
@@ -9,7 +9,7 @@ class Patient < Resource
     extract_basic_attributes(fhir_patient)
     extract_contact_info(fhir_patient)
     extract_characteristics(fhir_patient)
-
+    @emergency_contacts = extract_emergency_contacts
     self.class.update(self)
   end
 
@@ -27,7 +27,7 @@ class Patient < Resource
     @dob = fhir_patient.birthDate || '--'
     @gender = fhir_patient.gender || '--'
     @medical_record_number = extract_med_rec_num(fhir_patient.identifier)
-    @marital_status = fhir_patient.maritalStatus&.coding&.first&.display || '--'
+    @marital_status = marital_status_code_mapping(fhir_patient.maritalStatus&.coding&.first&.code)
     @language = fhir_patient.communication.first&.language&.coding&.first&.code&.upcase || '--'
   end
 
@@ -62,6 +62,34 @@ class Patient < Resource
     nil
   end
 
+  def extract_emergency_contacts
+    return [] unless @fhir_resource.contact
+
+    @fhir_resource.contact.map do |contact|
+      relationship = if relationship_code = contact.relationship&.first&.coding&.first&.code
+                       relationship_code_mapping(relationship_code)
+                     else
+                       'Unknown'
+                     end
+      name = contact.name&.text.presence
+      unless name
+        name_obj = format_name([contact.name].flatten.compact)
+        name = "#{name_obj[:first_name]} #{name_obj[:last_name]}"
+      end
+      phone = format_phone(contact.telecom)
+      email = format_email(contact.telecom)
+      address = contact.address.try(:text).presence || format_address([contact.address].flatten.compact)
+
+      {
+        name:,
+        relationship:,
+        phone:,
+        email:,
+        address:
+      }
+    end.compact
+  end
+
   def read_characteristics(extensions)
     characteristics = { race: '--', ethnicity: '--', birthsex: '--' }
 
@@ -83,5 +111,27 @@ class Patient < Resource
     extension.extension.map do |sub_ext|
       sub_ext.valueCoding.display if sub_ext.url == 'ombCategory' && sub_ext.valueCoding
     end.compact.join(', ')
+  end
+
+  def relationship_code_mapping(code)
+    mapping = {
+      'SONC' => 'Son',
+      'DAUC' => 'Daughter',
+      'SPOU' => 'Spouse',
+      'FTH' => 'Father',
+      'MTH' => 'Mother',
+      'SIB' => 'Sibling',
+      'FRND' => 'Friend',
+      'CUST' => 'Custodian',
+      'GUAR' => 'Guarantor',
+      'PART' => 'Partner',
+      'NOK' => 'Next of Kin',
+      'DAUINLAW' => 'Daughter-in-law',
+      'SONINLAW' => 'Son-in-law',
+      'MTHINLAW' => 'Mother-in-law',
+      'FTHINLAW' => 'Father-in-law'
+    }
+
+    mapping[code] || code || '--'
   end
 end
