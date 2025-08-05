@@ -4,9 +4,6 @@ class Resource
   include ModelHelper
   include ModelValueSet
 
-  # Expiration time for cached records
-  EXPIRATION_TIME = 1.hour
-
   class << self
     def update(resource)
       remove(resource.id) if exist?(resource.id)
@@ -14,6 +11,7 @@ class Resource
       all << resource
       all_by_id[resource.id] = resource
       updated_at(Time.zone.now)
+      expiration_time(1.hour)
     end
 
     def remove(id)
@@ -45,12 +43,17 @@ class Resource
     def expired?
       return true  unless updated_at
 
-      updated_at < EXPIRATION_TIME.ago
+      updated_at < expiration_time.ago
     end
 
     def updated_at(time = nil)
       @updated_at = time if time.present?
       @updated_at
+    end
+
+    def expiration_time(expiration_time = nil)
+      @expiration_time = expiration_time if expiration_time.present?
+      @expiration_time ||= 1.hour
     end
 
     def all
