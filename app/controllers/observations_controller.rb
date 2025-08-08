@@ -6,6 +6,11 @@ class ObservationsController < ApplicationController
   # GET /patients/:patient_id/observations
   def index
     observations = fetch_observations(params[:patient_id])
+    if params[:derived_from].present?
+      observations = observations.select do |obs|
+        obs.derived_from.map { |r| r[:reference] }.include?(params[:derived_from])
+      end
+    end
 
     @grouped_observations = Observation.group_by_category_and_domain(observations)
     @collection_observations = Observation.collections(observations)

@@ -30,6 +30,12 @@ class QuestionnaireResponse < Resource
     self.class.update(self)
   end
 
+  # Checks if there are any Observations that were generated from this QuestionnaireResponse
+  def observations?
+    Observation.all.any? { |obs| obs.derived_from&.any? { |ref| ref[:reference] == "QuestionnaireResponse/#{@id}" } } ||
+      PatientRecordCache.observations_by_questionnaire_response_id(@id).any?
+  end
+
   # Returns a categorized view of items for better organization in the UI
   def categorized_items
     @items.group_by { |item| item[:category] || 'Uncategorized' }

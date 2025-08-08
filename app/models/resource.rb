@@ -22,8 +22,6 @@ class Resource
     end
 
     def find(id)
-      return if expired?
-
       all_by_id[id]
     end
 

@@ -99,6 +99,8 @@ en:
 
     questionnaire_responses:
       no_responses: "Patient has not answer any questionnaire yet"
+      not_found_error: "QuestionnaireResponse not found"
+      conversion_initiated: "Conversion to assessments initiated. Results will be processed shortly."
 
     service_requests:
       no_requests: "Patient has no Service Request yet"
