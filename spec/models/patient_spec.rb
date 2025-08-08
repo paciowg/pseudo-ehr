@@ -17,7 +17,7 @@ RSpec.describe Patient do
                   double('Telecom', system: 'email', value: 'john.doe@example.com')],
         identifier: [double('Identifier', value: 'MR12345', type: double('Type',
                                                                          coding: [double('Coding', code: 'MR')]))],
-        maritalStatus: double('MaritalStatus', coding: [double('Coding', display: 'Married')]),
+        maritalStatus: double('MaritalStatus', coding: [double('Coding', code: 'M', display: 'Married')]),
         extension: []
       )
     end
