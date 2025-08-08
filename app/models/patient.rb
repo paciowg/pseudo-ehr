@@ -66,7 +66,7 @@ class Patient < Resource
     return [] unless @fhir_resource.contact
 
     @fhir_resource.contact.map do |contact|
-      relationship = if relationship_code = contact.relationship&.first&.coding&.first&.code
+      relationship = if (relationship_code = contact.relationship&.first&.coding&.first&.code)
                        relationship_code_mapping(relationship_code)
                      else
                        'Unknown'
