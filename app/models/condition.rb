@@ -11,7 +11,7 @@ class Condition < Resource
     @patient_id = fhir_condition.subject&.reference&.split('/')&.last
     @patient = Patient.find(@patient_id)
     @clinical_status = fhir_condition.clinicalStatus.coding.first&.code&.capitalize
-    @verification_status = fhir_condition.verificationStatus.coding.first&.code&.capitalize
+    @verification_status = fhir_condition.verificationStatus&.coding&.first&.code&.capitalize
     @category = retrieve_categories
     @code = retrieve_code
     @onset_date_time = fhir_condition.try(:onsetDateTime)

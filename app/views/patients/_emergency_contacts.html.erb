@@ -1,0 +1,44 @@
+<% if @patient.emergency_contacts.present? %>
+  <div class="space-y-4">
+    <% @patient.emergency_contacts.each do |contact| %>
+      <div class="bg-amber-50 dark:bg-gray-700 p-4 rounded-lg">
+        <div class="flex items-center mb-3">
+          <svg class="w-5 h-5 text-amber-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <h6 class="text-md font-medium text-amber-700 dark:text-amber-300"><%= contact[:name] %> (<%= contact[:relationship] %>)</h6>
+        </div>
+        <div class="pl-7 space-y-2">
+          <% if contact[:phone].present? && contact[:phone] != '--' %>
+            <p class="text-gray-800 dark:text-white font-medium text-sm md:text-base">
+              <span class="text-gray-600 dark:text-gray-400">Phone:</span>
+              <a href="tel:<%= contact[:phone] %>" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
+                <%= contact[:phone] %>
+              </a>
+            </p>
+          <% end %>
+
+          <% if contact[:email].present? && contact[:email] != '--' %>
+            <p class="text-gray-800 dark:text-white font-medium text-sm md:text-base">
+              <span class="text-gray-600 dark:text-gray-400">Email:</span>
+              <a href="mailto:<%= contact[:email] %>" class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors break-all">
+                <%= contact[:email] %>
+              </a>
+            </p>
+          <% end %>
+
+          <% if contact[:address].present? && contact[:address] != '--' %>
+            <p class="text-gray-800 dark:text-white font-medium text-sm md:text-base">
+              <span class="text-gray-600 dark:text-gray-400">Address:</span>
+              <%= contact[:address] %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg text-center">
+    <p class="text-gray-600 dark:text-gray-400">No emergency contacts available</p>
+  </div>
+<% end %>

@@ -90,6 +90,19 @@ module ResourceFetchHelper
     end
   end
 
+  def update_resource(fhir_resource)
+    response = client.update(fhir_resource, fhir_resource.id)
+    add_query(response.request)
+
+    unless response.resource.is_a?(fhir_resource.class)
+      raise "Error updating #{fhir_resource.class.name}:\n #{response.resource&.inspect}"
+    end
+
+    response.resource
+  rescue Net::ReadTimeout, Net::OpenTimeout
+    raise TIMEOUT_ERROR_MESSAGE
+  end
+
   # Fetch specific patient data
 
   def fetch_patients_by_id

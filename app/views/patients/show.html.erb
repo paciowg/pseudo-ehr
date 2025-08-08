@@ -1,5 +1,61 @@
 <!-- app/views/patients/show.html.erb -->
-<div class="sm:mt-16 lg:mt-4 lg:ml-64 w-full lg:w-3/4 h-full flex flex-col font-sans items-center justify-center">
-  <h1 class="font-semibold text-left text-xl mb-2">Personal Information</h1>
+<div class="sm:mt-16 lg:mt-4 lg:ml-64 w-full lg:w-3/4 h-full flex flex-col font-sans">
+  <div class="mb-6">
+    <div class="flex items-center justify-between">
+      <h1 class="font-bold text-2xl text-gray-800 dark:text-white">Patient Summary</h1>
+      <div data-controller="modal">
+        <button data-action="modal#open" data-modal-id="updatePatientModal" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+          </svg>
+          Update Patient Info
+        </button>
+      </div>
+    </div>
+
+    <!-- Patient Quick Stats -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mt-4 mb-6">
+      <div class="flex items-center">
+        <% icon = @patient.gender == "female" ? "woman.svg" : "man-user.svg" %>
+        <%= image_tag icon, alt: "User Logo", class: "w-12 h-12 rounded-full mr-4" %>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800 dark:text-white"><%= @patient.name %></h2>
+          <div class="flex flex-wrap items-center text-sm text-gray-600 dark:text-gray-300">
+            <span class="mr-3"><%= @patient.gender.capitalize %>, <%= calculate_age(@patient.dob) %> years</span>
+            <span class="mr-3">DOB: <%= @patient.dob %></span>
+            <% if @patient.medical_record_number.present? %>
+              <span>MRN: <%= @patient.medical_record_number %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
+    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+      <li class="mr-2">
+        <a href="#" class="inline-block p-4 border-b-2 border-blue-600 rounded-t-lg active text-blue-600 dark:text-blue-500 dark:border-blue-500" aria-current="page">
+          Personal Information
+        </a>
+      </li>
+      <li class="mr-2">
+        <a href="#" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">
+          Clinical Data
+        </a>
+      </li>
+      <li class="mr-2">
+        <a href="#" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">
+          Care Plan
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Patient Information -->
   <%= render "patient" %>
 </div>
+
+<!-- Render the patient update modal -->
+<%= render "update_patient_modal" %>
