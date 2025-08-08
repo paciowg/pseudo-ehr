@@ -4,12 +4,45 @@ class QuestionnaireResponsesController < ApplicationController
 
   # GET /patients/:patient_id/questionnaire_responses
   def index
+    if params[:task_id].present?
+      session[:qr_task_ids] ||= []
+      session[:qr_task_ids] << params[:task_id] unless session[:qr_task_ids].include?(params[:task_id])
+    end
+    @task_ids = session[:qr_task_ids] || []
     @pagy, @questionnaire_responses = pagy_array(fetch_questionnaire_responses(params[:patient_id]),
                                                  items: 10)
     flash.now[:notice] = I18n.t('controllers.questionnaire_responses.no_responses') if @questionnaire_responses.empty?
   rescue StandardError => e
     flash.now[:danger] = e.message
     @questionnaire_responses = []
+  end
+
+  # POST /patients/:patient_id/questionnaire_responses/:id/convert_to_assessments
+  def convert_to_assessments
+    qr = fetch_questionnaire_response
+
+    if qr.blank?
+      flash[:danger] = I18n.t('controllers.questionnaire_responses.not_found_error')
+      redirect_to patient_questionnaire_responses_path(patient_id: params[:patient_id]) and return
+    end
+
+    fhir_server_url = session[:fhir_server_url]
+    task = TaskStatus.create_for_task(
+      'Questionnaire Response to PFE Assessments Conversion',
+      nil, # No folder_path needed
+      fhir_server_url,
+      params[:id] # Use the QuestionnaireResponse ID as task_id for easier tracking
+    )
+
+    ConvertQrToPfeAndSubmitJob.perform_later(
+      qr.fhir_resource.to_hash,
+      session[:fhir_server_url],
+      task.task_id,
+      params[:patient_id]
+    )
+
+    flash[:notice] = I18n.t('controllers.questionnaire_responses.conversion_initiated')
+    redirect_to patient_questionnaire_responses_path(patient_id: params[:patient_id], task_id: task.task_id)
   end
 
   private
@@ -36,5 +69,13 @@ class QuestionnaireResponsesController < ApplicationController
     Rails.logger.error(e.backtrace.join("\n"))
 
     raise "Error fetching or parsing patient's questionnaire responses. Check the log for detail."
+  end
+
+  def fetch_questionnaire_response
+    qr = QuestionnaireResponse.find(params[:id])
+    return qr unless qr.nil?
+
+    qrs = fetch_questionnaire_responses(params[:patient_id])
+    qrs.find { |response| response.id == params[:id] }
   end
 end

@@ -39,6 +39,10 @@ Rails.application.routes.draw do
   get 'patients/:patient_id/care_teams', to: 'care_teams#index', as: 'patient_care_teams'
   get 'patients/:patient_id/questionnaire_responses', to: 'questionnaire_responses#index',
                                                       as: 'patient_questionnaire_responses'
+  post 'patients/:patient_id/questionnaire_responses/:id/convert_to_assessments',
+       to: 'questionnaire_responses#convert_to_assessments',
+       as: 'convert_questionnaire_response_to_assessments'
+
   get 'patients/:patient_id/nutrition_orders', to: 'nutrition_orders#index', as: 'patient_nutrition_orders'
   get 'patients/:patient_id/service_requests', to: 'service_requests#index', as: 'patient_service_requests'
   get 'patients/:patient_id/observations', to: 'observations#index', as: 'patient_observations'
