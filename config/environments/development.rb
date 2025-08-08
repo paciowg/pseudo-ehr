@@ -17,6 +17,9 @@ Rails.application.configure do
   # Enable server timing
   config.server_timing = true
 
+  # Use the async job adapter
+  config.active_job.queue_adapter = :async
+
   # Enable/disable caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.
   config.action_controller.perform_caching = true
@@ -82,4 +85,7 @@ Rails.application.configure do
 
   # Allow Action Cable access from any origin
   config.action_cable.disable_request_forgery_protection = true
+
+  # Set default URL options for the development environment
+  config.default_url_options = { host: 'localhost:3000' }
 end
