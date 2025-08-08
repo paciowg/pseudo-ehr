@@ -57,4 +57,7 @@ Rails.application.configure do
 
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
+
+  # Set default URL options for the test environment
+  config.default_url_options = { host: 'test.host' }
 end
