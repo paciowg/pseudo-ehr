@@ -1,5 +1,5 @@
 class QuestionnaireResponseProcessor
-  Result = Struct.new(:success?, :bundle, :error, keyword_init: true)
+  Result = Struct.new(:success?, :bundle, :error, :code, :resource, keyword_init: true)
 
   def initialize(questionnaire_response_hash, fhir_server:)
     @questionnaire_response_hash = questionnaire_response_hash.deep_symbolize_keys
