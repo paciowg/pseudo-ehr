@@ -60,25 +60,6 @@
         updateFhirUrlFields();
       });
     });
-
-    // Function to dismiss a task
-    function dismissTask(taskId, container) {
-      fetch(`/task_statuses/${taskId}/dismiss`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-        }
-      }).then(response => {
-        if (response.ok) {
-          container.remove();
-        } else {
-          console.error('Failed to dismiss task');
-        }
-      }).catch(error => {
-        console.error('Error dismissing task:', error);
-      });
-    }
   </script>
   <div class="max-w-7xl mx-auto">
     <div class="flex justify-between items-center mb-6">
@@ -91,20 +72,25 @@
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Task Status</h2>
 
       <% # Dismiss all except the most recent task
-         TaskStatus.dismiss_all_except_current
+         TaskStatus.dismiss_all_except_current('FHIR Data Push')
 
          # Get the most recent task
-         task = TaskStatus.most_recent
+         task = TaskStatus.most_recent('FHIR Data Push')
 
          if task && task.status != TaskStatus::DISMISSED %>
-        <div id="task-status-<%= task.task_id %>" class="task-status-item mb-4 p-4 border rounded
+        <div class="task-status-item mb-4 p-4 border rounded
           <%= case task.status
               when 'pending' then 'bg-yellow-100 border-yellow-300'
               when 'running' then 'bg-blue-100 border-blue-300'
               when 'completed' then 'bg-green-100 border-green-300'
               when 'failed' then 'bg-red-100 border-red-300'
               else 'bg-gray-100 border-gray-300'
-              end %>">
+              end %>"
+              id="task-<%= task.task_id %>"
+              data-controller="task-status"
+              data-task-status-task-id-value="<%= task.task_id %>"
+              data-task-status-target="wrapper"
+            >
           <div class="flex justify-between items-start">
             <div>
               <h3 class="font-semibold text-lg"><%= task.task_type %></h3>
@@ -122,20 +108,25 @@
                 when 'completed' then 'bg-green-100 border-green-300'
                 when 'failed' then 'bg-red-100 border-red-300'
                 else 'bg-gray-100 border-gray-300'
-                end %>">
+                end %>"
+                data-task-status-target="status"
+              >
                 <%= task.status.upcase %>
               </span>
             </div>
           </div>
           <div class="mt-2 text-sm">
-            <p><%= task.message %></p>
+            <p data-task-status-target="message"><%= task.message %></p>
           </div>
           <div class="mt-1 text-xs text-gray-500">
-            Last updated: <%= task.updated_at.strftime('%Y-%m-%d %H:%M:%S') %>
+            Last updated: <span data-task-status-target="lastupdated"><%= task.updated_at.strftime('%Y-%m-%d %H:%M:%S') %></span>
           </div>
-          <% if task.status == 'completed' || task.status == 'failed' %>
-            <button class="mt-2 px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded" onclick="dismissTask('<%= task.task_id %>', this.parentElement)">Dismiss</button>
-          <% end %>
+          <button class="mt-2 px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded<%= task.status == 'completed' || task.status == 'failed' ? '' : ' hidden' %>"
+            data-action="click->task-status#dismiss"
+            data-task-status-target="dismissButton"
+          >
+            Dismiss
+          </button>
         </div>
       <% else %>
         <div class="text-center py-4 text-gray-500">
