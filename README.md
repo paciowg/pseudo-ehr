@@ -307,6 +307,10 @@ The UI provides a user-friendly way to convert QuestionnaireResponses to PFE Obs
 
    ![View Derived Assessments](demo/view_derived_assessments.png)
 
+6. **View PFE Assessments**: After clicking "View Derived PFE Assessments", you'll be taken to the Observations page where you can see the newly created PFE Observations.
+
+   ![Generated Assessments](demo/generated_assessments.png)
+
 
 ## Testing
 
