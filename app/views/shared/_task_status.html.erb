@@ -1,0 +1,37 @@
+<% if @task_ids.present? %>
+
+  <% @task_ids.each do |task_id| %>
+    <% task = TaskStatus.find_by(task_id: task_id) %>
+    <% task.mark_dismissed if task && ['completed', 'failed'].include?(task.status) && task.updated_at >= 1.hour.ago %>
+    <% if task && task.status != 'dismissed' %>
+      <div
+        id="task-<%= task.task_id %>"
+        data-controller="task-status"
+        data-task-status-task-id-value="<%= task.task_id %>"
+        data-task-status-target="wrapper"
+        class="mb-4"
+      >
+        <div class="mb-1 text-sm font-medium" data-task-status-target="status">
+          <%= task.status %>
+        </div>
+        <div class="mb-2 text-sm text-gray-700" data-task-status-target="message">
+          <%= task.message %>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 overflow-hidden">
+          <div
+            class="h-2.5 rounded-full transition-all duration-500"
+            style="width: <%= task.status_completed? || task.status_failed? ? '100%' : task.status_running? ? '50%' : '10%' %>;"
+            data-task-status-target="bar"
+          ></div>
+        </div>
+        <button class="mt-2 px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded<%= task.status == 'completed' || task.status == 'failed' ? '' : ' hidden' %>"
+          data-action="click->task-status#dismiss"
+          data-task-status-target="dismissButton"
+        >
+          Dismiss
+        </button>
+      </div>
+    <% end %>
+  <% end %>
+
+<% end %>

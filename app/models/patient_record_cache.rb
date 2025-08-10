@@ -109,5 +109,20 @@ class PatientRecordCache
         patient_records_last_sync.key?(patient_id) &&
         patient_records_last_sync[patient_id] > EXPIRATION_TIME.ago
     end
+
+    # Observations by questionnaire response id
+    def observations_by_questionnaire_response_id(qr_id)
+      return [] if qr_id.blank?
+
+      all_observations = patient_records.values.flat_map do |records|
+        records.select { |r| r.resourceType == 'Observation' }
+      end
+
+      all_observations.select do |obs|
+        obs.try(:derivedFrom)&.any? do |ref|
+          ref.is_a?(FHIR::Reference) && ref.reference == "QuestionnaireResponse/#{qr_id}"
+        end
+      end
+    end
   end
 end

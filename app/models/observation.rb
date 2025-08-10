@@ -163,9 +163,10 @@ class Observation < Resource
 
     fhir_derived_from&.map do |elmt|
       resource_type, id = elmt.reference.split('/')
+      reference = "#{resource_type}/#{id}"
       name = "#{resource_type}-#{id} "
       path = "/patients/#{@patient_id}/#{resource_type.downcase}s/#{id}"
-      { name:, path: }
+      { name:, path:, reference: }
     end
   end
 
