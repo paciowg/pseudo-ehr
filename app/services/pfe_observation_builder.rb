@@ -164,10 +164,9 @@ class PfeObservationBuilder
     # Add device-use extension if author is a Device
     return unless author_ref.start_with?('Device/')
 
-    obs.extension << {
-      url: EXT_DEVICE_USE,
-      valueReference: { reference: author_ref }
-    }
+    ext = FHIR::Extension.new(url: EXT_DEVICE_USE, valueReference: { reference: author_ref })
+
+    obs.extension << ext
 
     # TODO: determine how to dynamically extract location
     # Add event-location extension
