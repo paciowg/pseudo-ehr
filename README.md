@@ -144,6 +144,170 @@ The Pseudo-EHR application follows the standard Rails structure with a few custo
 * **spec/**: RSpec tests for unit and integration testing.
 * **public/**: Static assets and compiled files.
 
+## API Endpoints
+
+### QuestionnaireResponse Processing API
+
+The application provides an API endpoint for processing QuestionnaireResponses and converting them to PFE Observations.
+
+**Endpoint**: `POST /api/convert_qr_to_pfe_and_submit`
+
+**Description**: Processes a FHIR QuestionnaireResponse resource, converts it into PFE Observations according to the PACIO PFE Implementation Guide, and submits the results to a specified FHIR server.
+
+**Parameters**:
+- `questionnaire_response`: A FHIR QuestionnaireResponse resource (required)
+- `fhir_server`: The base URL of the FHIR server to submit the results to (required)
+
+**Response**:
+- Success (200 OK): Returns the FHIR transaction bundle containing the created resources
+- Error (400 Bad Request): Returns an error message if the parameters are invalid
+- Error (422 Unprocessable Entity): Returns an error message if the conversion or submission fails
+
+**Example Request**:
+```json
+{
+  "questionnaire_response": {
+    "resourceType": "QuestionnaireResponse",
+    "id": "example-qr",
+    "status": "completed",
+    "subject": {
+      "reference": "Patient/example"
+    },
+    "questionnaire": "http://example.org/Questionnaire/example",
+    "item": [
+      {
+        "linkId": "1",
+        "text": "Example question",
+        "answer": [
+          {
+            "valueString": "Example answer"
+          }
+        ]
+      }
+    ]
+  },
+  "fhir_server": "https://example.org/fhir"
+}
+```
+
+**Example Success Response**:
+```json
+{
+  "success?": true,
+  "code": 200,
+  "resource": {
+    "resourceType": "Bundle",
+    "type": "transaction",
+    "entry": [
+      {
+        "resource": {
+          "resourceType": "QuestionnaireResponse",
+          "id": "example-qr",
+          "status": "completed",
+          "subject": {
+            "reference": "Patient/example"
+          },
+          "questionnaire": "http://example.org/Questionnaire/example",
+          "item": [
+            {
+              "linkId": "1",
+              "text": "Example question",
+              "answer": [
+                {
+                  "valueString": "Example answer"
+                }
+              ]
+            }
+          ]
+        },
+        "request": {
+          "method": "PUT",
+          "url": "QuestionnaireResponse/example-qr"
+        }
+      },
+      {
+        "resource": {
+          "resourceType": "Observation",
+          "id": "example-qr-1",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-survey-category-cs",
+                  "code": "survey"
+                }
+              ]
+            },
+            {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-category",
+                  "code": "functional-status",
+                  "display": "Functional Status"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "1",
+                "display": "Example question"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/example"
+          },
+          "valueString": "Example answer",
+          "derivedFrom": [
+            {
+              "reference": "QuestionnaireResponse/example-qr"
+            }
+          ]
+        },
+        "request": {
+          "method": "PUT",
+          "url": "Observation/example-qr-1"
+        }
+      }
+    ]
+  }
+}
+
+```
+
+## QuestionnaireResponse to PFE Conversion
+
+The application provides functionality to convert FHIR QuestionnaireResponse resources into PACIO Personal Functioning and Engagement (PFE) Observations. This conversion can be performed through both the UI and the API.
+
+### UI Conversion Process
+
+The UI provides a user-friendly way to convert QuestionnaireResponses to PFE Observations:
+
+1. **View QuestionnaireResponses**: Navigate to a patient's QuestionnaireResponses by selecting a patient and clicking on the "Questionnaire Responses" tab.
+
+   ![QuestionnaireResponses List](demo/patient_questionnaire_response_list.png)
+
+2. **Select a QuestionnaireResponse**: Click on a QuestionnaireResponse in the list to expand its details.
+
+   ![QuestionnaireResponse Details](demo/questionnaire_response_details.png)
+
+3. **Convert to PFE Assessments**: For completed QuestionnaireResponses that don't already have PFE Observations, click the "Convert to PFE Assessments" button at the bottom of the expanded details.
+
+   ![Convert to PFE Button](demo/questionnaire_response_details.png)
+
+4. **Monitor Conversion Progress**: The conversion process runs in the background. You can monitor its progress in the task status panel at the top of the page.
+
+   ![Conversion Progress](demo/qr_conversion_progress.png)
+
+5. **View Derived PFE Assessments**: Once the conversion is complete, a "View Derived PFE Assessments" button will appear, and the QuestionnaireResponse will be marked with a "PFE" badge. Click the button to view the generated PFE Observations.
+
+   ![View Derived Assessments](demo/view_derived_assessments.png)
+
+
 ## Testing
 
 This application uses RSpec for testing. You can find tests in the `spec/` folder, organized by models, controllers, and features.
