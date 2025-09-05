@@ -24,6 +24,18 @@ class ObservationsController < ApplicationController
   # GET /patients/:patient_id/observations/:id
   def show; end
 
+  # POST /patients/:patient_id/observations
+  def create
+  end
+
+  # PATCH /patients/:patient_id/observations/:id
+  def update
+  end
+
+  # DELETE /patients/:patient_id/observations/:id
+  def delete
+  end
+
   private
 
   def fetch_observations(patient_id)

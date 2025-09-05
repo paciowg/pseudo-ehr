@@ -12,6 +12,18 @@ class ServiceRequestsController < ApplicationController
     @service_requests = []
   end
 
+  # POST /patients/:patient_id/service_requests
+  def create
+  end
+
+  # PATCH /patients/:patient_id/service_requests/:id
+  def update
+  end
+
+  # DELETE /patients/:patient_id/service_requests/:id
+  def delete
+  end
+
   private
 
   def fetch_service_requests(patient_id)

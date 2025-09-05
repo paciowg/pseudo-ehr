@@ -12,6 +12,18 @@ class DiagnosticReportsController < ApplicationController
     @diagnostic_reports = []
   end
 
+  # POST /patients/:patient_id/diagnostic_reports
+  def create
+  end
+
+  # PATCH /patients/:patient_id/diagnostic_reports/:id
+  def update
+  end
+
+  # DELETE /patients/:patient_id/diagnostic_reports/:id
+  def delete
+  end
+  
   private
 
   def fetch_patient_diagnostic_reports(patient_id)

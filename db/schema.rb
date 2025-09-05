@@ -19,7 +19,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_24_033040) do
     t.string "name", null: false
     t.string "client_id"
     t.string "client_secret"
-    t.boolean "authenticated_access", default: false
+    t.boolean "authenticated_access", default: false, null: false
     t.string "token_url"
     t.string "authorization_url"
     t.string "scope"

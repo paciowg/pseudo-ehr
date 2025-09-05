@@ -1,0 +1,436 @@
+<!-- Modal for creating a new TOC -->
+<div id="createTocResourceModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full" data-controller="toc-form">
+  <div class="relative w-full max-w-4xl max-h-full">
+    <!-- Modal content -->
+    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+      <!-- Modal header -->
+      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 bg-gradient-to-r from-indigo-600 to-indigo-800">
+        <h3 class="text-xl font-semibold text-white">
+          Create New Goal
+        </h3>
+        <button type="button" class="text-white bg-transparent hover:bg-indigo-700 hover:text-white rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="createTocResourceModal">
+          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="p-4 md:p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+        <div class="flex justify-end mb-4">
+          <button type="button" id="auto-fill-btn" class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" data-action="click->toc-form#autoFill">
+            Auto-Fill Form
+          </button>
+        </div>
+        # NutritionOrder
+        #   - encounter 0..1 MS
+        #   - orderer 0..1 MS
+        #   - foodPreferenceModifier 0..* MS
+        #   - excludeFoodModifier 0..* MS
+        #   - oralDiet 0..1 MS
+        #       - type 0..1 MS
+        #       - nutrient 0..* MS
+        #           - modifier 0..1 MS
+        #           - amount 0..1 MS
+        #       - texture
+        #           - modifier 0..1 MS
+        #           - foodType 0..1 MS
+        #       - fluidConsistencyType 0..* MS
+        #       - instruction 0..1 MS
+        #   - supplement 0..* MS
+        #       - type 0..1 MS
+        #       - schedule 0..* MS
+        #       - quantity 0..1 MS
+        #       - instruction 0..1 MS
+        #   - enteralFormula 0..1 MS
+        #       - baseFormulaType 0..1 MS
+        #       - additiveType 0..1 MS
+        #       - caloricDensity 0..1 MS
+        #       - routeofAdministration 0..1 MS
+        #       - administration
+        #           - schedule 0..1 MS
+        #           - quantity 0..1 MS
+        #           - rate 0..1 MS
+        #       - administrationInstruction 0..1 MS
+
+        <%= form_with url: patient_goals_path(patient_id: @patient.id), method: :post, id: "toc-form", class: "space-y-6", data: { action: "submit->toc-form#validateOnSubmit", toc_form_target: "form" } do |form| %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="toc_title" class="block mb-2 text-sm font-medium text-gray-900">Title</label>
+              <%= form.text_field "toc[title]", id: "toc_title", class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5", placeholder: "Transfer Summary", required: true, data: { toc_form_target: "title", patient_name: @patient.name } %>
+            </div>
+
+            <div>
+              <label for="toc_author" class="block mb-2 text-sm font-medium text-gray-900">Author</label>
+              <%= form.select "toc[author]",
+                  options_for_select(cached_resources_for_select('PractitionerRole').map do |pr|
+                    display = pr.practitioner&.display || "PractitionerRole/#{pr.id}"
+                    ["#{display}", "PractitionerRole/#{pr.id}"]
+                  end),
+                  { include_blank: "Select Author" },
+                  { class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5", required: true }
+              %>
+            </div>
+
+            <div>
+              <label for="toc_custodian" class="block mb-2 text-sm font-medium text-gray-900">Custodian</label>
+              <%= form.select "toc[custodian]",
+                  options_for_select(cached_resources_for_select('Organization').map do |org|
+                    ["#{org.name || 'Organization'}", "Organization/#{org.id}"]
+                  end),
+                  { include_blank: "Select Custodian" },
+                  { class: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5", required: true }
+              %>
+            </div>
+
+            <div>
+              <label for="toc_type" class="block mb-2 text-sm font-medium text-gray-900">Type</label>
+              <div class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                Discharge summary - recommended C-CDA R2.1 sections (LOINC 81218-0)
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-gray-200 pt-4">
+            <h4 class="text-lg font-medium text-gray-900 mb-4">Sections</h4>
+            <p class="text-sm text-gray-600 mb-4">Select at least 4 sections to include in the document.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="toc-sections">
+              <!-- Allergies and Intolerances Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_allergies", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Allergies and Intolerances" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "48765-2" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Allergies and adverse reactions Document" %>
+                  </div>
+                  <label for="section_allergies" class="ml-2 text-sm font-medium text-gray-900">Allergies and Intolerances</label>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% cached_resources_for_select('AllergyIntolerance').each do |ai| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "AllergyIntolerance/#{ai.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox allergy-entry", data: { toc_form_target: "entryCheckbox" } %>
+                        </div>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if ai.code&.text %>
+                              <%= ai.code.text %>
+                              <% if ai.recordedDate %>
+                                <span class="text-gray-500 ml-1">(<%= ai.recordedDate.to_date.strftime('%b %d, %Y') rescue ai.recordedDate %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "AllergyIntolerance/#{ai.id}" %>
+                            <% end %>
+                          </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Medications Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_medications", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Medications" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "10160-0" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Medications" %>
+                  </div>
+                  <label for="section_medications" class="ml-2 text-sm font-medium text-gray-900">Medications</label>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% if cached_resources_for_select('List').any? %>
+                      <h6 class="text-xs font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">Medication Lists</h6>
+                      <% cached_resources_for_select('List').each do |list| %>
+                        <div class="flex items-start mb-1">
+                          <div class="flex items-center h-5">
+                            <%= check_box_tag "toc[sections][][entries][]", "List/#{list.id}", false,
+                                class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox medication-list-entry", data: { toc_form_target: "entryCheckbox" } %>
+                          </div>
+                              <label class="ml-2 text-xs font-medium text-gray-900">
+                                <% if list.title %>
+                                  <%= list.title %>
+                                  <% if list.date %>
+                                    <span class="text-gray-500 ml-1">(<%= list.date.to_date.strftime('%b %d, %Y') rescue list.date %>)</span>
+                                  <% end %>
+                                <% else %>
+                                  <%= "Medication List/#{list.id}" %>
+                                <% end %>
+                              </label>
+                        </div>
+                      <% end %>
+                    <% end %>
+
+                    <% if cached_resources_for_select('MedicationRequest').any? %>
+                      <h6 class="text-xs font-semibold text-gray-700 mb-2 <%= 'mt-3' if cached_resources_for_select('List').any? %> border-b border-gray-200 pb-1">Medication Requests</h6>
+                      <% cached_resources_for_select('MedicationRequest').each do |mr| %>
+                        <div class="flex items-start mb-1">
+                          <div class="flex items-center h-5">
+                            <%= check_box_tag "toc[sections][][entries][]", "MedicationRequest/#{mr.id}", false,
+                                class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox medication-entry", data: { toc_form_target: "entryCheckbox" } %>
+                          </div>
+                              <label class="ml-2 text-xs font-medium text-gray-900">
+                                <% if mr.medicationCodeableConcept&.text %>
+                                  <%= mr.medicationCodeableConcept.text %>
+                                  <% if mr.authoredOn %>
+                                    <span class="text-gray-500 ml-1">(<%= mr.authoredOn.to_date.strftime('%b %d, %Y') rescue mr.authoredOn %>)</span>
+                                  <% end %>
+                                <% else %>
+                                  <%= "MedicationRequest/#{mr.id}" %>
+                                <% end %>
+                              </label>
+                        </div>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Problems Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_problems", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Problems" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "46019-6" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Diseases or conditions Set" %>
+                  </div>
+                  <label for="section_problems" class="ml-2 text-sm font-medium text-gray-900">Problems</label>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% cached_resources_for_select('Condition').each do |c| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "Condition/#{c.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox condition-entry", data: { toc_form_target: "entryCheckbox" } %>
+                        </div>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if c.code&.text %>
+                              <%= c.code.text %>
+                              <% if c.recordedDate %>
+                                <span class="text-gray-500 ml-1">(<%= c.recordedDate.to_date.strftime('%b %d, %Y') rescue c.recordedDate %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "Condition/#{c.id}" %>
+                            <% end %>
+                          </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Procedures Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_procedures", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Procedures" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "28570-0" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Procedure note" %>
+                  </div>
+                  <label for="section_procedures" class="ml-2 text-sm font-medium text-gray-900">Procedures</label>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% cached_resources_for_select('Procedure').each do |p| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "Procedure/#{p.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox procedure-entry", data: { toc_form_target: "entryCheckbox" } %>
+                        </div>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if p.code&.text %>
+                              <%= p.code.text %>
+                              <% if p.performedDateTime %>
+                                <span class="text-gray-500 ml-1">(<%= p.performedDateTime.to_date.strftime('%b %d, %Y') rescue p.performedDateTime %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "Procedure/#{p.id}" %>
+                            <% end %>
+                          </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Results Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_results", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Lab Test Results" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "19146-0" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: " Referral lab test results" %>
+                  </div>
+                  <label for="section_results" class="ml-2 text-sm font-medium text-gray-900">Results</label>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% cached_resources_for_select('Observation').each do |o| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox observation-entry", data: { toc_form_target: "entryCheckbox" } %>
+                        </div>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if o.code&.text %>
+                              <%= o.code.text %>
+                              <% if o.effectiveDateTime %>
+                                <span class="text-gray-500 ml-1">(<%= o.effectiveDateTime.to_date.strftime('%b %d, %Y') rescue o.effectiveDateTime %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "Observation/#{o.id}" %>
+                            <% end %>
+                          </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Vital Signs Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_vital_signs", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Vital Signs" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "LP30605-7" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Vital signs" %>
+                  </div>
+                  <label for="section_vital_signs" class="ml-2 text-sm font-medium text-gray-900">Vital signs</label>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% cached_resources_for_select('Observation').select {|o| o.category.include?('vital-signs')}.each do |o| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox observation-vital-entry", data: { toc_form_target: "entryCheckbox" } %>
+                        </div>
+                        <label class="ml-2 text-xs font-medium text-gray-900">
+                          <%= o.code&.text || "Observation/#{o.id}" %>
+                        </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Immunizations Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_immunizations", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Immunizations" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "82593-5" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Immunization summary report" %>
+                  </div>
+                  <label for="section_immunizations" class="ml-2 text-sm font-medium text-gray-900">Immunizations</label>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% cached_resources_for_select('Immunization').each do |i| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "Immunization/#{i.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox immunization-entry", data: { toc_form_target: "entryCheckbox" } %>
+                        </div>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if i.vaccine_code %>
+                              <%= i.vaccine_code %>
+                              <% if i.occurrenceDateTime %>
+                                <span class="text-gray-500 ml-1">(<%= i.occurrenceDateTime.to_date.strftime('%b %d, %Y') rescue i.occurrenceDateTime %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "Immunization/#{i.id}" %>
+                            <% end %>
+                          </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Advance Directives Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_advance_directives", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Advance Directives" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "42348-3" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Advance healthcare directives" %>
+                  </div>
+                  <label for="section_advance_directives" class="ml-2 text-sm font-medium text-gray-900">Advance Directives</label>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% filter_doc_refs_by_category(cached_resources_for_select('DocumentReference'), adi_category_codes).each do |d| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "DocumentReference/#{d.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox docref-entry", data: { toc_form_target: "entryCheckbox" } %>
+                        </div>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <% if d.description %>
+                              <%= d.description %>
+                              <% if d.date %>
+                                <span class="text-gray-500 ml-1">(<%= d.date.to_date.strftime('%b %d, %Y') rescue d.date %>)</span>
+                              <% end %>
+                            <% else %>
+                              <%= "DocumentReference/#{d.id}" %>
+                            <% end %>
+                          </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 text-sm text-red-600 hidden" id="section-error" data-toc-form-target="sectionError">
+              Please select at least 4 sections for the TOC document.
+            </div>
+          </div>
+
+          <div class="flex justify-end border-t border-gray-200 pt-4">
+            <div>
+              <button type="button" id="cancel-toc-btn" data-modal-hide="createTocResourceModal" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-indigo-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 mr-2" data-action="click->toc-form#clearForm">
+                Cancel
+              </button>
+              <button type="submit" id="submit-toc-btn" class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                Create TOC
+              </button>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stimulus controller handles all JavaScript functionality -->

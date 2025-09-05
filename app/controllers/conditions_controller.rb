@@ -12,6 +12,18 @@ class ConditionsController < ApplicationController
     @conditions = []
   end
 
+  # POST /patients/:patient_id/conditions
+  def create
+  end
+
+  # PATCH /patients/:patient_id/conditions/:id
+  def update
+  end
+
+  # DELETE /patients/:patient_id/conditions/:id
+  def delete
+  end
+  
   private
 
   def get_conditions(patient_id)

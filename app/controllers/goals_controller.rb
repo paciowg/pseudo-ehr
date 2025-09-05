@@ -11,6 +11,18 @@ class GoalsController < ApplicationController
     @goals = []
   end
 
+  # POST /patients/:patient_id/goals
+  def create
+  end
+
+  # PATCH /patients/:patient_id/goals/:id
+  def update
+  end
+
+  # DELETE /patients/:patient_id/goals/:id
+  def delete
+  end
+
   private
 
   def fetch_goals(patient_id)

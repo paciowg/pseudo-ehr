@@ -11,6 +11,18 @@ class NutritionOrdersController < ApplicationController
     @nutrition_orders = []
   end
 
+  # POST /patients/:patient_id/nutrition_orders
+  def create
+  end
+
+  # PATCH /patients/:patient_id/nutrition_orders/:id
+  def update
+  end
+
+  # DELETE /patients/:patient_id/nutrition_orders/:id
+  def delete
+  end
+
   private
 
   def fetch_nutrition_orders(patient_id)
