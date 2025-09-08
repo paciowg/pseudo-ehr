@@ -91,12 +91,14 @@ Make sure to start PostgreSQL before running the server.
     bundle install
    ```
 
+Note: Building tailwind may require BUNDLE_FORCE_RUBY_PLATFORM to be unset, see [https://github.com/flavorjones/tailwindcss-ruby#check-bundle_force_ruby_platform](https://github.com/flavorjones/tailwindcss-ruby#check-bundle_force_ruby_platform).
+
 3. **Database Setup**
 
    ```bash
-     rails db:create
-     rails db:migrate
-     rails db:seed
+     bundle exec rails db:create
+     bundle exec rails db:migrate
+     bundle exec rails db:seed
    ```
 
    > > **Note**: This should only be executed the first time you clone this repository.
