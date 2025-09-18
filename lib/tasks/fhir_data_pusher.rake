@@ -238,6 +238,8 @@ namespace :fhir do
   def extract_issue_details(issue)
     if issue['details']
       issue['details']['text'] || 'No details'
+    elsif issue['diagnostics']
+      issue['diagnostics']
     else
       'No details'
     end
