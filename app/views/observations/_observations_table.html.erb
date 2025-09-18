@@ -8,8 +8,8 @@
       <th scope="col" class="px-4 py-3 text-left text-sm">Organization</th>
     </tr>
   </thead>
-  <tbody data-accordion="table-column">
-    <% observations.each do |observation_set| %>
+  <% observations.each do |observation_set| %>
+    <tbody data-accordion="table-column" data-filter-target="domain">
       <tr class="border-t bg-gray-50 border-gray-200">
         <th class="px-4 py-3"> <span class="sr-only">Expand/Collapse Row</span></th>
         <th colspan="4" scope="colgroup" class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"><%= Observation.format_domain(observation_set.first) %></th>
@@ -52,6 +52,6 @@
           </td>
         </tr>
       <% end %>
-    <% end %>
-  </tbody>
+    </tbody>
+  <% end %>
 </table>

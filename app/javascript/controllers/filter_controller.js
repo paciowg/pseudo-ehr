@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "item", "category", "noResults", "count"]
+  static targets = ["input", "item", "category", "noResults", "count", "domain"]
 
   connect() {
     console.log("Filter controller connected")
@@ -31,6 +31,11 @@ export default class extends Controller {
       if (countElement) {
         countElement.textContent = `(${count})`
       }
+    })
+
+    this.domainTargets.forEach((domain) => {
+      const hasVisibleItems = domain.querySelectorAll('[data-filter-target="item"]:not(.hidden)').length > 0
+      domain.classList.toggle("hidden", !hasVisibleItems)
     })
 
     if (this.hasNoResultsTarget) {
