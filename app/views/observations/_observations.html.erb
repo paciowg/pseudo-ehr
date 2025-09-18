@@ -6,8 +6,13 @@
         <% index = 0 %>
         <% @grouped_observations.each do |type, sub_group| %>
           <% index += 1 %>
-          <%= render "observations_category", observation_sub_group: sub_group, type: type, index: index %>
+          <div data-filter-target="category">
+            <%= render "observations_category", observation_sub_group: sub_group, type: type, index: index %>
+          </div>
         <% end %>
+        <div data-filter-target="noResults" class="hidden">
+          <h3>No matching observations found.</h3>
+        </div>
       <% end %>
     </div>
     <div class="w-11/12" data-showhide-target="collectionObs">
