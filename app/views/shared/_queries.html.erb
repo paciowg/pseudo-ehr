@@ -1,10 +1,10 @@
 <%= turbo_frame_tag "queries" do %>
 <% if queries.empty? %>
-  <%= 'No query to display'%>
+  <p class="text-gray-500 dark:text-gray-400">'No query to display'</p>
 <% else %>
-  <ol class="mt-4 font-medium max-w-md space-y-1 text-gray-500 list-decimal list-inside dark:text-gray-400">
+  <ol class="font-medium max-w-full space-y-1 text-gray-500 list-decimal list-inside dark:text-gray-400">
     <% queries.each do |query| %>
-      <li><%= query %></li>
+      <li class="break-all"><%= query %></li>
     <% end %>
   </ol>
 <% end %>
