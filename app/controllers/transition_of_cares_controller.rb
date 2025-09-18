@@ -17,9 +17,7 @@ class TransitionOfCaresController < ApplicationController
       composition_data = build_toc_composition(params[:toc])
 
       # Send the composition to the FHIR server
-      response = client.create(composition_data)
-
-      fhir_composition = response.resource
+      fhir_composition = create_resource(composition_data)
 
       if fhir_composition.present?
         # Update the cache with the new composition
@@ -84,8 +82,7 @@ class TransitionOfCaresController < ApplicationController
         fhir_composition.section << section
       end
 
-      response = client.update(fhir_composition, fhir_composition.id)
-      resource = response.resource
+      resource = update_resource(fhir_composition)
 
       if resource.present?
         # Update the cache with the updated composition

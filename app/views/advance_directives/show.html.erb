@@ -1,9 +1,6 @@
 <!-- app/views/advance_directives/show.html.erb -->
 <div class="relative w-full max-w-6xl mx-auto px-4 py-6 mb-8 font-sans">
   <%= turbo_frame_tag "adi" do %>
-    <%= turbo_stream.update "queries" do%>
-      <%= render 'shared/queries' %>
-    <% end %>
     <%= turbo_stream.update "flash" do%>
       <%= render 'shared/flash_messages' %>
     <% end %>

@@ -50,7 +50,7 @@ class AdvanceDirectivesController < ApplicationController
     doc_ref = @adi.fhir_doc_ref
     doc_ref.extension ||= []
     doc_ref.extension << revoke_extension('cancelled')
-    @client.update(doc_ref, doc_ref.id)
+    update_resource(doc_ref)
 
     flash[:success] = I18n.t('controllers.advance_directives.living_will_revoked')
     PatientRecordCache.patient_records_last_sync[@patient.id] = 2.hours.ago
@@ -340,13 +340,13 @@ class AdvanceDirectivesController < ApplicationController
     new_bundle = FHIR::Bundle.new
     new_bundle.type = 'document'
     new_bundle.entry = new_entries
-    new_bundle = @client.create(new_bundle).resource
+    new_bundle = create_resource(new_bundle)
     # create Binary resouce
     fhir_binary = FHIR::Binary.new(
       contentType: 'application/fhir+json',
       data: Base64.encode64(new_bundle.to_json)
     )
-    fhir_binary = @client.create(fhir_binary).resource
+    fhir_binary = create_resource(fhir_binary)
     # create new DocumentReference
     new_doc_ref = doc_ref.dup
     new_doc_ref.status = 'current'
@@ -354,10 +354,10 @@ class AdvanceDirectivesController < ApplicationController
     new_doc_ref.date = current_time_formatted
     new_doc_ref.relatesTo = build_document_ref_relates_to(doc_ref)
     new_doc_ref.content = set_document_ref_content(fhir_binary.id, new_bundle.id, pdf)
-    @client.create(new_doc_ref)
+    create_resource(new_doc_ref)
     # Update the old DocumentReference status to superseded
     doc_ref.status = 'superseded'
-    @client.update(doc_ref, doc_ref.id)
+    update_resource(doc_ref)
   end
 end
 # rubocop:enable Metrics/ClassLength
