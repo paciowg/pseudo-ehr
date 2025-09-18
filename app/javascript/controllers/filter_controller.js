@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "item", "category", "noResults"]
+  static targets = ["input", "item", "category", "noResults", "count"]
 
   connect() {
     console.log("Filter controller connected")
@@ -22,8 +22,15 @@ export default class extends Controller {
     })
 
     this.categoryTargets.forEach((category) => {
-      const hasVisibleItems = category.querySelectorAll('[data-filter-target="item"]:not(.hidden)').length > 0
+      const visibleItemsInCategory = category.querySelectorAll('[data-filter-target="item"]:not(.hidden)')
+      const count = visibleItemsInCategory.length
+      const hasVisibleItems = count > 0
       category.classList.toggle("hidden", !hasVisibleItems)
+
+      const countElement = category.querySelector('[data-filter-target="count"]')
+      if (countElement) {
+        countElement.textContent = `(${count})`
+      }
     })
 
     if (this.hasNoResultsTarget) {
