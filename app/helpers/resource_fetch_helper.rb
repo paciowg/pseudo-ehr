@@ -19,15 +19,26 @@ module ResourceFetchHelper
   end
 
   def queries
-    session[:queries] ||= []
+    # Read queries from Rails cache, keyed by a unique session ID
+    Rails.cache.read(cache_key_for_queries) || []
   end
 
   def add_query(request)
     return unless request
 
-    queries << "#{request[:method].upcase} #{request[:url]}"
-    # We don't clear queries every request but limit to most recent 100 queries
-    queries.drop(queries.length - 100) if queries.length > 100
+    # Read-modify-write to the cache
+    current_queries = queries
+    current_queries << "#{request[:method].upcase} #{request[:url]}"
+    # Trim the array to the most recent 100 queries to prevent unbounded growth
+    current_queries = current_queries.last(100) if current_queries.length > 100
+    Rails.cache.write(cache_key_for_queries, current_queries)
+  end
+
+  private
+
+  def cache_key_for_queries
+    # Uses the session_id helper from CacheKeysHelper
+    "queries-#{session_id}"
   end
 
   def fetch_resource(resource_class, method:, parameters: {}, id: nil)
