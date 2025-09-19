@@ -4,7 +4,6 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["content"]
   static values = {
-    sessionKey: String,
     visible: Boolean
   }
 
@@ -23,9 +22,7 @@ export default class extends Controller {
   }
 
   persistDrawerState() {
-    if (!this.hasSessionKeyValue) return
-
-    const body = { session_key: this.sessionKeyValue, visible: this.visibleValue };
+    const state = { visible: this.visibleValue };
     const csrfToken = document.querySelector("meta[name='csrf-token']").content;
 
     fetch('/persistent_states/drawer', {
@@ -34,7 +31,7 @@ export default class extends Controller {
         'Content-Type': 'application/json',
         'X-CSRF-Token': csrfToken
       },
-      body: JSON.stringify(body)
+      body: JSON.stringify(state)
     });
   }
 }
