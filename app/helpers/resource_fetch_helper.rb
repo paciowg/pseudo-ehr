@@ -26,10 +26,8 @@ module ResourceFetchHelper
     return unless request
 
     queries << "#{request[:method].upcase} #{request[:url]}"
-  end
-
-  def clear_queries
-    session[:queries] = []
+    # We don't clear queries every request but limit to most recent 100 queries
+    queries.drop(queries.length - 100) if queries.length > 100
   end
 
   def fetch_resource(resource_class, method:, parameters: {}, id: nil)

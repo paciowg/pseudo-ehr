@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
   include Pagy::Backend
 
-  before_action :current_server, :clear_queries
+  before_action :current_server
 
   def server_present?
     !!current_server
