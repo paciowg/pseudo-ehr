@@ -15,20 +15,20 @@ export default class extends Controller {
   toggle() {
     this.visibleValue = !this.visibleValue
     this.updateVisibility()
-    this.updateSession()
+    this.persistDrawerState()
   }
 
   updateVisibility() {
     this.contentTarget.classList.toggle("hidden", !this.visibleValue)
   }
 
-  updateSession() {
+  persistDrawerState() {
     if (!this.hasSessionKeyValue) return
 
-    const body = { key: this.sessionKeyValue, value: this.visibleValue };
+    const body = { session_key: this.sessionKeyValue, visible: this.visibleValue };
     const csrfToken = document.querySelector("meta[name='csrf-token']").content;
 
-    fetch('/persistent_state', {
+    fetch('/persistent_states/drawer', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
