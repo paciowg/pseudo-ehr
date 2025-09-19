@@ -7,7 +7,7 @@ export default class extends Controller {
     visible: Boolean
   }
 
-  connect() {
+  visibleValueChanged() {
     this.updateVisibility()
   }
 
