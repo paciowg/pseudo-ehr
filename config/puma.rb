@@ -32,6 +32,10 @@ pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
 #
 # workers ENV.fetch("WEB_CONCURRENCY") { 2 }
 
+# Run puma in single mode (one worker, no master process) so we can use ActiveSupport::Cache::MemoryStore; if
+# deployment ever needs to be scaled to greater than 1 worker we need another approach for storing queries
+workers 0
+
 # Use the `preload_app!` method when specifying a `workers` number.
 # This directive tells Puma to first boot the application and load code
 # before forking the application. This takes advantage of Copy On Write
