@@ -1,23 +1,11 @@
-<div data-controller="drawer"
-     data-drawer-visible-value="<%= session.fetch(:queries_visible, true).to_s %>">
-  <div class="flex justify-between items-center py-2">
-    <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">FHIR Queries</h3>
-    <button type="button" data-action="click->drawer#toggle" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-      Toggle
-    </button>
-  </div>
-
-  <div data-drawer-target="content">
-    <%= turbo_frame_tag "queries", class: 'overflow-y-auto max-h-48' do %>
-      <% if queries.empty? %>
-        <p class="text-gray-500 dark:text-gray-400">'No query to display'</p>
-      <% else %>
-        <ol class="font-medium max-w-full space-y-1 text-gray-500 list-decimal list-inside dark:text-gray-400">
-          <% queries.each do |query| %>
-            <li class="break-all"><%= query %></li>
-          <% end %>
-        </ol>
+<%= turbo_frame_tag "queries", class: 'overflow-y-auto max-h-48', data: { drawer_target: 'content' } do %>
+  <% if queries.empty? %>
+    <p class="text-gray-500 dark:text-gray-400">'No query to display'</p>
+  <% else %>
+    <ol class="font-medium max-w-full space-y-1 text-gray-500 list-decimal list-inside dark:text-gray-400">
+      <% queries.each do |query| %>
+        <li class="break-all"><%= query %></li>
       <% end %>
-    <% end %>
-  </div>
-</div>
+    </ol>
+  <% end %>
+<% end %>
