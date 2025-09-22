@@ -34,13 +34,6 @@ module ResourceFetchHelper
     Rails.cache.write(cache_key_for_queries, current_queries)
   end
 
-  private
-
-  def cache_key_for_queries
-    # Uses the session_id helper from CacheKeysHelper
-    "queries-#{session_id}"
-  end
-
   def fetch_resource(resource_class, method:, parameters: {}, id: nil)
     response = case method
                when :search
@@ -215,5 +208,12 @@ module ResourceFetchHelper
     bundle_entries.compact.uniq
   rescue Net::ReadTimeout, Net::OpenTimeout
     raise TIMEOUT_ERROR_MESSAGE
+  end
+
+  private
+
+  def cache_key_for_queries
+    # Uses the session_id helper from CacheKeysHelper
+    "queries-#{session_id}"
   end
 end
