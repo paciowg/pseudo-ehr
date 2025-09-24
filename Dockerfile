@@ -15,8 +15,16 @@ COPY Gemfile Gemfile.lock ./
 # Install gems
 RUN bundle install
 
+# Copy package.json and yarn.lock to leverage caching
+COPY package.json yarn.lock ./
+# Install node modules
+RUN yarn install
+
 # Copy the main application code
 COPY . .
+
+# Precompile assets
+RUN RAILS_ENV=production bundle exec rails assets:precompile
 
 # Expose port 3000 to be accessible from the host machine
 EXPOSE 3000
