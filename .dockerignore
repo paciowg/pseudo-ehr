@@ -1,0 +1,37 @@
+# Git files
+.git
+.gitignore
+
+# Docker specific
+Dockerfile
+.dockerignore
+
+# Rails logs and temporary files
+log/*
+tmp/*
+logfile
+.byebug_history
+
+# Bundler config
+.bundle
+
+# Rails storage files
+storage/*
+
+# Compiled assets
+public/assets
+app/assets/builds
+
+# Node.js dependencies
+node_modules
+
+# Secrets
+config/master.key
+config/credentials/production.key
+.env
+
+# OS files
+.DS_Store
+
+# Data files
+data

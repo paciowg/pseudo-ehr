@@ -5,4 +5,4 @@ import 'flowbite';
 
 // Import ActionCable and channels
 import "@rails/actioncable"
-import "./channels/index"
+import "channels"
