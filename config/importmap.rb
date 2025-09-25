@@ -9,3 +9,4 @@ pin 'flowbite', to: 'https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.1/flowb
 pin 'debounce', to: 'https://ga.jspm.io/npm:debounce@1.2.1/index.js'
 pin '@rails/actioncable', to: 'actioncable.esm.js', preload: true
 pin_all_from 'app/javascript/channels', under: 'channels', preload: true
+pin 'apexcharts', to: 'https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js'

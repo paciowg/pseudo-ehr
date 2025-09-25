@@ -56,19 +56,15 @@ export default class extends Controller {
   }
 
   toggleObservations() {
-    if (this.obsTypeTarget.value === "Single Observations") {
-      this.singleObsTargets.forEach(el => {
-        el.hidden = false;
-      })
+    const showSingle = this.obsTypeTarget.value === "Single Observations"
+
+    this.singleObsTargets.forEach(el => {
+      el.classList.toggle('hidden', !showSingle)
+    })
+
+    if (this.hasCollectionObsTarget) {
       this.collectionObsTargets.forEach(el => {
-        el.hidden = true;
-      })
-    } else if (this.obsTypeTarget.value === "Observation Collection") {
-      this.singleObsTargets.forEach(el => {
-        el.hidden = true;
-      })
-      this.collectionObsTargets.forEach(el => {
-        el.hidden = false;
+        el.classList.toggle('hidden', showSingle)
       })
     }
   }
