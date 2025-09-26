@@ -21,19 +21,26 @@
       <div class="w-full">
         <label for="obs-type" class="sr-only">Filter By type</label>
         <select id="obs-type" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-          data-action="change->showhide#toggleObservations" data-showhide-target="obsType"
+          data-action="change->showhide#toggleObservations change->filter#filter" data-showhide-target="obsType"
         >
           <option>Observation Collection</option>
           <option>Single Observations</option>
         </select>
       </div>
     </div>
-    <div data-showhide-target="singleObs" class="w-full md:w-1/3" hidden>
-      <label for="observation-search" class="sr-only">Search</label>
-      <input type="text" name="observation-search" id="observation-search" placeholder="Filter by code or description..."
-             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-             data-action="input->filter#filter"
-             data-filter-target="input">
+    <div data-showhide-target="singleObs" class="w-full md:w-1/3 flex items-center space-x-4" hidden>
+      <div class="w-full">
+        <label for="observation-search" class="sr-only">Search</label>
+        <input type="text" name="observation-search" id="observation-search" placeholder="Filter by code or description..."
+               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+               data-action="input->filter#filter"
+               data-filter-target="input">
+      </div>
+      <button type="button"
+              class="hidden rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              data-filter-target="graphButton">
+        Graph
+      </button>
     </div>
   </div>
   <%= render "observations" %>

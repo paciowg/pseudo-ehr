@@ -39,6 +39,14 @@ class Observation < Resource
     @members.present?
   end
 
+  def has_value_quantity?
+    @fhir_resource.valueQuantity.present?
+  end
+
+  def raw_code
+    @fhir_resource.code&.coding&.first&.code
+  end
+
   def effective
     parse_date(@effective_date_time)
   end
