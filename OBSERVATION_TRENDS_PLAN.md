@@ -117,3 +117,4 @@ This phase focuses on creating the client-side components to fetch the graph dat
 *   **Date Range Filters**: Allow users to filter the data for the graph by a specific date range.
 *   **Overlaying Multiple Observation Types**: Explore options for plotting different observation types on the same timeline, potentially using multiple Y-axes.
 *   **Performance at Scale**: If patients have thousands of data points for a single observation code, the backend may need to be optimized to aggregate data or stream it rather than returning a single large JSON payload.
+*   **Cache Expiration Handling**: The `graph` endpoint currently relies on `Observation.find`, which only checks the in-memory cache. If a user's session is long-running, this cache can expire, causing `Observation.find` to return `nil` for valid IDs. The endpoint should be enhanced to re-fetch observations from the FHIR server if they are not found in the cache.
