@@ -18,6 +18,7 @@ As a clinician, when I am viewing a patient's observations, I want to be able to
     *   There are at least two visible observations.
     *   Each observation has a status of `final` or `amended`.
     *   Each observation has a valid `effectiveDateTime`.
+    *   Each observation has a `valueQuantity`.
 
 3.  **Graph Display**:
     *   Clicking the "Graph" button will open a modal or popover displaying the chart.
@@ -110,6 +111,7 @@ This phase focuses on creating the client-side components to fetch the graph dat
 *   **Performance**: The current approach of loading from the in-memory cache (`Observation.find`) is sufficient for the expected data volume.
 
 ### Long-Term / Future Enhancements
+*   **Non-numeric Values**: For observations that have a `valueCodeableConcept` certain code sets (e.g., NOMS Functional Communication Measures scoring) will be graphed.
 *   **Unit Conversion**: For observation types that may be recorded in different but compatible units (e.g., kg vs. lbs), a future iteration could add on-the-fly unit conversion.
 *   **Interactive Charts**: Enhance charts with features like tooltips on data points, zoom, and pan.
 *   **Date Range Filters**: Allow users to filter the data for the graph by a specific date range.
