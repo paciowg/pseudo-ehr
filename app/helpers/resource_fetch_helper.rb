@@ -106,10 +106,12 @@ module ResourceFetchHelper
   end
 
   def create_resource(fhir_resource)
+    raise ArgumentError, 'Cannot create a nil resource' if fhir_resource.nil?
+
     response = client.create(fhir_resource)
     add_query(response.request)
 
-    unless response.resource.is_a?(fhir_resource.class)
+    if response.code >= 400 || !response.resource.is_a?(fhir_resource.class)
       raise "Error creating #{fhir_resource.class.name}:\n #{response.resource&.inspect}"
     end
 

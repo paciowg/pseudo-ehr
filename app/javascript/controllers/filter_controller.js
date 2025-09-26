@@ -9,7 +9,7 @@ export default class extends Controller {
 
   filter() {
     const query = this.inputTarget.value.toLowerCase()
-    let visibleItems = 0
+    let hasVisibleItems = false
 
     this.itemTargets.forEach((item) => {
       const code = item.dataset.code || ""
@@ -17,7 +17,7 @@ export default class extends Controller {
       const isVisible = code.toLowerCase().includes(query) || description.toLowerCase().includes(query)
       item.classList.toggle("hidden", !isVisible)
       if (isVisible) {
-        visibleItems++
+        hasVisibleItems = true
       }
     })
 
@@ -39,7 +39,7 @@ export default class extends Controller {
     })
 
     if (this.hasNoResultsTarget) {
-      this.noResultsTarget.classList.toggle("hidden", visibleItems > 0)
+      this.noResultsTarget.classList.toggle("hidden", hasVisibleItems)
     }
   }
 }
