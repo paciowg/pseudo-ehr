@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
-import ApexCharts from "apexcharts"
+// TODO: When ApexCharts is managed locally, this should be changed back to:
+// import ApexCharts from "apexcharts"
+import "apexcharts"
 
 // Connects to data-controller="graph"
 export default class extends Controller {
@@ -60,7 +62,9 @@ export default class extends Controller {
         }
       }
 
-      this.chart = new ApexCharts(this.chartTarget, options)
+      // TODO: When ApexCharts is managed locally, this should be changed back to:
+      // this.chart = new ApexCharts(this.chartTarget, options)
+      this.chart = new window.ApexCharts(this.chartTarget, options)
       this.chart.render()
 
     } catch (error) {
