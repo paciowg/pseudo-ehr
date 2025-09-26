@@ -61,7 +61,7 @@ This phase involves modifying the existing UI to include the "Graph" button and 
 
 *   **Task 2.1: Enhance Observation Table Data**
     *   **File**: `app/views/observations/_observations_table.html.erb`
-    *   **Action**: Add `data-*` attributes to the `<tr>` for each observation row to expose its `id`, `code`, `status`, and `effective-date-time` to the Stimulus controller.
+    *   **Action**: Add `data-*` attributes to the `<tr>` for each observation row to expose its `id`, `code`, `status`, `effective-date-time`, and presence of a `valueQuantity` (e.g., `data-has-value-quantity="true"`) to the Stimulus controller.
 
 *   **Task 2.2: Add Graph Button to View**
     *   **File**: `app/views/observations/index.html.erb`
@@ -72,7 +72,7 @@ This phase involves modifying the existing UI to include the "Graph" button and 
     *   **Action**:
         *   Add `graphButton` to the `static targets` array.
         *   Create a new private method, `_updateGraphButtonState()`, which will be called at the end of the existing `filter()` method.
-        *   This new method will check all visible observation rows against the visibility criteria (count, same code, status, effective time).
+        *   This new method will check all visible observation rows against the visibility criteria (count, same code, status, effective time, and presence of `valueQuantity`).
         *   If criteria are met, it will make the `graphButton` visible and store the IDs of the valid observations in a `data-ids` attribute on the button. Otherwise, it will ensure the button is hidden.
 
 ### Phase 3: Front-end - Graph Rendering
