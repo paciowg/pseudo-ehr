@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "observations" do %>
-    <div id="accordion" class="w-11/12" data-accordion="collapse" data-showhide-target="singleObs" hidden>
+    <div id="accordion" class="w-11/12 hidden" data-accordion="collapse" data-showhide-target="singleObs">
       <% if @grouped_observations.blank? %>
         <h3> No Observations Found!</h3>
       <% else %>
