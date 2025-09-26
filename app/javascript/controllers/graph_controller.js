@@ -1,10 +1,22 @@
 import { Controller } from "@hotwired/stimulus"
+import ApexCharts from "apexcharts"
 
 // Connects to data-controller="graph"
 export default class extends Controller {
+  static targets = ["modal", "chart"]
   static values = { url: String }
 
-  async fetchData(event) {
+  connect() {
+    this.chart = null
+  }
+
+  disconnect() {
+    if (this.chart) {
+      this.chart.destroy()
+    }
+  }
+
+  async renderGraph(event) {
     const ids = event.currentTarget.dataset.ids
     if (!ids) {
       console.error("No observation IDs found on the button.")
@@ -16,13 +28,51 @@ export default class extends Controller {
     try {
       const response = await fetch(url)
       if (!response.ok) {
-        const errorText = await response.text()
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
-      const data = await response.json()
-      console.log("Graph Data:", data)
+      const graphData = await response.json()
+
+      this.chartTarget.innerHTML = "" // Clear previous chart
+      this.modalTarget.classList.remove("hidden")
+
+      const options = {
+        series: graphData.series,
+        chart: {
+          height: 350,
+          type: 'line',
+        },
+        title: {
+          text: graphData.title,
+          align: 'left'
+        },
+        xaxis: {
+          type: 'datetime',
+        },
+        yaxis: {
+          title: {
+            text: graphData.y_axis_label
+          },
+        },
+        tooltip: {
+          x: {
+            format: 'dd MMM yyyy HH:mm'
+          }
+        }
+      }
+
+      this.chart = new ApexCharts(this.chartTarget, options)
+      this.chart.render()
+
     } catch (error) {
-      console.error("Could not fetch graph data:", error)
+      console.error("Could not fetch or render graph data:", error)
+    }
+  }
+
+  closeModal() {
+    this.modalTarget.classList.add("hidden")
+    if (this.chart) {
+      this.chart.destroy()
+      this.chart = null
     }
   }
 }
