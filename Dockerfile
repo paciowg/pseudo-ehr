@@ -24,7 +24,7 @@ RUN yarn install
 COPY . .
 
 # Precompile assets
-RUN RAILS_ENV=production bundle exec rails assets:precompile
+RUN SECRET_KEY_BASE=dummy RAILS_ENV=production bundle exec rails assets:precompile
 
 # Expose port 3000 to be accessible from the host machine
 EXPOSE 3000
