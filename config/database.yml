@@ -82,6 +82,3 @@ test:
 production:
   <<: *default
   url: <%= ENV['DATABASE_URL'] %>
-  database: pseudo_ehr_production
-  username: pseudo_ehr
-  password: <%= ENV["PSEUDO_EHR_DATABASE_PASSWORD"] %>

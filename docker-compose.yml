@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "80:3000"
+    environment:
+      RAILS_ENV: production
+      DATABASE_URL: postgres://postgres:password@db:5432/pseudo_ehr_production
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: pseudo_ehr_production
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+volumes:
+  postgres_data:
