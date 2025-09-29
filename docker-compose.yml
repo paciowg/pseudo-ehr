@@ -7,7 +7,7 @@ services:
       - "80:3000"
     environment:
       RAILS_ENV: production
-      DATABASE_URL: postgres://postgres:password@db:5432/pseudo_ehr_production
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/pseudo_ehr_production
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
     depends_on:
       - db
@@ -19,7 +19,7 @@ services:
     environment:
       POSTGRES_DB: pseudo_ehr_production
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
 volumes:
   postgres_data:
