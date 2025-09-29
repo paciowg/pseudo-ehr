@@ -2,18 +2,23 @@ version: '3.8'
 
 services:
   app:
+    image: pseudo_ehr_rails
+    container_name: pseudo_ehr_rails
+    platform: linux/amd64
     build: .
-    ports:
-      - "80:3000"
+    depends_on:
+      - db
     environment:
       RAILS_ENV: production
       DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/pseudo_ehr_production
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-    depends_on:
-      - db
+    ports:
+      - "80:3000"
 
   db:
     image: postgres:15
+    container_name: pseudo_ehr_postgres
+    platform: linux/amd64
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
