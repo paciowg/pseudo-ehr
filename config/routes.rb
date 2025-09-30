@@ -32,6 +32,7 @@ Rails.application.routes.draw do
   get '/login', to: 'sessions#login'
   post '/launch', to: 'sessions#launch_server'
   get '/disconnect', to: 'sessions#disconnect_server'
+  patch 'persistent_states/drawer', to: 'persistent_states#update_drawer'
   get 'patients/:patient_id/advance_directives', to: 'advance_directives#index', as: 'patient_advance_directives'
   get 'advance_directives/:id', to: 'advance_directives#show', as: 'advance_directive'
   put 'advance_directives/:id', to: 'advance_directives#update_pmo'

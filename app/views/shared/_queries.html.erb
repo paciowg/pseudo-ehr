@@ -1,11 +1,11 @@
-<%= turbo_frame_tag "queries" do %>
-<% if queries.empty? %>
-  <%= 'No query to display'%>
-<% else %>
-  <ol class="mt-4 font-medium max-w-md space-y-1 text-gray-500 list-decimal list-inside dark:text-gray-400">
-    <% queries.each do |query| %>
-      <li><%= query %></li>
-    <% end %>
-  </ol>
-<% end %>
+<%= turbo_frame_tag "queries", class: 'overflow-y-auto max-h-48', data: { controller: 'scroll-to-bottom', action: 'drawer:opened@window->scroll-to-bottom#scroll' } do %>
+  <% if queries.empty? %>
+    <p class="text-gray-500 dark:text-gray-400">'No query to display'</p>
+  <% else %>
+    <ol class="font-medium max-w-full space-y-1 text-gray-500 list-decimal list-inside dark:text-gray-400">
+      <% queries.each do |query| %>
+        <li class="break-all"><%= query %></li>
+      <% end %>
+    </ol>
+  <% end %>
 <% end %>

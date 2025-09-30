@@ -19,17 +19,19 @@ module ResourceFetchHelper
   end
 
   def queries
-    session[:queries] ||= []
+    # Read queries from Rails cache, keyed by a unique session ID
+    Rails.cache.read(cache_key_for_queries) || []
   end
 
   def add_query(request)
     return unless request
 
-    queries << "#{request[:method].upcase} #{request[:url]}"
-  end
-
-  def clear_queries
-    session[:queries] = []
+    # Read-modify-write to the cache
+    current_queries = queries
+    current_queries << "#{request[:method].upcase} #{request[:url]}"
+    # Trim the array to the most recent 100 queries to prevent unbounded growth
+    current_queries = current_queries.last(100) if current_queries.length > 100
+    Rails.cache.write(cache_key_for_queries, current_queries)
   end
 
   def fetch_resource(resource_class, method:, parameters: {}, id: nil)
@@ -96,6 +98,21 @@ module ResourceFetchHelper
 
     unless response.resource.is_a?(fhir_resource.class)
       raise "Error updating #{fhir_resource.class.name}:\n #{response.resource&.inspect}"
+    end
+
+    response.resource
+  rescue Net::ReadTimeout, Net::OpenTimeout
+    raise TIMEOUT_ERROR_MESSAGE
+  end
+
+  def create_resource(fhir_resource)
+    raise ArgumentError, 'Cannot create a nil resource' if fhir_resource.nil?
+
+    response = client.create(fhir_resource)
+    add_query(response.request)
+
+    if response.code >= 400 || !response.resource.is_a?(fhir_resource.class)
+      raise "Error creating #{fhir_resource.class.name}:\n #{response.resource&.inspect}"
     end
 
     response.resource
@@ -193,5 +210,12 @@ module ResourceFetchHelper
     bundle_entries.compact.uniq
   rescue Net::ReadTimeout, Net::OpenTimeout
     raise TIMEOUT_ERROR_MESSAGE
+  end
+
+  private
+
+  def cache_key_for_queries
+    # Uses the session_id helper from CacheKeysHelper
+    "queries-#{session_id}"
   end
 end

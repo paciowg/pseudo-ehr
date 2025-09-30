@@ -8,15 +8,21 @@
       <th scope="col" class="px-4 py-3 text-left text-sm">Organization</th>
     </tr>
   </thead>
-  <tbody data-accordion="table-column">
-    <% observations.each do |observation_set| %>
+  <% observations.each do |observation_set| %>
+    <tbody data-accordion="table-column" data-filter-target="domain">
       <tr class="border-t bg-gray-50 border-gray-200">
         <th class="px-4 py-3"> <span class="sr-only">Expand/Collapse Row</span></th>
         <th colspan="4" scope="colgroup" class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"><%= Observation.format_domain(observation_set.first) %></th>
       </tr>
       <% observation_set.last.each do |observation| %>
         <% identifier = observation.id.to_s.downcase %>
-        <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition" id="table-column-header-<%= identifier%>" data-accordion-target="#table-column-body-<%= identifier%>" aria-expanded="false" aria-controls="table-column-body-<%= identifier%>">
+        <tr class="border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition"
+            id="table-column-header-<%= identifier%>"
+            data-accordion-target="#table-column-body-<%= identifier%>"
+            aria-expanded="false" aria-controls="table-column-body-<%= identifier%>"
+            data-filter-target="item"
+            data-code="<%= observation.code %>"
+            data-description="<%= observation.code %>">
           <td class="p-3 w-4">
             <svg data-accordion-icon="" class="w-6 h-6 shrink-0" fill="currentColor" viewbox="0 0 20 20" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -46,6 +52,6 @@
           </td>
         </tr>
       <% end %>
-    <% end %>
-  </tbody>
+    </tbody>
+  <% end %>
 </table>
