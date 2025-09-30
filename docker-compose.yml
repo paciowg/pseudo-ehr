@@ -2,7 +2,6 @@ services:
   app:
     image: pseudo_ehr_rails
     container_name: pseudo_ehr_rails
-    platform: linux/amd64
     build: .
     depends_on:
       - db
@@ -16,7 +15,6 @@ services:
   db:
     image: postgres:15
     container_name: pseudo_ehr_postgres
-    platform: linux/amd64
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
