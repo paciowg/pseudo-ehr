@@ -22,8 +22,11 @@ RUN yarn install
 # Copy the main application code
 COPY . .
 
-# Precompile assets with dummy variables to prevent database connection issues
-RUN RAILS_ENV=production SECRET_KEY_BASE=dummy DATABASE_URL=dummy://user:pass@host/db bundle exec rails assets:precompile
+# Build Tailwind CSS first to ensure the output file exists for Sprockets
+RUN RAILS_ENV=production SECRET_KEY_BASE=dummy bundle exec rails tailwindcss:build
+
+# Precompile assets, which will now find the generated tailwind.css
+RUN RAILS_ENV=production SECRET_KEY_BASE=dummy bundle exec rails assets:precompile
 
 # STAGE 2: Final runtime stage
 FROM ruby:3.3.6
