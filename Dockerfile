@@ -1,11 +1,10 @@
-# Use the same Ruby version as your Gemfile
-FROM ruby:3.3.6
+# STAGE 1: Build stage
+FROM ruby:3.3.6 AS builder
 
 # Install build dependencies, Node.js for the asset pipeline, yarn, and postgres client
 RUN apt-get update -qq && apt-get install -y build-essential nodejs npm libpq-dev
 RUN npm install -g yarn
 
-# Set the working directory in the container
 WORKDIR /usr/src/app
 
 # Copy the Gemfile and Gemfile.lock to leverage Docker's layer caching.
@@ -23,8 +22,20 @@ RUN yarn install
 # Copy the main application code
 COPY . .
 
-# Precompile assets
-RUN SECRET_KEY_BASE=dummy RAILS_ENV=production bundle exec rails tailwindcss:build assets:precompile
+# Precompile assets with dummy variables to prevent database connection issues
+RUN RAILS_ENV=production SECRET_KEY_BASE=dummy DATABASE_URL=dummy://user:pass@host/db bundle exec rails assets:precompile
+
+# STAGE 2: Final runtime stage
+FROM ruby:3.3.6
+
+# Install only essential runtime dependencies
+RUN apt-get update -qq && apt-get install -y libpq-dev --no-install-recommends && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/src/app
+
+# Copy installed gems and application code with precompiled assets from the builder stage
+COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
+COPY --from=builder /usr/src/app .
 
 # Expose port 3000 to be accessible from the host machine
 EXPOSE 3000
