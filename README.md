@@ -113,13 +113,13 @@ This application can be deployed using Docker Compose for a simple setup.
 
 1.  **Environment Setup**
 
-    You need a `SECRET_KEY_BASE` for Rails to run in production. Create a `.env` file with a secret key. You can generate one with Rails:
+    You need a `SECRET_KEY_BASE` for Rails to run in production. You can generate a key with Rails:
 
     ```bash
     bundle exec rails secret
     ```
 
-    Your `.env` file should contain the generated secret key and a password for the database:
+    Your `.env` file (create one if needed) should contain the generated secret key and a password for the database:
 
     ```text
     # .env
