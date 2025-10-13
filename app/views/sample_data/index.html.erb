@@ -1,92 +1,110 @@
-<div class="flex flex-row h-screen bg-gray-100 mt-16">
-  <!-- Top right button for loading data -->
-  <div class="fixed top-20 right-6 z-10">
-    <%= link_to "Load Data to FHIR Server", load_data_sample_data_path, class: "inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-md" %>
-  </div>
+<div class="fixed inset-x-0 bottom-0 top-20 flex">
+  <!-- Left Column -->
+  <div class="w-1/3 flex-shrink-0 overflow-y-auto border-r bg-white p-4">
+    <!-- Header -->
+    <div class="flex-none">
+      <h1 class="text-2xl font-bold mb-4">Sample FHIR Resources</h1>
+    </div>
 
-  <!-- Sidebar with folder structure - fixed width, full height -->
-  <div class="w-1/4 bg-white shadow-md overflow-y-auto py-16 px-6 h-full fixed left-0 top-16 bottom-0 flex flex-col items-center">
-    <div class="w-full max-w-md my-8">
-      <h1 class="text-2xl font-bold mb-8 text-indigo-700 text-center">Sample FHIR Resources</h1>
-
-    <% @use_cases.each_with_index do |(use_case_name, scenes), use_case_index| %>
-      <div class="mb-4 border-b border-gray-200 pb-2">
-        <div class="flex items-center justify-between cursor-pointer" onclick="toggleSection('use-case-<%= use_case_index %>')">
-          <h2 class="text-xl font-semibold text-gray-800"><%= use_case_name.titleize %></h2>
-          <svg class="w-5 h-5 text-gray-500 transform transition-transform" id="use-case-<%= use_case_index %>-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
+    <% if @releases.present? %>
+    <!-- Release Selector -->
+    <div class="mb-4">
+      <%= form_with url: sample_data_path, method: :get, class: "space-y-2" do |f| %>
+        <div>
+          <%= f.label :release_tag, "Sample Data Release", class: "block text-sm font-medium text-gray-700" %>
+          <%= f.select :release_tag,
+                        options_for_select(@releases.map { |r| [r['description'], r['identifier']] }, @selected_release_tag),
+                        {},
+                        { class: "mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md", onchange: 'this.form.submit()' } %>
         </div>
+      <% end %>
+    </div>
 
-        <div id="use-case-<%= use_case_index %>" class="mt-2">
-          <% scenes.each_with_index do |(scene_name, resource_types), scene_index| %>
-            <div class="ml-4 mb-2">
-              <div class="flex items-center justify-between cursor-pointer" onclick="toggleSection('scene-<%= use_case_index %>-<%= scene_index %>')">
-                <h3 class="text-lg font-medium text-gray-700"><%= scene_name.titleize %></h3>
-                <svg class="w-4 h-4 text-gray-500 transform transition-transform" id="scene-<%= use_case_index %>-<%= scene_index %>-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-              </div>
-
-              <div id="scene-<%= use_case_index %>-<%= scene_index %>" class="mt-1">
-                <% resource_types.each_with_index do |(resource_type, files), resource_index| %>
-                  <div class="ml-4 mb-1">
-                    <div class="flex items-center justify-between cursor-pointer" onclick="toggleSection('resource-<%= use_case_index %>-<%= scene_index %>-<%= resource_index %>')">
-                      <h4 class="text-md font-medium text-gray-600"><%= resource_type %></h4>
-                      <svg class="w-3 h-3 text-gray-500 transform transition-transform" id="resource-<%= use_case_index %>-<%= scene_index %>-<%= resource_index %>-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                      </svg>
-                    </div>
-
-                    <ul id="resource-<%= use_case_index %>-<%= scene_index %>-<%= resource_index %>" class="ml-4 list-disc mt-1">
-                      <% files.each do |file| %>
-                        <li class="<%= @selected_file_path == file[:path] ? 'text-indigo-600 font-semibold' : 'text-gray-600' %>">
-                          <%= link_to file[:name], sample_data_path(path: file[:path]), class: "hover:text-indigo-500 transition-colors" %>
-                        </li>
-                      <% end %>
-                    </ul>
-                  </div>
-                <% end %>
-              </div>
-            </div>
+    <!-- Push Data Form -->
+    <div class="mb-4 p-4 pt-0 border rounded-lg bg-gray-50">
+      <%= form_with url: push_data_sample_data_path, method: :post, class: "space-y-2" do |f| %>
+        <div class="text-sm text-gray-700 mb-2">
+          <% if session[:fhir_server_url].present? %>
+            <h3 class="font-semibold text-lg">FHIR Server</h3>
+            <%= session[:fhir_server_url] %>
+          <% else %>
+            No FHIR server is selected
           <% end %>
         </div>
+        <%= f.hidden_field :release_tag, value: @selected_release_tag %>
+        <%= f.submit "Push Data to FHIR Server",
+              id: "push-data-button",
+              class: "w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
+              disabled: @task_status&.status_running? || session[:fhir_server_url].blank?,
+              data: { fhir_server_present: session[:fhir_server_url].present? } %>
+      <% end %>
+    </div>
+
+    <!-- File Tree -->
+    <div id="file-tree-wrapper" class="file-tree <%= 'pointer-events-none opacity-50' if @task_status&.status_running? || @task_status&.status_pending? %>" data-controller="file-tree">
+      <% @scenes.each do |scene| %>
+        <div class="mb-2">
+          <h3 class="font-semibold text-lg"><%= scene['name'] %></h3>
+          <ul class="ml-4 list-disc space-y-1">
+            <% scene['resources'].select(&:present?).group_by { |r| File.basename(URI.parse(r).path).split('-').first.underscore.humanize.titleize }.each do |resource_type, resources| %>
+              <li>
+                <span class="font-medium"><%= resource_type %></span>
+                <ul class="ml-6 list-circle">
+                  <% resources.each do |resource| %>
+                    <li>
+                      <%= link_to File.basename(URI.parse(resource).path, '.json'),
+                                  show_file_sample_data_path(resource_url: resource, release_tag: @selected_release_tag),
+                                  data: { turbo_frame: "file_content", action: "click->file-tree#select", "file-tree-target": "link" },
+                                  class: "text-blue-600 hover:underline" %>
+                    </li>
+                  <% end %>
+                </ul>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <% if @other_resources.present? %>
+        <div class="mb-2">
+          <h3 class="font-semibold text-lg">Other Resources</h3>
+          <ul class="ml-4 list-disc space-y-1">
+            <% @other_resources.select(&:present?).group_by { |r| File.basename(URI.parse(r).path).split('-').first.underscore.humanize.titleize }.each do |resource_type, resources| %>
+              <li>
+                <span class="font-medium"><%= resource_type %></span>
+                <ul class="ml-6 list-circle">
+                  <% resources.each do |resource| %>
+                    <li>
+                      <%= link_to File.basename(URI.parse(resource).path, '.json'),
+                                  show_file_sample_data_path(resource_url: resource, release_tag: @selected_release_tag),
+                                  data: { turbo_frame: "file_content", action: "click->file-tree#select", "file-tree-target": "link" },
+                                  class: "text-blue-600 hover:underline" %>
+                    </li>
+                  <% end %>
+                </ul>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+    <% else %>
+      <div class="p-4 border rounded-lg bg-red-50 text-red-700">
+        <h3 class="font-semibold text-lg">Error Loading Data</h3>
+        <p>Failed to load sample data manifest. Please check the application configuration or network connectivity.</p>
       </div>
     <% end %>
-
-    </div>
   </div>
 
-  <!-- Main content area - with left margin to accommodate sidebar -->
-  <div class="ml-1/4 w-3/4 p-6 overflow-y-auto" style="margin-left: 25%;">
-    <% if @selected_file_path.present? %>
-      <div class="bg-white shadow-md rounded p-6">
-        <h2 class="text-xl font-semibold mb-4 text-gray-800">
-          <%= File.basename(@selected_file_path) %>
-        </h2>
-
-        <div class="overflow-x-auto">
-          <% if @json_content.present? %>
-            <div class="json-container">
-              <button class="toggle-json px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors mb-4" onclick="toggleJson(this)">Show JSON</button>
-              <pre class="json-block hidden bg-gray-50 p-4 rounded text-sm overflow-auto max-h-[600px]"><code class="language-json"><%= h(@json_content) %></code></pre>
-            </div>
-          <% elsif @file_content.present? %>
-            <pre class="bg-gray-50 p-4 rounded text-sm overflow-auto max-h-[600px]"><%= @file_content %></pre>
-          <% else %>
-            <p class="text-gray-500">Unable to display file content</p>
-          <% end %>
+  <!-- Right Column -->
+  <div class="w-2/3 overflow-y-auto p-6">
+    <%= turbo_frame_tag "file_content" do %>
+      <% if @task_status %>
+        <%= render @task_status %>
+      <% else %>
+        <div class="text-gray-500 text-center pt-10">
+          <p>Select a file from the left to view its content.</p>
         </div>
-      </div>
-    <% else %>
-      <div class="flex items-center justify-center h-full">
-        <div class="text-center text-gray-500">
-          <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-          </svg>
-          <p class="mt-2">Select a file from the sidebar to view its contents</p>
-        </div>
-      </div>
+      <% end %>
     <% end %>
   </div>
 </div>

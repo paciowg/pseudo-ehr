@@ -31,7 +31,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      # Add or replace dependency steps here
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1.207.0
         with:
@@ -39,10 +38,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-      # Add or replace database setup steps here
+      - name: Install Node.js dependencies
+        run: npm install
       - name: Set up database schema
         run: bin/setup
-      # Add or replace test runners here
+      - name: Build assets
+        run: bundle exec rails assets:precompile
       - name: Run tests
         run: bundle exec rspec
 

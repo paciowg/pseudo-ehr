@@ -22,7 +22,7 @@ class SessionsController < ApplicationController
     session[:code_verifier] = SecureRandom.urlsafe_base64(64)
     code_challenge = Base64.urlsafe_encode64(Digest::SHA256.digest(session[:code_verifier])).gsub(/=+$/, '')
     server_auth_url = "#{@current_server.authorization_url}?response_type=code&redirect_uri=#{login_url}"
-    server_auth_url += "&aud=#{@current_server.base_url}&state=#{state}&scope=#{@current_server.scope}&client_id=#{@current_server.client_id}" # rubocop:disable Layout/LineLength
+    server_auth_url += "&aud=#{@current_server.base_url}&state=#{state}&scope=#{@current_server.scope}&client_id=#{@current_server.client_id}"
     server_auth_url += "&code_challenge=#{code_challenge}&code_challenge_method=S256"
 
     redirect_to server_auth_url, allow_other_host: true

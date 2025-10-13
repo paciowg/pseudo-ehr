@@ -48,7 +48,6 @@ class FhirClientService
       scope: @fhir_server.scope
     }
     response = RestClient.post(@fhir_server.token_url, oauth2_params, oauth2_headers)
-    # rubocop:disable Layout/LineLength
     token_data = JSON.parse(response.body)
     @fhir_server.update!(
       access_token: token_data['access_token'],
@@ -80,7 +79,6 @@ class FhirClientService
       refresh_token: token_data['refresh_token'],
       access_token_expires_at: token_data['expires_in'].present? ? Time.current + token_data['expires_in'].to_i.seconds : nil
     )
-    # rubocop:enable Layout/LineLength
   rescue RestClient::ExceptionWithResponse => e
     raise "Failed to obtain access token for #{@fhir_server.base_url}: #{e.response.inspect}"
   rescue JSON::ParserError

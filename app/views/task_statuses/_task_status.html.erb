@@ -1,0 +1,59 @@
+<%= turbo_stream_from task_status %>
+<%= tag.div id: dom_id(task_status),
+            data: {
+              controller: 'task-status',
+              task_status_task_id_value: task_status.task_id
+            },
+            class: "p-4 border rounded-lg bg-white shadow" do %>
+  <div class="flex items-center justify-between">
+    <h3 class="text-lg font-semibold"><%= task_status.task_type %></h3>
+    <!-- TODO: consider allowing task to be cancelled by clicking a dismiss button
+    <button data-action="click->task-status#dismiss" data-task-status-target="dismissButton" class="text-gray-400 hover:text-gray-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    -->
+  </div>
+
+  <div class="mt-2">
+    <div class="flex items-center space-x-2">
+      <span class="font-medium">Status:</span>
+      <span data-task-status-target="status"><%= task_status.status.humanize %></span>
+    </div>
+    <div class="mt-1 text-sm text-gray-600 whitespace-pre-wrap" data-task-status-target="message">
+<%# Intentionally not indented for whitespace-pre-wrap formatting %>
+<%= task_status.message %>
+    </div>
+    <div class="mt-2 text-xs text-gray-400" data-task-status-target="lastupdated">
+      Last updated: <%= time_ago_in_words(task_status.updated_at) %> ago
+    </div>
+  </div>
+
+  <% if task_status.status_running? || task_status.status_pending? || task_status.status_completed? || task_status.status_failed? %>
+    <%
+      progress_val = extract_progress_from_message(task_status.message)
+      progress = 0
+      bar_classes = "h-2.5 rounded-full transition-all duration-500"
+
+      case task_status.status
+      when TaskStatus::RUNNING
+        progress = progress_val || 50
+        bar_classes += " bg-blue-600"
+        bar_classes += " animate-pulse" if progress_val.nil?
+      when TaskStatus::PENDING
+        progress = progress_val || 0
+        bar_classes += " bg-blue-400"
+      when TaskStatus::COMPLETED
+        progress = 100
+        bar_classes += " bg-green-600"
+      when TaskStatus::FAILED
+        progress = progress_val || 100
+        bar_classes += " bg-red-600"
+      end
+    %>
+    <div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
+      <div data-task-status-target="bar" class="<%= bar_classes %>" style="width: <%= progress %>%"></div>
+    </div>
+  <% end %>
+<% end %>

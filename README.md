@@ -419,21 +419,19 @@ This application uses RSpec for testing. You can find tests in the `spec/` folde
 * **Push FHIR resources to a server**:
 
   ```bash
-  bundle exec rake fhir:push[server_url,folder_path]
+  bundle exec rake fhir:push[release_tag,fhir_server_url]
   ```
 
-  This rake task pushes FHIR resources to a FHIR server in the correct dependency order. It takes two arguments:
+  This rake task pushes FHIR resources to a FHIR server. It takes two arguments:
 
-  * `server_url`: The base URL of the FHIR server
-  * `folder_path`: The path to the folder containing the FHIR resources to push
+  * `release_tag`: The sample data release to push, from https://paciowg.github.io/sample-data-fsh/
+  * `fhir_server_url`: The FHIR server to push to
 
   Example:
 
   ```bash
-  bundle exec rake fhir:push[http://hapi.fhir.org/baseR4,sample_use_cases/betsy_smith_johnson_stroke_use_case_pacio_sample_data_depot_v0_1_0]
+  bundle exec rake fhir:push[pacio-sample-data,http://hapi.fhir.org/baseR4]
   ```
-
-  The task analyzes resource dependencies to ensure referenced resources are pushed before the resources that reference them. It generates a detailed log report in the project's `log/fhir_push_logs` directory that includes information about successful uploads and any errors encountered, including error messages extracted from FHIR OperationOutcome resources.
 
 * **Transform QuestionnaireResponses to Observations**:
 

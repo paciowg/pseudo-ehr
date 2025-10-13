@@ -297,11 +297,9 @@ class AdvanceDirectivesController < ApplicationController
     case resource.category&.first&.coding&.first&.display
     when 'Additional portable medical orders or instructions'
       resource.code.text = service_request_params['Additional portable medical orders or instructions']['text']
-      # rubocop:disable Layout/LineLength
     when 'Medically assisted nutrition orders', 'Initial portable medical treatment orders', 'Cardiopulmonary resuscitation orders'
       assign_service_request_code_for_resource(resource)
     end
-    # rubocop:enable Layout/LineLength
   end
 
   def update_composition(resource)

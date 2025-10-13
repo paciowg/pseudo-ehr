@@ -1,4 +1,4 @@
-# rubocop:disable Layout/LineLength, RSpec/NamedSubject
+# rubocop:disable RSpec/NamedSubject
 # spec/models/fhir_server_spec.rb
 
 require 'rails_helper'
@@ -65,4 +65,4 @@ RSpec.describe FhirServer do
     end
   end
 end
-# rubocop:enable Layout/LineLength, RSpec/NamedSubject
+# rubocop:enable RSpec/NamedSubject

@@ -26,11 +26,8 @@ class QuestionnaireResponsesController < ApplicationController
       redirect_to patient_questionnaire_responses_path(patient_id: params[:patient_id]) and return
     end
 
-    fhir_server_url = session[:fhir_server_url]
     task = TaskStatus.create_for_task(
       'Questionnaire Response to PFE Assessments Conversion',
-      nil, # No folder_path needed
-      fhir_server_url,
       params[:id] # Use the QuestionnaireResponse ID as task_id for easier tracking
     )
 

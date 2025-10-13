@@ -58,7 +58,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   </head>
 
-  <body class="bg-gray-100" data-controller="drawer" data-drawer-visible-value="<%= session.fetch(:queries_visible, true).to_s %>">
+  <body class="bg-gray-100" data-controller="drawer" data-drawer-visible-value="<%= session.fetch(:queries_visible, false).to_s %>">
     <%= render "shared/header" %>
 
     <% if session[:patient_id].present? %>
@@ -125,6 +125,7 @@
           contentElmt.style.display = "flex";
         }
       }
+      hljs.highlightAll();
     });
   </script>
 </html>
