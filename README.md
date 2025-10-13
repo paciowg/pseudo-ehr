@@ -16,6 +16,7 @@ A Rails 7 application styled with Tailwind CSS that interacts with a FHIR server
 * [Prerequisites](#prerequisites)
 * [Technologies Used](#technologies-used)
 * [Installation](#installation)
+* [Docker Compose Deployment](#docker-compose-deployment)
 * [Usage](#usage)
 * [Application Structure](#application-structure)
 * [Testing](#testing)
@@ -105,6 +106,59 @@ Note: Building tailwind may require BUNDLE_FORCE_RUBY_PLATFORM to be unset, see 
    > > `rails db:seed` will persist the default servers commonly used in PACIO
    > > tracks and this app has been tested against
 
+
+## Docker Compose Deployment
+
+This application can be deployed using Docker Compose for a simple setup.
+
+1.  **Environment Setup**
+
+    You need a `SECRET_KEY_BASE` for Rails to run in production. You can generate a key with Rails:
+
+    ```bash
+    bundle exec rails secret
+    ```
+
+    Your `.env` file (create one if needed) should contain the generated secret key and a password for the database:
+
+    ```text
+    # .env
+    SECRET_KEY_BASE=your_generated_secret_key_here
+    POSTGRES_PASSWORD=your_secure_password
+    ```
+
+2.  **Build and Start Services**
+
+    Build the Docker image and start the application and database services:
+
+    ```bash
+    docker compose up --build -d
+    ```
+
+3.  **Database Setup**
+
+    With the services running, set up the database. This command runs inside the application container.
+
+    ```bash
+    docker compose run --rm app rails db:setup
+    ```
+
+    This will create, migrate, and seed the database.
+
+4.  **Accessing the Application**
+
+    The application will be available at `http://localhost`. (It maps to port 80 on your host).
+
+5.  **Managing the Services**
+
+    *   To view the application logs:
+        ```bash
+        docker compose logs -f app
+        ```
+    *   To stop the services:
+        ```bash
+        docker compose down
+        ```
 
 ## Usage
 
