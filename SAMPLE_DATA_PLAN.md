@@ -22,7 +22,7 @@ This document outlines the plan to decouple the sample FHIR data from the applic
         -   Fetch and cache the `manifest.json` file.
         -   Provide a list of available releases (e.g., "PACIO Sample Data v0.2", "master").
         -   Structure the data for a given release into the nested hash format required by the views (`scenes -> resource_types -> resources`).
-        -   Fetch and cache the content of individual resource JSON files from their URLs.
+        -   Fetch and cache the content of an individual resource JSON file from its URL (e.g., via a `fetch_resource_content(url)` method) to preserve the file viewer functionality on the `sample_data/index` page.
 
 2.  **`FhirPushService` (`app/services/fhir_push_service.rb`)**
     -   **Purpose:** To encapsulate the logic for pushing a set of FHIR resources to a server.
@@ -31,10 +31,10 @@ This document outlines the plan to decouple the sample FHIR data from the applic
         -   Iterate through the URLs, download each resource.
         -   Perform the PUT request to the FHIR server.
         -   Update the `TaskStatus` record with progress, success, or failure messages.
-        -   This logic will be extracted from the existing `fhir:push` Rake task. The logic will be updated to:
-            -   Don't build an explicit dependency map
-            -   Try resources most likely to not have dependencies first (e.g., Location, Practitioner, Patient)
-            -   Retry each resource up to 5 times but on failure add it to the end of the queue of resources to add rather than retrying immediately
+        -   This logic will be extracted from the existing `fhir:push` Rake task. The complex dependency graph logic (`extract_references`, `topological_sort`) in the Rake task should be discarded. The new service will use a simpler, more robust retry strategy:
+            -   Don't build an explicit dependency map.
+            -   Try resources most likely to not have dependencies first (e.g., Location, Practitioner, Patient).
+            -   Retry each resource up to 5 times, and on failure, add it to the end of the queue of resources to add rather than retrying immediately.
 
 ### New Background Job
 
@@ -46,11 +46,20 @@ This document outlines the plan to decouple the sample FHIR data from the applic
         -   Invoke `FhirPushService` to perform the data push.
     -   **Design:**
         - Start smallest-footprint: run GoodJob in-process (async_server) inside Puma; cap job threads at 1–2 to keep the web responsive.
-        - Track simple progress: a Task record with status/progress/total/message; update after each batch; the UI polls a status endpoint.
+        - Track simple progress via a `TaskStatus` record, updating it after each batch of resources is processed.
         - Optionally support cancel: check a canceled flag between batches and exit cleanly.
         - Migrate when needed (job runs long or impacts web): switch to a tiny external GoodJob worker.
             - Migration steps: reuse the same image and DB; run bin/good_job start with 2–4 threads; disable in-process execution on the web; optionally put the long job on its own queue.
             - After migration: tune threads/batch sizes modestly and checkpoint frequently so the worker can stop and resume mid-process.
+
+### Real-time UI Updates
+
+1.  **Technology:** Updates to the data push job's status will be pushed to the client in real-time using Action Cable and Turbo Streams, which is the idiomatic approach for a modern Hotwire application and is more efficient than polling.
+2.  **Implementation:**
+    -   A `TaskStatusChannel` will be created for clients to subscribe to.
+    -   The `FhirDataPushJob` will broadcast updates to the `TaskStatus` model over this channel after processing batches of resources.
+    -   The `load_data.html.erb` view will include a `<%= turbo_stream_from @task_status %>` tag (or similar) to subscribe to the stream.
+    -   The `TaskStatus` model will be configured to broadcast changes to itself. Turbo Streams will automatically render a partial (e.g., `_task_status.html.erb`) and push the update to the client. This will replace the need for the `task-status:update` event in `task_status_controller.js`, though the controller will still be useful for client-side interactions like the "Dismiss" button.
 
 ### Database Migration
 
