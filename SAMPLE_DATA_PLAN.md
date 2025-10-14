@@ -129,12 +129,11 @@ This document outlines the plan to decouple the sample FHIR data from the applic
 
 ## 4. Configuration
 
-The URL for the `manifest.json` file should be configurable. It should be stored in Rails' encrypted credentials.
+The URL for the `manifest.json` file is not a secret and is not expected to change often, so it will be stored in the application configuration.
 
-1.  Run `bin/rails credentials:edit`.
-2.  Add the following configuration:
-    ```yaml
-    sample_data:
-      manifest_url: 'https://paciowg.github.io/sample-data-fsh/manifest.json'
+1.  Open `config/application.rb`.
+2.  Add the following line inside the `Application` class:
+    ```ruby
+    config.x.sample_data.manifest_url = 'https://paciowg.github.io/sample-data-fsh/manifest.json'
     ```
-3.  The service can then access this URL via `Rails.application.credentials.sample_data[:manifest_url]`.
+3.  The service can then access this URL via `Rails.configuration.x.sample_data.manifest_url`.
