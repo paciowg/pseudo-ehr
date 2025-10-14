@@ -31,7 +31,10 @@ This document outlines the plan to decouple the sample FHIR data from the applic
         -   Iterate through the URLs, download each resource.
         -   Perform the PUT request to the FHIR server.
         -   Update the `TaskStatus` record with progress, success, or failure messages.
-        -   This logic will be extracted from the existing `fhir:push` Rake task.
+        -   This logic will be extracted from the existing `fhir:push` Rake task. The logic will be updated to:
+            -   Don't build an explicit dependency map
+            -   Try resources most likely to not have dependencies first (e.g., Location, Practitioner, Patient)
+            -   Retry each resource up to 5 times but on failure add it to the end of the queue of resources to add rather than retrying immediately
 
 ### New Background Job
 
@@ -41,6 +44,13 @@ This document outlines the plan to decouple the sample FHIR data from the applic
         -   Accept a `task_status_id` as an argument.
         -   Load the `TaskStatus` record to retrieve the list of resource URLs from its `payload`.
         -   Invoke `FhirPushService` to perform the data push.
+    -   **Design:**
+        - Start smallest-footprint: run GoodJob in-process (async_server) inside Puma; cap job threads at 1–2 to keep the web responsive.
+        - Track simple progress: a Task record with status/progress/total/message; update after each batch; the UI polls a status endpoint.
+        - Optionally support cancel: check a canceled flag between batches and exit cleanly.
+        - Migrate when needed (job runs long or impacts web): switch to a tiny external GoodJob worker.
+            - Migration steps: reuse the same image and DB; run bin/good_job start with 2–4 threads; disable in-process execution on the web; optionally put the long job on its own queue.
+            - After migration: tune threads/batch sizes modestly and checkpoint frequently so the worker can stop and resume mid-process.
 
 ### Database Migration
 
@@ -72,6 +82,7 @@ This document outlines the plan to decouple the sample FHIR data from the applic
 
 1.  Create `app/jobs/fhir_data_push_job.rb`.
 2.  Implement the `perform` method to load the `TaskStatus` record and call `FhirPushService`.
+3.  Set up and configure GoodJob
 
 ### Step 4: Refactor `SampleDataController`
 
