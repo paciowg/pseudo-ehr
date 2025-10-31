@@ -20,22 +20,19 @@ class TaskStatus < ApplicationRecord
   end
 
   # Create a new task status record with a unique task_id
-  def self.create_for_task(task_type, folder_path, server_url, task_id = nil)
+  def self.create_for_task(task_type, task_id = nil)
     task_id ||= SecureRandom.uuid
     create(
       task_id: task_id,
       task_type: task_type,
       status: PENDING,
-      message: "#{task_type} task initialized",
-      folder_path: folder_path,
-      server_url: server_url
+      message: "#{task_type} task initialized"
     )
   end
 
   # Update the status and broadcast the change
   def update_status(status, message = nil)
-    update(status: status, message: message) if message
-    update(status: status) unless message
+    update({ status: status, message: message }.compact)
     broadcast_update
     self
   end
@@ -112,8 +109,6 @@ class TaskStatus < ApplicationRecord
       task_type: task_type,
       status: status,
       message: message,
-      folder_path: folder_path,
-      server_url: server_url,
       updated_at: updated_at,
       deleted: destroyed?
     }

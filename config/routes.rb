@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   post 'task_statuses/:task_id/dismiss', to: 'task_statuses#dismiss'
   resources :sample_data, only: [:index] do
     collection do
-      get :load_data
+      get :show_file
       post :push_data
     end
   end

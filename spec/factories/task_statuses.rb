@@ -4,7 +4,5 @@ FactoryBot.define do
     task_type { 'MyString' }
     status { 'MyString' }
     message { 'MyText' }
-    folder_path { 'MyString' }
-    server_url { 'MyString' }
   end
 end

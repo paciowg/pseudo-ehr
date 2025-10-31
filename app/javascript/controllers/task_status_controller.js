@@ -41,6 +41,9 @@ export default class extends Controller {
 
     this.element.classList.remove("text-yellow-600", "text-green-600", "text-red-600")
 
+    const progressMatch = detail.message.match(/\[(\d+)%\]/);
+    const progress = progressMatch ? parseInt(progressMatch[1], 10) : null;
+
     switch (detail.status) {
       case "completed":
         this.element.classList.add("text-green-600")
@@ -50,17 +53,24 @@ export default class extends Controller {
         break
       case "failed":
         this.element.classList.add("text-red-600")
-        this.updateProgressBar(100, "bg-red-600")
+        this.updateProgressBar(progress || 100, "bg-red-600")
         break
       case "running":
         this.element.classList.add("text-yellow-600")
-        this.updateProgressBar(50, "bg-blue-600 animate-pulse")
+        if (progress !== null) {
+          this.updateProgressBar(progress, "bg-blue-600")
+        } else {
+          this.updateProgressBar(50, "bg-blue-600 animate-pulse") // Indeterminate
+        }
         break
       case "pending":
         this.element.classList.add("text-yellow-600")
-        this.updateProgressBar(10, "bg-blue-400 animate-pulse")
+        this.updateProgressBar(progress || 0, "bg-blue-400")
         break
     }
+
+    this.updatePushButtonState(detail.status)
+    this.updateFileTreeState(detail.status)
   }
 
   updateProgressBar(percent, classes) {
@@ -69,6 +79,29 @@ export default class extends Controller {
     this.barTarget.style.width = `${percent}%`
     this.barTarget.className =
       `h-2.5 rounded-full transition-all duration-500 ${classes}`
+  }
+
+  updatePushButtonState(status) {
+    const pushDataButton = document.getElementById("push-data-button")
+    if (!pushDataButton) return
+
+    if (status === "running" || status === "pending") {
+      pushDataButton.disabled = true
+    } else {
+      const fhirServerPresent = pushDataButton.dataset.fhirServerPresent === 'true'
+      pushDataButton.disabled = !fhirServerPresent
+    }
+  }
+
+  updateFileTreeState(status) {
+    const fileTreeWrapper = document.getElementById("file-tree-wrapper")
+    if (!fileTreeWrapper) return
+
+    if (status === "running" || status === "pending") {
+      fileTreeWrapper.classList.add("pointer-events-none", "opacity-50")
+    } else {
+      fileTreeWrapper.classList.remove("pointer-events-none", "opacity-50")
+    }
   }
 
   dismiss() {

@@ -18,6 +18,8 @@ module PseudoEhr
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
+    config.x.sample_data.manifest_url = 'https://paciowg.github.io/sample-data-fsh/manifest.json'
+
     # Disable SSL Verification in Development
     config.ssl_options = { verify_ssl: false } if Rails.env.development?
 

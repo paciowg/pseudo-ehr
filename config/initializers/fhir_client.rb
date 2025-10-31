@@ -1,12 +1,12 @@
 module FHIR
   class Client
     # Override fetch_patient_record to accept search parameters
-    def fetch_patient_record(id = nil, startTime = nil, endTime = nil, method = 'GET', format = nil, search_params: {}) # rubocop:disable Metrics/ParameterLists,Naming/MethodParameterName,Naming/VariableName
+    def fetch_patient_record(id = nil, startTime = nil, endTime = nil, method = 'GET', format = nil, search_params: {}) # rubocop:disable Naming/MethodParameterName,Naming/VariableName
       fetch_record(id, [startTime, endTime], method, versioned_resource_class('Patient'), format, search_params) # rubocop:disable Naming/VariableName
     end
 
     # Override fetch_record to accept search parameters
-    def fetch_record(id = nil, time = [nil, nil], method = 'GET', klass = versioned_resource_class('Patient'), # rubocop:disable Metrics/ParameterLists
+    def fetch_record(id = nil, time = [nil, nil], method = 'GET', klass = versioned_resource_class('Patient'),
                      format = nil, search_params = {})
       headers = {}
       headers[:accept] = format.to_s if format

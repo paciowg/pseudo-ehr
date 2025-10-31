@@ -36,4 +36,9 @@ module ApplicationHelper
   def patient_id
     session[:patient_id]
   end
+
+  def extract_progress_from_message(message)
+    match = message.match(/\[(\d+)%\]/)
+    match ? match[1].to_i : nil
+  end
 end

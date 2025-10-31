@@ -1,0 +1,6 @@
+<%= turbo_frame_tag "file_content" do %>
+  <h2 class="text-xl font-semibold mb-2"><%= @file_name %></h2>
+  <div class="bg-gray-100 p-4 rounded-lg">
+    <pre><code class="language-json"><%= @json_content %></code></pre>
+  </div>
+<% end %>

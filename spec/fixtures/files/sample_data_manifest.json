@@ -1,0 +1,40 @@
+{
+  "versions": [
+    {
+      "type": "release",
+      "identifier": "pacio-sample-data",
+      "description": "PACIO Sample Data v0.2",
+      "datetime": "2025-08-26T21:39:15Z",
+      "scenes": [
+        {
+          "name": "Scene 0",
+          "description": "Background",
+          "resources": [
+            "https://paciowg.github.io/sample-data-fsh/pacio-sample-data/Organization-org-ED-Metro-Hospital.json"
+          ]
+        }
+      ],
+      "other_resources": [
+        "https://paciowg.github.io/sample-data-fsh/pacio-sample-data/Location-org-Loc-ACMEssential.json"
+      ]
+    },
+    {
+      "type": "working",
+      "identifier": "master",
+      "description": "Refactor structure of manifest.json published on GitHub Pages",
+      "datetime": "2025-10-15T15:58:53-04:00",
+      "scenes": [
+        {
+          "name": "Scene 1",
+          "description": "Betsy has a stroke and is admitted to ED",
+          "resources": [
+            "https://paciowg.github.io/sample-data-fsh/master/Observation-betsysmith-johnson01-vital-signs-01.json"
+          ]
+        }
+      ],
+      "other_resources": [
+        "https://paciowg.github.io/sample-data-fsh/master/Location-org-Loc-ED-Metro-Hospital.json"
+      ]
+    }
+  ]
+}
