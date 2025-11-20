@@ -24,6 +24,63 @@ class ObservationsController < ApplicationController
   # GET /patients/:patient_id/observations/:id
   def show; end
 
+  # GET /patients/:patient_id/observations/graph
+  def graph
+    ids = params[:ids]&.split(',')
+    if ids.blank?
+      return render json: { error: 'No observation IDs provided' }, status: :bad_request
+    end
+
+    observations = ids.map { |id| Observation.find(id) }.compact
+    if observations.blank?
+      return render json: { error: 'No matching observations found' }, status: :not_found
+    end
+
+    first_obs = observations.first
+    title = first_obs.code
+
+    if first_obs.components?
+      # Handle observations with components (e.g., Blood Pressure)
+      series = {}
+      y_axis_label = ''
+
+      observations.each do |obs|
+        next unless obs.components?
+
+        obs.components.each do |component|
+          series[component[:code]] ||= { name: component[:code], data: [] }
+          value, unit = parse_component_value(component)
+          y_axis_label = unit if y_axis_label.blank? && unit.present?
+          series[component[:code]][:data] << { x: obs.effective_date_time, y: value } if value
+        end
+      end
+
+      series.each_value { |s| s[:data].sort_by! { |d| d[:x] } }
+      render json: { title: title, y_axis_label: y_axis_label, series: series.values }
+    else
+      # Handle single-value observations
+      _value, unit = parse_measurement(first_obs)
+      y_axis_label = unit
+
+      series_data = observations.map do |obs|
+        value, _unit = parse_measurement(obs)
+        { x: obs.effective_date_time, y: value } if value
+      end.compact.sort_by { |d| d[:x] }
+
+      render json: {
+        title: title,
+        y_axis_label: y_axis_label,
+        series: [{
+          name: title,
+          data: series_data
+        }]
+      }
+    end
+  rescue StandardError => e
+    Rails.logger.error("Error generating graph data: #{e.message}")
+    render json: { error: 'An unexpected error occurred' }, status: :internal_server_error
+  end
+
   private
 
   def fetch_observations(patient_id)
@@ -74,5 +131,23 @@ class ObservationsController < ApplicationController
 
     flash[:danger] = I18n.t('controllers.observations.retrieve_error')
     redirect_to patient_observations_path, id: @patient.id
+  end
+
+  def parse_measurement(observation)
+    quantity = observation.fhir_resource.valueQuantity
+    return [nil, nil] unless quantity
+
+    value = quantity.value
+    unit = quantity.unit.presence || quantity.code.presence
+    [value, unit]
+  end
+
+  def parse_component_value(component)
+    quantity = component[:value_quantity]
+    return [nil, nil] unless quantity
+
+    value = quantity.value
+    unit = quantity.unit.presence || quantity.code.presence
+    [value, unit]
   end
 end

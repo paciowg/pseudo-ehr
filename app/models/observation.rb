@@ -2,7 +2,7 @@
 class Observation < Resource
   attr_reader :id, :status, :category, :domain, :code, :effective_date_time,
               :performer, :derived_from, :measurement, :measurement_interpretation,
-              :location, :organization, :members, :fhir_resource, :patient_id,
+              :location, :organization, :members, :components, :fhir_resource, :patient_id,
               :patient, :reference_range, :body_site, :local_mentod, :device, :notes
 
   def initialize(fhir_observation, bundle_entries = [])
@@ -24,6 +24,7 @@ class Observation < Resource
     @measurement_interpretation = fhir_observation.try(:interpretation)&.map(&:text)&.join(', ').presence || '--'
     @location = retrieve_location(bundle_entries)
     @members = retrieve_members(fhir_observation.hasMember, bundle_entries)
+    @components = retrieve_components(fhir_observation.component)
     @body_site = retrieve_body_site
     @local_method = retrieve_method
     @device = @fhir_resource.device.try(:display).presence || '--'
@@ -37,6 +38,18 @@ class Observation < Resource
 
   def collection?
     @members.present?
+  end
+
+  def value_quantity?
+    @fhir_resource.valueQuantity.present?
+  end
+
+  def components?
+    @components.present?
+  end
+
+  def raw_code
+    @fhir_resource.code&.coding&.first&.code
   end
 
   def effective
@@ -207,5 +220,19 @@ class Observation < Resource
       system = category.coding.first&.system
       { code:, display:, system: }
     end.compact
+  end
+
+  def retrieve_components(components)
+    return [] if components.blank?
+
+    components.map do |component|
+      code = component.code&.coding&.first
+      display = code&.display
+      code_val = code&.code
+      {
+        code: display.present? ? "#{display} (#{code_val})" : (code_val.presence || '--'),
+        value_quantity: component.valueQuantity
+      }
+    end
   end
 end

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "item", "category", "noResults", "count", "domain"]
+  static targets = ["input", "item", "category", "noResults", "count", "domain", "graphButton"]
 
   connect() {
     console.log("Filter controller connected")
@@ -40,6 +40,41 @@ export default class extends Controller {
 
     if (this.hasNoResultsTarget) {
       this.noResultsTarget.classList.toggle("hidden", hasVisibleItems)
+    }
+
+    this._updateGraphButtonState()
+  }
+
+  _updateGraphButtonState() {
+    if (!this.hasGraphButtonTarget) { return }
+
+    const visibleItems = this.itemTargets.filter(item => !item.classList.contains("hidden"))
+
+    const criteriaMet = () => {
+      if (visibleItems.length < 2) return false
+
+      const firstItemCode = visibleItems[0].dataset.code
+      if (!firstItemCode) return false
+
+      return visibleItems.every(item => {
+        const status = item.dataset.status
+        const hasDateTime = item.dataset.effectiveDateTime
+        const hasValueQuantity = item.dataset.hasValueQuantity === 'true'
+        const hasComponents = item.dataset.hasComponents === 'true'
+
+        return item.dataset.code === firstItemCode &&
+          (status === 'final' || status === 'amended') &&
+          hasDateTime &&
+          (hasValueQuantity || hasComponents)
+      })
+    }
+
+    if (criteriaMet()) {
+      const visibleIds = visibleItems.map(item => item.dataset.id)
+      this.graphButtonTarget.dataset.ids = visibleIds.join(',')
+      this.graphButtonTarget.classList.remove("hidden")
+    } else {
+      this.graphButtonTarget.classList.add("hidden")
     }
   }
 }

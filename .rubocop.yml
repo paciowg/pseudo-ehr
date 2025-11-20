@@ -74,6 +74,9 @@ Layout/LineLength:
 Style/IfUnlessModifier:
   Enabled: false
 
+Style/MultilineBlockChain:
+  Enabled: false
+
 Rails/I18nLocaleTexts:
   Enabled: false
 
