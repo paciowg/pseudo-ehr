@@ -79,7 +79,7 @@
   us_core_category: cognitive-status
 '14372':
   pfe_domain_icf_code:
-    - BlockL2-b11
+    - b1
   us_core_category: cognitive-status
 '97479':
     pfe_domain_icf_code:
@@ -111,7 +111,7 @@
   us_core_category: cognitive-status
 '97488':
   pfe_domain_icf_code:
-    - BlockL2-b11
+    - b1
   us_core_category: cognitive-status
 '52731-7':
     pfe_domain_icf_code:
@@ -143,7 +143,7 @@
   us_core_category: cognitive-status
 '54614-3':
   pfe_domain_icf_code:
-    - BlockL2-b11
+    - b1
   us_core_category: cognitive-status
 '57492':
   pfe_domain_icf_code:
@@ -164,7 +164,7 @@
   us_core_category: cognitive-status
 '90473-0':
   pfe_domain_icf_code:
-    - BlockL2-d41
+    - d4
   us_core_category: functional-status
 70184-7:
   pfe_domain_icf_code:
