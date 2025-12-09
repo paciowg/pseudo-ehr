@@ -1,5 +1,5 @@
 ---
-BlockL1-b11:
+b:
   display: Body functions
   definition: Body functions are the physiological functions of body systems (including
     psychological functions). Impairments are problems in body function or structure
@@ -13,7 +13,7 @@ BlockL1-b11:
     to be used in a uniform manner, assessment procedures need to be developed through
     research. For a further explanation of coding conventions in ICF, refer to Annex
     2.
-BlockL2-b11:
+b1:
   display: Mental functions
   definition: 'This chapter is about the functions of the brain: both global mental
     functions, such as consciousness, energy and drive, and specific mental functions,
@@ -397,7 +397,7 @@ b1802:
   display: Experience of time
   definition: Specific mental functions of the subjective experiences related to the
     length and passage of time.
-BlockL2-b21:
+b2:
   display: Sensory functions and pain
   definition: This chapter is about the functions of the senses, seeing, hearing,
     tasting and so on, as well as the sensation of pain.
@@ -612,7 +612,7 @@ b2804:
   definition: Unpleasant sensation indicating potential or actual damage to some body
     structure located in areas of skin in different body parts not served by the same
     nerve root.
-BlockL2-b31:
+b3:
   display: Voice and speech functions
   definition: This chapter is about the functions of producing sounds and speech.
 b310:
@@ -654,7 +654,7 @@ b3400:
 b3401:
   display: Making a range of sounds
   definition: Functions of production of a variety of vocalizations.
-BlockL2-b41:
+b4:
   display: Functions of the cardiovascular, haematological, immunological and respiratory
     systems
   definition: This chapter is about the functions involved in the cardiovascular system
@@ -819,7 +819,7 @@ b460:
   display: Sensations associated with cardiovascular and respiratory functions
   definition: Sensations such as missing a heart beat, palpitation and shortness of
     breath.
-BlockL2-b51:
+b5:
   display: Functions of the digestive, metabolic and endocrine systems
   definition: This chapter is about the functions of ingestion, digestion and elimination,
     as well as functions involved in metabolism and the endocrine glands.
@@ -1007,7 +1007,7 @@ b55501:
 b55502:
   display: Penis, testes and scrotum development
   definition: Functions associated with development of penis, testes and scrotum.
-BlockL2-b61:
+b6:
   display: Genitourinary and reproductive functions
   definition: This chapter is about the functions of urination and the reproductive
     functions, including sexual and procreative functions.
@@ -1104,7 +1104,7 @@ b6702:
 b6703:
   display: Sensations associated with genital functions
   definition: Functions associated with arousal of the genitals.
-BlockL2-b71:
+b7:
   display: Neuromusculoskeletal and movement-related functions
   definition: This chapter is about the functions of movement and mobility, including
     functions of joints, bones, reflexes and muscles.
@@ -1328,7 +1328,7 @@ b7800:
 b7801:
   display: Sensation of muscle spasm
   definition: Sensation of involuntary contraction of a muscle or a group of muscles.
-BlockL2-b81:
+b8:
   display: Functions of the skin and related structures
   definition: This chapter is about the functions of skin, nails and hair.
 b810:
@@ -1352,7 +1352,7 @@ b850:
 b860:
   display: Functions of nails
   definition: Functions of the nails, such as protection, scratching and appearance.
-BlockL1-d11:
+d:
   display: Activities and participation
   definition: 'Activity is the execution of a task or action by an individual. Participation
     is involvement in a life situation. Activity limitations are difficulties an individual
@@ -1377,7 +1377,7 @@ BlockL1-d11:
     features of this uniform or standard environment. Both capacity and performance
     qualifiers can be used with and without assistive devices or personal assistance,
     and in accordance with the following scale:'
-BlockL2-d11:
+d1:
   display: Learning and applying knowledge
   definition: This chapter is about learning, applying the knowledge that is learned,
     thinking, solving problems, and making decisions.
@@ -1611,7 +1611,7 @@ d177:
     the effects of the choice, such as selecting and purchasing a specific item, or
     deciding to undertake and undertaking one task from among several tasks that need
     to be done.
-BlockL2-d21:
+d2:
   display: General tasks and demands
   definition: This chapter is about general aspects of carrying out single or multiple
     tasks, organizing routines and handling stress. These items can be used in conjunction
@@ -1707,7 +1707,7 @@ d2402:
   display: Handling crisis
   definition: Carrying out simple or complex and coordinated actions to cope with
     decisive turning points in a situation or times of acute danger or difficulty.
-BlockL2-d31:
+d3:
   display: Communication
   definition: This chapter is about general and specific features of communicating
     by language, signs and symbols, including receiving and producing messages, carrying
@@ -1852,7 +1852,7 @@ d3602:
   display: Using communication techniques
   definition: Performing actions and tasks involved in techniques for communicating,
     such as reading lips.
-BlockL2-d41:
+d4:
   display: Mobility
   definition: This chapter is about moving by changing body position or location or
     by transferring from one place to another, by carrying, moving or manipulating
@@ -2155,7 +2155,7 @@ d4752:
 d480:
   display: Riding animals for transportation
   definition: Travelling on the back of an animal, such as a horse, ox, camel or elephant.
-BlockL2-d51:
+d5:
   display: Self-care
   definition: This chapter is about caring for oneself, washing and drying oneself,
     caring for one's body and body parts, dressing, eating and drinking, and looking
@@ -2284,7 +2284,7 @@ d5702:
     ill-health, such as by seeking assistance (professional and non professional);
     following medical and other health advice; and managing risks to health such as
     injuries, communicable diseases, drug-taking and sexual transmitted diseases.
-BlockL2-d61:
+d6:
   display: Domestic life
   definition: This chapter is about carrying out domestic and everyday actions and
     tasks. Areas of domestic life include, caring for one's belongings and space,
@@ -2461,7 +2461,7 @@ d6605:
   definition: Assisting household members and others with formal and informal health
     care, such as by ensuring that a child gets regular medical check-ups, or that
     an elderly relative takes required medication.
-BlockL2-d71:
+d7:
   display: Interpersonal interactions and relationships
   definition: This chapter is about carrying out the actions and tasks required for
     basic and complex interactions with people (strangers, friends, relatives, family
@@ -2624,7 +2624,7 @@ d7702:
   display: Sexual relationships
   definition: Creating and maintaining a relationship of a sexual nature, with a spouse
     or other partner.
-BlockL2-d81:
+d8:
   display: Major life areas
   definition: This chapter is about carrying out the tasks and actions required to
     engage in education, work and employment and to conduct economic transactions.
@@ -2742,7 +2742,7 @@ d8701:
   display: Public economic entitlements
   definition: Having command over public economic resources, in order to ensure economical
     security for present and future needs.
-BlockL2-d91:
+d9:
   display: Community, social and civic life
   definition: This chapter is about the actions and tasks required to engage in organized
     social life outside the family, in community, social and civic areas of life.

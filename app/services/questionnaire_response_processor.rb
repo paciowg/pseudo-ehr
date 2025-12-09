@@ -3,6 +3,7 @@ class QuestionnaireResponseProcessor
 
   def initialize(questionnaire_response_hash, fhir_server:)
     @questionnaire_response_hash = questionnaire_response_hash.deep_symbolize_keys
+    @fhir_server = fhir_server
     @client = FhirClientService.new(fhir_server:).client
   end
 
@@ -52,21 +53,42 @@ class QuestionnaireResponseProcessor
   end
 
   def questionnaire
-    url = @questionnaire_response_hash[:questionnaire]
+    # Get the URL for retrieving the questionnaire from the response
+    canonical = @questionnaire_response_hash[:questionnaire]
+    url, version = canonical.to_s.split('|')
+    url += "/_history/#{version}" if version
 
-    # TODO: to be removed. none of the QR has a valid questionnaire url
-    # this hack is to use a known url for QR BSJ1-QuestionnaireResponse-GlobalAlliant-01
-    if url&.downcase&.include?('zbi')
-      url = 'https://gw.interop.community/cmspqrs/open/Questionnaire/questionnaire-ZBI22'
+    # Return a cached version if we've already retrieved it
+    return self.class.questionnaire_by_url[url] if self.class.questionnaire_by_url[url]
+
+    if url.blank?
+      raise "No Questionnaire URL found in QuestionnaireResponse"
     end
 
-    self.class.questionnaire_by_url[url] ||= begin
+    begin
       response = RestClient.get(url)
-      FHIR.from_contents(response.body)
+      self.class.questionnaire_by_url[url] = FHIR.from_contents(response.body)
     rescue RestClient::ExceptionWithResponse => e
-      raise "Failed to fetch Questionnaire from #{url}: #{e.response}"
+      # Workaround: if the questionnaire is not available from the URL in the questionnaire response we also
+      # want to check the FHIR server we're connected to
+      tail = url.match(/\/Questionnaire\/.+/)
+      alternate_url = @fhir_server.to_s.chomp('/') + tail[0] if tail
+      if alternate_url
+        begin
+          response = RestClient.get(alternate_url)
+          self.class.questionnaire_by_url[url] = FHIR.from_contents(response.body)
+        rescue RestClient::ExceptionWithResponse => e2
+          raise "Failed to fetch Questionnaire from #{url} or #{alternate_url}: #{e2.response || e2.message}"
+        rescue RestClient::Exception, StandardError => e2
+          raise "Unexpected error fetching Questionnaire from #{alternate_url}: #{e2.message}"
+        end
+      else
+        raise "Failed to fetch Questionnaire from #{url}: #{e.response || e.message}"
+      end
     rescue RestClient::Exception, StandardError => e
       raise "Unexpected error fetching Questionnaire from #{url}: #{e.message}"
     end
+
+    return self.class.questionnaire_by_url[url]
   end
 end

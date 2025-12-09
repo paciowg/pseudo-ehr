@@ -21,7 +21,11 @@ class PfeObservationBuilder
     collection = build_collection
     observations = extract_observations(@qr.item, collection)
 
-    collection.category = PfeCategoryCodeExtractor.collection_category_slice(observations)
+    # Only set the category here if build_collection wasn't able to determine an ICF category based on the code
+    pfe_categories = collection.category.select { |c| c.coding.first.system == PFE_DOMAIN_CATEGORY_URL }
+    if pfe_categories.empty? || pfe_categories.any? { |c| c.coding.first.code == 'unknown' }
+      collection.category = PfeCategoryCodeExtractor.collection_category_slice(observations)
+    end
     collection.category.reject! { |cat| cat.coding&.any? { |c| c.code == 'unknown' } }
 
     observations << collection
@@ -63,13 +67,19 @@ class PfeObservationBuilder
   def build_observations(item, collection)
     return if item&.answer.blank?
 
+    # NOTE: The origininal implementation used the linkId for mapping QuestionnaireResponse answers to PFE
+    # domains; the implementation has been updated to more appropriately use the code from the Questionnaire
+    # to find the PFE domain but also keep the linkId lookup for backwards compatibility
+
     item_link_id = item.linkId.to_s.delete_prefix('/')
+    item_code = @link_id_map[item_link_id]
+    item_code_string = item_code&.first&.to_hash&.with_indifferent_access[:code]
     answer = item.answer.first
     obs = FHIR::Observation.new(
       id: "#{@qr.id}-#{item_link_id&.camelize}", # SecureRandom.uuid,
       status: 'final',
-      category: PfeCategoryCodeExtractor.extract(item_link_id),
-      code: { coding: @link_id_map[item_link_id] || default_obs_coding(item) },
+      category: PfeCategoryCodeExtractor.extract(item_code_string, item_link_id),
+      code: { coding: item_code || default_obs_coding(item) },
       subject: @qr.subject,
       effectiveDateTime: @qr.authored,
       performer: Array(@qr.author).compact,
