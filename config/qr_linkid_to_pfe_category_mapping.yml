@@ -1,4 +1,3 @@
-
 '14363':
   pfe_domain_icf_code:
     - b1301
@@ -462,3 +461,73 @@ overall_burden:
   - b152
   us_core_category: cognitive-status
 
+# PROMIS short form - global - version 1.1
+85524-7:
+  pfe_domain_icf_code:
+  - b
+  - d
+  us_core_category:
+  - functional-status
+  - cognitive-status
+
+# PROMIS-10 Global 01 - General Health - In general, would you say your health is
+61577-3:
+  pfe_domain_icf_code:
+  - b
+  us_core_category: functional-status
+
+# PROMIS-10 Global 02 - Quality of Life - In general, would you say your quality of life is
+61578-1:
+  pfe_domain_icf_code:
+  - d
+  us_core_category: cognitive-status
+
+# PROMIS-10 Global 03 - Physical Health Rating - In general, how would you rate your physical health?
+61579-9:
+  pfe_domain_icf_code:
+  - b
+  us_core_category: functional-status
+
+# PROMIS-10 Global 04 - Mental Health Rating - In general, how would you rate your mental health, including your mood and your ability to think?
+61580-7:
+  pfe_domain_icf_code:
+  - b1
+  us_core_category: cognitive-status
+
+# PROMIS-10 Global 05 - Social Satisfaction - In general, how would you rate your satisfaction with your social activities and relationships?
+61581-5:
+  pfe_domain_icf_code:
+  - d
+  us_core_category: cognitive-status
+
+# PROMIS-10 Global 06 - Physical Activities - To what extent are you able to carry out your everyday physical activities such as walking, climbing stairs,
+# carrying groceries, or moving a chair?
+61582-3:
+  pfe_domain_icf_code:
+  - d
+  us_core_category: functional-status
+
+# PROMIS-10 Global 07 - Pain - How would you rate your pain on average?
+61583-1:
+  pfe_domain_icf_code:
+  - b2
+  us_core_category: functional-status
+
+# PROMIS-10 Global 08 - Fatigue - How would you rate your fatigue on average?
+61584-9:
+  pfe_domain_icf_code:
+  - b
+  us_core_category: functional-status
+
+# PROMIS-10 Global 09 - Social Roles (Performance) - In general, please rate how well you carry out your usual social activities and roles. (This includes
+# activities at home, at work and in your community, and responsibilities as a parent, child, spouse, employee, friend, etc.)
+61585-6:
+  pfe_domain_icf_code:
+  - d
+  us_core_category: functional-status
+
+# PROMIS-10 Global 10 - Emotional Problems - How often have you been bothered by emotional problems such as feeling anxious, depressed or irritable?
+61586-4:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
