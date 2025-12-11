@@ -343,10 +343,11 @@
   pfe_domain_icf_code:
   - d310
   us_core_category: cognitive-status
-mbi:
-  pfe_domain_icf_code:
-    - d138
-  us_core_category: functional-status
+# NOTE: mbi should not get an ICF code
+# mbi:
+#   pfe_domain_icf_code:
+#     - d138
+#   us_core_category: functional-status
 first_name:
   pfe_domain_icf_code:
     - d138
@@ -367,10 +368,11 @@ pcg_last_name:
   pfe_domain_icf_code:
   - d138
   us_core_category: functional-status
-assessment_date:
-  pfe_domain_icf_code:
-  - d138
-  us_core_category: functional-status
+# NOTE: assessment_date should not get an ICF code
+# assessment_date:
+#   pfe_domain_icf_code:
+#   - d138
+#   us_core_category: functional-status
 ask_more:
   pfe_domain_icf_code:
   - b152
