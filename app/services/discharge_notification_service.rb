@@ -35,8 +35,7 @@ class DischargeNotificationService
     doc_ref_uuid    = "urn:uuid:#{SecureRandom.uuid}" if document_url.present?
 
     # 2. Create the Encounter Resource
-    # Hardcoded per requirements: System ID, Emergency Class, Discharge Now
-    # TODO: We're missing some required fields, see https://build.fhir.org/ig/HL7/davinci-alerts/StructureDefinition-adt-notification-encounter.html
+    # Hardcoded for demonstration: class and type
     encounter = FHIR::Encounter.new(
       id: "encounter-#{SecureRandom.hex(4)}",
       meta: FHIR::Meta.new(
@@ -51,6 +50,11 @@ class DischargeNotificationService
         code: "EMER",
         display: "emergency"
       ),
+      type: FHIR::Coding.new(
+        system: "http://snomed.info/sct",
+        code: "4525004",
+        display: "Emergency department patient visit"
+      ),
       # Link to the Patient UUID defined above
       subject: FHIR::Reference.new(
         reference: patient_uuid,
@@ -64,7 +68,10 @@ class DischargeNotificationService
       period: FHIR::Period.new(
         end: DateTime.now.iso8601 # Discharge time is NOW
       )
-      # NOTE: hospitalization is optional, but maybe of interest?
+      # NOTE: hospitalization/dischargeDisposition is optional, but maybe of interest?
+      # system: "http://www.nubc.org/patient-discharge"
+      # code: "03"
+      # display: "Discharged/transferred to a Skilled Nursing Facility (SNF) with Medicare Certification in anticipation of Skilled Care"
     )
 
     # 3. Create DocumentReference if needed
