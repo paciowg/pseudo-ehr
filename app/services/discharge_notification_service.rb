@@ -50,17 +50,25 @@ class DischargeNotificationService
         code: "EMER",
         display: "emergency"
       ),
-      type: FHIR::Coding.new(
-        system: "http://snomed.info/sct",
-        code: "4525004",
-        display: "Emergency department patient visit"
-      ),
+      type: [
+        FHIR::CodeableConcept.new(
+          coding: [
+            FHIR::Coding.new(
+              system: "http://snomed.info/sct",
+              code: "4525004",
+              display: "Emergency department patient visit"
+            )
+          ]
+        )
+      ],
       # Link to the Patient UUID defined above
       subject: FHIR::Reference.new(
         reference: patient_uuid,
         display: patient.name
       ),
       # Link to the Organization UUID defined above
+      # NOTE: serviceProvider and location are optional, we could remove serviceProvider (simplify) or add
+      # location (since it's optional but must support)
       serviceProvider: FHIR::Reference.new(
         reference: org_uuid,
         display: organization.name
