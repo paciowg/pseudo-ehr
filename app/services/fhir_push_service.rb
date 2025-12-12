@@ -2,6 +2,8 @@ require 'net/http'
 require 'uri'
 require 'json'
 
+# TODO: If auth needed refactor this to use client from fhir_client_service.rb
+
 # Service to push a set of FHIR resources to a server.
 # It handles retries and updates a TaskStatus record with progress.
 class FhirPushService
