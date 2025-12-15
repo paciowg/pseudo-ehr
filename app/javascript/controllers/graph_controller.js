@@ -52,7 +52,7 @@ export default class extends Controller {
         },
         yaxis: {
           title: {
-            text: graphData.y_axis_label
+            text: graphData.y_axis_label || 'Score'
           },
         },
         tooltip: {
