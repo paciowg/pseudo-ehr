@@ -533,3 +533,15 @@ overall_burden:
   pfe_domain_icf_code:
   - b152
   us_core_category: cognitive-status
+
+# PROMIS-10 Global Physical Health (GPH) score
+71972-4:
+  pfe_domain_icf_code:
+  - b
+  us_core_category: functional-status
+
+# PROMIS-10 Global Mental Health (GMH) score
+71970-8:
+  pfe_domain_icf_code:
+  - b1
+  us_core_category: cognitive-status
