@@ -127,8 +127,8 @@ class TransitionOfCaresController < ApplicationController
         coding: [
           {
             system: 'http://loinc.org',
-            code: '81218-0',
-            display: 'Discharge summary - recommended C-CDA R2.1 sections'
+            code: '18842-5',
+            display: 'Discharge summary'
           }
         ]
       },
