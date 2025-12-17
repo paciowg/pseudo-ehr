@@ -177,7 +177,7 @@ class TransitionOfCaresController < ApplicationController
         reference: "Patient/#{patient_id}"
       },
       date: Time.now.iso8601,
-      title: t oc_params[:title],
+      title: toc_params[:title],
       author: [
         {
           reference: toc_params[:author]
