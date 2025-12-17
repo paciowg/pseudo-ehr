@@ -2,13 +2,12 @@
 
 class DischargeNotificationService
 
-  def self.perform(fhir_server:, patient:, organization:, destination_endpoint:, document_url: nil, document_description: nil)
+  def self.perform(fhir_server:, patient:, source_organization:, destination_organization:, document_url: nil, document_description: nil)
     # Get FHIR server information from DB if needed and set up client
     fhir_server = fhir_server.is_a?(String) ? FhirServer.find_by(base_url: fhir_server) : fhir_server
     fhir_client = FhirClientService.new(fhir_server: fhir_server).client
     # Create the message
-    source_endpoint = fhir_server.base_url
-    message = create_discharge_message(patient:, organization:, source_endpoint:, destination_endpoint:, document_url:, document_description:)
+    message = create_discharge_message(patient:, source_organization:, destination_organization:, document_url:, document_description:)
     # Write it to the FHIR server
     fhir_client.create(message)
   rescue Net::ReadTimeout, Net::OpenTimeout
@@ -18,14 +17,12 @@ class DischargeNotificationService
   # Generates a Da Vinci FHIR Discharge Notification Bundle
   #
   # @param patient [Patient] A valid Patient object containing a FHIR::Patient resource
-  # @param organization [Organization] A valid Organization object containing a FHIR::Organization resource
-  # @param source_endpoint [String] URL of the sending system
-  # @param destination_endpoint [String] URL of the receiving system
+  # @param source_organization [Organization] A valid Organization object containing a FHIR::Organization resource
+  # @param destination_organization [Organization] A valid Organization object containing a FHIR::Organization resource
   # @param document_url [String] Optional URL of a document to include
   # @param document_description [String] Optional description of the document
   # @return [FHIR::Bundle]
-  def self.create_discharge_message(patient:, organization:, source_endpoint:, destination_endpoint:, document_url: nil, document_description: nil)
-
+  def self.create_discharge_message(patient:, source_organization:, destination_organization:, document_url: nil, document_description: nil)
     # 1. Generate ephemeral UUIDs for internal linking within the Bundle
     # These are used for the 'fullUrl' and 'reference' fields.
     msg_header_uuid = "urn:uuid:#{SecureRandom.uuid}"
@@ -71,7 +68,7 @@ class DischargeNotificationService
       # location (since it's optional but must support)
       serviceProvider: FHIR::Reference.new(
         reference: org_uuid,
-        display: organization.name
+        display: source_organization.name
       ),
       period: FHIR::Period.new(
         end: DateTime.now.iso8601 # Discharge time is NOW
@@ -115,12 +112,13 @@ class DischargeNotificationService
         display: "Discharge Notification"
       ),
       source: FHIR::MessageHeader::Source.new(
-        name: organization.name,
-        endpoint: source_endpoint
+        name: source_organization.name,
+        endpoint: source_organization.endpoint_url
       ),
       destination: [
         FHIR::MessageHeader::Destination.new(
-          endpoint: destination_endpoint
+          name: destination_organization.name,
+          endpoint: destination_organization.endpoint_url
         )
       ],
       sender: FHIR::Reference.new(
@@ -136,7 +134,7 @@ class DischargeNotificationService
       FHIR::Bundle::Entry.new(fullUrl: encounter_uuid,  resource: encounter),
       # TODO: Maybe we want to simplify the included patient resource?
       FHIR::Bundle::Entry.new(fullUrl: patient_uuid,    resource: patient.fhir_resource),
-      FHIR::Bundle::Entry.new(fullUrl: org_uuid,        resource: organization.fhir_resource)
+      FHIR::Bundle::Entry.new(fullUrl: org_uuid,        resource: source_organization.fhir_resource)
     ]
     entries << FHIR::Bundle::Entry.new(fullUrl: doc_ref_uuid, resource: document_reference) if document_url.present?
 
