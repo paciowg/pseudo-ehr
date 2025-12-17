@@ -12,7 +12,7 @@ class TransitionsOfCareBundleService
 
   def perform
     # Fetch Composition from cache
-    comp_wrapper = PatientRecordCache.lookup_by_id(@composition_id)
+    comp_wrapper = PatientRecordCache.lookup('Composition', @composition_id)
     raise "Composition with ID #{@composition_id} not found in cache" unless comp_wrapper
 
     composition = unwrap_resource(comp_wrapper)
@@ -109,12 +109,11 @@ class TransitionsOfCareBundleService
     # Avoid re-processing
     return if @uuid_map[ref_string]
 
-    # Extract ID from reference (e.g. "Patient/123" -> "123")
-    parts = ref_string.split('/')
-    id = parts.last
+    # Extract type and ID from reference (e.g. "Patient/123" -> "Patient" and "123")
+    type, id = ref_string.split('/', 2)
     
     # Retrieve from cache
-    wrapper = PatientRecordCache.lookup_by_id(id)
+    wrapper = PatientRecordCache.lookup(type, id)
     if wrapper
       resource = unwrap_resource(wrapper)
       key = generate_key(resource)
