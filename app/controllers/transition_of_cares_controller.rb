@@ -102,6 +102,36 @@ class TransitionOfCaresController < ApplicationController
     redirect_to patient_transition_of_cares_path(patient_id: patient_id)
   end
 
+  # POST /patients/:patient_id/transition_of_cares/:id/notify
+  def notify
+    begin
+      toc_id = params[:id]
+      destination_organization = params[:destination_organization]
+
+      # Log the parameters for now (placeholder implementation)
+      Rails.logger.info("=== Notify TOC Action Called ===")
+      Rails.logger.info("Patient ID: #{patient_id}")
+      Rails.logger.info("TOC ID: #{toc_id}")
+      Rails.logger.info("Destination Organization: #{destination_organization}")
+      Rails.logger.info("================================")
+
+      # TODO: Implement actual notification logic here
+      # This could involve:
+      # - Creating a FHIR Communication resource
+      # - Sending the TOC document to the destination organization
+      # - Creating an audit trail entry
+      # - Triggering external notification systems
+
+      flash[:success] = "Discharge notification sent successfully to #{destination_organization}"
+    rescue StandardError => e
+      Rails.logger.error("Error sending discharge notification: #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      flash[:danger] = "Error sending discharge notification: #{e.message}"
+    end
+
+    redirect_to patient_transition_of_cares_path(patient_id: patient_id)
+  end
+
   private
 
   # Sort TOCs from most recent to oldest
@@ -147,7 +177,7 @@ class TransitionOfCaresController < ApplicationController
         reference: "Patient/#{patient_id}"
       },
       date: Time.now.iso8601,
-      title: toc_params[:title],
+      title: t oc_params[:title],
       author: [
         {
           reference: toc_params[:author]
