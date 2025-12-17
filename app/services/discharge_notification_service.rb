@@ -23,9 +23,6 @@ class DischargeNotificationService
   # @param document_description [String] Optional description of the document
   # @return [FHIR::Bundle]
   def self.create_discharge_message(patient:, source_organization:, destination_organization:, document_url: nil, document_description: nil)
-    source_endpoint = source_organization.endpoint_url
-    destination_endpoint = destination_organization.endpoint_url
-
     # 1. Generate ephemeral UUIDs for internal linking within the Bundle
     # These are used for the 'fullUrl' and 'reference' fields.
     msg_header_uuid = "urn:uuid:#{SecureRandom.uuid}"
@@ -116,11 +113,12 @@ class DischargeNotificationService
       ),
       source: FHIR::MessageHeader::Source.new(
         name: source_organization.name,
-        endpoint: source_endpoint
+        endpoint: source_organization.endpoint_url
       ),
       destination: [
         FHIR::MessageHeader::Destination.new(
-          endpoint: destination_endpoint
+          name: destination_organization.name,
+          endpoint: destination_organization.endpoint_url
         )
       ],
       sender: FHIR::Reference.new(

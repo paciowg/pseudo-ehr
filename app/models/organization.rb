@@ -7,4 +7,10 @@ class Organization < Resource
     @name = fhir_organization.name
     self.class.update(self)
   end
+
+  # We want a plausible endpoint URL for any organization for discharge notifications
+  # TODO: If we support endpoints in the sample data eventually, use that
+  def endpoint_url
+    "https://#{name.downcase.gsub(/\s/, '')}.org/fhir"
+  end
 end
