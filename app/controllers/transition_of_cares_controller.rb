@@ -133,8 +133,8 @@ class TransitionOfCaresController < ApplicationController
       raise "Destination organization not specified" unless destination_org_id.present?
 
       # Get Organization objects
-      source_organization = Organization.find(source_org_id)
-      destination_organization = Organization.find(destination_org_id)
+      source_organization = PatientRecordCache.lookup('Organization', source_org_id)
+      destination_organization = PatientRecordCache.lookup('Organization', destination_org_id)
 
       raise "Source organization #{source_org_id} not found" unless source_organization
       raise "Destination organization #{destination_org_id} not found" unless destination_organization
@@ -143,8 +143,8 @@ class TransitionOfCaresController < ApplicationController
       DischargeNotificationService.perform(
         fhir_server: current_server,
         patient: @patient,
-        source_organization: source_organization,
-        destination_organization: destination_organization,
+        source_organization: Organization.new(source_organization),
+        destination_organization: Organization.new(destination_organization),
         document_url: document_url,
         document_description: toc.title
       )
