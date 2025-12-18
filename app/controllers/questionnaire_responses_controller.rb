@@ -60,7 +60,7 @@ class QuestionnaireResponsesController < ApplicationController
     entries = (entries + retrieve_practitioner_roles).uniq
     fhir_questionnaire_responses.each { |entry| QuestionnaireResponse.new(entry, entries) }
 
-    QuestionnaireResponse.filter_by_patient_id(patient_id)
+    QuestionnaireResponse.filter_by_patient_id(patient_id).sort_by { |qr| qr.date }.reverse
   rescue StandardError => e
     Rails.logger.error("Error fetching or parsing QuestionnaireResponses:\n #{e.message.inspect}")
     Rails.logger.error(e.backtrace.join("\n"))
