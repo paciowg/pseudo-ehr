@@ -1,4 +1,4 @@
-class TransitionsOfCareBundleService
+class TransitionOfCareBundleService
   def self.perform(fhir_server:, composition_id:)
     new(fhir_server, composition_id).perform
   end

@@ -117,7 +117,7 @@ class TransitionOfCaresController < ApplicationController
       end
 
       # Step 1: Generate the TOC Bundle and get the document URL
-      document_url = TransitionsOfCareBundleService.perform(
+      document_url = TransitionOfCareBundleService.perform(
         fhir_server: current_server,
         composition_id: toc_id
       )
