@@ -9,8 +9,14 @@ class Organization < Resource
   end
 
   # We want a plausible endpoint URL for any organization for discharge notifications
-  # TODO: If we support endpoints in the sample data eventually, use that
   def endpoint_url
-    "https://#{name.downcase.gsub(/\s/, '')}.org/fhir"
+    # Use the endpoint specified by the organization if available, otherwise make up something reasonable
+    if @fhir_resource.endpoint.present?
+      endpoint_reference = @fhir_resource.endpoint.first.reference
+      endpoint = PatientRecordCache.lookup_by_reference(endpoint_reference)
+      endpoint&.address
+    else
+      "https://#{name.downcase.gsub(/\s/, '')}.org/fhir"
+    end
   end
 end

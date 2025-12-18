@@ -116,6 +116,12 @@ class PatientRecordCache
       patient_records.values.flatten.detect { |r| r.resourceType == type && r.id == id }
     end
 
+    # Lookup a resource given the reference (e.g., <type>/<id>)
+    def lookup_by_reference(reference)
+      type, id = reference.split('/', 2)
+      lookup(type, id)
+    end
+
     # Observations by questionnaire response id
     def observations_by_questionnaire_response_id(qr_id)
       return [] if qr_id.blank?
