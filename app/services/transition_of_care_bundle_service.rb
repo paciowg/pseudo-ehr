@@ -16,7 +16,7 @@ class TransitionOfCareBundleService
     raise "Composition with ID #{@composition_id} not found in cache" unless comp_wrapper
 
     composition = unwrap_resource(comp_wrapper)
-    
+
     # Initialize maps with the composition itself
     comp_key = generate_key(composition)
     comp_uuid = "urn:uuid:#{SecureRandom.uuid}"
@@ -49,7 +49,14 @@ class TransitionOfCareBundleService
       # Skip if it's the composition or the patient we already added
       next if resource.id == composition.id && resource.resourceType == 'Composition'
       next if patient_resource && resource.id == patient_resource.id && resource.resourceType == 'Patient'
-      
+
+      # TOC SMP entries have changed from List to Bundle; if we encounter a List we build an SMP Bundle from
+      # that and add it instead to the entries, using the same rewritten reference in the Composition
+      if resource.resourceType == 'List'
+        original_uuid = @uuid_map[generate_key(resource)]
+        resource = StandardizedMedicationProfileBundleService.perform(medication_list_id: resource.id)
+        @uuid_map[generate_key(resource)] = original_uuid
+      end
       entries << build_entry(resource)
     end
 
@@ -69,14 +76,12 @@ class TransitionOfCareBundleService
     client = FhirClientService.new(fhir_server: @fhir_server).client
     response = client.create(bundle)
 
-    if response.response[:code].to_s.start_with?('2')
-      # Return the full URL of the created bundle
-      id = response.resource.id
-      base = @fhir_server.base_url.chomp('/')
-      "#{base}/Bundle/#{id}"
-    else
-      raise "Failed to submit TOC Bundle: #{response.response[:body]}"
-    end
+    raise "Failed to submit TOC Bundle: #{response.response[:body]}" unless response.response[:code].to_s.start_with?('2')
+
+    # Return the full URL of the created bundle
+    id = response.resource.id
+    base = @fhir_server.base_url.chomp('/')
+    "#{base}/Bundle/#{id}"
   end
 
   private
@@ -94,11 +99,11 @@ class TransitionOfCareBundleService
     if patient_ref && @resources_map[patient_ref]
       return @resources_map[patient_ref]
     end
-    
+
     # Try finding by the key generated from the resource if we have a uuid mapping
     if patient_ref && @uuid_map[patient_ref]
-       uuid = @uuid_map[patient_ref]
-       return @resources_map.values.find { |r| @uuid_map[generate_key(r)] == uuid }
+      uuid = @uuid_map[patient_ref]
+      return @resources_map.values.find { |r| @uuid_map[generate_key(r)] == uuid }
     end
 
     # Fallback: Find any Patient resource in the map
@@ -111,22 +116,22 @@ class TransitionOfCareBundleService
 
     # Extract type and ID from reference (e.g. "Patient/123" -> "Patient" and "123")
     type, id = ref_string.split('/', 2)
-    
+
     # Retrieve from cache
     wrapper = PatientRecordCache.lookup(type, id)
-    if wrapper
-      resource = unwrap_resource(wrapper)
-      key = generate_key(resource)
+    return unless wrapper
 
-      # Generate a UUID if we haven't seen this resource object before
-      uuid = @uuid_map[key] || "urn:uuid:#{SecureRandom.uuid}"
-      
-      @resources_map[key] = resource
-      @uuid_map[key] = uuid
-      
-      # Also map the requested ref_string to this UUID
-      @uuid_map[ref_string] = uuid if ref_string != key
-    end
+    resource = unwrap_resource(wrapper)
+    key = generate_key(resource)
+
+    # Generate a UUID if we haven't seen this resource object before
+    uuid = @uuid_map[key] || "urn:uuid:#{SecureRandom.uuid}"
+
+    @resources_map[key] = resource
+    @uuid_map[key] = uuid
+
+    # Also map the requested ref_string to this UUID
+    @uuid_map[ref_string] = uuid if ref_string != key
   end
 
   def extract_references(resource)
@@ -137,12 +142,12 @@ class TransitionOfCareBundleService
 
   def scan_for_refs(hash, refs)
     return unless hash.is_a?(Hash)
-    
+
     if hash['reference'].is_a?(String)
       refs << hash['reference']
     end
-    
-    hash.each do |_, value|
+
+    hash.each_value do |value|
       if value.is_a?(Hash)
         scan_for_refs(value, refs)
       elsif value.is_a?(Array)
@@ -172,7 +177,7 @@ class TransitionOfCareBundleService
       hash['reference'] = uuid if uuid
     end
 
-    hash.each do |_, value|
+    hash.each_value do |value|
       if value.is_a?(Hash)
         replace_refs(value)
       elsif value.is_a?(Array)
