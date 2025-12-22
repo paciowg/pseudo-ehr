@@ -32,6 +32,10 @@ class TransitionOfCareBundleService
       collect_resource(ref)
     end
 
+    # Handle Medication Lists: Aggregate multiple Lists into a single SMP Bundle
+    # and update the Composition to reference that Bundle instead.
+    handle_medication_lists(composition)
+
     # Build Entries
     entries = []
 
@@ -50,13 +54,9 @@ class TransitionOfCareBundleService
       next if resource.id == composition.id && resource.resourceType == 'Composition'
       next if patient_resource && resource.id == patient_resource.id && resource.resourceType == 'Patient'
 
-      # TOC SMP entries have changed from List to Bundle; if we encounter a List we build an SMP Bundle from
-      # that and add it instead to the entries, using the same rewritten reference in the Composition
-      if resource.resourceType == 'List'
-        original_uuid = @uuid_map[generate_key(resource)]
-        resource = StandardizedMedicationProfileBundleService.perform(medication_list_id: resource.id)
-        @uuid_map[generate_key(resource)] = original_uuid
-      end
+      # Skip List resources as they are now consolidated into the SMP Bundle created in handle_medication_lists
+      next if resource.resourceType == 'List'
+
       entries << build_entry(resource)
     end
 
@@ -88,6 +88,44 @@ class TransitionOfCareBundleService
 
   def unwrap_resource(wrapper)
     wrapper.respond_to?(:fhir_resource) ? wrapper.fhir_resource : wrapper
+  end
+
+  def handle_medication_lists(composition)
+    # Identify all collected List resources (Medication Lists)
+    list_resources = @resources_map.values.select { |r| r.resourceType == 'List' }
+    return if list_resources.empty?
+
+    # Create the Standardized Medication Profile (SMP) Bundle from all lists
+    list_ids = list_resources.map(&:id)
+    smp_bundle = StandardizedMedicationProfileBundleService.perform(medication_list_ids: list_ids)
+
+    # Register the new Bundle in the maps so it gets built as an entry
+    smp_key = generate_key(smp_bundle)
+    smp_uuid = "urn:uuid:#{SecureRandom.uuid}"
+
+    @resources_map[smp_key] = smp_bundle
+    @uuid_map[smp_key] = smp_uuid
+
+    # Update Composition Sections:
+    # Replace references to the individual Lists with a single reference to the SMP Bundle.
+    list_refs = list_resources.map { |r| "#{r.resourceType}/#{r.id}" }
+
+    composition.section.each do |section|
+      # Identify entries in this section that point to any of our Lists
+      entries_to_replace = section.entry.select { |e| list_refs.include?(e.reference) }
+
+      if entries_to_replace.any?
+        # Remove the old List references
+        section.entry.reject! { |e| list_refs.include?(e.reference) }
+
+        # Add the single reference to the new SMP Bundle
+        # We use the UUID directly because the Composition will be serialized shortly after
+        section.entry << FHIR::Reference.new(reference: smp_uuid)
+      end
+    end
+
+    # Remove the original List resources from the map so they don't get added as individual entries
+    list_resources.each { |r| @resources_map.delete(generate_key(r)) }
   end
 
   def generate_key(resource)
