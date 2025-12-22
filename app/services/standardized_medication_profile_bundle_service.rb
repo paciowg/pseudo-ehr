@@ -3,12 +3,12 @@ class StandardizedMedicationProfileBundleService
   #
   # Usage:
   #   StandardizedMedicationProfileBundleService.perform(
-  #     medication_list_id: 'list-123',
+  #     medication_list_ids: ['list-123', 'list-456'],
   #     fhir_server: 'http://hapi.fhir.org/baseR4' # Optional
   #   )
   #
   # Arguments:
-  #   medication_list_id: (String) The ID of the FHIR List resource stored in PatientRecordCache.
+  #   medication_list_ids: (Array<String>) The IDs of the FHIR List resources stored in PatientRecordCache.
   #   fhir_server: (String|FhirServer|nil) Optional. The target FHIR server.
   #                If provided, the generated bundle will be written to this server.
   #                If nil (default), the bundle is only generated and returned to the caller.
@@ -16,12 +16,12 @@ class StandardizedMedicationProfileBundleService
   # Returns:
   #   (FHIR::Bundle) The generated collection bundle.
 
-  def self.perform(medication_list_id:, fhir_server: nil)
-    new(medication_list_id, fhir_server).perform
+  def self.perform(medication_list_ids:, fhir_server: nil)
+    new(medication_list_ids, fhir_server).perform
   end
 
-  def initialize(medication_list_id, fhir_server)
-    @medication_list_id = medication_list_id
+  def initialize(medication_list_ids, fhir_server)
+    @medication_list_ids = Array(medication_list_ids)
     if fhir_server
       @fhir_server = fhir_server.is_a?(String) ? FhirServer.find_by(base_url: fhir_server) : fhir_server
     end
@@ -30,29 +30,36 @@ class StandardizedMedicationProfileBundleService
   end
 
   def perform
-    # Fetch Medication List from cache
-    list_wrapper = PatientRecordCache.lookup('List', @medication_list_id)
-    raise "Medication List with ID #{@medication_list_id} not found in cache" unless list_wrapper
+    medication_lists = []
 
-    medication_list = unwrap_resource(list_wrapper)
+    # Fetch Medication Lists from cache
+    @medication_list_ids.each do |medication_list_id|
+      list_wrapper = PatientRecordCache.lookup('List', medication_list_id)
+      raise "Medication List with ID #{medication_list_id} not found in cache" unless list_wrapper
 
-    # 1. Map the List itself
-    collect_resource_object(medication_list)
+      medication_list = unwrap_resource(list_wrapper)
+      medication_lists << medication_list
 
-    # 2. Traverse List entries
-    medication_list&.entry&.each do |entry|
-      resolve_medication_statement(entry.item)
+      # 1. Map the List itself
+      collect_resource_object(medication_list)
+
+      # 2. Traverse List entries
+      medication_list&.entry&.each do |entry|
+        resolve_medication_statement(entry.item)
+      end
     end
 
     # 3. Build Entries
     entries = []
 
-    # List first
-    entries << build_entry(medication_list)
+    # Lists first
+    medication_lists.each do |medication_list|
+      entries << build_entry(medication_list)
+    end
 
     # Others
     @resources_map.each_value do |resource|
-      next if resource.id == medication_list.id && resource.resourceType == 'List'
+      next if resource.resourceType == 'List' && medication_lists.any? { |l| l.id == resource.id }
 
       entries << build_entry(resource)
     end
