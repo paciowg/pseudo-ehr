@@ -111,7 +111,7 @@ class TransitionOfCaresController < ApplicationController
       # Find the TOC Composition
       toc = Composition.find(toc_id)
       unless toc
-        flash[:danger] = "Transition of Care document not found"
+        flash[:danger] = 'Transition of Care document not found'
         redirect_to patient_transition_of_cares_path(patient_id: patient_id)
         return
       end
@@ -122,15 +122,15 @@ class TransitionOfCaresController < ApplicationController
         composition_id: toc_id
       )
 
-      raise "Failed to generate TOC bundle document URL" unless document_url.present?
+      raise 'Failed to generate TOC bundle document URL' if document_url.blank?
 
       # Step 2: Extract organization IDs from references
       # Source organization is the custodian from the composition
       source_org_id = toc.fhir_resource.custodian&.reference&.split('/')&.last
       destination_org_id = destination_organization_ref.split('/').last
 
-      raise "Source organization not found in TOC composition" unless source_org_id.present?
-      raise "Destination organization not specified" unless destination_org_id.present?
+      raise 'Source organization not found in TOC composition' if source_org_id.blank?
+      raise 'Destination organization not specified' if destination_org_id.blank?
 
       # Get Organization objects
       source_organization = PatientRecordCache.lookup('Organization', source_org_id)

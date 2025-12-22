@@ -73,7 +73,7 @@ class PfeObservationBuilder
 
     item_link_id = item.linkId.to_s.delete_prefix('/')
     item_code = @link_id_map[item_link_id]
-    item_code_string = item_code&.first&.to_hash&.with_indifferent_access[:code]
+    item_code_string = item_code&.first&.to_hash&.with_indifferent_access&.[](:code)
     answer = item.answer.first
     obs = FHIR::Observation.new(
       id: "#{@qr.id}-#{item_link_id&.camelize}", # SecureRandom.uuid,
