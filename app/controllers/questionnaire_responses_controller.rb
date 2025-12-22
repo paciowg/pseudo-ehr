@@ -45,7 +45,7 @@ class QuestionnaireResponsesController < ApplicationController
   private
 
   def fetch_questionnaire_responses(patient_id)
-    qrs = QuestionnaireResponse.filter_by_patient_id(patient_id).sort_by { |qr| qr.date }.reverse
+    qrs = QuestionnaireResponse.filter_by_patient_id(patient_id).sort_by(&:date).reverse
     return qrs unless QuestionnaireResponse.expired? || qrs.blank?
 
     entries = retrieve_current_patient_resources
@@ -60,7 +60,7 @@ class QuestionnaireResponsesController < ApplicationController
     entries = (entries + retrieve_practitioner_roles).uniq
     fhir_questionnaire_responses.each { |entry| QuestionnaireResponse.new(entry, entries) }
 
-    QuestionnaireResponse.filter_by_patient_id(patient_id).sort_by { |qr| qr.date }.reverse
+    QuestionnaireResponse.filter_by_patient_id(patient_id).sort_by(&:date).reverse
   rescue StandardError => e
     Rails.logger.error("Error fetching or parsing QuestionnaireResponses:\n #{e.message.inspect}")
     Rails.logger.error(e.backtrace.join("\n"))
