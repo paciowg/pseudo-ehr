@@ -1,10 +1,9 @@
 # Service to generate and push a FHIR discharge notification
 
 class DischargeNotificationService
-
   def self.perform(fhir_server:, patient:, source_organization:, destination_organization:, document_url: nil, document_description: nil)
     # Get FHIR server information from DB if needed and set up client
-    fhir_server = fhir_server.is_a?(String) ? FhirServer.find_by(base_url: fhir_server) : fhir_server
+    fhir_server = FhirServer.find_by(base_url: fhir_server) if fhir_server.is_a?(String)
     fhir_client = FhirClientService.new(fhir_server: fhir_server).client
     # Create the message
     message = create_discharge_message(patient:, source_organization:, destination_organization:, document_url:, document_description:)
@@ -37,23 +36,23 @@ class DischargeNotificationService
       id: "encounter-#{SecureRandom.hex(4)}",
       meta: FHIR::Meta.new(
         profile: [
-          "http://hl7.org/fhir/us/davinci-alerts/StructureDefinition/adt-notification-encounter",
-          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
+          'http://hl7.org/fhir/us/davinci-alerts/StructureDefinition/adt-notification-encounter',
+          'http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter'
         ]
       ),
       status: 'finished',
       class: FHIR::Coding.new(
-        system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-        code: "EMER",
-        display: "emergency"
+        system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode',
+        code: 'EMER',
+        display: 'emergency'
       ),
       type: [
         FHIR::CodeableConcept.new(
           coding: [
             FHIR::Coding.new(
-              system: "http://snomed.info/sct",
-              code: "4525004",
-              display: "Emergency department patient visit"
+              system: 'http://snomed.info/sct',
+              code: '4525004',
+              display: 'Emergency department patient visit'
             )
           ]
         )
@@ -104,12 +103,12 @@ class DischargeNotificationService
     message_header = FHIR::MessageHeader.new(
       id: SecureRandom.uuid,
       meta: FHIR::Meta.new(
-        profile: ["http://hl7.org/fhir/us/davinci-alerts/StructureDefinition/discharge-notification-messageheader"]
+        profile: ['http://hl7.org/fhir/us/davinci-alerts/StructureDefinition/discharge-notification-messageheader']
       ),
       eventCoding: FHIR::Coding.new(
-        system: "http://hl7.org/fhir/us/davinci-alerts/CodeSystem/notification-event",
-        code: "notification-discharge",
-        display: "Discharge Notification"
+        system: 'http://hl7.org/fhir/us/davinci-alerts/CodeSystem/notification-event',
+        code: 'notification-discharge',
+        display: 'Discharge Notification'
       ),
       source: FHIR::MessageHeader::Source.new(
         name: source_organization.name,
@@ -141,12 +140,11 @@ class DischargeNotificationService
     FHIR::Bundle.new(
       id: SecureRandom.uuid,
       meta: FHIR::Meta.new(
-        profile: ["http://hl7.org/fhir/us/davinci-alerts/StructureDefinition/notifications-bundle"]
+        profile: ['http://hl7.org/fhir/us/davinci-alerts/StructureDefinition/notifications-bundle']
       ),
       type: 'message',
       timestamp: DateTime.now.iso8601,
       entry: entries
     )
   end
-
 end

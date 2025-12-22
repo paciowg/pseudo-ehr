@@ -12,7 +12,7 @@ class PfeCategoryCodeExtractor
 
   COLLECTION_DOMAIN_MAP = {
     'd4' => %w[89398-2 89394-1 85927-2 89392-5 89414-7 89390-9 101325-9 89412-1 89385-9 89381-8 89379-2
-                        89416-2 89418-8 89402-2 95738-1],
+               89416-2 89418-8 89402-2 95738-1],
     'd5' => %w[95018-8 95017-0 95015-4 95014-7 89387-5 95013-9 89406-3 45606-1],
     'b5' => %w[86677-2],
     'd3' => %w[95737-3 54602-8],
@@ -26,7 +26,7 @@ class PfeCategoryCodeExtractor
     # NOTE: The origininal implementation used the linkId for mapping QuestionnaireResponse answers to PFE
     # domains; the implementation has been updated to more appropriately use the code from the Questionnaire
     # to find the PFE domain but also keep the linkId lookup for backwards compatibility
-    def extract(code, link_id=nil)
+    def extract(code, link_id = nil)
       link_id = link_id.to_s.delete_prefix('/')
       category_mapping = load_pfe_category_mapping
       extracted_categories = category_mapping[code].presence || category_mapping[link_id].presence || {}
