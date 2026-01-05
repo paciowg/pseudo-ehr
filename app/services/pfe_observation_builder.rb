@@ -102,6 +102,7 @@ class PfeObservationBuilder
 
     set_answer_value(obs, answer, item_link_id)
     add_extensions(obs)
+    add_reference_range(obs, item_code_string)
 
     if collection.code&.coding.blank?
       collection.code = FHIR::CodeableConcept.new(coding: @link_id_map[item_link_id] || default_obs_coding(item))
@@ -212,5 +213,17 @@ class PfeObservationBuilder
 
       traverse_items(item.item, map) if item.item.present?
     end
+  end
+
+  def add_reference_range(obs, code)
+    range = OBSERVATION_RANGES[code]
+    return if range.blank?
+
+    obs.referenceRange = [
+      FHIR::Observation::ReferenceRange.new(
+        low: FHIR::Quantity.new(value: range[:low]),
+        high: FHIR::Quantity.new(value: range[:high])
+      )
+    ]
   end
 end
