@@ -39,6 +39,11 @@ class ObservationsController < ApplicationController
     first_obs = observations.first
     title = first_obs.code
 
+    # Find reference range from the first observation that has it
+    ref_obs = observations.find { |o| o.min_ref_range.present? && o.max_ref_range.present? }
+    y_min = ref_obs&.min_ref_range
+    y_max = ref_obs&.max_ref_range
+
     if first_obs.components?
       # Handle observations with components (e.g., Blood Pressure)
       series = {}
@@ -56,7 +61,7 @@ class ObservationsController < ApplicationController
       end
 
       series.each_value { |s| s[:data].sort_by! { |d| d[:x] } }
-      render json: { title: title, y_axis_label: y_axis_label, series: series.values }
+      render json: { title: title, y_axis_label: y_axis_label, series: series.values, y_min: y_min, y_max: y_max }
     else
       # Handle single-value observations
       _value, unit = parse_measurement(first_obs)
@@ -73,7 +78,9 @@ class ObservationsController < ApplicationController
         series: [{
           name: title,
           data: series_data
-        }]
+        }],
+        y_min: y_min,
+        y_max: y_max
       }
     end
   rescue StandardError => e

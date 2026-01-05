@@ -9,6 +9,19 @@ class PfeObservationBuilder
   PFE_SINGLE_OBS_PROFILE = 'http://hl7.org/fhir/us/pacio-pfe/StructureDefinition/pfe-observation-single'.freeze
   PFE_COLLECTION_PROFILE = 'http://hl7.org/fhir/us/pacio-pfe/StructureDefinition/pfe-collection'.freeze
 
+  # Some of the questionnaire responses should generate observations with ranges; eventually we'll want to
+  # figure out a good long term lookup strategy
+  OBSERVATION_RANGES = {
+    # PROMIS-10 Global Physical Health (GPH) score
+    '71972-4' => {
+      low: 4, high: 20
+    },
+    # PROMIS-10 Global Mental Health (GMH) score
+    '71970-8' => {
+      low: 4, high: 20
+    }
+  }
+
   def initialize(qr, questionnaire) # rubocop:disable Naming/MethodParameterName
     @qr = qr
     @questionnaire = questionnaire
@@ -89,6 +102,7 @@ class PfeObservationBuilder
 
     set_answer_value(obs, answer, item_link_id)
     add_extensions(obs)
+    add_reference_range(obs, item_code_string)
 
     if collection.code&.coding.blank?
       collection.code = FHIR::CodeableConcept.new(coding: @link_id_map[item_link_id] || default_obs_coding(item))
@@ -199,5 +213,17 @@ class PfeObservationBuilder
 
       traverse_items(item.item, map) if item.item.present?
     end
+  end
+
+  def add_reference_range(obs, code)
+    range = OBSERVATION_RANGES[code]
+    return if range.blank?
+
+    obs.referenceRange = [
+      FHIR::Observation::ReferenceRange.new(
+        low: FHIR::Quantity.new(value: range[:low]),
+        high: FHIR::Quantity.new(value: range[:high])
+      )
+    ]
   end
 end
