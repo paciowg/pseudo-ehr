@@ -60,6 +60,14 @@ class Observation < Resource
     parse_date(@fhir_resource.issued)
   end
 
+  def min_ref_range
+    @fhir_resource.referenceRange&.first&.low&.value&.to_f
+  end
+
+  def max_ref_range
+    @fhir_resource.referenceRange&.first&.high&.value&.to_f
+  end
+
   def self.collections(observations)
     observations.select(&:collection?)
                 .sort_by { |observation| observation&.effective_date_time || '' }

@@ -62,6 +62,13 @@ export default class extends Controller {
         }
       }
 
+      if (graphData.y_min != null) {
+        options.yaxis.min = graphData.y_min
+      }
+      if (graphData.y_max != null) {
+        options.yaxis.max = graphData.y_max
+      }
+
       // TODO: When ApexCharts is managed locally, this should be changed back to:
       // this.chart = new ApexCharts(this.chartTarget, options)
       this.chart = new window.ApexCharts(this.chartTarget, options)
