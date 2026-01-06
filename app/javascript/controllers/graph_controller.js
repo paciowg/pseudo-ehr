@@ -49,6 +49,14 @@ export default class extends Controller {
         },
         xaxis: {
           type: 'datetime',
+          labels: {
+            datetimeFormatter: {
+              year: 'yyyy',
+              month: 'MMM yyyy',
+              day: 'dd MMM',
+              hour: 'HH:mm'
+            }
+          }
         },
         yaxis: {
           title: {
