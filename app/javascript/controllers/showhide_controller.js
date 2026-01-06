@@ -10,7 +10,8 @@ export default class extends Controller {
     "encounterDiagnosis", "problemListItem", "other",
     "tocConditionButton", "tocConditionContent", "tocServiceRequestButton",
      "tocServiceRequestContent", "tocAllergyButton", "tocAllergyContent",
-     "tocCarePlanContent", "tocCarePlanButton", "tocObservationButton", "tocObservationContent"
+     "tocCarePlanContent", "tocCarePlanButton", "tocObservationButton", "tocObservationContent",
+     "trendObs"
   ]
   static values = { showIf: String }
   connect() {
@@ -56,16 +57,32 @@ export default class extends Controller {
   }
 
   toggleObservations() {
-    const showSingle = this.obsTypeTarget.value === "Single Observations"
+    const value = this.obsTypeTarget.value
 
-    this.singleObsTargets.forEach(el => {
-      el.classList.toggle('hidden', !showSingle)
-    })
-
-    if (this.hasCollectionObsTarget) {
-      this.collectionObsTargets.forEach(el => {
-        el.classList.toggle('hidden', showSingle)
-      })
+    if (value === "Single Observations") {
+      this.singleObsTargets.forEach(el => el.classList.remove('hidden'))
+      if (this.hasCollectionObsTarget) {
+        this.collectionObsTargets.forEach(el => el.classList.add('hidden'))
+      }
+      if (this.hasTrendObsTarget) {
+        this.trendObsTargets.forEach(el => el.classList.add('hidden'))
+      }
+    } else if (value === "Observation Collection") {
+      this.singleObsTargets.forEach(el => el.classList.add('hidden'))
+      if (this.hasCollectionObsTarget) {
+        this.collectionObsTargets.forEach(el => el.classList.remove('hidden'))
+      }
+      if (this.hasTrendObsTarget) {
+        this.trendObsTargets.forEach(el => el.classList.add('hidden'))
+      }
+    } else if (value === "Observation Trends") {
+      this.singleObsTargets.forEach(el => el.classList.add('hidden'))
+      if (this.hasCollectionObsTarget) {
+        this.collectionObsTargets.forEach(el => el.classList.add('hidden'))
+      }
+      if (this.hasTrendObsTarget) {
+        this.trendObsTargets.forEach(el => el.classList.remove('hidden'))
+      }
     }
   }
 
