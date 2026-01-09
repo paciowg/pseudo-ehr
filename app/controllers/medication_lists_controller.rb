@@ -27,8 +27,8 @@ class MedicationListsController < ApplicationController
       fhir_lists = entries.select { |entry| entry.resourceType == 'List' && entry.code.present? }
     end
 
-    practitioner_roles = retrieve_practitioner_roles
-    entries = (entries + practitioner_roles).uniq
+    other_resources = retrieve_other_resources
+    entries = (entries + other_resources).uniq
 
     fhir_lists.each { |entry| MedicationList.new(entry, entries) }
 

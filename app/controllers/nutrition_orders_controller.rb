@@ -26,7 +26,7 @@ class NutritionOrdersController < ApplicationController
       fhir_nutrition_orders = entries.select { |entry| entry.resourceType == 'NutritionOrder' }
     end
 
-    entries = (entries + retrieve_practitioner_roles).uniq
+    entries = (entries + retrieve_other_resources).uniq
     fhir_nutrition_orders.each { |entry| NutritionOrder.new(entry, entries) }
 
     nutri_orders = NutritionOrder.filter_by_patient_id(patient_id)

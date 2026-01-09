@@ -26,11 +26,11 @@ class CareTeamsController < ApplicationController
       fhir_care_teams = entries.select { |entry| entry.resourceType == 'CareTeam' }
     end
 
-    # Get practitioner roles for reference resolution
-    practitioner_roles = retrieve_practitioner_roles
+    # Get other resources for reference resolution
+    other_resources = retrieve_other_resources
 
     # Combine entries and create CareTeam objects
-    entries = (entries + practitioner_roles).uniq
+    entries = (entries + other_resources).uniq
     fhir_care_teams.each { |entry| CareTeam.new(entry, entries) }
 
     CareTeam.filter_by_patient_id(patient_id)

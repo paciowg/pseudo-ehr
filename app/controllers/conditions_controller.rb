@@ -28,11 +28,11 @@ class ConditionsController < ApplicationController
       fhir_conditions = entries.select { |entry| entry.resourceType == 'Condition' }
     end
 
-    # Get practitioner roles for reference resolution
-    practitioner_roles = retrieve_practitioner_roles
+    # Get other resources for reference resolution
+    other_resources = retrieve_other_resources
 
     # Combine entries and create Condition objects
-    entries = (entries + practitioner_roles).uniq
+    entries = (entries + other_resources).uniq
     fhir_conditions.each { |entry| Condition.new(entry, entries) }
 
     conditions = Condition.filter_by_patient_id(patient_id)

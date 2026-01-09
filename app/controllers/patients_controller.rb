@@ -18,7 +18,7 @@ class PatientsController < ApplicationController
     session[:patient_id] = @patient.id
     retrieve_current_patient_resources
     set_resources_count
-    retrieve_practitioner_roles
+    retrieve_other_resources
 
     respond_to do |format|
       format.html
@@ -118,7 +118,7 @@ class PatientsController < ApplicationController
         session[:patient_id] = patient_id
         retrieve_current_patient_resources
         set_resources_count
-        retrieve_practitioner_roles
+        retrieve_other_resources
 
         render turbo_stream: [
           turbo_stream.replace('flash', partial: 'shared/flash_messages'),

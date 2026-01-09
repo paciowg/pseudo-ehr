@@ -26,7 +26,7 @@ class MedicationRequestsController < ApplicationController
       fhir_medication_requests = entries.select { |entry| entry.resourceType == 'MedicationRequest' }
     end
 
-    entries = (entries + retrieve_practitioner_roles).uniq
+    entries = (entries + retrieve_other_resources).uniq
     fhir_medication_requests.each { |entry| MedicationRequest.new(entry, entries) }
 
     med_requests = MedicationRequest.filter_by_patient_id(patient_id)

@@ -261,7 +261,7 @@ class TransitionOfCaresController < ApplicationController
       fhir_compositions = entries.select { |entry| entry.resourceType == 'Composition' }
     end
 
-    entries = (entries + retrieve_practitioner_roles).uniq
+    entries = (entries + retrieve_other_resources).uniq
     fhir_compositions.each { |entry| Composition.new(entry, entries) }
 
     # Sort TOCs from most recent to oldest

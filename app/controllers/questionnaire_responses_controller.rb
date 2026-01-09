@@ -57,7 +57,7 @@ class QuestionnaireResponsesController < ApplicationController
       fhir_questionnaire_responses = entries.select { |entry| entry.resourceType == 'QuestionnaireResponse' }
     end
 
-    entries = (entries + retrieve_practitioner_roles).uniq
+    entries = (entries + retrieve_other_resources).uniq
     fhir_questionnaire_responses.each { |entry| QuestionnaireResponse.new(entry, entries) }
 
     QuestionnaireResponse.filter_by_patient_id(patient_id).sort_by(&:date).reverse
