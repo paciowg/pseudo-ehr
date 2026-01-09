@@ -49,15 +49,18 @@ class ApplicationController < ActionController::Base
     redirect_to patients_path
   end
 
-  def retrieve_practitioner_roles
-    return PractitionerRoleCache.all unless PractitionerRoleCache.expired? || PractitionerRoleCache.all.empty?
+  # There are some resources we want to always load even if they're not connected to a patient, e.g.,
+  # PratitionerRole and Organization
+  def retrieve_other_resources
+    return OtherResourceCache.all unless OtherResourceCache.expired? || OtherResourceCache.all.empty?
 
     # If not in cache, fetch and store it
-    Rails.logger.info('Practitioner roles not found in memory, fetching from server')
+    Rails.logger.info('Other resources not found in memory, fetching from server')
     begin
-      practitioner_roles = fetch_practitioner_roles(500, PractitionerRoleCache.updated_at)
-      PractitionerRoleCache.update_records(practitioner_roles)
-      PractitionerRoleCache.all
+      practitioner_roles = fetch_practitioner_roles(500, OtherResourceCache.updated_at, true)
+      organizations = fetch_organizations(500, OtherResourceCache.updated_at, true)
+      OtherResourceCache.update_records(practitioner_roles + organizations)
+      OtherResourceCache.all
     rescue StandardError => e
       Rails.logger.error("Empty bundle or Error fetching practitioner roles:\n #{e.message.inspect}")
       Rails.logger.error(e.backtrace.join("\n"))
@@ -97,7 +100,11 @@ class ApplicationController < ActionController::Base
   end
 
   def cached_resources_type(type)
-    grouped_current_patient_record[type] || []
+    # See if the resource is within the patient record or a general cached resource (e.g., a Location the
+    # patient is not currently associated with)
+    patient_cache_results = grouped_current_patient_record[type] || []
+    other_cache_results = OtherResourceCache.by_type(type) || []
+    (patient_cache_results + other_cache_results).uniq
   end
 
   def find_cached_resource(resource_type, resource_id)
@@ -136,7 +143,7 @@ class ApplicationController < ActionController::Base
     MedicationList, MedicationRequest, MedicationStatement, NutritionOrder,
     Observation, Procedure, QuestionnaireResponse, ServiceRequest
   ].freeze
-  OTHER_MODELS = [Patient, PatientRecordCache, PractitionerRoleCache].freeze
+  OTHER_MODELS = [Patient, PatientRecordCache, OtherResourceCache].freeze
 
   def clear_models_data_for_patient(patient_id)
     PATIENT_MODELS.each { |model| model.clear_patient_data(patient_id) }

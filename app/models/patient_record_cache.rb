@@ -111,9 +111,9 @@ class PatientRecordCache
     end
 
     # Lookup a resource given the type and ID
-    # Note: this crosses over any loaded patients
+    # Note: this crosses over any loaded patients and also looks in our more general resource cache
     def lookup(type, id)
-      patient_records.values.flatten.detect { |r| r.resourceType == type && r.id == id }
+      patient_records.values.flatten.detect { |r| r.resourceType == type && r.id == id } || OtherResourceCache.lookup(type, id)
     end
 
     # Lookup a resource given the reference (e.g., <type>/<id>)

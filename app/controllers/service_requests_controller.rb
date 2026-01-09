@@ -27,7 +27,7 @@ class ServiceRequestsController < ApplicationController
       fhir_service_requests = entries.select { |entry| entry.resourceType == 'ServiceRequest' }
     end
 
-    entries = (entries + retrieve_practitioner_roles).uniq
+    entries = (entries + retrieve_other_resources).uniq
     fhir_service_requests.each { |entry| ServiceRequest.new(entry, entries) }
 
     ServiceRequest.filter_by_patient_id(patient_id).reject { |sr| sr.code == '--' }

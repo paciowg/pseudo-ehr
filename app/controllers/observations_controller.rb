@@ -103,7 +103,7 @@ class ObservationsController < ApplicationController
       fhir_observations = entries.select { |entry| entry.resourceType == 'Observation' }
     end
 
-    entries = (entries + retrieve_practitioner_roles).uniq
+    entries = (entries + retrieve_other_resources).uniq
     fhir_observations.each { |entry| Observation.new(entry, entries) }
 
     Observation.filter_by_patient_id(patient_id)
@@ -118,7 +118,7 @@ class ObservationsController < ApplicationController
     return if @observation.present?
 
     cached_observation = find_cached_resource('Observation', params[:id])
-    entries = (retrieve_current_patient_resources + retrieve_practitioner_roles).uniq
+    entries = (retrieve_current_patient_resources + retrieve_other_resources).uniq
     if cached_observation.present?
       @observation = Observation.new(cached_observation, entries)
       return

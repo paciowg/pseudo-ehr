@@ -26,7 +26,7 @@ class ProceduresController < ApplicationController
       fhir_procedures = entries.select { |entry| entry.resourceType == 'Procedure' }
     end
 
-    entries = (entries + retrieve_practitioner_roles).uniq
+    entries = (entries + retrieve_other_resources).uniq
     fhir_procedures.each { |entry| Procedure.new(entry, entries) }
 
     Procedure.filter_by_patient_id(patient_id)
