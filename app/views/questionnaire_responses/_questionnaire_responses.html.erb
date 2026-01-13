@@ -428,7 +428,9 @@
                         </a>
 
                         <!-- Convert to PFE assessments button -->
-                        <% show_class = response.status&.downcase == 'completed' ? 'flex' : 'hidden' %>
+                        <% show_class = response.status&.downcase == 'completed' && !response.observations? ? 'flex' : 'hidden' %>
+                        <%# Change to the line below if we want to offer the re-convert button, though that currently has issues %>
+                        <%# show_class = response.status&.downcase == 'completed' ? 'flex' : 'hidden' %>
                         <%= button_to convert_questionnaire_response_to_assessments_path(patient_id: params[:patient_id], id: response.id),
                                       method: :post,
                                       data: { turbo: false },
