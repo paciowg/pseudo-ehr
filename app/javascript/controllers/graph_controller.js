@@ -74,6 +74,7 @@ export default class extends Controller {
       }
 
       // Add conditional annotations for score ranges
+      // TODO: We should make these scores part of the overall application configuration and generalize the approach
       if (graphData.title === "PROMIS-10 Global Mental Health (GMH) score T-score (71969-0)") {
         const yMin = graphData.y_min !== null ? graphData.y_min : 0;
         const yMax = graphData.y_max !== null ? graphData.y_max : 100; // Default max for T-scores if not provided
