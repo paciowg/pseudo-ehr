@@ -73,6 +73,101 @@ export default class extends Controller {
         }
       }
 
+      // Add conditional annotations for score ranges
+      if (graphData.title === "PROMIS-10 Global Mental Health (GMH) score T-score (71969-0)") {
+        const yMin = graphData.y_min !== null ? graphData.y_min : 0;
+        const yMax = graphData.y_max !== null ? graphData.y_max : 100; // Default max for T-scores if not provided
+
+        options.annotations = {
+          yaxis: [{
+            y: yMin,
+            y2: 34,
+            fillColor: 'rgba(255, 192, 192, 0.4)', // Subtle Red
+            opacity: 0.4,
+            label: {
+              borderColor: 'rgba(255, 192, 192, 0.4)',
+              style: {
+                color: '#333',
+                background: 'rgba(255, 192, 192, 0.4)',
+              },
+              text: 'Concerning',
+            }
+          }, {
+            y: 34,
+            y2: 42,
+            fillColor: 'rgba(255, 255, 192, 0.4)', // Subtle Yellow
+            opacity: 0.4,
+            label: {
+              borderColor: 'rgba(255, 255, 192, 0.4)',
+              style: {
+                color: '#333',
+                background: 'rgba(255, 255, 192, 0.4)',
+              },
+              text: 'Moderate',
+            }
+          }, {
+            y: 42,
+            y2: yMax,
+            fillColor: 'rgba(192, 255, 192, 0.4)', // Subtle Green
+            opacity: 0.4,
+            label: {
+              borderColor: 'rgba(192, 255, 192, 0.4)',
+              style: {
+                color: '#333',
+                background: 'rgba(192, 255, 192, 0.4)',
+              },
+              text: 'Good',
+            }
+          }]
+        };
+      } else if (graphData.title === "PROMIS-10 Global Physical Health (GPH) score T-score (71971-6)") {
+        const yMin = graphData.y_min !== null ? graphData.y_min : 0;
+        const yMax = graphData.y_max !== null ? graphData.y_max : 100; // Default max for T-scores if not provided
+
+        options.annotations = {
+          yaxis: [{
+            y: yMin,
+            y2: 36,
+            fillColor: 'rgba(255, 192, 192, 0.4)', // Subtle Red
+            opacity: 0.4,
+            label: {
+              borderColor: 'rgba(255, 192, 192, 0.4)',
+              style: {
+                color: '#333',
+                background: 'rgba(255, 192, 192, 0.4)',
+              },
+              text: 'Concerning',
+            }
+          }, {
+            y: 36,
+            y2: 43,
+            fillColor: 'rgba(255, 255, 192, 0.4)', // Subtle Yellow
+            opacity: 0.4,
+            label: {
+              borderColor: 'rgba(255, 255, 192, 0.4)',
+              style: {
+                color: '#333',
+                background: 'rgba(255, 255, 192, 0.4)',
+              },
+              text: 'Moderate',
+            }
+          }, {
+            y: 43,
+            y2: yMax,
+            fillColor: 'rgba(192, 255, 192, 0.4)', // Subtle Green
+            opacity: 0.4,
+            label: {
+              borderColor: 'rgba(192, 255, 192, 0.4)',
+              style: {
+                color: '#333',
+                background: 'rgba(192, 255, 192, 0.4)',
+              },
+              text: 'Good',
+            }
+          }]
+        };
+      }
+
       if (graphData.y_min != null) {
         options.yaxis.min = graphData.y_min
       }
