@@ -43,6 +43,9 @@ export default class extends Controller {
           height: 350,
           type: 'line',
         },
+        markers: {
+          size: 5
+        },
         title: {
           text: graphData.title,
           align: 'left'
@@ -68,6 +71,54 @@ export default class extends Controller {
             format: 'dd MMM yyyy HH:mm'
           }
         }
+      }
+
+      // Add conditional annotations for score ranges
+      // TODO: We should make these scores part of the overall application configuration and generalize the approach
+      if (graphData.title === "PROMIS-10 Global Mental Health (GMH) score T-score (71969-0)") {
+        const yMin = graphData.y_min !== null ? graphData.y_min : 0;
+        const yMax = graphData.y_max !== null ? graphData.y_max : 100; // Default max for T-scores if not provided
+
+        options.annotations = {
+          yaxis: [{
+            y: yMin,
+            y2: 34,
+            fillColor: 'rgba(255, 192, 192, 0.4)', // Subtle Red
+            opacity: 0.4,
+          }, {
+            y: 34,
+            y2: 42,
+            fillColor: 'rgba(255, 255, 192, 0.4)', // Subtle Yellow
+            opacity: 0.4,
+          }, {
+            y: 42,
+            y2: yMax,
+            fillColor: 'rgba(192, 255, 192, 0.4)', // Subtle Green
+            opacity: 0.4,
+          }]
+        };
+      } else if (graphData.title === "PROMIS-10 Global Physical Health (GPH) score T-score (71971-6)") {
+        const yMin = graphData.y_min !== null ? graphData.y_min : 0;
+        const yMax = graphData.y_max !== null ? graphData.y_max : 100; // Default max for T-scores if not provided
+
+        options.annotations = {
+          yaxis: [{
+            y: yMin,
+            y2: 36,
+            fillColor: 'rgba(255, 192, 192, 0.4)', // Subtle Red
+            opacity: 0.4,
+          }, {
+            y: 36,
+            y2: 43,
+            fillColor: 'rgba(255, 255, 192, 0.4)', // Subtle Yellow
+            opacity: 0.4,
+          }, {
+            y: 43,
+            y2: yMax,
+            fillColor: 'rgba(192, 255, 192, 0.4)', // Subtle Green
+            opacity: 0.4,
+          }]
+        };
       }
 
       if (graphData.y_min != null) {
