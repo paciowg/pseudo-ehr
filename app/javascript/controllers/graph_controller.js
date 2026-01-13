@@ -43,6 +43,9 @@ export default class extends Controller {
           height: 350,
           type: 'line',
         },
+        markers: {
+          size: 5
+        },
         title: {
           text: graphData.title,
           align: 'left'
