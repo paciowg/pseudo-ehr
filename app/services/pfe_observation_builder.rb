@@ -19,6 +19,14 @@ class PfeObservationBuilder
     # PROMIS-10 Global Mental Health (GMH) score
     '71970-8' => {
       low: 4, high: 20
+    },
+    # PROMIS-10 Global Physical Health (GPH) score T-score
+    '71971-6' => {
+      low: 16.2, high: 67.7
+    },
+    # PROMIS-10 Global Mental Health (GMH) score T-score
+    '71969-0' => {
+      low: 21.2, high: 67.6
     }
   }
 
