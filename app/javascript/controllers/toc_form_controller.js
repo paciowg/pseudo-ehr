@@ -31,7 +31,7 @@ export default class extends Controller {
       'section_advance_directives': '.docref-entry'
     }
 
-    // Check sections with entries and select up to 5 entries per section
+    // Check sections with entries and select entries for each section
     Object.keys(sectionEntryMap).forEach(sectionId => {
       const checkbox = document.getElementById(sectionId)
       if (checkbox) {
@@ -43,7 +43,9 @@ export default class extends Controller {
         if (entryCheckboxes.length > 0) {
           checkbox.checked = true
           // Select up to 5 entries
-          const numToSelect = Math.min(5, entryCheckboxes.length)
+          //const numToSelect = Math.min(5, entryCheckboxes.length)
+          // Select all the entries
+          const numToSelect = entryCheckboxes.length;
           for (let i = 0; i < numToSelect; i++) {
             entryCheckboxes[i].checked = true
           }
@@ -58,6 +60,24 @@ export default class extends Controller {
       }
     })
 
+    this.validateForm()
+  }
+
+  selectAllEntries(event) {
+    event.preventDefault()
+    const sectionId = event.currentTarget.dataset.sectionId
+    const sectionCheckbox = document.getElementById(sectionId)
+    if (sectionCheckbox) {
+      sectionCheckbox.checked = true
+      // Find the parent div of the section (the one with the border and padding)
+      const sectionContainer = sectionCheckbox.closest('.border.border-gray-200.rounded-lg.p-4')
+      if (sectionContainer) {
+        const entryCheckboxes = Array.from(sectionContainer.querySelectorAll('.entry-checkbox'))
+        entryCheckboxes.forEach(checkbox => {
+          checkbox.checked = true
+        })
+      }
+    }
     this.validateForm()
   }
 
