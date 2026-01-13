@@ -31,7 +31,7 @@ export default class extends Controller {
       'section_advance_directives': '.docref-entry'
     }
 
-    // Check sections with entries and select up to 5 entries per section
+    // Check sections with entries and select entries for each section
     Object.keys(sectionEntryMap).forEach(sectionId => {
       const checkbox = document.getElementById(sectionId)
       if (checkbox) {
@@ -43,7 +43,9 @@ export default class extends Controller {
         if (entryCheckboxes.length > 0) {
           checkbox.checked = true
           // Select up to 5 entries
-          const numToSelect = Math.min(5, entryCheckboxes.length)
+          //const numToSelect = Math.min(5, entryCheckboxes.length)
+          // Select all the entries
+          const numToSelect = entryCheckboxes.length;
           for (let i = 0; i < numToSelect; i++) {
             entryCheckboxes[i].checked = true
           }
