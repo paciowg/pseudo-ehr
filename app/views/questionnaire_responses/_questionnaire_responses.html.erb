@@ -428,7 +428,7 @@
                         </a>
 
                         <!-- Convert to PFE assessments button -->
-                        <% show_class = response.status&.downcase == 'completed' && !response.observations? ? 'flex' : 'hidden' %>
+                        <% show_class = response.status&.downcase == 'completed' ? 'flex' : 'hidden' %>
                         <%= button_to convert_questionnaire_response_to_assessments_path(patient_id: params[:patient_id], id: response.id),
                                       method: :post,
                                       data: { turbo: false },
@@ -437,7 +437,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                           </svg>
-                          Convert to PFE Assessments
+                          <%= response.observations? ? 'Re-convert to PFE Assessments' : 'Convert to PFE Assessments' %>
                         <% end %>
                       </div>
                     </div>
