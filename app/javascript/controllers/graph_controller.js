@@ -3,6 +3,25 @@ import { Controller } from "@hotwired/stimulus"
 // import ApexCharts from "apexcharts"
 import "apexcharts"
 
+// TODO: This cut point configuration should eventually be moved to a general application configuration
+// location and be driven just by the Observation code
+const CUT_POINT_CONFIG = {
+  "PROMIS-10 Global Mental Health (GMH) score T-score (71969-0)": [
+    { limit: 34, label: "Poor", color: 'rgba(255, 192, 192, 0.4)' },
+    { limit: 42, label: "Fair", color: 'rgba(255, 255, 192, 0.4)' },
+    { limit: 49, label: "Good", color: 'rgba(192, 255, 192, 0.4)' },
+    { limit: 57, label: "Very Good", color: 'rgba(192, 255, 192, 0.4)' },
+    { limit: Infinity, label: "Excellent", color: 'rgba(192, 255, 192, 0.4)' }
+  ],
+  "PROMIS-10 Global Physical Health (GPH) score T-score (71971-6)": [
+    { limit: 36, label: "Poor", color: 'rgba(255, 192, 192, 0.4)' },
+    { limit: 43, label: "Fair", color: 'rgba(255, 255, 192, 0.4)' },
+    { limit: 51, label: "Good", color: 'rgba(192, 255, 192, 0.4)' },
+    { limit: 58, label: "Very Good", color: 'rgba(192, 255, 192, 0.4)' },
+    { limit: Infinity, label: "Excellent", color: 'rgba(192, 255, 192, 0.4)' }
+  ]
+}
+
 // Connects to data-controller="graph"
 export default class extends Controller {
   static targets = ["modal", "chart"]
@@ -74,51 +93,42 @@ export default class extends Controller {
       }
 
       // Add conditional annotations for score ranges
-      // TODO: We should make these scores part of the overall application configuration and generalize the approach
-      if (graphData.title === "PROMIS-10 Global Mental Health (GMH) score T-score (71969-0)") {
+      const cutPointConfig = CUT_POINT_CONFIG[graphData.title]
+
+      if (cutPointConfig) {
         const yMin = graphData.y_min !== null ? graphData.y_min : 0;
         const yMax = graphData.y_max !== null ? graphData.y_max : 100; // Default max for T-scores if not provided
 
-        options.annotations = {
-          yaxis: [{
-            y: yMin,
-            y2: 34,
-            fillColor: 'rgba(255, 192, 192, 0.4)', // Subtle Red
-            opacity: 0.4,
-          }, {
-            y: 34,
-            y2: 42,
-            fillColor: 'rgba(255, 255, 192, 0.4)', // Subtle Yellow
-            opacity: 0.4,
-          }, {
-            y: 42,
-            y2: yMax,
-            fillColor: 'rgba(192, 255, 192, 0.4)', // Subtle Green
-            opacity: 0.4,
-          }]
-        };
-      } else if (graphData.title === "PROMIS-10 Global Physical Health (GPH) score T-score (71971-6)") {
-        const yMin = graphData.y_min !== null ? graphData.y_min : 0;
-        const yMax = graphData.y_max !== null ? graphData.y_max : 100; // Default max for T-scores if not provided
+        options.annotations = { yaxis: [] };
+        
+        let previousLimit = yMin; // Start ranges from the visible yMin
 
-        options.annotations = {
-          yaxis: [{
-            y: yMin,
-            y2: 36,
-            fillColor: 'rgba(255, 192, 192, 0.4)', // Subtle Red
-            opacity: 0.4,
-          }, {
-            y: 36,
-            y2: 43,
-            fillColor: 'rgba(255, 255, 192, 0.4)', // Subtle Yellow
-            opacity: 0.4,
-          }, {
-            y: 43,
-            y2: yMax,
-            fillColor: 'rgba(192, 255, 192, 0.4)', // Subtle Green
-            opacity: 0.4,
-          }]
-        };
+        cutPointConfig.forEach((range) => {
+          const limit = range.limit === Infinity ? yMax : range.limit;
+          
+          // Ensure the annotation is within the visible graph area [yMin, yMax]
+          const y1 = Math.max(previousLimit, yMin);
+          const y2 = Math.min(limit, yMax);
+          
+          if (y1 < y2) {
+             options.annotations.yaxis.push({
+               y: y1,
+               y2: y2,
+               fillColor: range.color,
+               opacity: 0.4,
+             });
+          }
+          previousLimit = limit;
+        });
+
+        // Add tooltip formatter
+        options.tooltip.y = {
+          formatter: (value) => {
+             const range = cutPointConfig.find(r => value < r.limit);
+             const label = range ? range.label : "";
+             return `${value} (${label})`;
+          }
+        }
       }
 
       if (graphData.y_min != null) {
