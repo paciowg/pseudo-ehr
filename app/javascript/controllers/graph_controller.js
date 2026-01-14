@@ -3,7 +3,9 @@ import { Controller } from "@hotwired/stimulus"
 // import ApexCharts from "apexcharts"
 import "apexcharts"
 
-const PROMIS_CONFIG = {
+// TODO: This cut point configuration should eventually be moved to a general application configuration
+// location and be driven just by the Observation code
+const CUT_POINT_CONFIG = {
   "PROMIS-10 Global Mental Health (GMH) score T-score (71969-0)": [
     { limit: 34, label: "Poor", color: 'rgba(255, 192, 192, 0.4)' },
     { limit: 42, label: "Fair", color: 'rgba(255, 255, 192, 0.4)' },
@@ -91,9 +93,9 @@ export default class extends Controller {
       }
 
       // Add conditional annotations for score ranges
-      const promisConfig = PROMIS_CONFIG[graphData.title]
+      const cutPointConfig = CUT_POINT_CONFIG[graphData.title]
 
-      if (promisConfig) {
+      if (cutPointConfig) {
         const yMin = graphData.y_min !== null ? graphData.y_min : 0;
         const yMax = graphData.y_max !== null ? graphData.y_max : 100; // Default max for T-scores if not provided
 
@@ -101,7 +103,7 @@ export default class extends Controller {
         
         let previousLimit = yMin; // Start ranges from the visible yMin
 
-        promisConfig.forEach((range) => {
+        cutPointConfig.forEach((range) => {
           const limit = range.limit === Infinity ? yMax : range.limit;
           
           // Ensure the annotation is within the visible graph area [yMin, yMax]
@@ -122,7 +124,7 @@ export default class extends Controller {
         // Add tooltip formatter
         options.tooltip.y = {
           formatter: (value) => {
-             const range = promisConfig.find(r => value < r.limit);
+             const range = cutPointConfig.find(r => value < r.limit);
              const label = range ? range.label : "";
              return `${value} (${label})`;
           }
