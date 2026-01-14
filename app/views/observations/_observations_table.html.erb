@@ -2,10 +2,10 @@
   <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700">
     <tr>
       <th scope="col" class="px-4 py-3"> <span class="sr-only">Expand/Collapse Row</span></th>
+      <th scope="col" class="px-4 py-3"> <span class="sr-only">Expand/Collapse Row</span></th>
       <th scope="col" class="px-4 py-3 text-left text-sm sm:pl-3">Date</th>
       <th scope="col" class="px-4 py-3 text-left text-sm">Observation</th>
       <th scope="col" class="px-4 py-3 text-left text-sm">Performer</th>
-      <th scope="col" class="px-4 py-3 text-left text-sm">Organization</th>
       <th scope="col" class="px-4 py-3 text-left text-sm">Response</th>
     </tr>
   </thead>
@@ -13,7 +13,7 @@
     <tbody data-accordion="table-column" data-filter-target="domain">
       <tr class="border-t bg-gray-50 border-gray-200">
         <th class="px-4 py-3"> <span class="sr-only">Expand/Collapse Row</span></th>
-        <th colspan="5" scope="colgroup" class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"><%= Observation.format_domain(observation_set.first) %></th>
+        <th colspan="4" scope="colgroup" class="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"><%= Observation.format_domain(observation_set.first) %></th>
       </tr>
       <% observation_set.last.each do |observation| %>
         <% identifier = observation.id.to_s.downcase %>
@@ -37,15 +37,18 @@
           <td class="px-4 py-3 text-sm text-gray-500"><%= observation.effective %></td>
           <td class="px-4 py-3 text-sm text-gray-500"><%= observation.code %></td>
           <td class="px-4 py-3 text-sm text-gray-500"><%= observation.performer %></td>
-          <td class="px-4 py-3 text-sm text-gray-500"><%= observation.organization %></td>
           <td class="px-4 py-3 text-sm text-gray-500"><%= observation.measurement %></td>
         </tr>
         <tr class="hidden flex-1 overflow-x-auto w-full" id="table-column-body-<%= identifier%>" aria-labelledby="table-column-header-<%= identifier%>">
           <td scope="col" class="px-4 py-3"><span class="sr-only">Expand/Collapse Row</span></td>
-          <td class="p-4 border-b" colspan="5">
+          <td class="p-4 border-b" colspan="4">
             <div>
               <h6 class="my-2 text-base leading-none font-medium text-gray-900 dark:text-white">Response</h6>
               <p class="text-base text-gray-500 dark:text-gray-400 max-w-screen-md"><%= observation.measurement %></p>
+            </div>
+            <div class="mt-4">
+              <h6 class="my-2 text-base leading-none font-medium text-gray-900 dark:text-white">Organization</h6>
+              <p class="text-base text-gray-500 dark:text-gray-400 max-w-screen-md"><%= observation.organization %></p>
             </div>
             <div class="flex items-center space-x-3 mt-4">
               <button type="button" class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-primary-700 rounded-lg hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
