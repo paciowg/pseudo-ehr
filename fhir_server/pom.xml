@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.mitre</groupId>
+    <artifactId>smp-operation</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <!-- Matching a recent stable HAPI FHIR version -->
+        <hapi.fhir.version>8.6.5</hapi.fhir.version>
+    </properties>
+
+    <dependencies>
+        <!-- Core HAPI FHIR Library -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-base</artifactId>
+            <version>${hapi.fhir.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Server Framework -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-server</artifactId>
+            <version>${hapi.fhir.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- R4 Structures (Patient, Parameters, etc.) -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-r4</artifactId>
+            <version>${hapi.fhir.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Servlet API (Required for compilation of some HAPI interfaces) -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

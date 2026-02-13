@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  hapi-fhir:
+    image: hapiproject/hapi:v8.6.0-1
+    ports:
+      - "8081:8080"
+    volumes:
+      # Mount your custom JAR into the special 'extra-classes' folder
+      - ./target/smp-operation-1.0.0.jar:/app/extra-classes/smp-operation.jar
+    environment:
+      # 1. Database Config (Postgres)
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://hapi-db:5432/hapi
+      - SPRING_DATASOURCE_USERNAME=hapi
+      - SPRING_DATASOURCE_PASSWORD=hapi
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      
+      # 2. Tell HAPI to load your specific Provider Class
+      # This is the magic key that registers your code
+      - hapi.fhir.custom-provider-classes=org.mitre.fhir.providers.SmpRetrieveProvider
+      
+      # 3. (Optional) If you have other Spring components, tell Spring to scan your package
+      - hapi.fhir.custom-bean-packages=org.mitre.fhir.providers
+      
+    depends_on:
+      - hapi-db
+
+  hapi-db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=hapi
+      - POSTGRES_USER=hapi
+      - POSTGRES_PASSWORD=hapi
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
