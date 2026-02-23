@@ -40,12 +40,42 @@
             <version>${hapi.fhir.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- JPA API for DAO access -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-jpaserver-api</artifactId>
+            <version>${hapi.fhir.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Storage layer (includes SearchParameterMap) -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-storage</artifactId>
+            <version>${hapi.fhir.version}</version>
+            <scope>provided</scope>
+        </dependency>
         
         <!-- Servlet API (Required for compilation of some HAPI interfaces) -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Spring Context for @Autowired -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>6.1.14</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>6.1.14</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

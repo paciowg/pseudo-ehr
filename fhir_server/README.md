@@ -12,4 +12,20 @@ Run the docker image with the operation included:
 docker compose up
 ```
 
-Test by visiting http://localhost:8081/fhir/$smp-query?patient=Patient/123
+Test by POSTing a Patient resource to http://localhost:8081/fhir/$smp-query
+
+Example request body:
+```json
+{
+  "resourceType": "Parameters",
+  "parameter": [
+    {
+      "name": "patient",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [{ "system": "http://hospital.org", "value": "123" }]
+      }
+    }
+  ]
+}
+```
