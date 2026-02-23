@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.DateParam;
+import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -20,6 +21,18 @@ public class SmpRetrieveProvider {
 
     @Autowired
     private IFhirResourceDao<Patient> myPatientDao;
+
+    @Autowired
+    private IFhirResourceDao<MedicationStatement> myMedicationStatementDao;
+
+    @Autowired
+    private IFhirResourceDao<MedicationRequest> myMedicationRequestDao;
+
+    @Autowired
+    private IFhirResourceDao<MedicationDispense> myMedicationDispenseDao;
+
+    @Autowired
+    private IFhirResourceDao<MedicationAdministration> myMedicationAdministrationDao;
 
     /**
      * The Operation Definition: $smp-query
@@ -78,7 +91,7 @@ public class SmpRetrieveProvider {
                     .setDiagnostics("No search criteria (identifier, name, or birthdate) found in input patient resource.");
         } else {
             IBundleProvider searchResults = myPatientDao.search(map);
-            List<IBaseResource> patients = searchResults.getResources(0, 10);
+            List<IBaseResource> patients = searchResults.getResources(0, 1);
 
             if (patients.isEmpty()) {
                 outcome.addIssue()
@@ -90,7 +103,54 @@ public class SmpRetrieveProvider {
                 Patient matchedPatient = (Patient) patients.get(0);
                 resultBundle.addEntry().setResource(matchedPatient);
 
-                if (patients.size() > 1) {
+                // Create the Medication List resource (SMPMedicationList)
+                ListResource medList = new ListResource();
+                medList.setStatus(ListResource.ListStatus.CURRENT);
+                medList.setMode(ListResource.ListMode.SNAPSHOT);
+                // LOINC 10160-0: History of Medication use
+                medList.setCode(new CodeableConcept().addCoding(new Coding("http://loinc.org", "10160-0", "History of Medication use")));
+                medList.setSubject(new Reference(matchedPatient.getIdElement().toUnqualifiedVersionless()));
+
+                // Fetch MedicationStatements
+                SearchParameterMap msMap = new SearchParameterMap();
+                msMap.add(MedicationStatement.SP_PATIENT, new ReferenceParam(matchedPatient.getIdElement().toUnqualifiedVersionless()));
+                List<IBaseResource> statements = myMedicationStatementDao.search(msMap).getResources(0, 100);
+                for (IBaseResource res : statements) {
+                    MedicationStatement ms = (MedicationStatement) res;
+                    medList.addEntry().setItem(new Reference(ms.getIdElement().toUnqualifiedVersionless()));
+                    resultBundle.addEntry().setResource(ms);
+                }
+
+                // Add the List to the bundle
+                resultBundle.addEntry().setResource(medList);
+
+                // Fetch other medication resources and add to bundle
+                
+                // MedicationRequest
+                SearchParameterMap mrMap = new SearchParameterMap();
+                mrMap.add(MedicationRequest.SP_PATIENT, new ReferenceParam(matchedPatient.getIdElement().toUnqualifiedVersionless()));
+                List<IBaseResource> requests = myMedicationRequestDao.search(mrMap).getResources(0, 100);
+                for (IBaseResource res : requests) {
+                    resultBundle.addEntry().setResource((MedicationRequest) res);
+                }
+
+                // MedicationDispense
+                SearchParameterMap mdMap = new SearchParameterMap();
+                mdMap.add(MedicationDispense.SP_PATIENT, new ReferenceParam(matchedPatient.getIdElement().toUnqualifiedVersionless()));
+                List<IBaseResource> dispenses = myMedicationDispenseDao.search(mdMap).getResources(0, 100);
+                for (IBaseResource res : dispenses) {
+                    resultBundle.addEntry().setResource((MedicationDispense) res);
+                }
+
+                // MedicationAdministration
+                SearchParameterMap maMap = new SearchParameterMap();
+                maMap.add(MedicationAdministration.SP_PATIENT, new ReferenceParam(matchedPatient.getIdElement().toUnqualifiedVersionless()));
+                List<IBaseResource> admins = myMedicationAdministrationDao.search(maMap).getResources(0, 100);
+                for (IBaseResource res : admins) {
+                    resultBundle.addEntry().setResource((MedicationAdministration) res);
+                }
+
+                if (searchResults.size() != null && searchResults.size() > 1) {
                     outcome.addIssue()
                             .setSeverity(OperationOutcome.IssueSeverity.INFORMATION)
                             .setCode(OperationOutcome.IssueType.INFORMATIONAL)
@@ -99,10 +159,8 @@ public class SmpRetrieveProvider {
                     outcome.addIssue()
                             .setSeverity(OperationOutcome.IssueSeverity.INFORMATION)
                             .setCode(OperationOutcome.IssueType.INFORMATIONAL)
-                            .setDiagnostics("Patient match successful.");
+                            .setDiagnostics("Patient match successful and medication data retrieved.");
                 }
-                
-                // TODO: Next step is to grab all medication information for the matched patient and add it to the bundle
             }
         }
 
