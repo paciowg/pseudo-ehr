@@ -58,7 +58,8 @@ public class SmpRetrieveProvider {
                 }
             }
             if (thePatient.hasBirthDate()) {
-                map.add(Patient.SP_BIRTHDATE, new DateParam(thePatient.getBirthDate()));
+                // Using setValue() explicitly to avoid constructor ambiguity with java.util.Date
+                map.add(Patient.SP_BIRTHDATE, new DateParam().setValue(thePatient.getBirthDate()));
                 hasCriteria = true;
             }
         }

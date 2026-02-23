@@ -10,8 +10,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <!-- Use release instead of source/target to fix build warnings and ensure proper API access -->
+        <maven.compiler.release>17</maven.compiler.release>
         <!-- Matching a recent stable HAPI FHIR version -->
         <hapi.fhir.version>8.6.5</hapi.fhir.version>
     </properties>
