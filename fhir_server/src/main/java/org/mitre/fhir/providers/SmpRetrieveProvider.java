@@ -5,12 +5,10 @@ import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
-import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
-import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
+import org.mitre.fhir.services.SmpPatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +18,7 @@ import java.util.List;
 public class SmpRetrieveProvider {
 
     @Autowired
-    private IFhirResourceDao<Patient> myPatientDao;
+    private SmpPatientService smpPatientService;
 
     @Autowired
     private IFhirResourceDao<MedicationStatement> myMedicationStatementDao;
@@ -51,56 +49,27 @@ public class SmpRetrieveProvider {
         // Note: list-type is ignored for now as per requirements
         // if (theListType != null) { ... }
 
-        // 2. Logic: Search for matching patient
-        // We'll try to match by identifier first, then by name and birthdate
-        SearchParameterMap map = new SearchParameterMap();
-        boolean hasCriteria = false;
-
-        if (thePatient.hasIdentifier()) {
-            Identifier id = thePatient.getIdentifierFirstRep();
-            map.add(Patient.SP_IDENTIFIER, new TokenParam(id.getSystem(), id.getValue()));
-            hasCriteria = true;
-        } else {
-            if (thePatient.hasName()) {
-                HumanName name = thePatient.getNameFirstRep();
-                if (name.hasFamily()) {
-                    map.add(Patient.SP_FAMILY, new StringParam(name.getFamily()));
-                    hasCriteria = true;
-                }
-                if (name.hasGiven()) {
-                    map.add(Patient.SP_GIVEN, new StringParam(name.getGivenAsSingleString()));
-                    hasCriteria = true;
-                }
-            }
-            if (thePatient.hasBirthDate()) {
-                // Using setValue() explicitly to avoid constructor ambiguity with java.util.Date
-                map.add(Patient.SP_BIRTHDATE, new DateParam().setValue(thePatient.getBirthDate()));
-                hasCriteria = true;
-            }
-        }
-
         Bundle resultBundle = new Bundle();
         resultBundle.setType(Bundle.BundleType.COLLECTION); // IG specifies 'collection' type for the output bundle
 
         OperationOutcome outcome = new OperationOutcome();
 
-        if (!hasCriteria) {
+        if (!smpPatientService.hasCriteria(thePatient)) {
             outcome.addIssue()
                     .setSeverity(OperationOutcome.IssueSeverity.ERROR)
                     .setCode(OperationOutcome.IssueType.INVALID)
                     .setDiagnostics("No search criteria (identifier, name, or birthdate) found in input patient resource.");
         } else {
-            IBundleProvider searchResults = myPatientDao.search(map);
-            List<IBaseResource> patients = searchResults.getResources(0, 1);
+            SmpPatientService.PatientMatchResult matchResult = smpPatientService.findMatchingPatient(thePatient);
+            Patient matchedPatient = matchResult.getPatient();
 
-            if (patients.isEmpty()) {
+            if (matchedPatient == null) {
                 outcome.addIssue()
                         .setSeverity(OperationOutcome.IssueSeverity.WARNING)
                         .setCode(OperationOutcome.IssueType.NOTFOUND)
                         .setDiagnostics("No matching patient found.");
             } else {
-                // Take the first match
-                Patient matchedPatient = (Patient) patients.get(0);
+                // Take the match
                 resultBundle.addEntry().setResource(matchedPatient);
 
                 // Create the Medication List resource (SMPMedicationList)
@@ -150,7 +119,7 @@ public class SmpRetrieveProvider {
                     resultBundle.addEntry().setResource((MedicationAdministration) res);
                 }
 
-                if (searchResults.size() != null && searchResults.size() > 1) {
+                if (matchResult.hasMultipleMatches()) {
                     outcome.addIssue()
                             .setSeverity(OperationOutcome.IssueSeverity.INFORMATION)
                             .setCode(OperationOutcome.IssueType.INFORMATIONAL)

@@ -18,10 +18,10 @@ services:
       
       # 2. Tell HAPI to load your specific Provider Class
       # This is the magic key that registers your code
-      - hapi.fhir.custom-provider-classes=org.mitre.fhir.providers.SmpRetrieveProvider
+      - hapi.fhir.custom-provider-classes=org.mitre.fhir.providers.SmpRetrieveProvider,org.mitre.fhir.providers.SmpSubmitProvider
       
       # 3. (Optional) If you have other Spring components, tell Spring to scan your package
-      - hapi.fhir.custom-bean-packages=org.mitre.fhir.providers
+      - hapi.fhir.custom-bean-packages=org.mitre.fhir.providers,org.mitre.fhir.services
       
     depends_on:
       - hapi-db
