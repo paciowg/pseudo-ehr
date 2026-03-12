@@ -4,7 +4,7 @@ class Composition < Resource
   include ActiveModel::Serializers::JSON
 
   attr_reader :id, :identifier, :status, :type, :category, :date, :author, :title, :custodian,
-              :subject, :sections, :fhir_resource, :patient_id, :patient, :fhir_bundle
+              :language, :subject, :sections, :fhir_resource, :patient_id, :patient, :fhir_bundle
 
   #-----------------------------------------------------------------------------
   # TODO: Get api keys to read code values from https://cts.nlm.nih.gov/fhir/login.html
@@ -21,6 +21,7 @@ class Composition < Resource
     @author = retrieve_author(fhir_composition.author, fhir_bundle)
     @title = fhir_composition.title
     @custodian = get_custodian(fhir_composition.custodian, fhir_bundle)
+    @language = fhir_composition.language || '--'
     @fhir_bundle = fhir_bundle
     @subject = @patient
     fill_sections(fhir_composition.section, fhir_bundle)

@@ -79,6 +79,17 @@
               <tr class="hidden" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
                 <td class="sr-only">Expanded Content</td>
                 <td colspan="6" class="px-6 py-4 bg-gray-50 border-b">
+                  <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 bg-indigo-50 p-4 rounded-lg border border-indigo-100 shadow-sm">
+                    <div class="flex items-center text-sm text-gray-700">
+                      <span class="font-semibold text-indigo-700 w-24">Identifier:</span>
+                      <span class="bg-white px-2 py-1 rounded border border-indigo-100"><%= toc.identifier %></span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-700">
+                      <span class="font-semibold text-indigo-700 w-24">Language:</span>
+                      <span class="bg-white px-2 py-1 rounded border border-indigo-100"><%= toc.language %></span>
+                    </div>
+                  </div>
+
                   <% if toc.sections.present? %>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <% toc.sections.each do |section| %>
