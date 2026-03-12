@@ -112,6 +112,13 @@
                             </div>
                           <% end %>
 
+                          <% if section['text'] %>
+                            <div class="mb-4">
+                              <span class="text-sm font-medium text-gray-500">Text:</span>
+                              <span class="ml-2 text-sm text-gray-700"><%= strip_tags(section['text']).squish %></span>
+                            </div>
+                          <% end %>
+
                           <% if section['code'].to_s.include?('52471-0') %>
                             <div class="mb-4">
                               <%= link_to patient_medication_lists_path(patient_id: @patient.id), class: "inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium", data: {turbo: false} do %>
