@@ -7,7 +7,7 @@ module ResourceFetchHelper
   PATIENT_RELATED_RESOURCES = %i[
     ServiceRequest NutritionOrder Observation CareTeam Goal QuestionnaireResponse Condition
     List Composition MedicationRequest Procedure DiagnosticReport DocumentReference
-    DetectedIssue
+    DetectedIssue Device
   ].freeze
 
   def current_server

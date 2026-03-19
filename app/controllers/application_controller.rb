@@ -139,7 +139,7 @@ class ApplicationController < ActionController::Base
 
   PATIENT_MODELS = [
     AdvanceDirective, AllergyIntolerance, CarePlan, CareTeamParticipant, CareTeam,
-    Composition, Condition, DiagnosticReport, DocumentReference, Goal,
+    Composition, Condition, Device, DiagnosticReport, DocumentReference, Goal,
     MedicationList, MedicationRequest, MedicationStatement, NutritionOrder,
     Observation, Procedure, QuestionnaireResponse, ServiceRequest
   ].freeze

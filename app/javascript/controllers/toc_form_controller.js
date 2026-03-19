@@ -28,7 +28,9 @@ export default class extends Controller {
       'section_results': '.observation-entry',
       'section_vital_signs': '.observation-vital-entry',
       'section_immunizations': '.immunization-entry',
-      'section_advance_directives': '.docref-entry'
+      'section_advance_directives': '.docref-entry',
+      'section_medical_devices': '.device-entry',
+      'section_functional_status': '.observation-functional-entry'
     }
 
     // Check sections with entries and select entries for each section

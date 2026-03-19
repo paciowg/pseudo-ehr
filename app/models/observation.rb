@@ -3,7 +3,7 @@ class Observation < Resource
   attr_reader :id, :status, :category, :domain, :code, :effective_date_time,
               :performer, :derived_from, :measurement, :measurement_interpretation,
               :location, :organization, :members, :components, :fhir_resource, :patient_id,
-              :patient, :reference_range, :body_site, :local_mentod, :device, :notes
+              :patient, :reference_range, :body_site, :local_method, :device, :notes
 
   def initialize(fhir_observation, bundle_entries = [])
     @fhir_resource = fhir_observation
