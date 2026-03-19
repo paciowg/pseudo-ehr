@@ -449,7 +449,7 @@
                                                                   .map { |obj| obj[:resource].fhir_resource.id }
                         end
                       %>
-                      <% cached_resources_for_select('Observation').select { |o| o.fhir_resource.category&.any? { |c| c.coding&.any? { |cd| cd.system == 'http://hl7.org/fhir/us/core/CodeSystem/us-core-category' && cd.code == 'vital-signs' } } }.each do |o| %>
+                      <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'vital-signs' } } }.each do |o| %>
                         <div class="flex items-start mb-1">
                           <div class="flex items-center h-5">
                             <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", vital_signs_entries.include?(o.id),
@@ -645,7 +645,7 @@
                                                                     .map { |obj| obj[:resource].fhir_resource.id }
                         end
                       %>
-                      <% cached_resources_for_select('Observation').select { |o| o.fhir_resource.category&.any? { |c| c.coding&.any? { |cd| cd.system == 'http://hl7.org/fhir/us/core/CodeSystem/us-core-category' && cd.code == 'functional-status' } } }.each do |o| %>
+                      <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'functional-status' } } }.each do |o| %>
                         <div class="flex items-start mb-1">
                           <div class="flex items-center h-5">
                             <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", functional_entries.include?(o.id),
@@ -875,7 +875,7 @@
                     <div class="mt-2">
                       <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
                       <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
-                        <% cached_resources_for_select('Observation').select { |o| o.fhir_resource.category&.any? { |c| c.coding&.any? { |cd| cd.system == 'http://hl7.org/fhir/us/core/CodeSystem/us-core-category' && cd.code == 'vital-signs' } } }.each do |o| %>
+                        <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'vital-signs' } } }.each do |o| %>
                           <div class="flex items-start mb-1">
                             <div class="flex items-center h-5">
                               <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
@@ -1003,7 +1003,7 @@
                     <div class="mt-2">
                       <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
                       <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
-                        <% cached_resources_for_select('Observation').select { |o| o.fhir_resource.category&.any? { |c| c.coding&.any? { |cd| cd.system == 'http://hl7.org/fhir/us/core/CodeSystem/us-core-category' && cd.code == 'functional-status' } } }.each do |o| %>
+                        <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'functional-status' } } }.each do |o| %>
                           <div class="flex items-start mb-1">
                             <div class="flex items-center h-5">
                               <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
