@@ -115,7 +115,7 @@ RSpec.describe ApplicationController do
     end
   end
 
-  describe '#retrieve_practitioner_roles' do
+  describe '#retrieve_other_resources' do
     let(:patient_id) { '123' }
 
     context 'when no error' do
@@ -125,20 +125,20 @@ RSpec.describe ApplicationController do
       end
 
       it 'sets @practitioner_roles' do
-        roles = controller.retrieve_practitioner_roles
+        roles = controller.retrieve_other_resources
         expect(roles).to all(be_instance_of(FHIR::PractitionerRole))
       end
     end
 
     context 'when an error occurs while fetching practitioner roles' do
       before do
-        allow(PractitionerRoleCache).to receive(:expired?).and_return(true)
+        allow(OtherResourceCache).to receive(:expired?).and_return(true)
         allow(controller).to receive(:fetch_practitioner_roles).and_raise(StandardError, 'Some error')
         allow(Rails.logger).to receive(:error)
       end
 
       it 'logs the error and returns an empty array' do
-        roles = controller.retrieve_practitioner_roles
+        roles = controller.retrieve_other_resources
         expect(roles).to eq([])
         expect(Rails.logger).to have_received(:error).with(/Empty bundle or Error fetching practitioner roles/)
       end

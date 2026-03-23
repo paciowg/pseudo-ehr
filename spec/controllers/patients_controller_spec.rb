@@ -45,7 +45,16 @@ RSpec.describe PatientsController do
 
     # Stub PractitionerRole search
     body = FHIR::Bundle.new(entry: [FHIR::Bundle::Entry.new(resource: FHIR::PractitionerRole.new(id: 'role1'))]).to_json
-    stub_request(:get, "#{fhir_server.base_url}/PractitionerRole?_count=150&_include=*&_sort=-_lastUpdated")
+    stub_request(:get, "#{fhir_server.base_url}/PractitionerRole?_count=250&_include=*&_sort=-_lastUpdated")
+      .to_return(
+        status: 200,
+        body:,
+        headers: { 'Content-Type' => 'application/fhir+json' }
+      )
+
+    # Stub Organization search
+    body = FHIR::Bundle.new(entry: [FHIR::Bundle::Entry.new(resource: FHIR::Organization.new(id: 'organization1'))]).to_json
+    stub_request(:get, "#{fhir_server.base_url}/Organization?_count=250&_include=*&_sort=-_lastUpdated")
       .to_return(
         status: 200,
         body:,
