@@ -70,9 +70,32 @@ class QuestionnaireResponseProcessor
       self.class.questionnaire_by_url[url] = FHIR.from_contents(response.body)
     rescue RestClient::ExceptionWithResponse => e
       # Workaround: if the questionnaire is not available from the URL in the questionnaire response we also
-      # want to check the FHIR server we're connected to
-      tail = url.match(%r{/Questionnaire/.+})
-      alternate_url = @fhir_server.to_s.chomp('/') + tail[0] if tail
+      # want to look on the FHIR server we're connected to
+      tail_match = url.match(%r{/Questionnaire/[A-Za-z0-9\-\._/]*})
+      tail = tail_match[0] if tail_match
+      raise "Failed to fetch Questionnaire from #{url}: #{e.response || e.message}" unless tail
+
+      # Validate the tail of the Questionnaire URL to ensure it's a valid path
+      raise 'Invalid Questionnaire path' if tail.include?('?') || tail.include?('#') || tail.include?('..')
+
+      # Constrain @fhir_server to a limited whitelist of known servers
+      allowed_servers = FhirServer.pluck(:base_url)
+      raise 'Invalid FHIR server provided to QuestionnaireResponseProcessor' unless allowed_servers.include?(@fhir_server)
+
+      # Validate URI of the FHIR server
+      begin
+        fhir_server_uri = URI.parse(@fhir_server.to_s)
+      rescue URI::InvalidURIError
+        raise 'Invalid FHIR server provided to QuestionnaireResponseProcessor'
+      end
+
+      unless %w[http https].include?(fhir_server_uri.scheme)
+        raise 'Invalid FHIR server provided to QuestionnaireResponseProcessor'
+      end
+
+      # Build alternate_url with validated FHIR server URI plus validated tail
+      alternate_url = fhir_server_uri.path.to_s.chomp('/') + tail
+
       raise "Failed to fetch Questionnaire from #{url}: #{e.response || e.message}" unless alternate_url
 
       begin
