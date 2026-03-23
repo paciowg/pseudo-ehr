@@ -5,7 +5,6 @@ class OtherResourceCache
   EXPIRATION_TIME = 1.hour
 
   class << self
-
     def all
       @all ||= []
     end
@@ -44,7 +43,7 @@ class OtherResourceCache
       end
 
       @all = existing_map.values
-      @by_type = @all.group_by { |r| r.resourceType }
+      @by_type = @all.group_by(&:resourceType)
       updated_at(Time.zone.now)
     end
 

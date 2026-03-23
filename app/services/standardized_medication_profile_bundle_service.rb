@@ -50,11 +50,9 @@ class StandardizedMedicationProfileBundleService
     end
 
     # 3. Build Entries
-    entries = []
-
     # Lists first
-    medication_lists.each do |medication_list|
-      entries << build_entry(medication_list)
+    entries = medication_lists.map do |medication_list|
+      build_entry(medication_list)
     end
 
     # Others

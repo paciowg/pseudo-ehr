@@ -28,7 +28,7 @@ class PfeObservationBuilder
     '71969-0' => {
       low: 21.2, high: 67.6
     }
-  }
+  }.freeze
 
   def initialize(qr, questionnaire) # rubocop:disable Naming/MethodParameterName
     @qr = qr

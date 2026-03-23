@@ -114,14 +114,14 @@ class TransitionOfCareBundleService
       # Identify entries in this section that point to any of our Lists
       entries_to_replace = section.entry.select { |e| list_refs.include?(e.reference) }
 
-      if entries_to_replace.any?
-        # Remove the old List references
-        section.entry.reject! { |e| list_refs.include?(e.reference) }
+      next unless entries_to_replace.any?
 
-        # Add the single reference to the new SMP Bundle
-        # We use the UUID directly because the Composition will be serialized shortly after
-        section.entry << FHIR::Reference.new(reference: smp_uuid)
-      end
+      # Remove the old List references
+      section.entry.reject! { |e| list_refs.include?(e.reference) }
+
+      # Add the single reference to the new SMP Bundle
+      # We use the UUID directly because the Composition will be serialized shortly after
+      section.entry << FHIR::Reference.new(reference: smp_uuid)
     end
 
     # Remove the original List resources from the map so they don't get added as individual entries
