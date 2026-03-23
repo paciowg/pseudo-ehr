@@ -131,8 +131,8 @@ RSpec.describe PfeObservationBuilder do
                         coding: [
                           {
                             system: described_class::PFE_DOMAIN_CATEGORY_URL,
-                            code: 'BlockL2-d51',
-                            display: 'Mobility'
+                            code: 'd5',
+                            display: 'Self-care'
                           }
                         ]
                       )

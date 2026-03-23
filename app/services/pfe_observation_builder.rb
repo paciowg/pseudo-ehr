@@ -9,6 +9,27 @@ class PfeObservationBuilder
   PFE_SINGLE_OBS_PROFILE = 'http://hl7.org/fhir/us/pacio-pfe/StructureDefinition/pfe-observation-single'.freeze
   PFE_COLLECTION_PROFILE = 'http://hl7.org/fhir/us/pacio-pfe/StructureDefinition/pfe-collection'.freeze
 
+  # Some of the questionnaire responses should generate observations with ranges; eventually we'll want to
+  # figure out a good long term lookup strategy
+  OBSERVATION_RANGES = {
+    # PROMIS-10 Global Physical Health (GPH) score
+    '71972-4' => {
+      low: 4, high: 20
+    },
+    # PROMIS-10 Global Mental Health (GMH) score
+    '71970-8' => {
+      low: 4, high: 20
+    },
+    # PROMIS-10 Global Physical Health (GPH) score T-score
+    '71971-6' => {
+      low: 16.2, high: 67.7
+    },
+    # PROMIS-10 Global Mental Health (GMH) score T-score
+    '71969-0' => {
+      low: 21.2, high: 67.6
+    }
+  }.freeze
+
   def initialize(qr, questionnaire) # rubocop:disable Naming/MethodParameterName
     @qr = qr
     @questionnaire = questionnaire
@@ -21,7 +42,11 @@ class PfeObservationBuilder
     collection = build_collection
     observations = extract_observations(@qr.item, collection)
 
-    collection.category = PfeCategoryCodeExtractor.collection_category_slice(observations)
+    # Only set the category here if build_collection wasn't able to determine an ICF category based on the code
+    pfe_categories = collection.category.select { |c| c.coding.first.system == PFE_DOMAIN_CATEGORY_URL }
+    if pfe_categories.empty? || pfe_categories.any? { |c| c.coding.first.code == 'unknown' }
+      collection.category = PfeCategoryCodeExtractor.collection_category_slice(observations)
+    end
     collection.category.reject! { |cat| cat.coding&.any? { |c| c.code == 'unknown' } }
 
     observations << collection
@@ -63,13 +88,19 @@ class PfeObservationBuilder
   def build_observations(item, collection)
     return if item&.answer.blank?
 
+    # NOTE: The origininal implementation used the linkId for mapping QuestionnaireResponse answers to PFE
+    # domains; the implementation has been updated to more appropriately use the code from the Questionnaire
+    # to find the PFE domain but also keep the linkId lookup for backwards compatibility
+
     item_link_id = item.linkId.to_s.delete_prefix('/')
+    item_code = @link_id_map[item_link_id]
+    item_code_string = item_code&.first&.to_hash&.with_indifferent_access&.[](:code)
     answer = item.answer.first
     obs = FHIR::Observation.new(
       id: "#{@qr.id}-#{item_link_id&.camelize}", # SecureRandom.uuid,
       status: 'final',
-      category: PfeCategoryCodeExtractor.extract(item_link_id),
-      code: { coding: @link_id_map[item_link_id] || default_obs_coding(item) },
+      category: PfeCategoryCodeExtractor.extract(item_code_string, item_link_id),
+      code: { coding: item_code || default_obs_coding(item) },
       subject: @qr.subject,
       effectiveDateTime: @qr.authored,
       performer: Array(@qr.author).compact,
@@ -79,6 +110,7 @@ class PfeObservationBuilder
 
     set_answer_value(obs, answer, item_link_id)
     add_extensions(obs)
+    add_reference_range(obs, item_code_string)
 
     if collection.code&.coding.blank?
       collection.code = FHIR::CodeableConcept.new(coding: @link_id_map[item_link_id] || default_obs_coding(item))
@@ -189,5 +221,17 @@ class PfeObservationBuilder
 
       traverse_items(item.item, map) if item.item.present?
     end
+  end
+
+  def add_reference_range(obs, code)
+    range = OBSERVATION_RANGES[code]
+    return if range.blank?
+
+    obs.referenceRange = [
+      FHIR::Observation::ReferenceRange.new(
+        low: FHIR::Quantity.new(value: range[:low]),
+        high: FHIR::Quantity.new(value: range[:high])
+      )
+    ]
   end
 end

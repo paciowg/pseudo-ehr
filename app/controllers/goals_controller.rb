@@ -26,11 +26,11 @@ class GoalsController < ApplicationController
       fhir_goals = entries.select { |entry| entry.resourceType == 'Goal' }
     end
 
-    # Get practitioner roles for reference resolution
-    practitioner_roles = retrieve_practitioner_roles
+    # Get other resources for reference resolution
+    other_resources = retrieve_other_resources
 
     # Combine entries and create Goal objects
-    entries = (entries + practitioner_roles).uniq
+    entries = (entries + other_resources).uniq
     fhir_goals.each { |entry| Goal.new(entry, entries) }
 
     Goal.filter_by_patient_id(patient_id)

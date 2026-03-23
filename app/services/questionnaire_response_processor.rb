@@ -3,6 +3,7 @@ class QuestionnaireResponseProcessor
 
   def initialize(questionnaire_response_hash, fhir_server:)
     @questionnaire_response_hash = questionnaire_response_hash.deep_symbolize_keys
+    @fhir_server = fhir_server
     @client = FhirClientService.new(fhir_server:).client
   end
 
@@ -52,21 +53,63 @@ class QuestionnaireResponseProcessor
   end
 
   def questionnaire
-    url = @questionnaire_response_hash[:questionnaire]
+    # Get the URL for retrieving the questionnaire from the response
+    canonical = @questionnaire_response_hash[:questionnaire]
+    url, version = canonical.to_s.split('|')
+    url += "/_history/#{version}" if version
 
-    # TODO: to be removed. none of the QR has a valid questionnaire url
-    # this hack is to use a known url for QR BSJ1-QuestionnaireResponse-GlobalAlliant-01
-    if url&.downcase&.include?('zbi')
-      url = 'https://gw.interop.community/cmspqrs/open/Questionnaire/questionnaire-ZBI22'
+    # Return a cached version if we've already retrieved it
+    return self.class.questionnaire_by_url[url] if self.class.questionnaire_by_url[url]
+
+    if url.blank?
+      raise 'No Questionnaire URL found in QuestionnaireResponse'
     end
 
-    self.class.questionnaire_by_url[url] ||= begin
+    begin
       response = RestClient.get(url)
-      FHIR.from_contents(response.body)
+      self.class.questionnaire_by_url[url] = FHIR.from_contents(response.body)
     rescue RestClient::ExceptionWithResponse => e
-      raise "Failed to fetch Questionnaire from #{url}: #{e.response}"
+      # Workaround: if the questionnaire is not available from the URL in the questionnaire response we also
+      # want to look on the FHIR server we're connected to
+      tail_match = url.match(%r{/Questionnaire/[A-Za-z0-9\-\._/]*})
+      tail = tail_match[0] if tail_match
+      raise "Failed to fetch Questionnaire from #{url}: #{e.response || e.message}" unless tail
+
+      # Validate the tail of the Questionnaire URL to ensure it's a valid path
+      raise 'Invalid Questionnaire path' if tail.include?('?') || tail.include?('#') || tail.include?('..')
+
+      # Constrain @fhir_server to a limited whitelist of known servers
+      allowed_servers = FhirServer.pluck(:base_url)
+      raise 'Invalid FHIR server provided to QuestionnaireResponseProcessor' unless allowed_servers.include?(@fhir_server)
+
+      # Validate URI of the FHIR server
+      begin
+        fhir_server_uri = URI.parse(@fhir_server.to_s)
+      rescue URI::InvalidURIError
+        raise 'Invalid FHIR server provided to QuestionnaireResponseProcessor'
+      end
+
+      unless %w[http https].include?(fhir_server_uri.scheme)
+        raise 'Invalid FHIR server provided to QuestionnaireResponseProcessor'
+      end
+
+      # Build alternate_url with validated FHIR server URI plus validated tail
+      alternate_url = fhir_server_uri.path.to_s.chomp('/') + tail
+
+      raise "Failed to fetch Questionnaire from #{url}: #{e.response || e.message}" unless alternate_url
+
+      begin
+        response = RestClient.get(alternate_url)
+        self.class.questionnaire_by_url[url] = FHIR.from_contents(response.body)
+      rescue RestClient::ExceptionWithResponse => e2
+        raise "Failed to fetch Questionnaire from #{url} or #{alternate_url}: #{e2.response || e2.message}"
+      rescue RestClient::Exception, StandardError => e2
+        raise "Unexpected error fetching Questionnaire from #{alternate_url}: #{e2.message}"
+      end
     rescue RestClient::Exception, StandardError => e
       raise "Unexpected error fetching Questionnaire from #{url}: #{e.message}"
     end
+
+    self.class.questionnaire_by_url[url]
   end
 end

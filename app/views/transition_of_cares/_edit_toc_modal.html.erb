@@ -46,7 +46,7 @@
               <div>
                 <label for="toc_type_<%= identifier %>" class="block mb-2 text-sm font-medium text-gray-900">Type</label>
                 <div class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                  Discharge summary - recommended C-CDA R2.1 sections (LOINC 81218-0)
+                  Discharge summary (LOINC 18842-5)
                 </div>
               </div>
             </div>
@@ -57,8 +57,8 @@
 
               <!-- First show sections that are already included -->
               <%
-                # Get all predefined section codes
-                predefined_codes = ['48765-2', '10160-0', '11450-4', '30954-2', '10183-2', '46019-6', '28570-0', '19146-0', 'LP30605-7', '82593-5', '42348-3']
+                # Get all predefined section codes; this includes some previously used codes for backwards compatibility
+                predefined_codes = ['48765-2', '10160-0', '11450-4', '30954-2', '10183-2', '46019-6', '28570-0', '19146-0', 'LP30605-7', '82593-5', '42348-3', '47519-4', '8716-3']
 
                 # Find which predefined sections are already included
                 included_sections = predefined_codes.select do |code|
@@ -273,7 +273,7 @@
                       %>
                       <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_problems_#{identifier}", checked: section_included }, "1", "0" %>
                       <%= form.hidden_field "toc[sections][][title]", value: section_title %>
-                      <%= form.hidden_field "toc[sections][][code]", value: "46019-6" %>
+                      <%= form.hidden_field "toc[sections][][code]", value: "11450-4" %>
                       <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
                       <%= form.hidden_field "toc[sections][][display]", value: "Diseases or conditions Set" %>
                     </div>
@@ -314,19 +314,19 @@
 
                 <% end %>
 
-                <% if included_sections.include?('28570-0') %>
+                <% if included_sections.include?('47519-4') || included_sections.include?('28570-0') %>
                 <!-- Procedures Section -->
                 <div class="border border-gray-200 rounded-lg p-4 bg-indigo-50">
                   <div class="flex items-start">
                     <div class="flex items-center h-5">
                       <%
-                        section_included = toc.sections.any? { |s| s['code']&.include?('28570-0') }
-                        procedure_section = toc.sections.find { |s| s['code']&.include?('28570-0') }
+                        section_included = toc.sections.any? { |s| s['code']&.include?('47519-4') || s['code']&.include?('28570-0') }
+                        procedure_section = toc.sections.find { |s| s['code']&.include?('47519-4') || s['code']&.include?('28570-0') }
                         section_title = procedure_section ? procedure_section['title'] : "Procedures"
                       %>
                       <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_procedures_#{identifier}", checked: section_included }, "1", "0" %>
                       <%= form.hidden_field "toc[sections][][title]", value: section_title %>
-                      <%= form.hidden_field "toc[sections][][code]", value: "28570-0" %>
+                      <%= form.hidden_field "toc[sections][][code]", value: "47519-4" %>
                       <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
                       <%= form.hidden_field "toc[sections][][display]", value: "Procedure note" %>
                     </div>
@@ -336,7 +336,7 @@
                     <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
                     <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
                       <%
-                        procedure_section = toc.sections.find { |s| s['code']&.include?('28570-0') }
+                        procedure_section = toc.sections.find { |s| s['code']&.include?('47519-4') || s['code']&.include?('28570-0') }
                         procedure_entries = []
                         if procedure_section && procedure_section['objects'].present?
                           procedure_entries = procedure_section['objects'].select { |obj| obj[:resource_type] == 'Procedure' }
@@ -420,19 +420,19 @@
 
                 <% end %>
 
-                <% if included_sections.include?('LP30605-7') %>
+                <% if included_sections.include?('8716-3') || included_sections.include?('LP30605-7') %>
                 <!-- Vital Signs Section -->
                 <div class="border border-gray-200 rounded-lg p-4 bg-indigo-50">
                   <div class="flex items-start">
                     <div class="flex items-center h-5">
                       <%
-                        section_included = toc.sections.any? { |s| s['code']&.include?('LP30605-7') }
-                        vital_signs_section = toc.sections.find { |s| s['code']&.include?('LP30605-7') }
+                        section_included = toc.sections.any? { |s| s['code']&.include?('8716-3') || s['code']&.include?('LP30605-7') }
+                        vital_signs_section = toc.sections.find { |s| s['code']&.include?('8716-3') || s['code']&.include?('LP30605-7') }
                         section_title = vital_signs_section ? vital_signs_section['title'] : "Vital Signs"
                       %>
                       <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_vital_signs_#{identifier}", checked: section_included }, "1", "0" %>
                       <%= form.hidden_field "toc[sections][][title]", value: section_title %>
-                      <%= form.hidden_field "toc[sections][][code]", value: "LP30605-7" %>
+                      <%= form.hidden_field "toc[sections][][code]", value: "8716-3" %>
                       <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
                       <%= form.hidden_field "toc[sections][][display]", value: "Vital signs" %>
                     </div>
@@ -442,7 +442,7 @@
                     <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
                     <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
                       <%
-                        vital_signs_section = toc.sections.find { |s| s['code']&.include?('LP30605-7') }
+                        vital_signs_section = toc.sections.find { |s| s['code']&.include?('8716-3') || s['code']&.include?('LP30605-7') }
                         vital_signs_entries = []
                         if vital_signs_section && vital_signs_section['objects'].present?
                           vital_signs_entries = vital_signs_section['objects'].select { |obj| obj[:resource_type] == 'Observation' }
@@ -675,14 +675,14 @@
                   </div>
                   <% end %>
 
-                  <% if not_included_sections.include?('46019-6') %>
+                  <% if not_included_sections.include?('11450-4') && !included_sections.include?('46019-6') %>
                   <!-- Problems Section -->
                   <div class="border border-gray-200 rounded-lg p-4">
                     <div class="flex items-start">
                       <div class="flex items-center h-5">
                         <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_problems_#{identifier}", checked: false }, "1", "0" %>
                         <%= form.hidden_field "toc[sections][][title]", value: "Problems" %>
-                        <%= form.hidden_field "toc[sections][][code]", value: "46019-6" %>
+                        <%= form.hidden_field "toc[sections][][code]", value: "11450-4" %>
                         <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
                         <%= form.hidden_field "toc[sections][][display]", value: "Diseases or conditions Set" %>
                       </div>
@@ -707,14 +707,14 @@
                   </div>
                   <% end %>
 
-                  <% if not_included_sections.include?('28570-0') %>
+                  <% if not_included_sections.include?('47519-4') && !included_sections.include?('28570-0') %>
                   <!-- Procedures Section -->
                   <div class="border border-gray-200 rounded-lg p-4">
                     <div class="flex items-start">
                       <div class="flex items-center h-5">
                         <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_procedures_#{identifier}", checked: false }, "1", "0" %>
                         <%= form.hidden_field "toc[sections][][title]", value: "Procedures" %>
-                        <%= form.hidden_field "toc[sections][][code]", value: "28570-0" %>
+                        <%= form.hidden_field "toc[sections][][code]", value: "47519-4" %>
                         <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
                         <%= form.hidden_field "toc[sections][][display]", value: "Procedure note" %>
                       </div>
@@ -771,14 +771,14 @@
                   </div>
                   <% end %>
 
-                  <% if not_included_sections.include?('LP30605-7') %>
+                  <% if not_included_sections.include?('8716-3') && !included_sections.include?('LP30605-7') %>
                   <!-- Vital Signs Section -->
                   <div class="border border-gray-200 rounded-lg p-4">
                     <div class="flex items-start">
                       <div class="flex items-center h-5">
                         <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_vital_signs_#{identifier}", checked: false }, "1", "0" %>
                         <%= form.hidden_field "toc[sections][][title]", value: "Vital Signs" %>
-                        <%= form.hidden_field "toc[sections][][code]", value: "LP30605-7" %>
+                        <%= form.hidden_field "toc[sections][][code]", value: "8716-3" %>
                         <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
                         <%= form.hidden_field "toc[sections][][display]", value: "Vital signs" %>
                       </div>
@@ -876,7 +876,7 @@
               <!-- Display existing sections that don't match predefined codes -->
               <%
                 # Get all predefined section codes
-                predefined_codes = ['48765-2', '10160-0', '11450-4', '30954-2', '10183-2', '46019-6', '28570-0', '19146-0', 'LP30605-7', '82593-5', '42348-3']
+                predefined_codes = ['48765-2', '10160-0', '11450-4', '30954-2', '10183-2', '46019-6', '28570-0', '19146-0', 'LP30605-7', '82593-5', '42348-3', '47519-4', '8716-3']
 
                 # Find sections that don't match any predefined codes
                 custom_sections = toc.sections.select do |section|

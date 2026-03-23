@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "item", "category", "noResults", "count", "domain", "graphButton"]
+  static targets = ["input", "item", "category", "noResults", "count", "domain", "graphButton", "trendList"]
 
   connect() {
     console.log("Filter controller connected")
@@ -43,6 +43,72 @@ export default class extends Controller {
     }
 
     this._updateGraphButtonState()
+  }
+
+  onViewChange(event) {
+    if (event.target.value === "Observation Trends") {
+      this.renderTrends()
+    }
+  }
+
+  renderTrends() {
+    if (!this.hasTrendListTarget) return
+
+    this.trendListTarget.innerHTML = ""
+
+    const groups = {}
+    this.itemTargets.forEach(item => {
+      const code = item.dataset.code
+      if (!code) return
+      if (!groups[code]) groups[code] = []
+      groups[code].push(item)
+    })
+
+    let hasTrends = false
+
+    Object.keys(groups).forEach(code => {
+      const items = groups[code]
+      
+      const validItems = items.filter(item => {
+        const status = item.dataset.status
+        const hasDateTime = item.dataset.effectiveDateTime
+        const hasValueQuantity = item.dataset.hasValueQuantity === 'true'
+        const hasComponents = item.dataset.hasComponents === 'true'
+
+        return (status === 'final' || status === 'amended') &&
+          hasDateTime &&
+          (hasValueQuantity || hasComponents)
+      })
+
+      if (validItems.length < 2) return
+
+      hasTrends = true
+      const description = validItems[0].dataset.description || code
+      const count = validItems.length
+      const ids = validItems.map(i => i.dataset.id).join(',')
+
+      const el = document.createElement("div")
+      el.className = "flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+      el.innerHTML = `
+        <div class="flex-1">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">${description}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">${count} data points</p>
+        </div>
+        <div class="ml-4">
+          <button type="button"
+            class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            data-action="click->graph#renderGraph"
+            data-ids="${ids}">
+            Graph
+          </button>
+        </div>
+      `
+      this.trendListTarget.appendChild(el)
+    })
+
+    if (!hasTrends) {
+       this.trendListTarget.innerHTML = `<div class="p-4 text-center text-gray-500 dark:text-gray-400">No trendable observations found.</div>`
+    }
   }
 
   _updateGraphButtonState() {

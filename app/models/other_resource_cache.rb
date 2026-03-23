@@ -1,4 +1,6 @@
-class PractitionerRoleCache
+# Support caching of resources that we want to load all the time that may not be connected to patient records
+# with existing relationships (e.g., PractitionerRole, Organization)
+class OtherResourceCache
   # Expiration time for cached records
   EXPIRATION_TIME = 1.hour
 
@@ -7,13 +9,22 @@ class PractitionerRoleCache
       @all ||= []
     end
 
+    # Return a list of resources given a type or nil if there are none
+    def by_type(type)
+      @by_type && @by_type[type]
+    end
+
+    def lookup(type, id)
+      @by_type && @by_type[type]&.detect { |r| r.id == id }
+    end
+
     def updated_at(time = nil)
       @updated_at = time if time.present?
       @updated_at
     end
 
     def expired?
-      return true  unless updated_at
+      return true unless updated_at
 
       updated_at < EXPIRATION_TIME.ago
     end
@@ -32,6 +43,7 @@ class PractitionerRoleCache
       end
 
       @all = existing_map.values
+      @by_type = @all.group_by(&:resourceType)
       updated_at(Time.zone.now)
     end
 

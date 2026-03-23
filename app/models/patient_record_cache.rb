@@ -110,6 +110,18 @@ class PatientRecordCache
         patient_records_last_sync[patient_id] > EXPIRATION_TIME.ago
     end
 
+    # Lookup a resource given the type and ID
+    # Note: this crosses over any loaded patients and also looks in our more general resource cache
+    def lookup(type, id)
+      patient_records.values.flatten.detect { |r| r.resourceType == type && r.id == id } || OtherResourceCache.lookup(type, id)
+    end
+
+    # Lookup a resource given the reference (e.g., <type>/<id>)
+    def lookup_by_reference(reference)
+      type, id = reference.split('/', 2)
+      lookup(type, id)
+    end
+
     # Observations by questionnaire response id
     def observations_by_questionnaire_response_id(qr_id)
       return [] if qr_id.blank?

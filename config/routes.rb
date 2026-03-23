@@ -56,6 +56,8 @@ Rails.application.routes.draw do
   post 'patients/:patient_id/transition_of_cares', to: 'transition_of_cares#create'
   patch 'patients/:patient_id/transition_of_cares/:id', to: 'transition_of_cares#update',
                                                         as: 'update_patient_transition_of_care'
+  post 'patients/:patient_id/transition_of_cares/:id/notify', to: 'transition_of_cares#notify',
+                                                              as: 'notify_patient_transition_of_care'
   get 'patients/:patient_id/medication_lists', to: 'medication_lists#index', as: 'patient_medication_lists'
   get 'patients/:patient_id/medication_requests', to: 'medication_requests#index', as: 'patient_medication_requests'
   get 'patients/:patient_id/procedures', to: 'procedures#index', as: 'patient_procedures'

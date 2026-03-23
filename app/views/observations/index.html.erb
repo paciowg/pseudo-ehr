@@ -21,10 +21,11 @@
       <div class="w-full">
         <label for="obs-type" class="sr-only">Filter By type</label>
         <select id="obs-type" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-          data-action="change->showhide#toggleObservations change->filter#filter" data-showhide-target="obsType"
+          data-action="change->showhide#toggleObservations change->filter#filter change->filter#onViewChange" data-showhide-target="obsType"
         >
           <option>Observation Collection</option>
           <option>Single Observations</option>
+          <option>Observation Trends</option>
         </select>
       </div>
     </div>
@@ -45,6 +46,12 @@
     </div>
   </div>
   <%= render "observations" %>
+
+  <div data-showhide-target="trendObs" class="hidden w-11/12 mx-auto mt-4">
+    <div data-filter-target="trendList" class="space-y-4">
+      <!-- Trend list will be populated here -->
+    </div>
+  </div>
 
   <!-- Graph Modal -->
   <div data-graph-target="modal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">

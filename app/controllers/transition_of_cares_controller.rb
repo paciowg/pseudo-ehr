@@ -102,6 +102,63 @@ class TransitionOfCaresController < ApplicationController
     redirect_to patient_transition_of_cares_path(patient_id: patient_id)
   end
 
+  # POST /patients/:patient_id/transition_of_cares/:id/notify
+  def notify
+    begin
+      toc_id = params[:id]
+      destination_organization_ref = params[:destination_organization]
+
+      # Find the TOC Composition
+      toc = Composition.find(toc_id)
+      unless toc
+        flash[:danger] = 'Transition of Care document not found'
+        redirect_to patient_transition_of_cares_path(patient_id: patient_id)
+        return
+      end
+
+      # Step 1: Generate the TOC Bundle and get the document URL
+      document_url = TransitionOfCareBundleService.perform(
+        fhir_server: current_server,
+        composition_id: toc_id
+      )
+
+      raise 'Failed to generate TOC bundle document URL' if document_url.blank?
+
+      # Step 2: Extract organization IDs from references
+      # Source organization is the custodian from the composition
+      source_org_id = toc.fhir_resource.custodian&.reference&.split('/')&.last
+      destination_org_id = destination_organization_ref.split('/').last
+
+      raise 'Source organization not found in TOC composition' if source_org_id.blank?
+      raise 'Destination organization not specified' if destination_org_id.blank?
+
+      # Get Organization objects
+      source_organization = PatientRecordCache.lookup('Organization', source_org_id)
+      destination_organization = PatientRecordCache.lookup('Organization', destination_org_id)
+
+      raise "Source organization #{source_org_id} not found" unless source_organization
+      raise "Destination organization #{destination_org_id} not found" unless destination_organization
+
+      # Step 3: Send the discharge notification
+      DischargeNotificationService.perform(
+        fhir_server: current_server,
+        patient: @patient,
+        source_organization: Organization.new(source_organization),
+        destination_organization: Organization.new(destination_organization),
+        document_url: document_url,
+        document_description: toc.title
+      )
+
+      flash[:success] = "Discharge notification sent successfully to #{destination_organization.name}"
+    rescue StandardError => e
+      Rails.logger.error("Error sending discharge notification: #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      flash[:danger] = "Error sending discharge notification: #{e.message}"
+    end
+
+    redirect_to patient_transition_of_cares_path(patient_id: patient_id)
+  end
+
   private
 
   # Sort TOCs from most recent to oldest
@@ -127,8 +184,8 @@ class TransitionOfCaresController < ApplicationController
         coding: [
           {
             system: 'http://loinc.org',
-            code: '81218-0',
-            display: 'Discharge summary - recommended C-CDA R2.1 sections'
+            code: '18842-5',
+            display: 'Discharge summary'
           }
         ]
       },
@@ -204,7 +261,7 @@ class TransitionOfCaresController < ApplicationController
       fhir_compositions = entries.select { |entry| entry.resourceType == 'Composition' }
     end
 
-    entries = (entries + retrieve_practitioner_roles).uniq
+    entries = (entries + retrieve_other_resources).uniq
     fhir_compositions.each { |entry| Composition.new(entry, entries) }
 
     # Sort TOCs from most recent to oldest

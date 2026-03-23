@@ -38,6 +38,13 @@ module Api
                status: :bad_request and return
       end
 
+      allowed_servers = FhirServer.pluck(:base_url)
+
+      unless allowed_servers.include?(params[:fhir_server])
+        render json: { error: 'Unauthorized fhir_server host' },
+               status: :bad_request and return
+      end
+
       if questionnaire_response_params.blank? || !questionnaire_response_params.is_a?(ActionController::Parameters)
         render json: {
                  error: 'Missing or invalid questionnaire_response parameter.

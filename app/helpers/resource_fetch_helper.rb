@@ -77,9 +77,11 @@ module ResourceFetchHelper
   # Dynamically generate non-patient-related fetch methods
   NON_PATIENT_RELATED_RESOURCES.each do |resource_class_name|
     method_name = "fetch_#{resource_class_name.to_s.underscore.pluralize}"
-    define_method(method_name.to_sym) do |max_results = DEFAULT_MAX_RESULTS, since_time = nil|
-      additional_params = resource_class_name == :PractitionerRole ? { _include: '*' } : {}
+    define_method(method_name.to_sym) do |max_results = DEFAULT_MAX_RESULTS, since_time = nil, include_all = false|
+      Rails.logger.info("Calling dynamically defined method #{method_name}")
+      additional_params = {}
       additional_params[:_since] = since_time.iso8601 if since_time
+      additional_params[:_include] = '*' if include_all
       fetch_resource_with_defaults("FHIR::#{resource_class_name}".constantize, max_results, additional_params)
     end
   end

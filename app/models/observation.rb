@@ -60,6 +60,14 @@ class Observation < Resource
     parse_date(@fhir_resource.issued)
   end
 
+  def min_ref_range
+    @fhir_resource.referenceRange&.first&.low&.value&.to_f
+  end
+
+  def max_ref_range
+    @fhir_resource.referenceRange&.first&.high&.value&.to_f
+  end
+
   def self.collections(observations)
     observations.select(&:collection?)
                 .sort_by { |observation| observation&.effective_date_time || '' }
@@ -67,8 +75,11 @@ class Observation < Resource
   end
 
   def self.format_domain(domain_code)
-    display = pfe_domain_dict[domain_code] || category_dict[domain_code]
-    display.present? ? "#{display} (#{domain_code})" : domain_code
+    # Domain can be a comma separated list
+    domain_code.split(/,\s+/).map do |domain|
+      display = pfe_domain_dict[domain] || category_dict[domain]
+      display.present? ? "#{display} (#{domain})" : domain
+    end.join(', ')
   end
 
   def self.group_by_category_and_domain(observations)
@@ -117,13 +128,8 @@ class Observation < Resource
   end
 
   def retrieve_domain
-    domain = categories.find { |cat| cat[:system] == 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-category-cs' }
-
-    if domain.blank?
-      ''
-    else
-      domain[:display] ? "#{domain[:display]} (#{domain[:code]})" : domain[:code]
-    end
+    domains = categories.select { |cat| cat[:system] == 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-category-cs' }
+    domains.map { |d| d[:display] ? "#{d[:display]} (#{d[:code]})" : d[:code] }.join(', ')
   end
 
   def retrieve_code

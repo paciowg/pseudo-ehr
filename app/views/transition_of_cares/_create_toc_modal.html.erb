@@ -56,7 +56,7 @@
             <div>
               <label for="toc_type" class="block mb-2 text-sm font-medium text-gray-900">Type</label>
               <div class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                Discharge summary - recommended C-CDA R2.1 sections (LOINC 81218-0)
+                Discharge summary (LOINC 18842-5)
               </div>
             </div>
           </div>
@@ -77,6 +77,7 @@
                     <%= form.hidden_field "toc[sections][][display]", value: "Allergies and adverse reactions Document" %>
                   </div>
                   <label for="section_allergies" class="ml-2 text-sm font-medium text-gray-900">Allergies and Intolerances</label>
+                  <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_allergies">All</button>
                 </div>
                 <div class="mt-2">
                   <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
@@ -114,6 +115,7 @@
                     <%= form.hidden_field "toc[sections][][display]", value: "Medications" %>
                   </div>
                   <label for="section_medications" class="ml-2 text-sm font-medium text-gray-900">Medications</label>
+                  <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_medications">All</button>
                 </div>
                 <div class="mt-2">
                   <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
@@ -171,11 +173,12 @@
                   <div class="flex items-center h-5">
                     <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_problems", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Problems" %>
-                    <%= form.hidden_field "toc[sections][][code]", value: "46019-6" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "11450-4" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "Diseases or conditions Set" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Problem list - Reported" %>
                   </div>
                   <label for="section_problems" class="ml-2 text-sm font-medium text-gray-900">Problems</label>
+                  <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_problems">All</button>
                 </div>
                 <div class="mt-2">
                   <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
@@ -208,11 +211,12 @@
                   <div class="flex items-center h-5">
                     <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_procedures", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Procedures" %>
-                    <%= form.hidden_field "toc[sections][][code]", value: "28570-0" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "47519-4" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "Procedure note" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "History of Procedures Document" %>
                   </div>
                   <label for="section_procedures" class="ml-2 text-sm font-medium text-gray-900">Procedures</label>
+                  <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_procedures">All</button>
                 </div>
                 <div class="mt-2">
                   <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
@@ -250,6 +254,7 @@
                     <%= form.hidden_field "toc[sections][][display]", value: " Referral lab test results" %>
                   </div>
                   <label for="section_results" class="ml-2 text-sm font-medium text-gray-900">Results</label>
+                  <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_results">All</button>
                 </div>
                 <div class="mt-2">
                   <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
@@ -282,11 +287,12 @@
                   <div class="flex items-center h-5">
                     <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_vital_signs", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Vital Signs" %>
-                    <%= form.hidden_field "toc[sections][][code]", value: "LP30605-7" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "8716-3" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "Vital signs" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Vital signs note" %>
                   </div>
                   <label for="section_vital_signs" class="ml-2 text-sm font-medium text-gray-900">Vital signs</label>
+                  <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_vital_signs">All</button>
                 </div>
                 <div class="mt-2">
                   <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
@@ -317,6 +323,7 @@
                     <%= form.hidden_field "toc[sections][][display]", value: "Immunization summary report" %>
                   </div>
                   <label for="section_immunizations" class="ml-2 text-sm font-medium text-gray-900">Immunizations</label>
+                  <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_immunizations">All</button>
                 </div>
                 <div class="mt-2">
                   <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
@@ -354,6 +361,7 @@
                     <%= form.hidden_field "toc[sections][][display]", value: "Advance healthcare directives" %>
                   </div>
                   <label for="section_advance_directives" class="ml-2 text-sm font-medium text-gray-900">Advance Directives</label>
+                  <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_advance_directives">All</button>
                 </div>
                 <div class="mt-2">
                   <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>

@@ -25,11 +25,11 @@ class DetectedIssuesController < ApplicationController
       fhir_detected_issues = entries.select { |entry| entry.resourceType == 'DetectedIssue' }
     end
 
-    # Get practitioner roles for reference resolution
-    practitioner_roles = retrieve_practitioner_roles
+    # Get other resources for reference resolution
+    other_resources = retrieve_other_resources
 
     # Combine entries and create DetectedIssue objects
-    entries = (entries + practitioner_roles).uniq
+    entries = (entries + other_resources).uniq
     fhir_detected_issues.each { |entry| DetectedIssue.new(entry, entries) }
 
     detected_issues = DetectedIssue.filter_by_patient_id(patient_id)
