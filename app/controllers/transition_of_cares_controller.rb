@@ -59,6 +59,7 @@ class TransitionOfCaresController < ApplicationController
       params[:toc][:sections].each do |section_params|
         next unless section_params[:include] == '1'
 
+        # TODO: Add section.text (narrative) to meet TOC IG 1..1 requirement
         section = FHIR::Composition::Section.new(
           title: section_params[:title],
           code: {
@@ -222,6 +223,7 @@ class TransitionOfCaresController < ApplicationController
     toc_params[:sections].each do |section_params|
       next unless section_params[:include] == '1' && section_params[:entries].present?
 
+      # TODO: Add section.text (narrative) to meet TOC IG 1..1 requirement
       section = FHIR::Composition::Section.new(
         title: section_params[:title],
         code: {

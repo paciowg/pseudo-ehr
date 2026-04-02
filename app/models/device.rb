@@ -65,8 +65,7 @@ class Device < Resource
     device_names.map do |name|
       {
         name: name.name,
-        type: name.type,
-        model: name.modelName
+        type: name.type
       }
     end
   end

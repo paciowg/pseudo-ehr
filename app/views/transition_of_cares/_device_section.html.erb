@@ -52,7 +52,7 @@
               <td class="px-4 py-2 text-sm text-gray-700"><%= device.status_reason || '--' %></td>
               <td class="px-4 py-2 text-sm text-gray-700"><%= device.manufacturer || '--' %></td>
               <td class="px-4 py-2 text-sm text-gray-700"><%= device.model_number || '--' %></td>
-              <td class="px-4 py-2 text-sm text-gray-700"><%= device.version || '--' %></td>
+              <td class="px-4 py-2 text-sm text-gray-700"><%= device.version.map { |v| v[:value] }.join(' | ').presence || '--' %></td>
               <td class="px-4 py-2 text-sm text-gray-700"><%= device.serial_number || '--' %></td>
               <td class="px-4 py-2 text-sm text-gray-700"><%= device.lot_number || '--' %></td>
               <td class="px-4 py-2 text-sm text-gray-700"><%= device.expiration_date || '--' %></td>
@@ -85,23 +85,6 @@
               </tr>
             <% end %>
 
-            <% if device.property.present? %>
-              <tr class="bg-gray-50">
-                <td colspan="9" class="px-4 py-2 text-sm">
-                  <div class="font-medium">Device Properties:</div>
-                  <ul class="list-disc list-inside ml-4">
-                    <% device.property.each do |property| %>
-                      <li>
-                        <span class="font-medium"><%= property[:type] %>:</span> <%= property[:value] %>
-                        <% if property[:value_quantity].present? %>
-                          (<%= property[:value_quantity] %>)
-                        <% end %>
-                      </li>
-                    <% end %>
-                  </ul>
-                </td>
-              </tr>
-            <% end %>
           <% end %>
         </tbody>
       </table>

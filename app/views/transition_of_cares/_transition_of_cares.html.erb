@@ -25,7 +25,7 @@
               </th>
               <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Date</th>
               <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Type</th>
-              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Description</th>
+              <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Title</th>
               <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Author</th>
               <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Custodian</th>
               <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Actions</th>
@@ -79,6 +79,25 @@
               <tr class="hidden" id="table-column-body-<%= identifier %>" aria-labelledby="table-column-header-<%= identifier %>">
                 <td class="sr-only">Expanded Content</td>
                 <td colspan="6" class="px-6 py-4 bg-gray-50 border-b">
+                  <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 bg-indigo-50 p-4 rounded-lg border border-indigo-100 shadow-sm">
+                    <div class="flex items-center text-sm text-gray-700">
+                      <span class="font-semibold text-indigo-700 w-24">Identifier:</span>
+                      <span class="bg-white px-2 py-1 rounded border border-indigo-100"><%= toc.identifier %></span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-700">
+                      <span class="font-semibold text-indigo-700 w-24">Status:</span>
+                      <span class="bg-white px-2 py-1 rounded border border-indigo-100"><%= toc.status %></span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-700">
+                      <span class="font-semibold text-indigo-700 w-24">Category:</span>
+                      <span class="bg-white px-2 py-1 rounded border border-indigo-100"><%= toc.category %></span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-700">
+                      <span class="font-semibold text-indigo-700 w-24">Language:</span>
+                      <span class="bg-white px-2 py-1 rounded border border-indigo-100"><%= toc.language %></span>
+                    </div>
+                  </div>
+
                   <% if toc.sections.present? %>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <% toc.sections.each do |section| %>
@@ -90,6 +109,13 @@
                             <div class="mb-4">
                               <span class="text-sm font-medium text-gray-500">Classification:</span>
                               <span class="ml-2 text-sm text-gray-700"><%= section['code'] %></span>
+                            </div>
+                          <% end %>
+
+                          <% if section['text'] %>
+                            <div class="mb-4">
+                              <span class="text-sm font-medium text-gray-500">Text:</span>
+                              <span class="ml-2 text-sm text-gray-700"><%= strip_tags(section['text']).squish %></span>
                             </div>
                           <% end %>
 

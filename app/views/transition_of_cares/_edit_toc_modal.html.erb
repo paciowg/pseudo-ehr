@@ -58,7 +58,7 @@
               <!-- First show sections that are already included -->
               <%
                 # Get all predefined section codes; this includes some previously used codes for backwards compatibility
-                predefined_codes = ['48765-2', '10160-0', '11450-4', '30954-2', '10183-2', '46019-6', '28570-0', '19146-0', 'LP30605-7', '82593-5', '42348-3', '47519-4', '8716-3']
+                predefined_codes = ['48765-2', '10160-0', '11450-4', '30954-2', '10183-2', '46019-6', '28570-0', '19146-0', 'LP30605-7', '82593-5', '42348-3', '47519-4', '8716-3', '46264-8', '47420-5']
 
                 # Find which predefined sections are already included
                 included_sections = predefined_codes.select do |code|
@@ -449,7 +449,7 @@
                                                                   .map { |obj| obj[:resource].fhir_resource.id }
                         end
                       %>
-                      <% cached_resources_for_select('Observation').select {|o| o.category.include?('vital-signs')}.each do |o| %>
+                      <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'vital-signs' } } }.each do |o| %>
                         <div class="flex items-start mb-1">
                           <div class="flex items-center h-5">
                             <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", vital_signs_entries.include?(o.id),
@@ -564,6 +564,94 @@
                               <%= "DocumentReference/#{d.id}" %>
                             <% end %>
                           </label>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+                <% end %>
+
+                <% if included_sections.include?('46264-8') %>
+                <!-- Medical Devices Section -->
+                <div class="border border-gray-200 rounded-lg p-4 bg-indigo-50">
+                  <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                      <%
+                        section_included = toc.sections.any? { |s| s['code']&.include?('46264-8') }
+                        devices_section = toc.sections.find { |s| s['code']&.include?('46264-8') }
+                        section_title = devices_section ? devices_section['title'] : "Medical Devices"
+                      %>
+                      <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_medical_devices_#{identifier}", checked: section_included }, "1", "0" %>
+                      <%= form.hidden_field "toc[sections][][title]", value: section_title %>
+                      <%= form.hidden_field "toc[sections][][code]", value: "46264-8" %>
+                      <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                      <%= form.hidden_field "toc[sections][][display]", value: "Medical Devices" %>
+                    </div>
+                    <label for="section_medical_devices_<%= identifier %>" class="ml-2 text-sm font-medium text-gray-900">Medical Devices</label>
+                  </div>
+                  <div class="mt-2">
+                    <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                    <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                      <%
+                        devices_section = toc.sections.find { |s| s['code']&.include?('46264-8') }
+                        device_entries = []
+                        if devices_section && devices_section['objects'].present?
+                          device_entries = devices_section['objects'].select { |obj| obj[:resource_type] == 'Device' }
+                                                                    .map { |obj| "Device/#{obj[:resource].fhir_resource.id}" }
+                        end
+                      %>
+                      <% cached_resources_for_select('Device').each do |d| %>
+                        <div class="flex items-start mb-1">
+                          <div class="flex items-center h-5">
+                            <%= check_box_tag "toc[sections][][entries][]", "Device/#{d.id}", device_entries.include?("Device/#{d.id}"),
+                                class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox-#{identifier} device-entry-#{identifier}" %>
+                          </div>
+                          <label class="ml-2 text-xs font-medium text-gray-900">
+                            <%= d.type&.coding&.first&.display || d.type&.coding&.first&.code || "Device/#{d.id}" %>
+                          </label>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+                <% end %>
+
+                <% if included_sections.include?('47420-5') %>
+                <!-- Functional Status Section -->
+                <div class="border border-gray-200 rounded-lg p-4 bg-indigo-50">
+                  <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                      <%
+                        section_included = toc.sections.any? { |s| s['code']&.include?('47420-5') }
+                        functional_section = toc.sections.find { |s| s['code']&.include?('47420-5') }
+                        section_title = functional_section ? functional_section['title'] : "Functional Status"
+                      %>
+                      <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_functional_status_#{identifier}", checked: section_included }, "1", "0" %>
+                      <%= form.hidden_field "toc[sections][][title]", value: section_title %>
+                      <%= form.hidden_field "toc[sections][][code]", value: "47420-5" %>
+                      <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                      <%= form.hidden_field "toc[sections][][display]", value: "Functional Status" %>
+                    </div>
+                    <label for="section_functional_status_<%= identifier %>" class="ml-2 text-sm font-medium text-gray-900">Functional Status</label>
+                  </div>
+                  <div class="mt-2">
+                    <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                    <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                      <%
+                        functional_section = toc.sections.find { |s| s['code']&.include?('47420-5') }
+                        functional_entries = []
+                        if functional_section && functional_section['objects'].present?
+                          functional_entries = functional_section['objects'].select { |obj| obj[:resource_type] == 'Observation' }
+                                                                    .map { |obj| obj[:resource].fhir_resource.id }
+                        end
+                      %>
+                      <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'functional-status' } } }.each do |o| %>
+                        <div class="flex items-start mb-1">
+                          <div class="flex items-center h-5">
+                            <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", functional_entries.include?(o.id),
+                                class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox-#{identifier} observation-functional-entry-#{identifier}" %>
+                          </div>
+                          <label class="ml-2 text-xs font-medium text-gray-900"><%= o.code&.text || "Observation/#{o.id}" %></label>
                         </div>
                       <% end %>
                     </div>
@@ -787,7 +875,7 @@
                     <div class="mt-2">
                       <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
                       <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
-                        <% cached_resources_for_select('Observation').select {|o| o.category.include?('vital-signs')}.each do |o| %>
+                        <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'vital-signs' } } }.each do |o| %>
                           <div class="flex items-start mb-1">
                             <div class="flex items-center h-5">
                               <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
@@ -866,6 +954,68 @@
                     </div>
                   </div>
                   <% end %>
+
+                  <% if not_included_sections.include?('46264-8') %>
+                  <!-- Medical Devices Section -->
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                      <div class="flex items-center h-5">
+                        <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_medical_devices_#{identifier}", checked: false }, "1", "0" %>
+                        <%= form.hidden_field "toc[sections][][title]", value: "Medical Devices" %>
+                        <%= form.hidden_field "toc[sections][][code]", value: "46264-8" %>
+                        <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                        <%= form.hidden_field "toc[sections][][display]", value: "Medical Devices" %>
+                      </div>
+                      <label for="section_medical_devices_<%= identifier %>" class="ml-2 text-sm font-medium text-gray-900">Medical Devices</label>
+                    </div>
+                    <div class="mt-2">
+                      <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                      <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                        <% cached_resources_for_select('Device').each do |d| %>
+                          <div class="flex items-start mb-1">
+                            <div class="flex items-center h-5">
+                              <%= check_box_tag "toc[sections][][entries][]", "Device/#{d.id}", false,
+                                  class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox-#{identifier} device-entry-#{identifier}" %>
+                            </div>
+                            <label class="ml-2 text-xs font-medium text-gray-900">
+                              <%= d.type&.coding&.first&.display || d.type&.coding&.first&.code || "Device/#{d.id}" %>
+                            </label>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                  <% end %>
+
+                  <% if not_included_sections.include?('47420-5') %>
+                  <!-- Functional Status Section -->
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                      <div class="flex items-center h-5">
+                        <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_functional_status_#{identifier}", checked: false }, "1", "0" %>
+                        <%= form.hidden_field "toc[sections][][title]", value: "Functional Status" %>
+                        <%= form.hidden_field "toc[sections][][code]", value: "47420-5" %>
+                        <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                        <%= form.hidden_field "toc[sections][][display]", value: "Functional Status" %>
+                      </div>
+                      <label for="section_functional_status_<%= identifier %>" class="ml-2 text-sm font-medium text-gray-900">Functional Status</label>
+                    </div>
+                    <div class="mt-2">
+                      <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                      <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                        <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'functional-status' } } }.each do |o| %>
+                          <div class="flex items-start mb-1">
+                            <div class="flex items-center h-5">
+                              <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
+                                  class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox-#{identifier} observation-functional-entry-#{identifier}" %>
+                            </div>
+                            <label class="ml-2 text-xs font-medium text-gray-900"><%= o.code&.text || "Observation/#{o.id}" %></label>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                  <% end %>
                 </div>
               <% end %>
 
@@ -876,7 +1026,7 @@
               <!-- Display existing sections that don't match predefined codes -->
               <%
                 # Get all predefined section codes
-                predefined_codes = ['48765-2', '10160-0', '11450-4', '30954-2', '10183-2', '46019-6', '28570-0', '19146-0', 'LP30605-7', '82593-5', '42348-3', '47519-4', '8716-3']
+                predefined_codes = ['48765-2', '10160-0', '11450-4', '30954-2', '10183-2', '46019-6', '28570-0', '19146-0', 'LP30605-7', '82593-5', '42348-3', '47519-4', '8716-3', '46264-8', '47420-5']
 
                 # Find sections that don't match any predefined codes
                 custom_sections = toc.sections.select do |section|
