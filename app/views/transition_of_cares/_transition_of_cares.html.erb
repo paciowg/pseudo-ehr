@@ -17,7 +17,7 @@
       </div>
     <% else %>
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="w-full divide-y divide-gray-200">
           <thead class="bg-gradient-to-r from-indigo-600 to-indigo-800">
             <tr>
               <th scope="col" class="px-4 py-3 text-white text-center w-10">
@@ -48,8 +48,8 @@
                 <td class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap"><%= toc.date %></td>
                 <td class="px-4 py-3 text-sm text-gray-700"><%= toc.type %></td>
                 <td class="px-4 py-3 text-sm text-gray-700"><%= toc.title %></td>
-                <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap"><%= toc.author %></td>
-                <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap"><%= toc.custodian %></td>
+                <td class="px-4 py-3 text-sm text-gray-700"><%= toc.author %></td>
+                <td class="px-4 py-3 text-sm text-gray-700"><%= toc.custodian %></td>
                 <td class="px-4 py-3 text-center">
                   <div class="flex items-center justify-center space-x-2">
                     <button id="toggle-update-button-<%= identifier %>"
