@@ -42,7 +42,7 @@ class TransitionOfCaresController < ApplicationController
     begin
       delete_resource(FHIR::Composition, params[:id])
       Composition.remove(params[:id])
-      PatientRecordCache.clear_grouped_patient_record(patient_id)
+      PatientRecordCache.remove_resource_from_patient_record(patient_id, 'Composition', params[:id])
       flash[:success] = 'Transition of Care document deleted successfully.'
     rescue StandardError => e
       Rails.logger.error("Error deleting TOC Composition: #{e.message}")

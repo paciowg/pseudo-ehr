@@ -85,6 +85,15 @@ class PatientRecordCache
       store_patient_record(patient_id, records)
     end
 
+    # Remove a single resource from a patient record
+    def remove_resource_from_patient_record(patient_id, type, id)
+      records = get_patient_record(patient_id)
+      return unless records
+
+      records.reject! { |r| r.resourceType == type && r.id == id }
+      store_patient_record(patient_id, records)
+    end
+
     # Get a grouped patient record from the cache
     def get_grouped_patient_record(patient_id)
       grouped_patient_records[patient_id]
