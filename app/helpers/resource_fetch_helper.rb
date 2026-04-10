@@ -122,6 +122,19 @@ module ResourceFetchHelper
     raise TIMEOUT_ERROR_MESSAGE
   end
 
+  def delete_resource(resource_class, id)
+    response = client.destroy(resource_class, id)
+    add_query(response.request)
+
+    unless [200, 204].include?(response.code)
+      raise "Error deleting #{resource_class.name}:\n #{response.resource&.inspect}"
+    end
+
+    response
+  rescue Net::ReadTimeout, Net::OpenTimeout
+    raise TIMEOUT_ERROR_MESSAGE
+  end
+
   # Fetch specific patient data
 
   def fetch_patients_by_id

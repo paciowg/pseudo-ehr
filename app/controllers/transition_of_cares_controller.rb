@@ -37,6 +37,21 @@ class TransitionOfCaresController < ApplicationController
     redirect_to patient_transition_of_cares_path(patient_id: patient_id)
   end
 
+  # DELETE /patients/:patient_id/transition_of_cares/:id
+  def destroy
+    begin
+      delete_resource(FHIR::Composition, params[:id])
+      Composition.remove(params[:id])
+      PatientRecordCache.clear_grouped_patient_record(patient_id)
+      flash[:success] = 'Transition of Care document deleted successfully.'
+    rescue StandardError => e
+      Rails.logger.error("Error deleting TOC Composition: #{e.message}")
+      flash[:danger] = "Error deleting Transition of Care document: #{e.message}"
+    end
+
+    redirect_to patient_transition_of_cares_path(patient_id: patient_id)
+  end
+
   # PATCH /patients/:patient_id/transition_of_cares/:id
   def update
     begin
