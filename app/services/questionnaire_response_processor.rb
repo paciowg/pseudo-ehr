@@ -94,7 +94,7 @@ class QuestionnaireResponseProcessor
       end
 
       # Build alternate_url with validated FHIR server URI plus validated tail
-      alternate_url = fhir_server_uri.path.to_s.chomp('/') + tail
+      alternate_url = fhir_server_uri.to_s.chomp('/') + tail
 
       raise "Failed to fetch Questionnaire from #{url}: #{e.response || e.message}" unless alternate_url
 
