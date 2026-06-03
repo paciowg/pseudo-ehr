@@ -1,0 +1,71 @@
+"71972-4":
+  range:
+    low: 4
+    high: 20
+  cut_points: []
+
+"71970-8":
+  range:
+    low: 4
+    high: 20
+  cut_points: []
+
+"71971-6":
+  range:
+    low: 16.2
+    high: 67.7
+  cut_points:
+    - limit: 36
+      label: "Poor"
+      color: "rgba(255, 192, 192, 0.4)"
+    - limit: 43
+      label: "Fair"
+      color: "rgba(255, 255, 192, 0.4)"
+    - limit: 51
+      label: "Good"
+      color: "rgba(192, 255, 192, 0.4)"
+    - limit: 58
+      label: "Very Good"
+      color: "rgba(192, 255, 192, 0.4)"
+    - limit:
+      label: "Excellent"
+      color: "rgba(192, 255, 192, 0.4)"
+
+"71969-0":
+  range:
+    low: 21.2
+    high: 67.6
+  cut_points:
+    - limit: 34
+      label: "Poor"
+      color: "rgba(255, 192, 192, 0.4)"
+    - limit: 42
+      label: "Fair"
+      color: "rgba(255, 255, 192, 0.4)"
+    - limit: 49
+      label: "Good"
+      color: "rgba(192, 255, 192, 0.4)"
+    - limit: 57
+      label: "Very Good"
+      color: "rgba(192, 255, 192, 0.4)"
+    - limit:
+      label: "Excellent"
+      color: "rgba(192, 255, 192, 0.4)"
+
+"70274-6":
+  range:
+    low: 0
+    high: 21
+  cut_points:
+    - limit: 4
+      label: "Minimal anxiety"
+      color: "rgba(192, 255, 192, 0.4)"
+    - limit: 9
+      label: "Mild anxiety"
+      color: "rgba(255, 255, 192, 0.4)"
+    - limit: 14
+      label: "Moderate anxiety"
+      color: "rgba(255, 255, 192, 0.4)"
+    - limit:
+      label: "Moderate to severe anxiety"
+      color: "rgba(255, 192, 192, 0.4)"
