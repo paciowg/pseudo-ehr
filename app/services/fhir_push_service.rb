@@ -45,6 +45,7 @@ class FhirPushService
       begin
         resource_json = fetch_resource(current_url)
         resource = JSON.parse(resource_json)
+        rewrite_questionnaire_references!(resource)
 
         unless resource.is_a?(Hash) && resource['resourceType'] && resource['id']
           handle_failed_push(current_url, 'Invalid FHIR resource format', retry_counts, resources_to_process, failed_resources, force_fail: true)
@@ -93,6 +94,30 @@ class FhirPushService
   def fetch_resource(url)
     uri = URI(url)
     Net::HTTP.get(uri)
+  end
+
+  def rewrite_questionnaire_references!(resource)
+    return unless resource.is_a?(Hash)
+
+    case resource['resourceType']
+    when 'Questionnaire'
+      return unless resource['id']
+
+      resource['url'] = "#{@fhir_server_url}/Questionnaire/#{resource['id']}"
+    when 'QuestionnaireResponse'
+      questionnaire_value = resource['questionnaire']
+      return if questionnaire_value.blank?
+
+      questionnaire_id = extract_resource_id(questionnaire_value, 'Questionnaire')
+      return unless questionnaire_id
+
+      resource['questionnaire'] = "#{@fhir_server_url}/Questionnaire/#{questionnaire_id}"
+    end
+  end
+
+  def extract_resource_id(value, resource_type)
+    match = value.match(%r{(?:.*/)?#{resource_type}/([^/?#]+)})
+    match && match[1]
   end
 
   def handle_failed_push(url, error_message, retry_counts, queue, failed_list, force_fail: false)
