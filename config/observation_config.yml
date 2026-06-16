@@ -158,16 +158,16 @@
     low: 0
     high: 27
   cut_points:
-    - limit: 5
+    - limit: 4
       label: "Minimal"
       color: "rgba(192, 255, 192, 0.4)" # green
-    - limit: 10
+    - limit: 9
       label: "Mild"
       color: "rgba(255, 255, 192, 0.4)" # yellow
-    - limit: 15
+    - limit: 14
       label: "Moderate"
       color: "rgba(255, 255, 192, 0.4)" # yellow
-    - limit: 20
+    - limit: 19
       label: "Moderately Severe"
       color: "rgba(255, 192, 192, 0.4)" # red
     - limit: null

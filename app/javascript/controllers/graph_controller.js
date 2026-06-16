@@ -91,7 +91,7 @@ export default class extends Controller {
           const y1 = Math.max(previousLimit, yMin)
           const y2 = Math.min(limit, yMax)
 
-          if (y1 < y2) {
+          if (y1 <= y2) {
             options.annotations.yaxis.push({
               y: y1,
               y2: y2,
@@ -105,7 +105,7 @@ export default class extends Controller {
 
         options.tooltip.y = {
           formatter: (value) => {
-            const range = cutPoints.find((r) => value < r.limit)
+            const range = cutPoints.find((r) => value <= r.limit)
             const label = range ? range.label : ""
             return `${value} (${label})`
           }
