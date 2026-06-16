@@ -2,19 +2,28 @@
 # Observations (which are later used in graphing observation trends)
 # and displaying cut lines in observation trend graphs
 
+# PROMIS cut point information was taken from
+# https://www.healthmeasures.net/score-and-interpret/interpret-scores/promis/promis-score-cut-points/promis-adult-score-cut-points
+
+# WHODAS does not have LOINC codes
+# QuickDASH does not have LOINC codes
+# Musculoskeletal PGIC does not have LOINC codes
+# Behavioral Health PGIC Questionnaire does not have LOINC codes
+
+
 # PROMIS-10 Global Physical Health (GPH) score
 "71972-4":
   range:
     low: 4
     high: 20
-  cut_points: []
+  cut_points: [] # No cut points available
 
 # PROMIS-10 Global Mental Health (GMH) score
 "71970-8":
   range:
     low: 4
     high: 20
-  cut_points: []
+  cut_points: [] # No cut points available
 
 # PROMIS-10 Global Physical Health (GPH) score T-score
 "71971-6":
@@ -24,19 +33,19 @@
   cut_points:
     - limit: 36
       label: "Poor"
-      color: "rgba(255, 192, 192, 0.4)"
+      color: "rgba(255, 192, 192, 0.4)" # red
     - limit: 43
       label: "Fair"
-      color: "rgba(255, 255, 192, 0.4)"
+      color: "rgba(255, 255, 192, 0.4)" # yellow
     - limit: 51
       label: "Good"
-      color: "rgba(192, 255, 192, 0.4)"
+      color: "rgba(192, 255, 192, 0.4)" # green
     - limit: 58
       label: "Very Good"
-      color: "rgba(192, 255, 192, 0.4)"
-    - limit:
+      color: "rgba(192, 255, 192, 0.4)" # green
+    - limit: null
       label: "Excellent"
-      color: "rgba(192, 255, 192, 0.4)"
+      color: "rgba(192, 255, 192, 0.4)" # green
 
 # PROMIS-10 Global Mental Health (GMH) score T-score
 "71969-0":
@@ -46,19 +55,19 @@
   cut_points:
     - limit: 34
       label: "Poor"
-      color: "rgba(255, 192, 192, 0.4)"
+      color: "rgba(255, 192, 192, 0.4)" # red
     - limit: 42
       label: "Fair"
-      color: "rgba(255, 255, 192, 0.4)"
+      color: "rgba(255, 255, 192, 0.4)" # yellow
     - limit: 49
       label: "Good"
-      color: "rgba(192, 255, 192, 0.4)"
+      color: "rgba(192, 255, 192, 0.4)" # green
     - limit: 57
       label: "Very Good"
-      color: "rgba(192, 255, 192, 0.4)"
-    - limit:
+      color: "rgba(192, 255, 192, 0.4)" # green
+    - limit: null
       label: "Excellent"
-      color: "rgba(192, 255, 192, 0.4)"
+      color: "rgba(192, 255, 192, 0.4)" # green
 
 
 # Generalized anxiety disorder 7 item (GAD-7) total score
@@ -69,16 +78,16 @@
   cut_points:
     - limit: 4
       label: "Minimal anxiety"
-      color: "rgba(192, 255, 192, 0.4)"
+      color: "rgba(192, 255, 192, 0.4)" # green
     - limit: 9
       label: "Mild anxiety"
-      color: "rgba(255, 255, 192, 0.4)"
+      color: "rgba(255, 255, 192, 0.4)" # yellow
     - limit: 14
       label: "Moderate anxiety"
-      color: "rgba(255, 255, 192, 0.4)"
-    - limit:
-      label: "Moderate to severe anxiety"
-      color: "rgba(255, 192, 192, 0.4)"
+      color: "rgba(255, 255, 192, 0.4)" # yellow
+    - limit: null
+      label: "Severe anxiety"
+      color: "rgba(255, 192, 192, 0.4)" # red
 
 
 # PROMIS short form - pain interference 6a - version 1.0 raw score
@@ -86,12 +95,26 @@
   range:
     low: 6
     high: 30
+  cut_points: [] # No cut points available
 
 # PROMIS pain interference - version 1.0 Tscore
 "77865-4":
   range:
     low: 41.6
     high: 90.5
+  cut_points:
+    - limit: 55
+      label: "Within Normal Limits"
+      color: "rgba(192, 255, 192, 0.4)" # green
+    - limit: 60
+      label: "Mild"
+      color: "rgba(255, 255, 192, 0.4)" # yellow
+    - limit: 70
+      label: "Moderate"
+      color: "rgba(255, 255, 192, 0.4)" # yellow
+    - limit: null
+      label: "Severe"
+      color: "rgba(255, 192, 192, 0.4)" # red
 
 
 # PROMIS short form - physical function 6b - version 1.2 raw score
@@ -99,19 +122,34 @@
   range:
     low: 6
     high: 30
+  cut_points: [] # No cut points available
 
 # PROMIS physical function - version 1.0 Tscore
 "77866-2":
   range:
     low: 16.2
     high: 99.7
+  cut_points:
+    - limit: 30
+      label: "Severe"
+      color: "rgba(255, 192, 192, 0.4)" # red
+    - limit: 40
+      label: "Moderate"
+      color: "rgba(255, 255, 192, 0.4)" # yellow
+    - limit: 45
+      label: "Mild"
+      color: "rgba(255, 255, 192, 0.4)" # yellow
+    - limit: null
+      label: "Within Normal Limits"
+      color: "rgba(192, 255, 192, 0.4)" # green
 
 
-#  Pain severity - 0-10 verbal numeric rating [Score] - Reported
+# Pain severity - 0-10 verbal numeric rating [Score] - Reported
 "72514-3":
   range:
     low: 0
     high: 10
+  cut_points: [] # No cut points available
 
 
 # Patient Health Questionnaire 9 item (PHQ-9) total score
@@ -120,18 +158,80 @@
     low: 0
     high: 27
   cut_points:
-    - limit: 5
+    - limit: 4
       label: "Minimal"
-      color: "rgba(192, 255, 192, 0.4)"
-    - limit: 10
+      color: "rgba(192, 255, 192, 0.4)" # green
+    - limit: 9
       label: "Mild"
-      color: "rgba(192, 255, 192, 0.4)"
-    - limit: 15
+      color: "rgba(255, 255, 192, 0.4)" # yellow
+    - limit: 14
       label: "Moderate"
-      color: "rgba(255, 255, 192, 0.4)"
-    - limit: 20
+      color: "rgba(255, 255, 192, 0.4)" # yellow
+    - limit: 19
       label: "Moderately Severe"
-      color: "rgba(255, 192, 192, 0.4)"
-    - limit:
+      color: "rgba(255, 192, 192, 0.4)" # red
+    - limit: null
       label: "Severe"
-      color: "rgba(255, 192, 192, 0.4)"
+      color: "rgba(255, 192, 192, 0.4)" # red
+
+
+# Oswestry disability index score ODI
+"97909-6":
+  range:
+    low: 0
+    high: 100
+  cut_points:
+    - limit: 20
+      label: "Minimal disability"
+      color: "rgba(192, 255, 192, 0.4)" # green
+    - limit: 40
+      label: "Moderate disability"
+      color: "rgba(255, 255, 192, 0.4)" # yellow
+    - limit: 60
+      label: "Severe disability"
+      color: "rgba(255, 192, 192, 0.4)" # red
+    - limit: 80
+      label: "Disability that significantly restricts daily activities"
+      color: "rgba(255, 192, 192, 0.4)" # red
+    - limit: null
+      label: "Bed-bound or exaggerating"
+      color: "rgba(255, 192, 192, 0.4)" # red
+
+
+# Total score Neck Disability Index [NDI]
+"82237-9":
+  range:
+    low: 0
+    high: 100
+  cut_points:
+    - limit: 8
+      label: "No disability"
+      color: "rgba(192, 255, 192, 0.4)" # green
+    - limit: 28
+      label: "Mild disability"
+      color: "rgba(255, 255, 192, 0.4)" # yellow
+    - limit: 48
+      label: "Moderate disability"
+      color: "rgba(255, 255, 192, 0.4)" # yellow
+    - limit: 64
+      label: "Severe disability"
+      color: "rgba(255, 192, 192, 0.4)" # red
+    - limit: null
+      label: "Complete disability"
+      color: "rgba(255, 192, 192, 0.4)" # red
+
+
+# Total interval score [KOOSJR]
+"82332-8":
+  range:
+    low: 0
+    high: 100
+  cut_points: [] # No cut points available
+
+
+# Total interval score [HOOSJR]
+"82323-7":
+  range:
+    low: 0
+    high: 100
+  cut_points: [] # No cut points available
