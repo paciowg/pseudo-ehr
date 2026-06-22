@@ -34,7 +34,7 @@
   us_core_category: cognitive-status
 44253-3:
   pfe_domain_icf_code:
-    - b16710
+    - b167
   us_core_category: cognitive-status
 44252-5:
   pfe_domain_icf_code:
@@ -42,16 +42,15 @@
   us_core_category: cognitive-status
 44258-2:
   pfe_domain_icf_code:
-    - b1800
-    - b126
+    - b180
   us_core_category: cognitive-status
 44251-7:
   pfe_domain_icf_code:
-    - b1302
+    - b130
   us_core_category: cognitive-status
 44254-1:
   pfe_domain_icf_code:
-    - b1300
+    - b130
   us_core_category: cognitive-status
 44259-0:
   pfe_domain_icf_code:
@@ -59,12 +58,11 @@
   us_core_category: cognitive-status
 44255-8:
   pfe_domain_icf_code:
-    - b126
     - b152
   us_core_category: cognitive-status
 44250-9:
   pfe_domain_icf_code:
-    - b1301
+    - b130
   us_core_category: cognitive-status
 '14371':
   pfe_domain_icf_code:
@@ -73,7 +71,6 @@
   us_core_category: cognitive-status
 '44260-8':
   pfe_domain_icf_code:
-    - b152
     - b160
   us_core_category: cognitive-status
 '14372':
@@ -151,7 +148,7 @@
   us_core_category: cognitive-status
 '44261-6':
   pfe_domain_icf_code:
-    - b152
+    - b1
   us_core_category: cognitive-status
 '44249-1':
   pfe_domain_icf_code:
