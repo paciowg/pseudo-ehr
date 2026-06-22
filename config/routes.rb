@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     collection do
       get :show_file
       post :push_data
+      post :delete_data
     end
   end
   namespace :api do
