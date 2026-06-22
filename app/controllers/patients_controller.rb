@@ -1,7 +1,7 @@
 # app/controllers/patients_controller.rb
 class PatientsController < ApplicationController
   before_action :require_server
-  before_action :delete_current_patient_id, except: %i[sync_patient_record update]
+  before_action :delete_current_patient_id, except: %i[sync_patient_record update destroy]
 
   def index
     @pagy, @patients = pagy_array(get_patients, items: 10)
@@ -126,6 +126,25 @@ class PatientsController < ApplicationController
         ]
       end
     end
+  end
+
+  def destroy
+    patient_id = params[:id]
+    patient = get_patient(patient_id)
+
+    delete_patient_record(patient_id)
+    clear_models_data_for_patient(patient_id)
+    PatientRecordCache.clear_patient_record(patient_id)
+    Patient.remove(patient_id)
+    session.delete(:patient_id)
+
+    flash[:success] = "Patient #{patient&.name || patient_id} and all related data were deleted."
+    redirect_to patients_path
+  rescue StandardError => e
+    Rails.logger.error("Error deleting patient #{patient_id}: #{e.message}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    flash[:danger] = "Error deleting patient record: #{e.message}"
+    redirect_to patient_path(patient_id)
   end
 
   private
