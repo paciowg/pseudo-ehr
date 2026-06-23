@@ -51,6 +51,7 @@ class SampleDataController < ApplicationController
     if fhir_server_url.present? && release_tag.present?
       task_status = TaskStatus.create_for_task('FHIR Data Delete')
       FhirDataDeleteJob.perform_later(release_tag, fhir_server_url, task_status.id)
+      clear_all_data
       redirect_to sample_data_path(release_tag: release_tag, task_id: task_status.task_id)
     else
       flash[:alert] = 'Please select a FHIR server and a release version.'
