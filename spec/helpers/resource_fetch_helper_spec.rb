@@ -107,6 +107,61 @@ RSpec.describe ResourceFetchHelper, type: :helper do
       result = helper.fetch_single_patient_record('123')
       expect(result.first).to be_a(FHIR::Patient)
     end
+
+    it 'removes extensions with blank URLs before parsing patient records' do
+      params = '_count=1000&_include=*&_include:iterate=*&_maxresults=2000&_revinclude=*&_sort=-_lastUpdated'
+      url = "#{fhir_server.base_url}/Patient/123/$everything?#{params}"
+      body = {
+        resourceType: 'Bundle',
+        type: 'searchset',
+        entry: [
+          { resource: { resourceType: 'Patient', id: '123' } },
+          {
+            resource: {
+              resourceType: 'Composition',
+              id: 'composition-123',
+              status: 'final',
+              type: { coding: [{ system: 'http://loinc.org', code: '34133-9' }] },
+              date: '2026-06-23T00:00:00Z',
+              title: 'Test Composition',
+              section: [
+                {
+                  text: {
+                    status: 'generated',
+                    div: '<div xmlns="http://www.w3.org/1999/xhtml">Test</div>',
+                    extension: [
+                      {
+                        url: nil,
+                        extension: [
+                          {
+                            url: 'http://hl7.org/fhir/StructureDefinition/textLink',
+                            extension: [
+                              { url: 'text', valueString: 'Test' },
+                              { url: 'reference', valueReference: { reference: 'Observation/obs-123' } }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+
+      stub_request(:get, url)
+        .to_return(
+          status: 200,
+          body: body.to_json,
+          headers: { 'Content-Type' => 'application/fhir+json' }
+        )
+
+      result = helper.fetch_single_patient_record('123')
+
+      expect(result.map(&:resourceType)).to include('Patient', 'Composition')
+    end
   end
 
   describe '#fetch_resource_with_defaults' do
@@ -137,6 +192,62 @@ RSpec.describe ResourceFetchHelper, type: :helper do
 
       document_reference = helper.fetch_document_reference('doc123')
       expect(document_reference).to be_a(FHIR::DocumentReference)
+    end
+  end
+
+  describe '#fetch_bundle' do
+    it 'removes extensions with blank URLs before parsing a directly fetched bundle' do
+      body = {
+        resourceType: 'Bundle',
+        id: 'bundle-123',
+        type: 'collection',
+        entry: [
+          {
+            resource: {
+              resourceType: 'Composition',
+              id: 'composition-123',
+              status: 'final',
+              type: { coding: [{ system: 'http://loinc.org', code: '42348-3' }] },
+              date: '2026-06-23T00:00:00Z',
+              title: 'ADI Composition',
+              section: [
+                {
+                  text: {
+                    status: 'generated',
+                    div: '<div xmlns="http://www.w3.org/1999/xhtml">ADI</div>',
+                    extension: [
+                      {
+                        url: nil,
+                        extension: [
+                          {
+                            url: 'http://hl7.org/fhir/StructureDefinition/textLink',
+                            extension: [
+                              { url: 'text', valueString: 'ADI' },
+                              { url: 'reference', valueReference: { reference: 'Observation/obs-123' } }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+
+      stub_request(:get, "#{fhir_server.base_url}/Bundle/bundle-123")
+        .to_return(
+          status: 200,
+          body: body.to_json,
+          headers: { 'Content-Type' => 'application/fhir+json' }
+        )
+
+      bundle = helper.fetch_bundle('bundle-123')
+
+      expect(bundle).to be_a(FHIR::Bundle)
+      expect(bundle.entry.map(&:resource).map(&:resourceType)).to include('Composition')
     end
   end
 
