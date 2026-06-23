@@ -168,6 +168,12 @@ This application can be deployed using Docker Compose for a simple setup.
      ./bin/dev
    ```
 
+   For a local macOS setup that also starts PostgreSQL and prepares the database:
+
+   ```bash
+     scripts/start_pseudo_ehr.sh
+   ```
+
    Open your browser and navigate to `http://localhost:3000`.
 
 2. **Connecting to a FHIR Server**
@@ -388,6 +394,12 @@ This application uses RSpec for testing. You can find tests in the `spec/` folde
 
   ```bash
   ./bin/dev
+  ```
+
+* **Start the app and local dependencies**:
+
+  ```bash
+  scripts/start_pseudo_ehr.sh
   ```
 
 * **Run RSpec tests**:

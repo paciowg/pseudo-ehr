@@ -43,9 +43,11 @@ RSpec.describe FhirPushService, type: :service do
     end
 
     it 'updates task status with progress and completion in order' do
-      # Order: start, push practitioner, push patient, complete
+      # Order: start, fetch/push practitioner, fetch/push patient, complete
       expect(task_status).to receive(:update_status).with('running', a_string_starting_with('[0%] Starting data push...'))
+      expect(task_status).to receive(:update_status).with('running', a_string_matching(%r{\[0%\].*Fetching practitioner1}))
       expect(task_status).to receive(:update_status).with('running', a_string_matching(%r{\[0%\].*Practitioner/practitioner1}))
+      expect(task_status).to receive(:update_status).with('running', a_string_matching(%r{\[50%\].*Fetching patient1}))
       expect(task_status).to receive(:update_status).with('running', a_string_matching(%r{\[50%\].*Patient/patient1}))
       expect(task_status).to receive(:update_status).with('completed', '[100%] Push completed successfully. 2 resources pushed.')
 

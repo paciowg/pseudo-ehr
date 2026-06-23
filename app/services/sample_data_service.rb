@@ -1,13 +1,12 @@
 require 'net/http'
 require 'json'
+require 'openssl'
 
 class SampleDataService
   class << self
     def manifest
       Rails.cache.fetch('sample_data_manifest', expires_in: 1.minute) do
-        uri = URI(Rails.configuration.x.sample_data.manifest_url)
-        response = Net::HTTP.get(uri)
-        JSON.parse(response)
+        JSON.parse(fetch_uri(Rails.configuration.x.sample_data.manifest_url))
       end
     rescue StandardError => e
       Rails.logger.error "Failed to fetch or parse manifest.json: #{e.message}"
@@ -39,13 +38,33 @@ class SampleDataService
 
     def fetch_resource(url)
       Rails.cache.fetch("sample_resource_content_#{url}", expires_in: 1.minute) do
-        uri = URI(url)
-        response = Net::HTTP.get(uri)
-        JSON.pretty_generate(JSON.parse(response))
+        JSON.pretty_generate(JSON.parse(fetch_uri(url)))
       end
     rescue StandardError => e
       Rails.logger.error "Failed to fetch or parse resource from #{url}: #{e.message}"
       { error: "Failed to fetch resource: #{e.message}" }.to_json
+    end
+
+    private
+
+    def fetch_uri(url)
+      uri = URI(url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = uri.scheme == 'https'
+      http.cert_store = certificate_store if http.use_ssl?
+
+      response = http.get(uri.request_uri)
+      response.value
+      response.body
+    end
+
+    def certificate_store
+      store = OpenSSL::X509::Store.new
+      store.set_default_paths
+      # Homebrew OpenSSL can inherit CRL-check flags that require local CRLs for
+      # public web certificates. Keep normal CA verification, but do not require CRLs.
+      store.flags = 0 if store.respond_to?(:flags=)
+      store
     end
   end
 end

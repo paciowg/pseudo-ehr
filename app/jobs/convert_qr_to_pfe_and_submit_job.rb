@@ -28,15 +28,30 @@ class ConvertQrToPfeAndSubmitJob < ApplicationJob
 
       task.mark_completed("Task #{task_id}: Conversion completed successfully.")
     else
-      body = begin
-        JSON.parse(response.body)
-      rescue StandardError
-        {}
-      end
-      task.mark_failed("Task #{task_id}: Conversion failed: #{body['error'] || response.status}")
+      task.mark_failed("Task #{task_id}: Conversion failed: #{api_error_message(response)}")
     end
   rescue StandardError => e
     task&.mark_failed("Unexpected error: #{e.message}")
     Rails.logger.error("[QR Conversion Job] #{e.message}")
+  end
+
+  private
+
+  def api_error_message(response)
+    body = JSON.parse(response.body)
+    body['error'].presence ||
+      operation_outcome_message(body['resource']) ||
+      body['code'].presence ||
+      response.status
+  rescue StandardError
+    response.status
+  end
+
+  def operation_outcome_message(resource)
+    return unless resource.is_a?(Hash) && resource['resourceType'] == 'OperationOutcome'
+
+    Array(resource['issue']).filter_map do |issue|
+      issue['diagnostics'].presence || issue.dig('details', 'text').presence
+    end.join('; ').presence
   end
 end
