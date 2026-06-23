@@ -9,15 +9,15 @@ class FhirDataDeleteJob < ApplicationJob
     end
 
     begin
-      task_status.mark_running("Fetching resource references for release: #{release_tag}")
-      resource_references = SampleDataService.version_resource_references(release_tag, fhir_server_url)
+      task_status.mark_running("Fetching resource URLs for release: #{release_tag}")
+      resource_urls = SampleDataService.version_resource_urls(release_tag)
 
-      if resource_references.empty?
+      if resource_urls.empty?
         task_status.mark_failed("No resources found for release: #{release_tag}")
         return
       end
 
-      FhirDeleteService.perform(resource_references, fhir_server_url, task_status)
+      FhirDeleteService.perform(resource_urls, fhir_server_url, task_status)
     rescue StandardError => e
       task_status.mark_failed("An unexpected error occurred: #{e.message}")
       Rails.logger.error "FhirDataDeleteJob failed for task #{task_status.id}: #{e.message}\n#{e.backtrace.join("\n")}"

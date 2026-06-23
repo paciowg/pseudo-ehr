@@ -8,21 +8,21 @@ class FhirDeleteService
   RESOURCE_ORDER = FhirPushService::RESOURCE_ORDER.freeze
   HTTP_TIMEOUT = 30 # seconds
 
-  def self.perform(resource_references, fhir_server_url, task_status)
-    new(resource_references, fhir_server_url, task_status).perform
+  def self.perform(resource_urls, fhir_server_url, task_status)
+    new(resource_urls, fhir_server_url, task_status).perform
   end
 
-  def initialize(resource_references, fhir_server_url, task_status)
-    @resource_references = deduplicate_references(resource_references)
+  def initialize(resource_urls, fhir_server_url, task_status)
+    @resource_urls = resource_urls.uniq
     @fhir_server_url = fhir_server_url.chomp('/')
     @task_status = task_status
-    @total_resources = @resource_references.size
+    @total_resources = @resource_urls.size
   end
 
   def perform
-    sorted_references = sort_resource_references_for_delete(@resource_references)
+    sorted_urls = sort_resource_urls_for_delete(@resource_urls)
 
-    resources_to_process = sorted_references.dup
+    resources_to_process = sorted_urls.dup
     successful_resources = Set.new
     failed_resources = []
     retry_counts = Hash.new(0)
@@ -30,48 +30,51 @@ class FhirDeleteService
     update_task_status('Starting data delete...', 0, TaskStatus::RUNNING)
 
     until resources_to_process.empty?
-      current_reference = resources_to_process.shift
-      reference_key = resource_key(current_reference)
-      next if successful_resources.include?(reference_key)
-      next if retry_counts[reference_key] >= MAX_RETRIES
+      current_url = resources_to_process.shift
+      next if successful_resources.include?(current_url)
+      next if retry_counts[current_url] >= MAX_RETRIES
 
-      retry_counts[reference_key] += 1
-      attempt_num = retry_counts[reference_key]
-
-      resource_type = current_reference[:resource_type]
-      resource_id = current_reference[:resource_id]
-
-      if resource_type.blank? || resource_id.blank?
-        handle_failed_delete(
-          current_reference,
-          'Invalid resource reference format',
-          retry_counts,
-          resources_to_process,
-          failed_resources,
-          force_fail: true
-        )
-        next
-      end
-
-      message = "Deleting #{reference_key} with cascade... (Attempt #{attempt_num}/#{MAX_RETRIES})"
-      update_task_status(message, successful_resources.size)
-
-      uri = URI("#{@fhir_server_url}/#{resource_type}/#{resource_id}?_cascade=delete")
-      request = Net::HTTP::Delete.new(uri)
+      retry_counts[current_url] += 1
+      attempt_num = retry_counts[current_url]
 
       begin
+        resource_json = fetch_resource(current_url)
+        resource = JSON.parse(resource_json)
+
+        unless resource.is_a?(Hash) && resource['resourceType'].present? && resource['id'].present?
+          handle_failed_delete(
+            current_url,
+            'Invalid FHIR resource format',
+            retry_counts,
+            resources_to_process,
+            failed_resources,
+            force_fail: true
+          )
+          next
+        end
+
+        resource_type = resource['resourceType']
+        resource_id = resource['id']
+        resource_key = "#{resource_type}/#{resource_id}"
+
+        message = "Deleting #{resource_key} with cascade... (Attempt #{attempt_num}/#{MAX_RETRIES})"
+        update_task_status(message, successful_resources.size)
+
+        uri = URI("#{@fhir_server_url}/#{resource_type}/#{resource_id}?_cascade=delete")
+        request = Net::HTTP::Delete.new(uri)
+
         response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https', read_timeout: HTTP_TIMEOUT) do |http|
           http.request(request)
         end
 
         if response.is_a?(Net::HTTPSuccess) || response.is_a?(Net::HTTPRedirection) || response.code.to_i == 404
-          successful_resources.add(reference_key)
+          successful_resources.add(current_url)
         else
           error_message = parse_error_response(response)
-          handle_failed_delete(current_reference, error_message, retry_counts, resources_to_process, failed_resources)
+          handle_failed_delete(current_url, error_message, retry_counts, resources_to_process, failed_resources, resource_key: resource_key)
         end
       rescue StandardError => e
-        handle_failed_delete(current_reference, e.message, retry_counts, resources_to_process, failed_resources)
+        handle_failed_delete(current_url, e.message, retry_counts, resources_to_process, failed_resources)
       end
     end
 
@@ -80,28 +83,23 @@ class FhirDeleteService
 
   private
 
-  def deduplicate_references(resource_references)
-    resource_references.uniq { |reference| resource_key(reference) }
-  end
-
-  def sort_resource_references_for_delete(references)
-    references.sort_by do |reference|
-      resource_type = reference[:resource_type]
-      index = RESOURCE_ORDER.find_index(resource_type)
+  def sort_resource_urls_for_delete(urls)
+    urls.sort_by do |url|
+      index = RESOURCE_ORDER.find_index { |resource_type| url.include?(resource_type) }
       index.nil? ? -1 : -index
     end
   end
 
-  def resource_key(reference)
-    "#{reference[:resource_type]}/#{reference[:resource_id]}"
+  def fetch_resource(url)
+    uri = URI(url)
+    Net::HTTP.get(uri)
   end
 
-  def handle_failed_delete(reference, error_message, retry_counts, queue, failed_list, force_fail: false)
-    key = resource_key(reference)
-    if force_fail || retry_counts[key] >= MAX_RETRIES
-      failed_list << { reference: reference, error: error_message }
+  def handle_failed_delete(url, error_message, retry_counts, queue, failed_list, force_fail: false, resource_key: nil)
+    if force_fail || retry_counts[url] >= MAX_RETRIES
+      failed_list << { url: url, resource_key: resource_key, error: error_message }
     else
-      queue.push(reference)
+      queue.push(url)
     end
   end
 
@@ -118,7 +116,7 @@ class FhirDeleteService
       update_task_status(message, success_count, TaskStatus::COMPLETED)
     else
       error_summary = failed_resources.map do |failure|
-        "#{resource_key(failure[:reference])}: #{failure[:error]}"
+        "#{failure[:resource_key] || File.basename(failure[:url])}: #{failure[:error]}"
       end.join("\n")
       message = "Delete completed with #{failed_resources.size} failures:\n#{error_summary}"
       update_task_status(message, success_count, TaskStatus::FAILED)
