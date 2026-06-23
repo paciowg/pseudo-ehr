@@ -1,6 +1,7 @@
 require 'net/http'
 require 'uri'
 require 'json'
+require 'openssl'
 
 # TODO: If auth needed refactor this to use client from fhir_client_service.rb
 
@@ -43,6 +44,8 @@ class FhirPushService
       attempt_num = retry_counts[current_url]
 
       begin
+        update_task_status("Fetching #{File.basename(URI.parse(current_url).path)}... (Attempt #{attempt_num}/#{MAX_RETRIES})",
+                           successful_resources.size)
         resource_json = fetch_resource(current_url)
         resource = JSON.parse(resource_json)
         rewrite_questionnaire_references!(resource)
@@ -93,7 +96,24 @@ class FhirPushService
 
   def fetch_resource(url)
     uri = URI(url)
-    Net::HTTP.get(uri)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = uri.scheme == 'https'
+    http.open_timeout = HTTP_TIMEOUT
+    http.read_timeout = HTTP_TIMEOUT
+    http.cert_store = certificate_store if http.use_ssl?
+
+    response = http.get(uri.request_uri)
+    response.value
+    response.body
+  end
+
+  def certificate_store
+    store = OpenSSL::X509::Store.new
+    store.set_default_paths
+    # Homebrew OpenSSL can inherit CRL-check flags that require local CRLs for
+    # public web certificates. Keep normal CA verification, but do not require CRLs.
+    store.flags = 0 if store.respond_to?(:flags=)
+    store
   end
 
   def rewrite_questionnaire_references!(resource)
