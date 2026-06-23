@@ -147,6 +147,43 @@ RSpec.describe ConvertQrToPfeAndSubmitJob, type: :job do
       end
     end
 
+    context 'when conversion fails with an OperationOutcome' do
+      let(:failed_response) do
+        instance_double(
+          Faraday::Response,
+          success?: false,
+          status: 422,
+          body: {
+            'code' => 400,
+            'resource' => {
+              'resourceType' => 'OperationOutcome',
+              'issue' => [
+                {
+                  'severity' => 'error',
+                  'code' => 'processing',
+                  'diagnostics' => 'HAPI-0450: Failed to parse request body as JSON resource'
+                }
+              ]
+            }
+          }.to_json
+        )
+      end
+
+      before do
+        allow(Faraday).to receive(:post).and_yield(req = double).and_return(failed_response)
+        allow(req).to receive(:headers).and_return({})
+        allow(req).to receive(:body=)
+        allow(PatientRecordCache).to receive(:update_patient_record)
+      end
+
+      it 'marks the task as failed with the OperationOutcome diagnostics' do
+        qr_conversion_job.perform(qr_hash, fhir_server_url, task_id, patient_id)
+
+        expect(task_status).to have_received(:mark_failed)
+          .with("Task #{task_id}: Conversion failed: HAPI-0450: Failed to parse request body as JSON resource")
+      end
+    end
+
     context 'when an unexpected exception occurs' do
       before do
         allow(Faraday).to receive(:post).and_raise(StandardError.new('Connection error'))
