@@ -1,3 +1,5 @@
+require 'set'
+
 class TransitionOfCareBundleService
   def self.perform(fhir_server:, composition_id:)
     new(fhir_server, composition_id).perform
@@ -8,6 +10,7 @@ class TransitionOfCareBundleService
     @composition_id = composition_id
     @resources_map = {}
     @uuid_map = {}
+    @processed_refs = Set.new
   end
 
   def perform
@@ -26,9 +29,8 @@ class TransitionOfCareBundleService
     # Identify Patient reference (expected to be the second entry)
     patient_ref = composition.subject&.reference
 
-    # Collect all resources referenced by the composition
-    refs = extract_references(composition)
-    refs.each do |ref|
+    # Collect all resources referenced by the composition, recursively
+    extract_references(composition).each do |ref|
       collect_resource(ref)
     end
 
@@ -111,6 +113,8 @@ class TransitionOfCareBundleService
     list_refs = list_resources.map { |r| "#{r.resourceType}/#{r.id}" }
 
     composition.section.each do |section|
+      next unless section.entry
+
       # Identify entries in this section that point to any of our Lists
       entries_to_replace = section.entry.select { |e| list_refs.include?(e.reference) }
 
@@ -149,11 +153,14 @@ class TransitionOfCareBundleService
   end
 
   def collect_resource(ref_string)
-    # Avoid re-processing
-    return if @uuid_map[ref_string]
+    return unless resolvable_reference?(ref_string)
+    return if @processed_refs.include?(ref_string)
+
+    @processed_refs << ref_string
 
     # Extract type and ID from reference (e.g. "Patient/123" -> "Patient" and "123")
     type, id = ref_string.split('/', 2)
+    return if type.blank? || id.blank?
 
     # Retrieve from cache
     wrapper = PatientRecordCache.lookup(type, id)
@@ -170,28 +177,42 @@ class TransitionOfCareBundleService
 
     # Also map the requested ref_string to this UUID
     @uuid_map[ref_string] = uuid if ref_string != key
+
+    # Recursively collect references from the newly discovered resource
+    extract_references(resource).each do |nested_ref|
+      collect_resource(nested_ref)
+    end
   end
 
   def extract_references(resource)
     refs = []
     scan_for_refs(resource.to_hash, refs)
-    refs
+    refs.uniq
   end
 
-  def scan_for_refs(hash, refs)
-    return unless hash.is_a?(Hash)
+  def scan_for_refs(node, refs)
+    case node
+    when Hash
+      ref = node['reference']
+      refs << ref if resolvable_reference?(ref)
 
-    if hash['reference'].is_a?(String)
-      refs << hash['reference']
-    end
-
-    hash.each_value do |value|
-      if value.is_a?(Hash)
+      node.each_value do |value|
         scan_for_refs(value, refs)
-      elsif value.is_a?(Array)
-        value.each { |item| scan_for_refs(item, refs) if item.is_a?(Hash) }
+      end
+    when Array
+      node.each do |item|
+        scan_for_refs(item, refs)
       end
     end
+  end
+
+  def resolvable_reference?(ref)
+    return false if ref.blank?
+    return false if ref.start_with?('#')
+    return false if ref.start_with?('urn:uuid:')
+    return false if ref.include?('://')
+
+    ref.include?('/')
   end
 
   def build_entry(resource)
