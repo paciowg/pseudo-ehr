@@ -13,14 +13,14 @@ class TransitionOfCaresController < ApplicationController
   # POST /patients/:patient_id/transition_of_cares
   def create
     begin
-      # Create a new TOC Composition
-      composition_data = build_toc_composition(params[:toc])
+      composition_data = TransitionOfCareCompositionService.build(
+        patient_id: patient_id,
+        toc_params: params[:toc]
+      )
 
-      # Send the composition to the FHIR server
       fhir_composition = create_resource(composition_data)
 
       if fhir_composition.present?
-        # Update the cache with the new composition
         PatientRecordCache.add_resource_to_patient_record(patient_id, fhir_composition)
         entries = retrieve_current_patient_resources
         Composition.new(fhir_composition, entries)
@@ -49,44 +49,15 @@ class TransitionOfCaresController < ApplicationController
         return
       end
 
-      fhir_composition.title = params[:toc][:title]
-      fhir_composition.date = Time.now.iso8601
+      updated_composition = TransitionOfCareCompositionService.rebuild(
+        composition: fhir_composition,
+        patient_id: patient_id,
+        toc_params: params[:toc]
+      )
 
-      # Clear existing sections and add updated ones
-      fhir_composition.section = []
-
-      # Add the selected sections
-      params[:toc][:sections].each do |section_params|
-        next unless section_params[:include] == '1'
-
-        # TODO: Add section.text (narrative) to meet TOC IG 1..1 requirement
-        section = FHIR::Composition::Section.new(
-          title: section_params[:title],
-          code: {
-            coding: [
-              {
-                system: section_params[:code_system],
-                code: section_params[:code],
-                display: section_params[:display]
-              }
-            ]
-          }
-        )
-
-        # Add entries to the section if provided
-        if section_params[:entries].present?
-          section.entry = section_params[:entries].map do |entry|
-            FHIR::Reference.new(reference: entry)
-          end
-        end
-
-        fhir_composition.section << section
-      end
-
-      resource = update_resource(fhir_composition)
+      resource = update_resource(updated_composition)
 
       if resource.present?
-        # Update the cache with the updated composition
         PatientRecordCache.update_patient_record(patient_id, [resource])
         entries = retrieve_current_patient_resources
         Composition.new(resource, entries)
@@ -175,77 +146,6 @@ class TransitionOfCaresController < ApplicationController
         end
       end
     end.reverse
-  end
-
-  def build_toc_composition(toc_params)
-    # Create a new FHIR Composition resource
-    composition = FHIR::Composition.new(
-      status: 'final',
-      type: {
-        coding: [
-          {
-            system: 'http://loinc.org',
-            code: '18842-5',
-            display: 'Discharge summary'
-          }
-        ]
-      },
-      category: [
-        {
-          coding: [
-            {
-              system: 'http://loinc.org',
-              code: '18761-7',
-              display: 'Transfer Summary Note'
-            }
-          ]
-        }
-      ],
-      subject: {
-        reference: "Patient/#{patient_id}"
-      },
-      date: Time.now.iso8601,
-      title: toc_params[:title],
-      author: [
-        {
-          reference: toc_params[:author]
-        }
-      ],
-      custodian: {
-        reference: toc_params[:custodian]
-      }
-    )
-
-    # Add sections to the composition
-    composition.section = []
-
-    # Add the selected sections
-    toc_params[:sections].each do |section_params|
-      next unless section_params[:include] == '1' && section_params[:entries].present?
-
-      # TODO: Add section.text (narrative) to meet TOC IG 1..1 requirement
-      section = FHIR::Composition::Section.new(
-        title: section_params[:title],
-        code: {
-          coding: [
-            {
-              system: section_params[:code_system],
-              code: section_params[:code],
-              display: section_params[:display]
-            }
-          ]
-        }
-      )
-
-      # Add entries to the section if provided
-      section.entry = section_params[:entries].map do |entry|
-        FHIR::Reference.new(reference: entry)
-      end
-
-      composition.section << section
-    end
-
-    composition
   end
 
   def fetch_tocs
