@@ -1,7 +1,7 @@
 class PfeObservationBuilder
   US_CORE_CATEGORY_URL = 'http://hl7.org/fhir/us/core/CodeSystem/us-core-category'.freeze
-  SURVEY_CATEGORY_URL = 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-survey-category-cs'.freeze
-  PFE_DOMAIN_CATEGORY_URL = 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-category-cs'.freeze
+  SURVEY_CATEGORY_URL = 'http://terminology.hl7.org/CodeSystem/observation-category'.freeze
+  PFE_DOMAIN_CATEGORY_URL = 'http://hl7.org/fhir/sid/icf'.freeze
 
   EXT_EVENT_LOCATION = 'http://hl7.org/fhir/StructureDefinition/event-location'.freeze
   EXT_DEVICE_USE = 'http://hl7.org/fhir/us/pacio-pfe/StructureDefinition/device-patient-used'.freeze

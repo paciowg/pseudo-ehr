@@ -1,5 +1,7 @@
 # Observation Model
 class Observation < Resource
+  ICF_CATEGORY_URL = 'http://hl7.org/fhir/sid/icf'.freeze
+
   attr_reader :id, :status, :category, :domain, :code, :effective_date_time,
               :performer, :derived_from, :measurement, :measurement_interpretation,
               :location, :organization, :members, :components, :fhir_resource, :patient_id,
@@ -117,7 +119,7 @@ class Observation < Resource
 
   def retrieve_category
     category_codes = categories.reject do |cat|
-      cat[:system] == 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-category-cs'
+      cat[:system] == ICF_CATEGORY_URL
     end.pluck(:code).sort
 
     formatted_categories = category_codes.map do |code|
@@ -128,7 +130,7 @@ class Observation < Resource
   end
 
   def retrieve_domain
-    domains = categories.select { |cat| cat[:system] == 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-category-cs' }
+    domains = categories.select { |cat| cat[:system] == ICF_CATEGORY_URL }
     domains.map { |d| d[:display] ? "#{d[:display]} (#{d[:code]})" : d[:code] }.join(', ')
   end
 
