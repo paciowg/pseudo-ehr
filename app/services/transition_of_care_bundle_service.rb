@@ -34,9 +34,9 @@ class TransitionOfCareBundleService
       collect_resource(ref)
     end
 
-    # Handle Medication Lists: Aggregate multiple Lists into a single SMP Bundle
-    # and update the Composition to reference that Bundle instead.
-    handle_medication_lists(composition)
+    # If we want to aggregate multiple Lists into a single SMP Bundle and update the Composition to reference
+    # that Bundle instead; the TOC IG does not currently support SMP Bundles so we don't do this
+    # bundle_medication_lists(composition)
 
     # Build Entries
     entries = []
@@ -55,10 +55,6 @@ class TransitionOfCareBundleService
       # Skip if it's the composition or the patient we already added
       next if resource.id == composition.id && resource.resourceType == 'Composition'
       next if patient_resource && resource.id == patient_resource.id && resource.resourceType == 'Patient'
-
-      # Skip List resources as they are now consolidated into the SMP Bundle created in handle_medication_lists
-      next if resource.resourceType == 'List'
-
       entries << build_entry(resource)
     end
 
@@ -92,7 +88,7 @@ class TransitionOfCareBundleService
     wrapper.respond_to?(:fhir_resource) ? wrapper.fhir_resource : wrapper
   end
 
-  def handle_medication_lists(composition)
+  def bundle_medication_lists(composition)
     # Identify all collected List resources (Medication Lists)
     list_resources = @resources_map.values.select { |r| r.resourceType == 'List' }
     return if list_resources.empty?
