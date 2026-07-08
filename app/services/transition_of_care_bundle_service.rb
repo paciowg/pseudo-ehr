@@ -204,6 +204,7 @@ class TransitionOfCareBundleService
 
   def resolvable_reference?(ref)
     return false if ref.blank?
+    return false if ref.is_a?(Hash) # Handle cases where there is a field called reference
     return false if ref.start_with?('#')
     return false if ref.start_with?('urn:uuid:')
     return false if ref.include?('://')
