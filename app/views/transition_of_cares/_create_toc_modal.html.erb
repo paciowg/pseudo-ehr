@@ -261,7 +261,7 @@
                 <div class="mt-2">
                   <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
                   <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
-                    <% cached_resources_for_select('Observation').reject { |o| o.category&.any? { |c| c.coding&.any? { |cd| ['vital-signs', 'functional-status'].include?(cd.code) } } }.each do |o| %>
+                    <% cached_resources_for_select('Observation').reject { |o| o.category&.any? { |c| c.coding&.any? { |cd| ['vital-signs', 'functional-status', 'cognitive-status'].include?(cd.code) } } }.each do |o| %>
                       <div class="flex items-start mb-1">
                         <div class="flex items-center h-5">
                           <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
@@ -446,6 +446,37 @@
                           <label class="ml-2 text-xs font-medium text-gray-900">
                             <%= o.code&.text || "Observation/#{o.id}" %>
                           </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Behavioral Health Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_behavioral_health", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Behavioral Health" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "behavioral_health_summary" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://hl7.org/fhir/us/pacio-toc/CodeSystem/toc-temp-cs" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Behavioral Health Summary" %>
+                  </div>
+                  <label for="section_behavioral_health" class="ml-2 text-sm font-medium text-gray-900">Behavioral Health</label>
+                  <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_behavioral_health">All</button>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'cognitive-status' } } }.each do |o| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox observation-behavioral-health-entry", data: { toc_form_target: "entryCheckbox" } %>
+                        </div>
+                        <label class="ml-2 text-xs font-medium text-gray-900">
+                          <%= o.code&.text || "Observation/#{o.id}" %>
+                        </label>
                       </div>
                     <% end %>
                   </div>

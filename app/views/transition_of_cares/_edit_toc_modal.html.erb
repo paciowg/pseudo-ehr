@@ -79,6 +79,14 @@
     code_system: 'http://loinc.org',
     display: 'Functional status',
     legacy_codes: []
+  },
+  {
+    key: 'behavioral_health',
+    title: 'Behavioral Health',
+    code: 'behavioral_health_summary',
+    code_system: 'http://hl7.org/fhir/us/pacio-toc/CodeSystem/toc-temp-cs',
+    display: 'Behavioral Health Summary',
+    legacy_codes: []
   }
 ] %>
 
@@ -460,7 +468,7 @@
                                                               .map { |obj| obj[:resource].fhir_resource.id }
                           end
                         %>
-                        <% cached_resources_for_select('Observation').reject { |o| o.category&.any? { |c| c.coding&.any? { |cd| ['vital-signs', 'functional-status'].include?(cd.code) } } }.each do |o| %>
+                        <% cached_resources_for_select('Observation').reject { |o| o.category&.any? { |c| c.coding&.any? { |cd| ['vital-signs', 'functional-status', 'cognitive-status'].include?(cd.code) } } }.each do |o| %>
                           <div class="flex items-start mb-1">
                             <div class="flex items-center h-5">
                               <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", results_entries.include?(o.id),
@@ -699,6 +707,47 @@
                     </div>
                   </div>
                 <% end %>
+
+                <% if included_definitions.any? { |definition| definition[:key] == 'behavioral_health' } %>
+                  <% definition = supported_section_definitions.find { |defn| defn[:key] == 'behavioral_health' } %>
+                  <% behavioral_health_section = sections_by_key['behavioral_health'] %>
+                  <% section_title = behavioral_health_section ? behavioral_health_section['title'] : definition[:title] %>
+                  <div class="border border-gray-200 rounded-lg p-4 bg-indigo-50">
+                    <div class="flex items-start">
+                      <div class="flex items-center h-5">
+                        <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_behavioral_health_#{identifier}", checked: true }, "1", "0" %>
+                        <%= form.hidden_field "toc[sections][][title]", value: section_title %>
+                        <%= form.hidden_field "toc[sections][][code]", value: definition[:code] %>
+                        <%= form.hidden_field "toc[sections][][code_system]", value: definition[:code_system] %>
+                        <%= form.hidden_field "toc[sections][][display]", value: definition[:display] %>
+                      </div>
+                      <label for="section_behavioral_health_<%= identifier %>" class="ml-2 text-sm font-medium text-gray-900">Behavioral Health</label>
+                    </div>
+                    <div class="mt-2">
+                      <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                      <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                        <%
+                          behavioral_health_entries = []
+                          if behavioral_health_section && behavioral_health_section['objects'].present?
+                            behavioral_health_entries = behavioral_health_section['objects'].select { |obj| obj[:resource_type] == 'Observation' }
+                                                                                          .map { |obj| obj[:resource].fhir_resource.id }
+                          end
+                        %>
+                        <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'cognitive-status' } } }.each do |o| %>
+                          <div class="flex items-start mb-1">
+                            <div class="flex items-center h-5">
+                              <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", behavioral_health_entries.include?(o.id),
+                                  class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox-#{identifier} observation-behavioral-health-entry-#{identifier}" %>
+                            </div>
+                            <label class="ml-2 text-xs font-medium text-gray-900">
+                              <%= o.code&.text || "Observation/#{o.id}" %>
+                            </label>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
               </div>
 
               <% if not_included_definitions.any? %>
@@ -866,7 +915,7 @@
                       <div class="mt-2">
                         <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
                         <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
-                          <% cached_resources_for_select('Observation').reject { |o| o.category&.any? { |c| c.coding&.any? { |cd| ['vital-signs', 'functional-status'].include?(cd.code) } } }.each do |o| %>
+                          <% cached_resources_for_select('Observation').reject { |o| o.category&.any? { |c| c.coding&.any? { |cd| ['vital-signs', 'functional-status', 'cognitive-status'].include?(cd.code) } } }.each do |o| %>
                             <div class="flex items-start mb-1">
                               <div class="flex items-center h-5">
                                 <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
@@ -1033,6 +1082,38 @@
                                     class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox-#{identifier} observation-functional-entry-#{identifier}" %>
                               </div>
                               <label class="ml-2 text-xs font-medium text-gray-900"><%= o.code&.text || "Observation/#{o.id}" %></label>
+                            </div>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+
+                  <% if not_included_definitions.any? { |definition| definition[:key] == 'behavioral_health' } %>
+                    <% definition = supported_section_definitions.find { |defn| defn[:key] == 'behavioral_health' } %>
+                    <div class="border border-gray-200 rounded-lg p-4">
+                      <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                          <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_behavioral_health_#{identifier}", checked: false }, "1", "0" %>
+                          <%= form.hidden_field "toc[sections][][title]", value: definition[:title] %>
+                          <%= form.hidden_field "toc[sections][][code]", value: definition[:code] %>
+                          <%= form.hidden_field "toc[sections][][code_system]", value: definition[:code_system] %>
+                          <%= form.hidden_field "toc[sections][][display]", value: definition[:display] %>
+                        </div>
+                        <label for="section_behavioral_health_<%= identifier %>" class="ml-2 text-sm font-medium text-gray-900">Behavioral Health</label>
+                      </div>
+                      <div class="mt-2">
+                        <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                        <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                          <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'cognitive-status' } } }.each do |o| %>
+                            <div class="flex items-start mb-1">
+                              <div class="flex items-center h-5">
+                                <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
+                                    class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox-#{identifier} observation-behavioral-health-entry-#{identifier}" %>
+                              </div>
+                              <label class="ml-2 text-xs font-medium text-gray-900">
+                                <%= o.code&.text || "Observation/#{o.id}" %>
+                              </label>
                             </div>
                           <% end %>
                         </div>
