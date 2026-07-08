@@ -460,7 +460,7 @@
                                                               .map { |obj| obj[:resource].fhir_resource.id }
                           end
                         %>
-                        <% cached_resources_for_select('Observation').each do |o| %>
+                        <% cached_resources_for_select('Observation').reject { |o| o.category&.any? { |c| c.coding&.any? { |cd| ['vital-signs', 'functional-status'].include?(cd.code) } } }.each do |o| %>
                           <div class="flex items-start mb-1">
                             <div class="flex items-center h-5">
                               <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", results_entries.include?(o.id),
@@ -866,7 +866,7 @@
                       <div class="mt-2">
                         <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
                         <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
-                          <% cached_resources_for_select('Observation').each do |o| %>
+                          <% cached_resources_for_select('Observation').reject { |o| o.category&.any? { |c| c.coding&.any? { |cd| ['vital-signs', 'functional-status'].include?(cd.code) } } }.each do |o| %>
                             <div class="flex items-start mb-1">
                               <div class="flex items-center h-5">
                                 <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
