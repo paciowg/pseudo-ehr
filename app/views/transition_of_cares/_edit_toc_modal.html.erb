@@ -87,6 +87,14 @@
     code_system: 'http://hl7.org/fhir/us/pacio-toc/CodeSystem/toc-temp-cs',
     display: 'Behavioral Health Summary',
     legacy_codes: []
+  },
+  {
+    key: 'plan_of_care',
+    title: 'Plan of Care',
+    code: '18776-5',
+    code_system: 'http://loinc.org',
+    display: 'Plan of care note',
+    legacy_codes: []
   }
 ] %>
 
@@ -748,6 +756,47 @@
                     </div>
                   </div>
                 <% end %>
+
+                <% if included_definitions.any? { |definition| definition[:key] == 'plan_of_care' } %>
+                  <% definition = supported_section_definitions.find { |defn| defn[:key] == 'plan_of_care' } %>
+                  <% plan_of_care_section = sections_by_key['plan_of_care'] %>
+                  <% section_title = plan_of_care_section ? plan_of_care_section['title'] : definition[:title] %>
+                  <div class="border border-gray-200 rounded-lg p-4 bg-indigo-50">
+                    <div class="flex items-start">
+                      <div class="flex items-center h-5">
+                        <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_plan_of_care_#{identifier}", checked: true }, "1", "0" %>
+                        <%= form.hidden_field "toc[sections][][title]", value: section_title %>
+                        <%= form.hidden_field "toc[sections][][code]", value: definition[:code] %>
+                        <%= form.hidden_field "toc[sections][][code_system]", value: definition[:code_system] %>
+                        <%= form.hidden_field "toc[sections][][display]", value: definition[:display] %>
+                      </div>
+                      <label for="section_plan_of_care_<%= identifier %>" class="ml-2 text-sm font-medium text-gray-900">Plan of Care</label>
+                    </div>
+                    <div class="mt-2">
+                      <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                      <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                        <%
+                          plan_of_care_entries = []
+                          if plan_of_care_section && plan_of_care_section['objects'].present?
+                            plan_of_care_entries = plan_of_care_section['objects'].select { |obj| obj[:resource_type] == 'CarePlan' }
+                                                                          .map { |obj| obj[:resource].fhir_resource.id }
+                          end
+                        %>
+                        <% cached_resources_for_select('CarePlan').each do |care_plan| %>
+                          <div class="flex items-start mb-1">
+                            <div class="flex items-center h-5">
+                              <%= check_box_tag "toc[sections][][entries][]", "CarePlan/#{care_plan.id}", plan_of_care_entries.include?(care_plan.id),
+                                  class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox-#{identifier} care-plan-entry-#{identifier}" %>
+                            </div>
+                            <label class="ml-2 text-xs font-medium text-gray-900">
+                              <%= care_plan.title || care_plan.description || "CarePlan/#{care_plan.id}" %>
+                            </label>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
               </div>
 
               <% if not_included_definitions.any? %>
@@ -1113,6 +1162,38 @@
                               </div>
                               <label class="ml-2 text-xs font-medium text-gray-900">
                                 <%= o.code&.text || "Observation/#{o.id}" %>
+                              </label>
+                            </div>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+
+                  <% if not_included_definitions.any? { |definition| definition[:key] == 'plan_of_care' } %>
+                    <% definition = supported_section_definitions.find { |defn| defn[:key] == 'plan_of_care' } %>
+                    <div class="border border-gray-200 rounded-lg p-4">
+                      <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                          <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox-#{identifier}", id: "section_plan_of_care_#{identifier}", checked: false }, "1", "0" %>
+                          <%= form.hidden_field "toc[sections][][title]", value: definition[:title] %>
+                          <%= form.hidden_field "toc[sections][][code]", value: definition[:code] %>
+                          <%= form.hidden_field "toc[sections][][code_system]", value: definition[:code_system] %>
+                          <%= form.hidden_field "toc[sections][][display]", value: definition[:display] %>
+                        </div>
+                        <label for="section_plan_of_care_<%= identifier %>" class="ml-2 text-sm font-medium text-gray-900">Plan of Care</label>
+                      </div>
+                      <div class="mt-2">
+                        <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                        <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                          <% cached_resources_for_select('CarePlan').each do |care_plan| %>
+                            <div class="flex items-start mb-1">
+                              <div class="flex items-center h-5">
+                                <%= check_box_tag "toc[sections][][entries][]", "CarePlan/#{care_plan.id}", false,
+                                    class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox-#{identifier} care-plan-entry-#{identifier}" %>
+                              </div>
+                              <label class="ml-2 text-xs font-medium text-gray-900">
+                                <%= care_plan.title || care_plan.description || "CarePlan/#{care_plan.id}" %>
                               </label>
                             </div>
                           <% end %>
