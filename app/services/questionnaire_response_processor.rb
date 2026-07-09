@@ -62,7 +62,9 @@ class QuestionnaireResponseProcessor
     # Get the URL for retrieving the questionnaire from the response
     canonical = @questionnaire_response_hash[:questionnaire]
     url, version = canonical.to_s.split('|')
-    url += "/_history/#{version}" if version
+
+    # We don't need to get the history version at this time
+    # url += "/_history/#{version}" if version
 
     # Return a cached version if we've already retrieved it
     return self.class.questionnaire_by_url[url] if self.class.questionnaire_by_url[url]
