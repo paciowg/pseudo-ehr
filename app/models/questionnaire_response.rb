@@ -71,15 +71,11 @@ class QuestionnaireResponse < Resource
   def extract_questionnaire_title
     return @name if @questionnaire.blank?
 
-    # Try to extract a title from the questionnaire reference
-    if @questionnaire.include?('|')
-      parts = @questionnaire.split('|')
-      return parts.last if parts.size > 1
-    end
+    questionnaire_reference = @questionnaire.to_s.split('|', 2).first
 
     # Extract the last part of the URL as a fallback
     uri = begin
-      URI.parse(@questionnaire)
+      URI.parse(questionnaire_reference)
     rescue StandardError
       nil
     end
