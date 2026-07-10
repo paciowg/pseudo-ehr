@@ -19,15 +19,14 @@ class DocumentReferencesController < ApplicationController
 
     raise "Document Reference #{params[:id]} not found" if document_reference.blank?
 
-    # Just take the first contents entry for now
-    @bundle_content = document_reference.bundle_contents.first
+    bundle_content = document_reference.bundle_contents.first
 
-    if @bundle_content.blank?
+    if bundle_content.blank?
       @bundle_error = 'Unable to load the document.'
       return
     end
 
-    matching_server = FhirServer.all.find { |server| @bundle_content.url.start_with?(server.base_url) }
+    matching_server = FhirServer.all.find { |server| bundle_content.url.start_with?(server.base_url) }
 
     if matching_server.blank?
       @bundle_error = 'Unable to load the document.'
@@ -37,7 +36,7 @@ class DocumentReferencesController < ApplicationController
     client = FhirClientService.new(fhir_server: matching_server).client
 
     # Make finding Bundle ID more robust
-    @bundle = client.read(FHIR::Bundle, @bundle_content.url.split('/').last).resource
+    @bundle = client.read(FHIR::Bundle, bundle_content.url.split('/').last).resource
 
     unless @bundle.is_a?(FHIR::Bundle)
       @bundle_error = 'Unable to load the document.'

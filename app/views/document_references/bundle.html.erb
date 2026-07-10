@@ -5,24 +5,14 @@
     </div>
 
     <div class="bg-white border border-gray-200 rounded-lg shadow p-6">
-
-      <% if @bundle_content.present? %>
-        <div class="mb-4 text-sm text-gray-600">
-          <span class="font-medium">Bundle URL:</span>
-          <%= @bundle_content.url %>
-        </div>
-      <% end %>
-
-      <% composition_title = extract_composition_title(@bundle) if @bundle.present? %>
-
       <% if @bundle_error.present? %>
         <div class="p-4 bg-red-100 text-red-800 rounded">
           <%= @bundle_error %>
         </div>
-      <% elsif composition_title.present? %>
+      <% elsif extract_composition_title(@bundle).present? %>
         <div class="p-4 bg-green-100 text-green-800 rounded">
           <span class="font-medium">Composition Title:</span>
-          <%= composition_title %>
+          <%= extract_composition_title(@bundle) %>
         </div>
       <% else %>
         <div class="p-4 bg-yellow-100 text-yellow-800 rounded">
