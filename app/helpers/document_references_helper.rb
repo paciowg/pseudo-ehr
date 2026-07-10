@@ -203,7 +203,7 @@ module DocumentReferencesHelper
     {
       heading: resource.deviceName.to_a.find { |name| name.name.present? }&.name.to_s.presence || code_display(resource.type) || resource.id,
       meta: compact_meta(
-        "Status: #{resource.status}" ,
+        "Status: #{resource.status}",
         "Type: #{code_display(resource.type)}",
         "Code: #{first_coding_code(resource.type)}"
       )
@@ -267,11 +267,23 @@ module DocumentReferencesHelper
       goal = resolve_bundle_reference(bundle, goal_ref.reference)
       next if goal.blank?
 
-      goal.respond_to?(:description) ? codeable_text(goal.description) : resource_display_name(goal)
+      goal_text = goal.respond_to?(:description) ? codeable_text(goal.description) : resource_display_name(goal)
+      next if goal_text.blank?
+
+      {
+        heading: "Goal: #{goal_text}",
+        meta: []
+      }
     end
 
     activities = resource.activity.to_a.map do |activity|
-      activity.detail&.description.presence || code_display(activity.detail&.code) || activity.reference&.reference
+      activity_text = activity.detail&.description.presence || code_display(activity.detail&.code) || activity.reference&.reference
+      next if activity_text.blank?
+
+      {
+        heading: "Activity: #{activity_text}",
+        meta: []
+      }
     end.compact
 
     {
@@ -281,7 +293,7 @@ module DocumentReferencesHelper
         "Intent: #{resource.intent}",
         "Created: #{display_date(resource.created)}"
       ),
-      children: (goals + activities).map { |text| { heading: text, meta: [] } }
+      children: goals + activities
     }
   end
 
@@ -293,7 +305,8 @@ module DocumentReferencesHelper
         "Verification: #{first_coding_code(resource.verificationStatus)}",
         "Onset: #{display_date(resource.onsetDateTime)}",
         "Recorded: #{display_date(resource.recordedDate)}",
-        "Body site: #{code_display(resource.bodySite.to_a.first)}"
+        "Body site: #{code_display(resource.bodySite.to_a.first)}",
+        "Note: #{resource.note.to_a.first&.text}"
       )
     }
   end
