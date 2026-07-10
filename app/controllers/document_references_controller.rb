@@ -14,24 +14,21 @@ class DocumentReferencesController < ApplicationController
 
   # GET /patients/:patient_id/document_references/:id/bundle
   def bundle
-
     document_references = fetch_patient_document_reference(params[:patient_id]).values.flatten
     document_reference = document_references.detect { |dr| dr.id == params[:id] }
 
-    if document_reference.blank?
-      raise "Document Reference #{params[:id]} not found"
-    end
+    raise "Document Reference #{params[:id]} not found" if document_reference.blank?
 
     # Just take the first contents entry for now
-    bundle_content = document_reference.bundle_contents.first
+    @bundle_content = document_reference.bundle_contents.first
 
-    if bundle_content.blank?
+    if @bundle_content.blank?
       @bundle_error = 'Unable to load the document.'
       return
     end
 
-    matching_server = FhirServer.all.find { |server| bundle_content.url.start_with?(server.base_url) }
-    
+    matching_server = FhirServer.all.find { |server| @bundle_content.url.start_with?(server.base_url) }
+
     if matching_server.blank?
       @bundle_error = 'Unable to load the document.'
       return
@@ -40,14 +37,12 @@ class DocumentReferencesController < ApplicationController
     client = FhirClientService.new(fhir_server: matching_server).client
 
     # Make finding Bundle ID more robust
-    @bundle = client.read(FHIR::Bundle, bundle_content.url.split('/').last).resource
+    @bundle = client.read(FHIR::Bundle, @bundle_content.url.split('/').last).resource
 
     unless @bundle.is_a?(FHIR::Bundle)
       @bundle_error = 'Unable to load the document.'
       return
     end
-
-    @composition_title = extract_composition_title(@bundle)
   rescue StandardError => e
     Rails.logger.error("Error loading DocumentReference bundle:\n #{e.message.inspect}")
     Rails.logger.error(e.backtrace.join("\n"))
@@ -82,12 +77,5 @@ class DocumentReferencesController < ApplicationController
 
   def sort_and_group_docs(docs)
     docs.sort_by(&:full_date).reverse.group_by(&:identifier)
-  end
-
-  def extract_composition_title(bundle)
-    composition_entry = bundle.entry.to_a.find { |entry| entry.resource.is_a?(FHIR::Composition) }
-    composition = composition_entry&.resource
-
-    composition&.title.presence
   end
 end
