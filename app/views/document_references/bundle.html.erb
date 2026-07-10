@@ -1,0 +1,35 @@
+<div class="xl:mt-6 lg:mt-10 md:mt-12 sm:mt-32 lg:ml-64 w-full lg:w-3/4 h-full">
+  <div class="w-11/12">
+    <div class="mb-6">
+      <%= link_to '← Back to Document References', patient_document_references_path(params[:patient_id]), class: 'text-blue-600 hover:text-blue-800' %>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg shadow p-6">
+      <h1 class="text-base font-semibold leading-6 text-gray-900 mb-4">
+        <%= @document_reference.title %>
+      </h1>
+
+      <% if @bundle_content.present? %>
+        <div class="mb-4 text-sm text-gray-600">
+          <span class="font-medium">Bundle URL:</span>
+          <%= @bundle_content.url %>
+        </div>
+      <% end %>
+
+      <% if @bundle_error.present? %>
+        <div class="p-4 bg-red-100 text-red-800 rounded">
+          <%= @bundle_error %>
+        </div>
+      <% elsif @composition_title.present? %>
+        <div class="p-4 bg-green-100 text-green-800 rounded">
+          <span class="font-medium">Composition Title:</span>
+          <%= @composition_title %>
+        </div>
+      <% else %>
+        <div class="p-4 bg-yellow-100 text-yellow-800 rounded">
+          Bundle loaded but no displayable Composition title was found.
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

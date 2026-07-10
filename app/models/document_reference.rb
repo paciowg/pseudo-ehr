@@ -22,6 +22,22 @@ class DocumentReference < Resource
     self.class.update(self)
   end
 
+  def bundle_contents
+    attachments = @fhir_resource.content.to_a.map(&:attachment)
+
+    attachments.filter_map do |attachment|
+      next unless bundle_attachment?(attachment)
+      next unless allowed_bundle_url?(attachment.url)
+
+      ContentAttachment.new(
+        title: attachment.title || title,
+        type: attachment.contentType,
+        url: attachment.url,
+        creation_date: parse_date(attachment.creation)
+      )
+    end
+  end
+
   private
 
   def get_authors(bundle_entries)
@@ -50,5 +66,21 @@ class DocumentReference < Resource
 
   def read_identifier
     type.downcase.gsub(/[[:punct:]\s]/, '')
+  end
+
+  def bundle_attachment?(attachment)
+    attachment.contentType.in?(%w[application/fhir+json application/json]) &&
+      attachment.url.present? &&
+      attachment.url.include?('/Bundle/')
+  end
+
+  def allowed_bundle_url?(url)
+    self.class.allowed_server_prefixes.any? { |server| url.start_with?(server) }
+  end
+
+  class << self
+    def allowed_server_prefixes
+      FhirServer.pluck(:base_url).compact
+    end
   end
 end

@@ -35,38 +35,48 @@
                             <td class="px-2 py-2"><%= document_reference.author %></td>
                             <td class="px-2 py-2"><%= document_reference.date %></td>
                             <td class="px-2 py-2">
-                            <% if document_reference.contents.present? %>
-                              <div class="flex flex-wrap gap-2">
-                                <% document_reference.contents.each_with_index do |content, index| %>
-                                  <button
-                                    data-modal-target="<%= content.id %>"
-                                    data-modal-toggle="<%= content.id %>"
-                                    class="border-none text-blue-600 hover:text-red-500 focus:ring-4 focus:ring-blue-300 font-medium text-xs px-3 py-1.5 focus:outline-none flex items-center"
-                                    type="button"
-                                  >
-                                    <span class="text-sm">View Doc</span>
-                                    <span class="text-sm ml-2"><%= content_type_badge(content.type) %></span>
-                                  </button>
-                                  <%= render partial: 'shared/content_display_modal', locals: { content: content } %>
-                                <% end %>
-                              </div>
-                            <% else %>
-                              <small>No Document</small>
-                            <% end %>
+                              <% if document_reference.contents.present? || document_reference.bundle_contents.present? %>
+                                <div class="flex flex-wrap gap-2">
+                                  <% document_reference.contents.each_with_index do |content, index| %>
+                                    <button
+                                      data-modal-target="<%= content.id %>"
+                                      data-modal-toggle="<%= content.id %>"
+                                      class="border-none text-blue-600 hover:text-red-500 focus:ring-4 focus:ring-blue-300 font-medium text-xs px-3 py-1.5 focus:outline-none flex items-center"
+                                      type="button"
+                                    >
+                                      <span class="text-sm">View Doc</span>
+                                      <span class="text-sm ml-2"><%= content_type_badge(content.type) %></span>
+                                    </button>
+                                    <%= render partial: 'shared/content_display_modal', locals: { content: content } %>
+                                  <% end %>
+
+                                  <% document_reference.bundle_contents.each do |content| %>
+                                    <%= link_to patient_document_reference_bundle_path(params[:patient_id], document_reference.id, content_id: content.id),
+                                                class: "border-none text-blue-600 hover:text-red-500 focus:ring-4 focus:ring-blue-300 font-medium text-xs px-3 py-1.5 focus:outline-none flex items-center" do %>
+                                      <span class="text-sm">View Doc</span>
+                                      <span class="text-sm ml-2"><%= content_type_badge(content.type) %></span>
+                                    <% end %>
+                                  <% end %>
+                                </div>
+                              <% else %>
+                                <small>No Document</small>
+                              <% end %>
+                            </td>
                           </tr>
                         <% end %>
                       </tbody>
                     </table>
                   </div>
-              </div>
+                </div>
+              <% end %>
+            </div>
             <br />
             <% if @pagy %>
               <%== pagy_nav(@pagy, link_extra: "data-turbo-action='advance'") %>
             <% end %>
             <br />
-          <% end %>
+          </div>
         <% end %>
-      </div>
       </div>
     </div>
   </div>

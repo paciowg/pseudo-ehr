@@ -64,4 +64,6 @@ Rails.application.routes.draw do
   get 'patients/:patient_id/procedures', to: 'procedures#index', as: 'patient_procedures'
   get 'patients/:patient_id/diagnostic_reports', to: 'diagnostic_reports#index', as: 'patient_diagnostic_reports'
   get 'patients/:patient_id/document_references', to: 'document_references#index', as: 'patient_document_references'
+  get 'patients/:patient_id/document_references/:id/bundle', to: 'document_references#bundle',
+                                                            as: 'patient_document_reference_bundle'
 end
