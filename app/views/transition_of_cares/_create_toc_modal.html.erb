@@ -56,14 +56,16 @@
             <div>
               <label for="toc_type" class="block mb-2 text-sm font-medium text-gray-900">Type</label>
               <div class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                Discharge summary (LOINC 18842-5)
+                Physician Discharge summary (LOINC 11490-0)
               </div>
             </div>
           </div>
 
           <div class="border-t border-gray-200 pt-4">
             <h4 class="text-lg font-medium text-gray-900 mb-4">Sections</h4>
-            <p class="text-sm text-gray-600 mb-4">Select at least 4 sections to include in the document.</p>
+            <p class="text-sm text-gray-600 mb-4">
+              Select at least 1 section to include in the document. Required TOC sections not selected here will still be added automatically with an appropriate empty reason.
+            </p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="toc-sections">
               <!-- Allergies and Intolerances Section -->
@@ -112,7 +114,7 @@
                     <%= form.hidden_field "toc[sections][][title]", value: "Medications" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "10160-0" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "Medications" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "History of Medication Use" %>
                   </div>
                   <label for="section_medications" class="ml-2 text-sm font-medium text-gray-900">Medications</label>
                   <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_medications">All</button>
@@ -248,18 +250,18 @@
                 <div class="flex items-start">
                   <div class="flex items-center h-5">
                     <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_results", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
-                    <%= form.hidden_field "toc[sections][][title]", value: "Lab Test Results" %>
-                    <%= form.hidden_field "toc[sections][][code]", value: "19146-0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Clinical Results" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "30954-2" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: " Referral lab test results" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Relevant diagnostic tests/laboratory data note" %>
                   </div>
-                  <label for="section_results" class="ml-2 text-sm font-medium text-gray-900">Results</label>
+                  <label for="section_results" class="ml-2 text-sm font-medium text-gray-900">Clinical Results</label>
                   <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_results">All</button>
                 </div>
                 <div class="mt-2">
                   <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
                   <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
-                    <% cached_resources_for_select('Observation').each do |o| %>
+                    <% cached_resources_for_select('Observation').reject { |o| o.category&.any? { |c| c.coding&.any? { |cd| ['vital-signs', 'functional-status', 'cognitive-status'].include?(cd.code) } } }.each do |o| %>
                       <div class="flex items-start mb-1">
                         <div class="flex items-center h-5">
                           <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
@@ -318,9 +320,9 @@
                   <div class="flex items-center h-5">
                     <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_immunizations", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
                     <%= form.hidden_field "toc[sections][][title]", value: "Immunizations" %>
-                    <%= form.hidden_field "toc[sections][][code]", value: "82593-5" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "11369-6" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "Immunization summary report" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "History of Immunization note" %>
                   </div>
                   <label for="section_immunizations" class="ml-2 text-sm font-medium text-gray-900">Immunizations</label>
                   <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_immunizations">All</button>
@@ -396,7 +398,7 @@
                     <%= form.hidden_field "toc[sections][][title]", value: "Medical Devices" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "46264-8" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "Medical Devices" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "History of medical device use" %>
                   </div>
                   <label for="section_medical_devices" class="ml-2 text-sm font-medium text-gray-900">Medical Devices</label>
                   <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_medical_devices">All</button>
@@ -427,7 +429,7 @@
                     <%= form.hidden_field "toc[sections][][title]", value: "Functional Status" %>
                     <%= form.hidden_field "toc[sections][][code]", value: "47420-5" %>
                     <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
-                    <%= form.hidden_field "toc[sections][][display]", value: "Functional Status" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Functional status" %>
                   </div>
                   <label for="section_functional_status" class="ml-2 text-sm font-medium text-gray-900">Functional Status</label>
                   <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_functional_status">All</button>
@@ -449,10 +451,72 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Behavioral Health Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_behavioral_health", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Behavioral Health" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "behavioral_health_summary" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://hl7.org/fhir/us/pacio-toc/CodeSystem/toc-temp-cs" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Behavioral Health Summary" %>
+                  </div>
+                  <label for="section_behavioral_health" class="ml-2 text-sm font-medium text-gray-900">Behavioral Health</label>
+                  <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_behavioral_health">All</button>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% cached_resources_for_select('Observation').select { |o| o.category&.any? { |c| c.coding&.any? { |cd| cd.code == 'cognitive-status' } } }.each do |o| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "Observation/#{o.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox observation-behavioral-health-entry", data: { toc_form_target: "entryCheckbox" } %>
+                        </div>
+                        <label class="ml-2 text-xs font-medium text-gray-900">
+                          <%= o.code&.text || "Observation/#{o.id}" %>
+                        </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Plan of Care Section -->
+              <div class="border border-gray-200 rounded-lg p-4">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= form.check_box "toc[sections][][include]", { class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 section-checkbox", id: "section_plan_of_care", data: { toc_form_target: "sectionCheckbox", action: "change->toc-form#validateForm" } }, "1", "0" %>
+                    <%= form.hidden_field "toc[sections][][title]", value: "Plan of Care" %>
+                    <%= form.hidden_field "toc[sections][][code]", value: "18776-5" %>
+                    <%= form.hidden_field "toc[sections][][code_system]", value: "http://loinc.org" %>
+                    <%= form.hidden_field "toc[sections][][display]", value: "Plan of care note" %>
+                  </div>
+                  <label for="section_plan_of_care" class="ml-2 text-sm font-medium text-gray-900">Plan of Care</label>
+                  <button type="button" class="ml-auto text-xs text-indigo-600 hover:text-indigo-800" data-action="click->toc-form#selectAllEntries" data-section-id="section_plan_of_care">All</button>
+                </div>
+                <div class="mt-2">
+                  <label class="block mb-1 text-xs font-medium text-gray-700">Entries</label>
+                  <div class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 max-h-40 overflow-y-auto">
+                    <% cached_resources_for_select('CarePlan').each do |care_plan| %>
+                      <div class="flex items-start mb-1">
+                        <div class="flex items-center h-5">
+                          <%= check_box_tag "toc[sections][][entries][]", "CarePlan/#{care_plan.id}", false,
+                              class: "w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-indigo-300 entry-checkbox care-plan-entry", data: { toc_form_target: "entryCheckbox" } %>
+                        </div>
+                        <label class="ml-2 text-xs font-medium text-gray-900">
+                          <%= care_plan.title || care_plan.description || "CarePlan/#{care_plan.id}" %>
+                        </label>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="mt-4 text-sm text-red-600 hidden" id="section-error" data-toc-form-target="sectionError">
-              Please select at least 4 sections for the TOC document.
+              Please select at least 1 section for the TOC document.
             </div>
           </div>
 
@@ -465,8 +529,8 @@
                 Create TOC
               </button>
             </div>
-          </div>
-        <% end %>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>

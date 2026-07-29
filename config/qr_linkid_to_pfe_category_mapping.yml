@@ -34,7 +34,7 @@
   us_core_category: cognitive-status
 44253-3:
   pfe_domain_icf_code:
-    - b16710
+    - b167
   us_core_category: cognitive-status
 44252-5:
   pfe_domain_icf_code:
@@ -42,16 +42,15 @@
   us_core_category: cognitive-status
 44258-2:
   pfe_domain_icf_code:
-    - b1800
-    - b126
+    - b180
   us_core_category: cognitive-status
 44251-7:
   pfe_domain_icf_code:
-    - b1302
+    - b130
   us_core_category: cognitive-status
 44254-1:
   pfe_domain_icf_code:
-    - b1300
+    - b130
   us_core_category: cognitive-status
 44259-0:
   pfe_domain_icf_code:
@@ -59,12 +58,11 @@
   us_core_category: cognitive-status
 44255-8:
   pfe_domain_icf_code:
-    - b126
     - b152
   us_core_category: cognitive-status
 44250-9:
   pfe_domain_icf_code:
-    - b1301
+    - b130
   us_core_category: cognitive-status
 '14371':
   pfe_domain_icf_code:
@@ -73,7 +71,6 @@
   us_core_category: cognitive-status
 '44260-8':
   pfe_domain_icf_code:
-    - b152
     - b160
   us_core_category: cognitive-status
 '14372':
@@ -151,7 +148,7 @@
   us_core_category: cognitive-status
 '44261-6':
   pfe_domain_icf_code:
-    - b152
+    - b1
   us_core_category: cognitive-status
 '44249-1':
   pfe_domain_icf_code:
@@ -557,3 +554,55 @@ overall_burden:
   pfe_domain_icf_code:
   - b1
   us_core_category: cognitive-status
+
+# GAD-9 Over the last 2 weeks, how often have you been bothered by: Feeling nervous, anxious or on edge
+69725-0:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+
+# GAD-9 Over the last 2 weeks, how often have you been bothered by: Not being able to stop or control worrying
+68509-9:
+  pfe_domain_icf_code:
+  - b1521
+  us_core_category: cognitive-status
+
+# GAD-9 Over the last 2 weeks, how often have you been bothered by: Worrying too much about different things
+69733-4:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+
+# GAD-9 Over the last 2 weeks, how often have you been bothered by: Trouble relaxing
+69734-2:
+  pfe_domain_icf_code:
+  - d920
+  us_core_category: cognitive-status
+
+# GAD-9 Over the last 2 weeks, how often have you been bothered by: Being so restless that it is hard to sit still
+69735-9:
+  pfe_domain_icf_code:
+  - b1470
+  us_core_category: cognitive-status
+
+# GAD-9 Over the last 2 weeks, how often have you been bothered by: Becoming easily annoyed or irritated
+69689-8:
+  pfe_domain_icf_code:
+  - b126
+  us_core_category: cognitive-status
+
+# GAD-9 Over the last 2 weeks, how often have you been bothered by: Feeling afraid as if something awful might happen
+69736-7:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+
+# GAD-9 Total GAD-7 score
+70274-6:
+  pfe_domain_icf_code:
+  - b152
+  us_core_category: cognitive-status
+
+# GAD-9 If you checked off any problems, how difficult have these problems made it for you to do your work, take care of things at home, or get along with other people?
+# There is no exact LOINC code for this so we won't map it... https://loinc.org/69722-7 is close but a different questionnaire
+# If we did map it it would be to ICF category 'd' and US Core Category cognitive-status

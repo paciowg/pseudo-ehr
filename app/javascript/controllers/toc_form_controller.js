@@ -84,10 +84,10 @@ export default class extends Controller {
   }
 
   validateForm() {
-    // Check if at least 4 sections are selected
+    // Check if at least 1 section is selected
     const checkedSections = this.sectionCheckboxTargets.filter(checkbox => checkbox.checked).length
 
-    if (checkedSections < 4) {
+    if (checkedSections < 1) {
       this.sectionErrorTarget.classList.remove("hidden")
       return false
     } else {

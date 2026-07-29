@@ -122,6 +122,22 @@ module ResourceFetchHelper
     raise TIMEOUT_ERROR_MESSAGE
   end
 
+  def delete_patient_record(patient_id)
+    base_url = current_server.base_url.to_s.chomp('/')
+    url = "#{base_url}/Patient/#{patient_id}?_cascade=delete"
+    headers = { accept: :json }
+    headers[:Authorization] = "Bearer #{current_server.access_token}" if current_server&.access_token.present?
+
+    response = RestClient::Request.execute(method: :delete, url:, headers:)
+    add_query({ method: 'DELETE', url: })
+
+    response
+  rescue RestClient::ExceptionWithResponse => e
+    raise "Failed to delete patient #{patient_id}: #{e.response}"
+  rescue Net::ReadTimeout, Net::OpenTimeout
+    raise TIMEOUT_ERROR_MESSAGE
+  end
+
   # Fetch specific patient data
 
   def fetch_patients_by_id

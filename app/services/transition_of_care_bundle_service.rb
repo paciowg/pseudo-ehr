@@ -8,6 +8,7 @@ class TransitionOfCareBundleService
     @composition_id = composition_id
     @resources_map = {}
     @uuid_map = {}
+    @processed_refs = Set.new
   end
 
   def perform
@@ -26,15 +27,14 @@ class TransitionOfCareBundleService
     # Identify Patient reference (expected to be the second entry)
     patient_ref = composition.subject&.reference
 
-    # Collect all resources referenced by the composition
-    refs = extract_references(composition)
-    refs.each do |ref|
+    # Collect all resources referenced by the composition, recursively
+    extract_references(composition).each do |ref|
       collect_resource(ref)
     end
 
-    # Handle Medication Lists: Aggregate multiple Lists into a single SMP Bundle
-    # and update the Composition to reference that Bundle instead.
-    handle_medication_lists(composition)
+    # If we want to aggregate multiple Lists into a single SMP Bundle and update the Composition to reference
+    # that Bundle instead; the TOC IG does not currently support SMP Bundles so we don't do this
+    # bundle_medication_lists(composition)
 
     # Build Entries
     entries = []
@@ -53,9 +53,6 @@ class TransitionOfCareBundleService
       # Skip if it's the composition or the patient we already added
       next if resource.id == composition.id && resource.resourceType == 'Composition'
       next if patient_resource && resource.id == patient_resource.id && resource.resourceType == 'Patient'
-
-      # Skip List resources as they are now consolidated into the SMP Bundle created in handle_medication_lists
-      next if resource.resourceType == 'List'
 
       entries << build_entry(resource)
     end
@@ -90,7 +87,7 @@ class TransitionOfCareBundleService
     wrapper.respond_to?(:fhir_resource) ? wrapper.fhir_resource : wrapper
   end
 
-  def handle_medication_lists(composition)
+  def bundle_medication_lists(composition)
     # Identify all collected List resources (Medication Lists)
     list_resources = @resources_map.values.select { |r| r.resourceType == 'List' }
     return if list_resources.empty?
@@ -111,6 +108,8 @@ class TransitionOfCareBundleService
     list_refs = list_resources.map { |r| "#{r.resourceType}/#{r.id}" }
 
     composition.section.each do |section|
+      next unless section.entry
+
       # Identify entries in this section that point to any of our Lists
       entries_to_replace = section.entry.select { |e| list_refs.include?(e.reference) }
 
@@ -149,11 +148,14 @@ class TransitionOfCareBundleService
   end
 
   def collect_resource(ref_string)
-    # Avoid re-processing
-    return if @uuid_map[ref_string]
+    return unless resolvable_reference?(ref_string)
+    return if @processed_refs.include?(ref_string)
+
+    @processed_refs << ref_string
 
     # Extract type and ID from reference (e.g. "Patient/123" -> "Patient" and "123")
     type, id = ref_string.split('/', 2)
+    return if type.blank? || id.blank?
 
     # Retrieve from cache
     wrapper = PatientRecordCache.lookup(type, id)
@@ -170,28 +172,43 @@ class TransitionOfCareBundleService
 
     # Also map the requested ref_string to this UUID
     @uuid_map[ref_string] = uuid if ref_string != key
+
+    # Recursively collect references from the newly discovered resource
+    extract_references(resource).each do |nested_ref|
+      collect_resource(nested_ref)
+    end
   end
 
   def extract_references(resource)
     refs = []
     scan_for_refs(resource.to_hash, refs)
-    refs
+    refs.uniq
   end
 
-  def scan_for_refs(hash, refs)
-    return unless hash.is_a?(Hash)
+  def scan_for_refs(node, refs)
+    case node
+    when Hash
+      ref = node['reference']
+      refs << ref if resolvable_reference?(ref)
 
-    if hash['reference'].is_a?(String)
-      refs << hash['reference']
-    end
-
-    hash.each_value do |value|
-      if value.is_a?(Hash)
+      node.each_value do |value|
         scan_for_refs(value, refs)
-      elsif value.is_a?(Array)
-        value.each { |item| scan_for_refs(item, refs) if item.is_a?(Hash) }
+      end
+    when Array
+      node.each do |item|
+        scan_for_refs(item, refs)
       end
     end
+  end
+
+  def resolvable_reference?(ref)
+    return false if ref.blank?
+    return false if ref.is_a?(Hash) # Handle cases where there is a field called reference
+    return false if ref.start_with?('#')
+    return false if ref.start_with?('urn:uuid:')
+    return false if ref.include?('://')
+
+    ref.include?('/')
   end
 
   def build_entry(resource)

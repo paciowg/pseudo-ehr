@@ -13,14 +13,14 @@ class TransitionOfCaresController < ApplicationController
   # POST /patients/:patient_id/transition_of_cares
   def create
     begin
-      # Create a new TOC Composition
-      composition_data = build_toc_composition(params[:toc])
+      composition_data = TransitionOfCareCompositionService.build(
+        patient_id: patient_id,
+        toc_params: params[:toc]
+      )
 
-      # Send the composition to the FHIR server
       fhir_composition = create_resource(composition_data)
 
       if fhir_composition.present?
-        # Update the cache with the new composition
         PatientRecordCache.add_resource_to_patient_record(patient_id, fhir_composition)
         entries = retrieve_current_patient_resources
         Composition.new(fhir_composition, entries)
@@ -49,44 +49,15 @@ class TransitionOfCaresController < ApplicationController
         return
       end
 
-      fhir_composition.title = params[:toc][:title]
-      fhir_composition.date = Time.now.iso8601
+      updated_composition = TransitionOfCareCompositionService.rebuild(
+        composition: fhir_composition,
+        patient_id: patient_id,
+        toc_params: params[:toc]
+      )
 
-      # Clear existing sections and add updated ones
-      fhir_composition.section = []
-
-      # Add the selected sections
-      params[:toc][:sections].each do |section_params|
-        next unless section_params[:include] == '1'
-
-        # TODO: Add section.text (narrative) to meet TOC IG 1..1 requirement
-        section = FHIR::Composition::Section.new(
-          title: section_params[:title],
-          code: {
-            coding: [
-              {
-                system: section_params[:code_system],
-                code: section_params[:code],
-                display: section_params[:display]
-              }
-            ]
-          }
-        )
-
-        # Add entries to the section if provided
-        if section_params[:entries].present?
-          section.entry = section_params[:entries].map do |entry|
-            FHIR::Reference.new(reference: entry)
-          end
-        end
-
-        fhir_composition.section << section
-      end
-
-      resource = update_resource(fhir_composition)
+      resource = update_resource(updated_composition)
 
       if resource.present?
-        # Update the cache with the updated composition
         PatientRecordCache.update_patient_record(patient_id, [resource])
         entries = retrieve_current_patient_resources
         Composition.new(resource, entries)
@@ -103,13 +74,14 @@ class TransitionOfCaresController < ApplicationController
     redirect_to patient_transition_of_cares_path(patient_id: patient_id)
   end
 
-  # POST /patients/:patient_id/transition_of_cares/:id/notify
-  def notify
+  # POST /patients/:patient_id/transition_of_cares/:id/share
+  def share
     begin
       toc_id = params[:id]
       destination_organization_ref = params[:destination_organization]
+      share_mode = params[:share_mode].presence || 'document'
+      target_fhir_server = FhirServer.find(params[:target_fhir_server_id])
 
-      # Find the TOC Composition
       toc = Composition.find(toc_id)
       unless toc
         flash[:danger] = 'Transition of Care document not found'
@@ -117,44 +89,71 @@ class TransitionOfCaresController < ApplicationController
         return
       end
 
-      # Step 1: Generate the TOC Bundle and get the document URL
-      document_url = TransitionOfCareBundleService.perform(
-        fhir_server: current_server,
-        composition_id: toc_id
-      )
+      case share_mode
+      when 'message'
+        source_org_id = toc.fhir_resource.custodian&.reference&.split('/')&.last
+        destination_org_id = destination_organization_ref.to_s.split('/').last
 
-      raise 'Failed to generate TOC bundle document URL' if document_url.blank?
+        raise 'Source organization not found in TOC composition' if source_org_id.blank?
+        raise 'Destination organization not specified' if destination_org_id.blank?
 
-      # Step 2: Extract organization IDs from references
-      # Source organization is the custodian from the composition
-      source_org_id = toc.fhir_resource.custodian&.reference&.split('/')&.last
-      destination_org_id = destination_organization_ref.split('/').last
+        source_organization = PatientRecordCache.lookup('Organization', source_org_id)
+        destination_organization = PatientRecordCache.lookup('Organization', destination_org_id)
 
-      raise 'Source organization not found in TOC composition' if source_org_id.blank?
-      raise 'Destination organization not specified' if destination_org_id.blank?
+        raise "Source organization #{source_org_id} not found" unless source_organization
+        raise "Destination organization #{destination_org_id} not found" unless destination_organization
 
-      # Get Organization objects
-      source_organization = PatientRecordCache.lookup('Organization', source_org_id)
-      destination_organization = PatientRecordCache.lookup('Organization', destination_org_id)
+        document_url = TransitionOfCareBundleService.perform(
+          fhir_server: target_fhir_server,
+          composition_id: toc_id
+        )
 
-      raise "Source organization #{source_org_id} not found" unless source_organization
-      raise "Destination organization #{destination_org_id} not found" unless destination_organization
+        raise 'Failed to generate TOC bundle document URL' if document_url.blank?
 
-      # Step 3: Send the discharge notification
-      DischargeNotificationService.perform(
-        fhir_server: current_server,
-        patient: @patient,
-        source_organization: Organization.new(source_organization),
-        destination_organization: Organization.new(destination_organization),
-        document_url: document_url,
-        document_description: toc.title
-      )
+        source_organization = Organization.new(source_organization) unless source_organization.respond_to?(:fhir_resource)
+        destination_organization = Organization.new(destination_organization) unless destination_organization.respond_to?(:fhir_resource)
 
-      flash[:success] = "Discharge notification sent successfully to #{destination_organization.name}"
+        DischargeNotificationService.perform(
+          fhir_server: target_fhir_server,
+          patient: @patient,
+          source_organization: source_organization,
+          destination_organization: destination_organization,
+          document_url: document_url,
+          document_description: toc.title
+        )
+
+        flash[:success] = "Transition of Care message sent successfully to #{target_fhir_server.name}"
+      when 'document'
+        patient_result = PatientMatchOrCreateService.perform(
+          fhir_server: target_fhir_server,
+          patient: @patient
+        )
+
+        document_url = TransitionOfCareBundleService.perform(
+          fhir_server: target_fhir_server,
+          composition_id: toc_id
+        )
+
+        raise 'Failed to generate TOC bundle document URL' if document_url.blank?
+
+        TransitionOfCareDocumentReferenceService.perform(
+          fhir_server: target_fhir_server,
+          patient_id: patient_result[:patient_id],
+          patient_name: @patient.name,
+          document_url: document_url,
+          document_description: toc.title
+        )
+
+        flash[:success] = "Transition of Care document shared successfully to #{target_fhir_server.name}"
+      else
+        raise "Unsupported share mode: #{share_mode}"
+      end
+    rescue ActiveRecord::RecordNotFound
+      flash[:danger] = 'Selected FHIR server was not found'
     rescue StandardError => e
-      Rails.logger.error("Error sending discharge notification: #{e.message}")
+      Rails.logger.error("Error sharing transition of care: #{e.message}")
       Rails.logger.error(e.backtrace.join("\n"))
-      flash[:danger] = "Error sending discharge notification: #{e.message}"
+      flash[:danger] = "Error sharing Transition of Care document: #{e.message}"
     end
 
     redirect_to patient_transition_of_cares_path(patient_id: patient_id)
@@ -175,77 +174,6 @@ class TransitionOfCaresController < ApplicationController
         end
       end
     end.reverse
-  end
-
-  def build_toc_composition(toc_params)
-    # Create a new FHIR Composition resource
-    composition = FHIR::Composition.new(
-      status: 'final',
-      type: {
-        coding: [
-          {
-            system: 'http://loinc.org',
-            code: '18842-5',
-            display: 'Discharge summary'
-          }
-        ]
-      },
-      category: [
-        {
-          coding: [
-            {
-              system: 'http://loinc.org',
-              code: '18761-7',
-              display: 'Transfer Summary Note'
-            }
-          ]
-        }
-      ],
-      subject: {
-        reference: "Patient/#{patient_id}"
-      },
-      date: Time.now.iso8601,
-      title: toc_params[:title],
-      author: [
-        {
-          reference: toc_params[:author]
-        }
-      ],
-      custodian: {
-        reference: toc_params[:custodian]
-      }
-    )
-
-    # Add sections to the composition
-    composition.section = []
-
-    # Add the selected sections
-    toc_params[:sections].each do |section_params|
-      next unless section_params[:include] == '1' && section_params[:entries].present?
-
-      # TODO: Add section.text (narrative) to meet TOC IG 1..1 requirement
-      section = FHIR::Composition::Section.new(
-        title: section_params[:title],
-        code: {
-          coding: [
-            {
-              system: section_params[:code_system],
-              code: section_params[:code],
-              display: section_params[:display]
-            }
-          ]
-        }
-      )
-
-      # Add entries to the section if provided
-      section.entry = section_params[:entries].map do |entry|
-        FHIR::Reference.new(reference: entry)
-      end
-
-      composition.section << section
-    end
-
-    composition
   end
 
   def fetch_tocs

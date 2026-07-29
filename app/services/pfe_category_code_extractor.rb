@@ -2,8 +2,8 @@ class PfeCategoryCodeExtractor
   PFE_DOMAIN_PATH = Rails.root.join('config/pfe_domain_mapping.yml')
   PFE_CATEGORY_MAPPING_PATH = Rails.root.join('config/qr_linkid_to_pfe_category_mapping.yml')
   US_CORE_CATEGORY_URL = 'http://hl7.org/fhir/us/core/CodeSystem/us-core-category'.freeze
-  PFE_DOMAIN_CATEGORY_URL = 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-category-cs'.freeze
-  SURVEY_CATEGORY_URL = 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-survey-category-cs'.freeze
+  PFE_DOMAIN_CATEGORY_URL = 'http://hl7.org/fhir/sid/icf'.freeze
+  SURVEY_CATEGORY_URL = 'http://terminology.hl7.org/CodeSystem/observation-category'.freeze
 
   US_CORE_CATEGORY_CODES = {
     'functional-status' => 'Functional Status',

@@ -55,6 +55,19 @@
 
   <!-- Patient Information -->
   <%= render "patient" %>
+
+  <div class="mt-8 flex justify-end">
+    <%= button_to patient_path(@patient.id),
+        method: :delete,
+        class: "px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors",
+        form: {
+          data: {
+            turbo_confirm: "Are you sure you want to delete #{@patient.name} and ALL related data? This action cannot be undone."
+          }
+        } do %>
+      Delete Patient Record
+    <% end %>
+  </div>
 </div>
 
 <!-- Render the patient update modal -->

@@ -1,34 +1,13 @@
 class PfeObservationBuilder
   US_CORE_CATEGORY_URL = 'http://hl7.org/fhir/us/core/CodeSystem/us-core-category'.freeze
-  SURVEY_CATEGORY_URL = 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-survey-category-cs'.freeze
-  PFE_DOMAIN_CATEGORY_URL = 'http://hl7.org/fhir/us/pacio-pfe/CodeSystem/pfe-category-cs'.freeze
+  SURVEY_CATEGORY_URL = 'http://terminology.hl7.org/CodeSystem/observation-category'.freeze
+  PFE_DOMAIN_CATEGORY_URL = 'http://hl7.org/fhir/sid/icf'.freeze
 
   EXT_EVENT_LOCATION = 'http://hl7.org/fhir/StructureDefinition/event-location'.freeze
   EXT_DEVICE_USE = 'http://hl7.org/fhir/us/pacio-pfe/StructureDefinition/device-patient-used'.freeze
 
   PFE_SINGLE_OBS_PROFILE = 'http://hl7.org/fhir/us/pacio-pfe/StructureDefinition/pfe-observation-single'.freeze
   PFE_COLLECTION_PROFILE = 'http://hl7.org/fhir/us/pacio-pfe/StructureDefinition/pfe-collection'.freeze
-
-  # Some of the questionnaire responses should generate observations with ranges; eventually we'll want to
-  # figure out a good long term lookup strategy
-  OBSERVATION_RANGES = {
-    # PROMIS-10 Global Physical Health (GPH) score
-    '71972-4' => {
-      low: 4, high: 20
-    },
-    # PROMIS-10 Global Mental Health (GMH) score
-    '71970-8' => {
-      low: 4, high: 20
-    },
-    # PROMIS-10 Global Physical Health (GPH) score T-score
-    '71971-6' => {
-      low: 16.2, high: 67.7
-    },
-    # PROMIS-10 Global Mental Health (GMH) score T-score
-    '71969-0' => {
-      low: 21.2, high: 67.6
-    }
-  }.freeze
 
   def initialize(qr, questionnaire) # rubocop:disable Naming/MethodParameterName
     @qr = qr
@@ -224,7 +203,7 @@ class PfeObservationBuilder
   end
 
   def add_reference_range(obs, code)
-    range = OBSERVATION_RANGES[code]
+    range = ObservationConfig.range_for(code)
     return if range.blank?
 
     obs.referenceRange = [

@@ -6,20 +6,31 @@ export default class extends Controller {
 
   connect() {
     this.updateHandler = this.update.bind(this)
+    this.beforeUnloadHandler = this.handleBeforeUnload.bind(this)
+    this.navigationWarningEnabled = false
+
     window.addEventListener("task-status:update", this.updateHandler)
 
     // Auto-scroll once on connect
     this.wrapperTarget?.scrollIntoView({ behavior: "smooth", block: "start" })
+
+    const currentStatus = this.hasStatusTarget ? this.statusTarget.textContent.trim().toLowerCase() : null
+    this.updateNavigationWarning(currentStatus)
+    this.updateActionButtons(currentStatus)
+    this.updateFileTreeState(currentStatus)
   }
 
   disconnect() {
     window.removeEventListener("task-status:update", this.updateHandler)
+    this.disableNavigationWarning()
   }
 
   update(event) {
     const { detail } = event
+
     // Remove the container if the task has been dismissed or deleted
     if (detail.status === "dismissed" || detail.deleted) {
+      this.disableNavigationWarning()
       if (this.wrapperTarget) {
         this.wrapperTarget.remove()
       } else {
@@ -41,8 +52,8 @@ export default class extends Controller {
 
     this.element.classList.remove("text-yellow-600", "text-green-600", "text-red-600")
 
-    const progressMatch = detail.message.match(/\[(\d+)%\]/);
-    const progress = progressMatch ? parseInt(progressMatch[1], 10) : null;
+    const progressMatch = detail.message.match(/\[(\d+)%\]/)
+    const progress = progressMatch ? parseInt(progressMatch[1], 10) : null
 
     switch (detail.status) {
       case "completed":
@@ -69,28 +80,33 @@ export default class extends Controller {
         break
     }
 
-    this.updatePushButtonState(detail.status)
+    this.updateActionButtons(detail.status)
     this.updateFileTreeState(detail.status)
+    this.updateNavigationWarning(detail.status)
   }
 
   updateProgressBar(percent, classes) {
     if (!this.hasBarTarget) return
 
     this.barTarget.style.width = `${percent}%`
-    this.barTarget.className =
-      `h-2.5 rounded-full transition-all duration-500 ${classes}`
+    this.barTarget.className = `h-2.5 rounded-full transition-all duration-500 ${classes}`
   }
 
-  updatePushButtonState(status) {
+  updateActionButtons(status) {
     const pushDataButton = document.getElementById("push-data-button")
-    if (!pushDataButton) return
+    const deleteDataButton = document.getElementById("delete-data-button")
+    const active = status === "running" || status === "pending"
 
-    if (status === "running" || status === "pending") {
-      pushDataButton.disabled = true
-    } else {
-      const fhirServerPresent = pushDataButton.dataset.fhirServerPresent === 'true'
-      pushDataButton.disabled = !fhirServerPresent
-    }
+    ;[pushDataButton, deleteDataButton].forEach((button) => {
+      if (!button) return
+
+      if (active) {
+        button.disabled = true
+      } else {
+        const fhirServerPresent = button.dataset.fhirServerPresent === "true"
+        button.disabled = !fhirServerPresent
+      }
+    })
   }
 
   updateFileTreeState(status) {
@@ -104,6 +120,34 @@ export default class extends Controller {
     }
   }
 
+  updateNavigationWarning(status) {
+    if (status === "running" || status === "pending") {
+      this.enableNavigationWarning()
+    } else {
+      this.disableNavigationWarning()
+    }
+  }
+
+  enableNavigationWarning() {
+    if (this.navigationWarningEnabled) return
+
+    window.addEventListener("beforeunload", this.beforeUnloadHandler)
+    this.navigationWarningEnabled = true
+  }
+
+  disableNavigationWarning() {
+    if (!this.navigationWarningEnabled) return
+
+    window.removeEventListener("beforeunload", this.beforeUnloadHandler)
+    this.navigationWarningEnabled = false
+  }
+
+  handleBeforeUnload(event) {
+    event.preventDefault()
+    event.returnValue = "A sample data task is still in progress. If you leave this page, you may miss progress updates."
+    return event.returnValue
+  }
+
   dismiss() {
     fetch(`/task_statuses/${this.taskIdValue}/dismiss`, {
       method: "POST",
@@ -111,14 +155,14 @@ export default class extends Controller {
         "Content-Type": "application/json",
         "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
       }
+    }).then(() => {
+      this.disableNavigationWarning()
+      if (this.wrapperTarget) {
+        this.wrapperTarget.remove()
+      } else {
+        this.element.remove()
+      }
     })
-      .then(() => {
-        if (this.wrapperTarget) {
-          this.wrapperTarget.remove()
-        } else {
-          this.element.remove()
-        }
-      })
   }
 
   // This function toggles the visibility of the "Convert to PFE assessments" and "View derived assessments" buttons
@@ -128,13 +172,12 @@ export default class extends Controller {
     const convertButton = document.getElementById(`convert-qr-${this.taskIdValue}`)
     const viewDerivedButton = document.getElementById(`view-derived-assessments-${this.taskIdValue}`)
     if (convertButton && viewDerivedButton) {
-      convertButton.classList.remove('flex')
-      convertButton.classList.add('hidden')
+      convertButton.classList.remove("flex")
+      convertButton.classList.add("hidden")
 
-      viewDerivedButton.classList.remove('hidden')
-      viewDerivedButton.classList.add('flex')
+      viewDerivedButton.classList.remove("hidden")
+      viewDerivedButton.classList.add("flex")
     }
-
   }
 
   // Change QR row background color when observations are present (task completed) and make icon visible
@@ -142,12 +185,12 @@ export default class extends Controller {
     const row = document.getElementById(`table-column-header-${this.taskIdValue}`)
     const icon = document.getElementById(`icon-${this.taskIdValue}`)
     if (row) {
-      row.classList.remove('bg-white')
-      row.classList.add('bg-green-50')
+      row.classList.remove("bg-white")
+      row.classList.add("bg-green-50")
     }
     if (icon) {
-      icon.classList.remove('hidden')
-      icon.classList.add('inline-flex')
+      icon.classList.remove("hidden")
+      icon.classList.add("inline-flex")
     }
   }
 }

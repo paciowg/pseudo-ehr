@@ -11,7 +11,13 @@ class QuestionnaireResponseProcessor
     qr = build_questionnaire_response
 
     @client.begin_transaction
-    @client.add_transaction_request('PUT', "QuestionnaireResponse/#{qr.id}", qr)
+
+    # Historically pseudo-ehr has written the QuestionnaireResponse to the server along with the observations
+    # generated from the QuestionnaireResponse; because in the typical use case the QuestionnaireResponse is
+    # already present on the server we don't need to rewrite it, so we skip this step due to a bug in
+    # fhir_models when hydrating a QuestionnaireResponse with contained resources
+
+    # @client.add_transaction_request('PUT', "QuestionnaireResponse/#{qr.id}", qr)
 
     observations = PfeObservationBuilder.new(qr, questionnaire).build
 
@@ -55,8 +61,10 @@ class QuestionnaireResponseProcessor
   def questionnaire
     # Get the URL for retrieving the questionnaire from the response
     canonical = @questionnaire_response_hash[:questionnaire]
-    url, version = canonical.to_s.split('|')
-    url += "/_history/#{version}" if version
+    url, = canonical.to_s.split('|')
+
+    # We don't need to get the history version at this time
+    # url += "/_history/#{version}" if version
 
     # Return a cached version if we've already retrieved it
     return self.class.questionnaire_by_url[url] if self.class.questionnaire_by_url[url]
@@ -94,7 +102,7 @@ class QuestionnaireResponseProcessor
       end
 
       # Build alternate_url with validated FHIR server URI plus validated tail
-      alternate_url = fhir_server_uri.path.to_s.chomp('/') + tail
+      alternate_url = fhir_server_uri.to_s.chomp('/') + tail
 
       raise "Failed to fetch Questionnaire from #{url}: #{e.response || e.message}" unless alternate_url
 
