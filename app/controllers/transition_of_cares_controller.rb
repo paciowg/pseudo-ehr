@@ -110,8 +110,8 @@ class TransitionOfCaresController < ApplicationController
 
         raise 'Failed to generate TOC bundle document URL' if document_url.blank?
 
-        source_organization = source_organization.respond_to?(:fhir_resource) ? source_organization : Organization.new(source_organization)
-        destination_organization = destination_organization.respond_to?(:fhir_resource) ? destination_organization : Organization.new(destination_organization)
+        source_organization = Organization.new(source_organization) unless source_organization.respond_to?(:fhir_resource)
+        destination_organization = Organization.new(destination_organization) unless destination_organization.respond_to?(:fhir_resource)
 
         DischargeNotificationService.perform(
           fhir_server: target_fhir_server,

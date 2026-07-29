@@ -227,7 +227,7 @@ class TransitionOfCareCompositionService
     SECTION_DEFINITIONS.map do |definition|
       selected_section = selected_sections[definition[:key]]
       section_title = selected_section&.dig(:title).presence || definition[:title]
-      entries = Array(selected_section&.dig(:entries)).reject(&:blank?).uniq
+      entries = Array(selected_section&.dig(:entries)).compact_blank.uniq
 
       build_section(definition: definition, title: section_title, entries: entries)
     end

@@ -1,5 +1,3 @@
-require 'set'
-
 class TransitionOfCareBundleService
   def self.perform(fhir_server:, composition_id:)
     new(fhir_server, composition_id).perform
@@ -55,6 +53,7 @@ class TransitionOfCareBundleService
       # Skip if it's the composition or the patient we already added
       next if resource.id == composition.id && resource.resourceType == 'Composition'
       next if patient_resource && resource.id == patient_resource.id && resource.resourceType == 'Patient'
+
       entries << build_entry(resource)
     end
 

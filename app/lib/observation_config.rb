@@ -20,7 +20,7 @@ class ObservationConfig
     end
 
     def config_path
-      Rails.root.join('config', 'observation_config.yml')
+      Rails.root.join('config/observation_config.yml')
     end
   end
 end

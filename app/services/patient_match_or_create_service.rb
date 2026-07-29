@@ -63,8 +63,6 @@ class PatientMatchOrCreateService
     elsif reply.respond_to?(:response) && reply.response.is_a?(Hash)
       body = reply.response[:body]
       body.present? ? FHIR.from_contents(body) : nil
-    else
-      nil
     end
   end
 

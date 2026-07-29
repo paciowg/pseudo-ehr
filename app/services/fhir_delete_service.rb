@@ -1,7 +1,6 @@
 require 'net/http'
 require 'uri'
 require 'json'
-require 'set'
 
 class FhirDeleteService
   MAX_RETRIES = 5
@@ -129,7 +128,8 @@ class FhirDeleteService
       if outcome['resourceType'] == 'OperationOutcome' && outcome['issue']
         return extract_operation_outcome_issues(outcome).join('; ')
       end
-    rescue JSON::ParserError
+    rescue JSON::ParserError => e
+      Rails.logger.debug("Non-JSON error response while parsing delete failure: #{e.message}") if Rails.logger
     end
 
     response_body = response.body.to_s
