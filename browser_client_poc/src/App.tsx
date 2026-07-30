@@ -1,6 +1,6 @@
 import './App.css'
 
-type SavedServer = {
+type PreviouslyConnectedServer = {
   id: string
   label: string
   baseUrl: string
@@ -28,7 +28,7 @@ type ResourceCount = {
   count: number | null
 }
 
-const savedServers: SavedServer[] = [
+const previouslyConnectedServers: PreviouslyConnectedServer[] = [
   {
     id: 'demo-hapi',
     label: 'Local HAPI Demo',
@@ -159,21 +159,19 @@ function App() {
                 <button type="button" className="primary-button">
                   Connect
                 </button>
-                <button type="button" className="secondary-button">
-                  Save server
-                </button>
               </div>
 
               <p className="helper-text">
-                Phase 1 assumes open endpoints only. Future iterations may add
-                SMART-on-FHIR support.
+                Phase 1 assumes open endpoints only. Connected servers should be
+                added automatically to the previously connected list and shown
+                with the most recently used first.
               </p>
             </form>
 
             <div className="saved-server-panel">
-              <h3>Saved servers</h3>
+              <h3>Previously Connected Servers</h3>
               <ul className="saved-server-list">
-                {savedServers.map((server) => (
+                {previouslyConnectedServers.map((server) => (
                   <li key={server.id} className="saved-server-item">
                     <div>
                       <p className="saved-server-name">{server.label}</p>
@@ -181,9 +179,17 @@ function App() {
                     </div>
                     <div className="saved-server-meta">
                       <span>{server.lastUsed}</span>
-                      <button type="button" className="link-button">
-                        Use
-                      </button>
+                      <div className="saved-server-actions">
+                        <button type="button" className="link-button">
+                          Use
+                        </button>
+                        <button
+                          type="button"
+                          className="link-button link-button-danger"
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
                   </li>
                 ))}
@@ -201,193 +207,191 @@ function App() {
             <span className="panel-tag">Planned route: /patients</span>
           </div>
 
-          <div className="patient-browser-layout">
-            <div className="patient-list-panel">
-              <div className="active-server-banner">
-                Active server: <strong>Local HAPI Demo</strong>
-              </div>
-
-              <div className="field-group">
-                <label htmlFor="patient-search">Search patients</label>
-                <input
-                  id="patient-search"
-                  type="text"
-                  value="betsy"
-                  readOnly
-                />
-              </div>
-
-              <ul className="patient-list">
-                {patients.map((patient) => (
-                  <li
-                    key={patient.id}
-                    className={
-                      patient.id === 'patient-betsysmith-johnson01'
-                        ? 'patient-list-item selected'
-                        : 'patient-list-item'
-                    }
-                  >
-                    <div>
-                      <p className="patient-name">{patient.name}</p>
-                      <p className="patient-meta">
-                        {patient.gender} · DOB {patient.dob}
-                      </p>
-                      <p className="patient-meta">MRN {patient.mrn}</p>
-                    </div>
-                    <button type="button" className="secondary-button compact">
-                      View
-                    </button>
-                  </li>
-                ))}
-              </ul>
+          <div className="patient-list-panel full-width-panel">
+            <div className="active-server-banner">
+              Active server: <strong>Local HAPI Demo</strong>
             </div>
 
-            <div className="summary-preview-panel">
-              <div className="panel-header summary-preview-header">
-                <div>
-                  <p className="section-kicker">Step 3</p>
-                  <h2>Patient summary</h2>
-                </div>
-                <span className="panel-tag">
-                  Planned route: /patients/:id
-                </span>
-              </div>
+            <div className="field-group patient-search-group">
+              <label htmlFor="patient-search">Search patients</label>
+              <input
+                id="patient-search"
+                type="text"
+                value="betsy"
+                readOnly
+              />
+            </div>
 
-              <section className="patient-summary-hero">
-                <div>
-                  <p className="patient-summary-name">Betsy Smith-Johnson</p>
-                  <p className="patient-summary-meta">
-                    Female, 75 years · DOB: 1950-11-15 · MRN: 1032702
-                  </p>
-                </div>
-                <div className="bundle-status success">
-                  $everything data available
-                </div>
+            <ul className="patient-list full-width-patient-list">
+              {patients.map((patient) => (
+                <li
+                  key={patient.id}
+                  className={
+                    patient.id === 'patient-betsysmith-johnson01'
+                      ? 'patient-list-item selected'
+                      : 'patient-list-item'
+                  }
+                >
+                  <div>
+                    <p className="patient-name">{patient.name}</p>
+                    <p className="patient-meta">
+                      {patient.gender} · DOB {patient.dob}
+                    </p>
+                    <p className="patient-meta">MRN {patient.mrn}</p>
+                  </div>
+                  <button type="button" className="secondary-button compact">
+                    View
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <p className="section-kicker">Step 3</p>
+              <h2>Patient summary</h2>
+            </div>
+            <span className="panel-tag">Planned route: /patients/:id</span>
+          </div>
+
+          <div className="summary-preview-panel full-width-panel">
+            <section className="patient-summary-hero">
+              <div>
+                <p className="patient-summary-name">Betsy Smith-Johnson</p>
+                <p className="patient-summary-meta">
+                  Female, 75 years · DOB: 1950-11-15 · MRN: 1032702
+                </p>
+              </div>
+              <div className="bundle-status success">
+                $everything data available
+              </div>
+            </section>
+
+            <div className="summary-grid">
+              <section className="summary-card wide">
+                <h3>Personal Information</h3>
+                <dl className="detail-grid">
+                  <div>
+                    <dt>First name</dt>
+                    <dd>Betsy</dd>
+                  </div>
+                  <div>
+                    <dt>Last name</dt>
+                    <dd>Smith-Johnson</dd>
+                  </div>
+                  <div>
+                    <dt>Date of birth</dt>
+                    <dd>1950-11-15</dd>
+                  </div>
+                  <div>
+                    <dt>Gender identity</dt>
+                    <dd>Female</dd>
+                  </div>
+                  <div>
+                    <dt>Sex assigned at birth</dt>
+                    <dd>--</dd>
+                  </div>
+                  <div>
+                    <dt>Marital status</dt>
+                    <dd>Unknown</dd>
+                  </div>
+                  <div className="span-2">
+                    <dt>Medical record number</dt>
+                    <dd>1032702</dd>
+                  </div>
+                </dl>
               </section>
 
-              <div className="summary-grid">
-                <section className="summary-card wide">
-                  <h3>Personal Information</h3>
-                  <dl className="detail-grid">
-                    <div>
-                      <dt>First name</dt>
-                      <dd>Betsy</dd>
-                    </div>
-                    <div>
-                      <dt>Last name</dt>
-                      <dd>Smith-Johnson</dd>
-                    </div>
-                    <div>
-                      <dt>Date of birth</dt>
-                      <dd>1950-11-15</dd>
-                    </div>
-                    <div>
-                      <dt>Gender identity</dt>
-                      <dd>Female</dd>
-                    </div>
-                    <div>
-                      <dt>Sex assigned at birth</dt>
-                      <dd>--</dd>
-                    </div>
-                    <div>
-                      <dt>Marital status</dt>
-                      <dd>Unknown</dd>
-                    </div>
-                    <div className="span-2">
-                      <dt>Medical record number</dt>
-                      <dd>1032702</dd>
-                    </div>
-                  </dl>
-                </section>
-
-                <section className="summary-card">
-                  <h3>Demographics</h3>
-                  <dl className="stacked-details">
-                    <div>
-                      <dt>Race</dt>
-                      <dd>White</dd>
-                    </div>
-                    <div>
-                      <dt>Ethnicity</dt>
-                      <dd>--</dd>
-                    </div>
-                    <div>
-                      <dt>Language</dt>
-                      <dd>EN</dd>
-                    </div>
-                  </dl>
-                </section>
-
-                <section className="summary-card">
-                  <h3>Contact Information</h3>
-                  <dl className="stacked-details">
-                    <div>
-                      <dt>Address</dt>
-                      <dd>17040 E Warren Avenue, Detroit, MI, 48224, US</dd>
-                    </div>
-                    <div>
-                      <dt>Phone</dt>
-                      <dd>555-555-1111</dd>
-                    </div>
-                    <div>
-                      <dt>Email</dt>
-                      <dd>mmoen+betsysmithjohnson@mydirectives.com</dd>
-                    </div>
-                  </dl>
-                </section>
-
-                <section className="summary-card wide">
-                  <h3>Emergency Contacts</h3>
-                  <div className="contact-cards">
-                    {emergencyContacts.map((contact) => (
-                      <article key={contact.name} className="contact-card">
-                        <h4>
-                          {contact.name} <span>({contact.relationship})</span>
-                        </h4>
-                        <dl className="stacked-details">
-                          <div>
-                            <dt>Phone</dt>
-                            <dd>{contact.phone}</dd>
-                          </div>
-                          <div>
-                            <dt>Email</dt>
-                            <dd>{contact.email}</dd>
-                          </div>
-                          <div>
-                            <dt>Address</dt>
-                            <dd>{contact.address}</dd>
-                          </div>
-                        </dl>
-                      </article>
-                    ))}
-                  </div>
-                </section>
-              </div>
-
-              <section className="summary-card counts-card">
-                <div className="counts-header">
+              <section className="summary-card">
+                <h3>Demographics</h3>
+                <dl className="stacked-details">
                   <div>
-                    <h3>Resource Counts</h3>
-                    <p>
-                      Rails-inspired Phase 1 categories derived from patient
-                      bundle data where available.
-                    </p>
+                    <dt>Race</dt>
+                    <dd>White</dd>
                   </div>
-                  <span className="availability-badge">Bundle-derived</span>
-                </div>
+                  <div>
+                    <dt>Ethnicity</dt>
+                    <dd>--</dd>
+                  </div>
+                  <div>
+                    <dt>Language</dt>
+                    <dd>EN</dd>
+                  </div>
+                </dl>
+              </section>
 
-                <div className="counts-grid">
-                  {resourceCounts.map((item) => (
-                    <article key={item.label} className="count-tile">
-                      <p className="count-value">
-                        {item.count === null ? 'Unavailable' : item.count}
-                      </p>
-                      <p className="count-label">{item.label}</p>
+              <section className="summary-card">
+                <h3>Contact Information</h3>
+                <dl className="stacked-details">
+                  <div>
+                    <dt>Address</dt>
+                    <dd>17040 E Warren Avenue, Detroit, MI, 48224, US</dd>
+                  </div>
+                  <div>
+                    <dt>Phone</dt>
+                    <dd>555-555-1111</dd>
+                  </div>
+                  <div>
+                    <dt>Email</dt>
+                    <dd>mmoen+betsysmithjohnson@mydirectives.com</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section className="summary-card wide">
+                <h3>Emergency Contacts</h3>
+                <div className="contact-cards">
+                  {emergencyContacts.map((contact) => (
+                    <article key={contact.name} className="contact-card">
+                      <h4>
+                        {contact.name} <span>({contact.relationship})</span>
+                      </h4>
+                      <dl className="stacked-details">
+                        <div>
+                          <dt>Phone</dt>
+                          <dd>{contact.phone}</dd>
+                        </div>
+                        <div>
+                          <dt>Email</dt>
+                          <dd>{contact.email}</dd>
+                        </div>
+                        <div>
+                          <dt>Address</dt>
+                          <dd>{contact.address}</dd>
+                        </div>
+                      </dl>
                     </article>
                   ))}
                 </div>
               </section>
             </div>
+
+            <section className="summary-card counts-card">
+              <div className="counts-header">
+                <div>
+                  <h3>Resource Counts</h3>
+                  <p>
+                    Rails-inspired Phase 1 categories derived from patient
+                    bundle data where available.
+                  </p>
+                </div>
+                <span className="availability-badge">Bundle-derived</span>
+              </div>
+
+              <div className="counts-grid">
+                {resourceCounts.map((item) => (
+                  <article key={item.label} className="count-tile">
+                    <p className="count-value">
+                      {item.count === null ? 'Unavailable' : item.count}
+                    </p>
+                    <p className="count-label">{item.label}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
           </div>
         </section>
 
@@ -405,7 +409,7 @@ function App() {
               <ul>
                 <li>Read-only Phase 1</li>
                 <li>Open FHIR endpoints only</li>
-                <li>FHIR server selection and saved-server concept</li>
+                <li>FHIR server selection and previously connected servers</li>
                 <li>Patient list and patient summary flow</li>
               </ul>
             </article>
