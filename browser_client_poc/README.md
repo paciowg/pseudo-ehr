@@ -22,10 +22,29 @@ Initial application development will support the following:
 2. List the Patient records on the server
 3. Allow the user to filter or search for patients
 4. When a patient is selected
-   1. That patient's full record is loaded (using $everything operator with _include and )
+   1. That patient's full record is loaded primarily using `$everything`
    2. A patient summary page is displayed
 
-Phase 1 should be completed in a manner that supports implementation future PACIO reference capabilities in later iterations.
+Phase 1 is read-only.
+
+The patient summary should display:
+
+- personal information
+- contact information
+- demographics
+- emergency contacts
+- active problems
+- current medications
+- known allergies
+- most recent vitals
+
+The initial clinical summary sections are non-interactive and should show up to 10 items with dates where available and a clear empty state when no data is present.
+
+Phase 1 should be completed in a manner that supports future PACIO reference capabilities in later iterations.
+
+For more detailed planning and current decisions, see:
+
+- `IMPLEMENTATION_PLAN.md`
 
 ## Phase 2
 
@@ -38,24 +57,24 @@ Once basic FHIR support is in place some PACIO specific functionality will be ex
 
 The goal is to have a clear reference implementation that is easy to follow but still use abstractions to simplify code. For example, custom React Hooks may be helpful to handle loading states, error boundaries, or fetching additional dependent data (like fetching a patient's Observations automatically whenever a patient view loads), e.g., something like
 
-import { useMemo } from 'react';
-import { Patient } from 'fhir/r4';
-import { getPatientFullName, getPatientPhone } from '../utils/fhirHelpers';
+```ts
+import { useMemo } from 'react'
+import { Patient } from 'fhir/r4'
+import { getPatientFullName, getPatientPhone } from '../utils/fhirHelpers'
 
 export const usePatientModel = (patient: Patient | undefined) => {
   return useMemo(() => {
-    if (!patient) return null;
+    if (!patient) return null
 
     return {
-      // Expose the raw data if a specific view needs custom hacking
       raw: patient,
-      // Expose the clean semantic helper methods/fields
       fullName: getPatientFullName(patient),
       primaryPhone: getPatientPhone(patient),
-      birthDate: patient.birthDate || 'Not Recorded'
-    };
-  }, [patient]); // Only recalculates if the actual patient object changes
-};
+      birthDate: patient.birthDate || 'Not Recorded',
+    }
+  }, [patient])
+}
+```
 
 # React + TypeScript + Vite
 

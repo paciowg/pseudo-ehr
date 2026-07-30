@@ -18,7 +18,6 @@ This POC will not share code with the Rails application, but it may take inspira
 
 - the user workflow
 - the kinds of patient data shown on the patient page
-- the resource categories counted for a patient
 - the semantic interpretation of FHIR data
 
 The browser POC should use a new visual design and should aim to present a simpler, more declarative implementation.
@@ -61,29 +60,27 @@ The Phase 1 patient summary page should display Rails-inspired content including
 - contact information
 - demographics
 - emergency contacts
-- resource counts
+- clinically oriented summary sections for:
+  - active problems
+  - current medications
+  - known allergies
+  - most recent vitals
 
-### Resource count categories
+### Clinical summary sections
 
-For Phase 1, the POC should keep the current Rails-inspired categories for patient resource counts:
+The patient page should include the following non-interactive clinical summary sections:
 
-- ADIs
-- Care Team
-- Conditions
-- Goals
-- Medication List
-- Medication Requests
-- Procedures
-- Diagnostic Reports
-- Other Documents
-- Detected Issues
-- Observations
-- Questionnaire Responses
-- Nutrition Orders
-- Service Requests
-- TOC
+- Active Problems
+- Current Medications
+- Known Allergies
+- Most Recent Vitals
 
-At this stage, these counts are part of the patient summary experience. Separate detail pages for each category are not required to begin sketching the initial implementation.
+For the first pass:
+
+- these sections are display-only
+- each section should show up to 10 items
+- each section should show dates when available
+- each section should show a clear empty state such as `None recorded`
 
 ### Patient page layout
 
@@ -95,7 +92,11 @@ The initial patient page should follow this general layout:
   - demographics card
   - contact information card
   - emergency contacts card
-- resource counts section or grid
+  - clinical summary cards for:
+    - active problems
+    - current medications
+    - known allergies
+    - most recent vitals
 
 This layout is intentionally inspired by the Rails patient summary while allowing a fresh visual design for the browser POC.
 
@@ -107,14 +108,14 @@ The primary mechanism for loading patient detail is:
 
 - `Patient/{id}/$everything`
 
-The patient summary page should derive both summary information and resource counts from the patient resource and returned bundle data.
+The patient summary page should derive both summary information and clinical summary sections from the patient resource and returned bundle data.
 
 ### Failure and fallback rule
 
 If `$everything` fails, is unsupported, or returns incomplete related-resource data:
 
 - the app should still display whatever can be derived from the `Patient` resource itself
-- related-resource counts and sections that depend on the bundle should be shown as unavailable
+- related clinical sections that depend on bundle data should be shown as unavailable or empty as appropriate
 - the implementation should not introduce a large first-pass fallback system that issues many separate resource-type queries
 
 This keeps Phase 1 simpler while still allowing graceful degradation.
@@ -203,19 +204,35 @@ Follow Rails-inspired behavior where possible:
 - address may come from `contact.address.text`, or from formatted structured address data
 - missing relationship may fall back to an `"Unknown"`-style display label
 
+### Clinical section sources
+
+For the first implementation pass, the clinical summary sections should use these source assumptions:
+
+- Active Problems
+  - `Condition`
+- Current Medications
+  - `MedicationRequest`
+- Known Allergies
+  - `AllergyIntolerance`
+- Most Recent Vitals
+  - `Observation`
+
+These source assumptions are sufficient for the sample data and the initial POC, even if they are not a perfect clinical abstraction for every production use case.
+
 ## Display conventions
 
 The exact wording can be refined during implementation, but the app should use consistent conventions for:
 
 - missing patient field values
 - empty emergency contact lists
-- unavailable counts or unavailable bundle-derived data
+- empty clinical summary sections
+- unavailable bundle-derived data
 
 A likely initial convention is:
 
 - use a placeholder such as `--` or `—` for missing simple field values
-- use `0` only when a count is known to be zero
-- use `Unavailable` when a count or section cannot be computed due to missing or failed bundle data
+- use `None recorded` for empty clinical lists
+- use `Unavailable` when a section cannot be computed due to missing or failed bundle data
 
 ## Initial route assumptions
 
@@ -242,7 +259,7 @@ The implementation should remain simple and understandable rather than mirroring
 
 The following questions remain open, but they do not block implementation sketching:
 
-- whether resource count cards are purely informational or eventually navigable
+- whether the clinical summary cards will later become navigable
 - whether a query/debug panel should be included in Phase 1
 - whether fixture-based mock data should be included immediately for local development
 - the exact final placeholder text for missing and unavailable values
@@ -257,6 +274,10 @@ The next step after this document is to sketch the initial implementation for Ph
 - component hierarchy
 - data-fetch flow
 - patient-summary view model / helper responsibilities
-- resource-count derivation approach
+- derivation approach for:
+  - active problems
+  - current medications
+  - known allergies
+  - most recent vitals
 
 This document should be updated as implementation decisions become more concrete.

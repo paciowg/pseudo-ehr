@@ -227,7 +227,8 @@
 }
 
 .saved-server-list,
-.patient-list {
+.patient-list,
+.clinical-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -239,7 +240,8 @@
 }
 
 .saved-server-item,
-.patient-list-item {
+.patient-list-item,
+.clinical-list-item {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
@@ -251,7 +253,8 @@
 
 .saved-server-name,
 .patient-name,
-.patient-summary-name {
+.patient-summary-name,
+.clinical-item-title {
   margin: 0;
   font-weight: 800;
   color: #0f172a;
@@ -294,7 +297,8 @@
   max-width: 28rem;
 }
 
-.patient-list {
+.patient-list,
+.clinical-list {
   display: grid;
   gap: 0.85rem;
 }
@@ -321,7 +325,7 @@
 }
 
 .bundle-status,
-.availability-badge {
+.clinical-summary-cap {
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
@@ -335,7 +339,7 @@
   color: #166534;
 }
 
-.availability-badge {
+.clinical-summary-cap {
   background: #e0f2fe;
   color: #075985;
 }
@@ -411,48 +415,61 @@ dd {
   color: #92400e;
 }
 
-.counts-card {
-  margin-top: 1rem;
+.clinical-summary-card {
+  display: grid;
+  gap: 1rem;
 }
 
-.counts-header {
+.clinical-summary-header {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.clinical-list-item {
   align-items: flex-start;
-  margin-bottom: 1rem;
 }
 
-.counts-header p {
-  margin-top: 0.35rem;
-  color: #475569;
-}
-
-.counts-grid {
+.clinical-list-main {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 0.85rem;
+  gap: 0.3rem;
 }
 
-.count-tile {
-  border-radius: 18px;
-  border: 1px solid #dbe4f0;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  padding: 1rem;
-  text-align: left;
-}
-
-.count-value {
+.clinical-item-secondary {
   margin: 0;
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.count-label {
-  margin: 0.35rem 0 0;
   color: #475569;
   font-size: 0.95rem;
+}
+
+.clinical-item-meta {
+  display: grid;
+  justify-items: end;
+  gap: 0.2rem;
+  text-align: right;
+  min-width: 7rem;
+}
+
+.clinical-item-date-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.clinical-item-date-value {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.empty-state {
+  margin: 0;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 1rem;
+  color: #64748b;
+  background: #f8fafc;
 }
 
 .notes-grid {
@@ -482,7 +499,7 @@ dd {
   .app-header,
   .panel-header,
   .patient-summary-hero,
-  .counts-header {
+  .clinical-summary-header {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -499,7 +516,8 @@ dd {
     grid-column: span 1;
   }
 
-  .saved-server-meta {
+  .saved-server-meta,
+  .clinical-item-meta {
     justify-items: start;
     text-align: left;
   }
@@ -527,5 +545,9 @@ dd {
 
   .app-header h1 {
     font-size: 2rem;
+  }
+
+  .clinical-list-item {
+    flex-direction: column;
   }
 }

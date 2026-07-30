@@ -23,9 +23,11 @@ type EmergencyContact = {
   address: string
 }
 
-type ResourceCount = {
-  label: string
-  count: number | null
+type ClinicalListItem = {
+  title: string
+  dateLabel?: string
+  dateValue?: string
+  secondaryText?: string
 }
 
 const previouslyConnectedServers: PreviouslyConnectedServer[] = [
@@ -84,23 +86,150 @@ const emergencyContacts: EmergencyContact[] = [
   },
 ]
 
-const resourceCounts: ResourceCount[] = [
-  { label: 'ADIs', count: 0 },
-  { label: 'Care Team', count: 1 },
-  { label: 'Conditions', count: 26 },
-  { label: 'Goals', count: 2 },
-  { label: 'Medication List', count: 7 },
-  { label: 'Medication Requests', count: 60 },
-  { label: 'Procedures', count: 0 },
-  { label: 'Diagnostic Reports', count: 4 },
-  { label: 'Other Documents', count: 4 },
-  { label: 'Detected Issues', count: 0 },
-  { label: 'Observations', count: 105 },
-  { label: 'Questionnaire Responses', count: 20 },
-  { label: 'Nutrition Orders', count: 2 },
-  { label: 'Service Requests', count: 10 },
-  { label: 'TOC', count: 4 },
+const activeProblems: ClinicalListItem[] = [
+  {
+    title: 'Essential hypertension',
+    dateLabel: 'Onset',
+    dateValue: '2018-03-14',
+  },
+  {
+    title: 'Type 2 diabetes mellitus',
+    dateLabel: 'Recorded',
+    dateValue: '2019-07-22',
+  },
+  {
+    title: 'Osteoarthritis of knee',
+    dateLabel: 'Onset',
+    dateValue: '2021-01-09',
+  },
+  {
+    title: 'Hyperlipidemia',
+    dateLabel: 'Recorded',
+    dateValue: '2017-11-05',
+  },
 ]
+
+const currentMedications: ClinicalListItem[] = [
+  {
+    title: 'Lisinopril 10 MG Oral Tablet',
+    dateLabel: 'Authored',
+    dateValue: '2024-02-11',
+  },
+  {
+    title: 'Metformin 500 MG Oral Tablet',
+    dateLabel: 'Authored',
+    dateValue: '2024-01-28',
+  },
+  {
+    title: 'Atorvastatin 20 MG Oral Tablet',
+    dateLabel: 'Authored',
+    dateValue: '2024-03-02',
+  },
+]
+
+const knownAllergies: ClinicalListItem[] = [
+  {
+    title: 'Penicillin',
+    dateLabel: 'Recorded',
+    dateValue: '2016-06-18',
+    secondaryText: 'Medication allergy',
+  },
+  {
+    title: 'Shellfish',
+    dateLabel: 'Recorded',
+    dateValue: '2014-09-03',
+    secondaryText: 'Food allergy',
+  },
+]
+
+const mostRecentVitals: ClinicalListItem[] = [
+  {
+    title: 'Blood pressure',
+    secondaryText: '132/78 mmHg',
+    dateLabel: 'Observed',
+    dateValue: '2025-01-12',
+  },
+  {
+    title: 'Heart rate',
+    secondaryText: '72 bpm',
+    dateLabel: 'Observed',
+    dateValue: '2025-01-12',
+  },
+  {
+    title: 'Respiratory rate',
+    secondaryText: '16 breaths/min',
+    dateLabel: 'Observed',
+    dateValue: '2025-01-12',
+  },
+  {
+    title: 'Body temperature',
+    secondaryText: '98.4 °F',
+    dateLabel: 'Observed',
+    dateValue: '2025-01-12',
+  },
+  {
+    title: 'Oxygen saturation',
+    secondaryText: '98%',
+    dateLabel: 'Observed',
+    dateValue: '2025-01-12',
+  },
+]
+
+function ClinicalSummarySection({
+  title,
+  items,
+  emptyMessage = 'None recorded',
+}: {
+  title: string
+  items: ClinicalListItem[]
+  emptyMessage?: string
+}) {
+  const visibleItems = items.slice(0, 10)
+
+  return (
+    <section className="summary-card clinical-summary-card">
+      <div className="clinical-summary-header">
+        <h3>{title}</h3>
+        <span className="clinical-summary-cap">Up to 10 items</span>
+      </div>
+
+      {visibleItems.length > 0 ? (
+        <ul className="clinical-list">
+          {visibleItems.map((item) => (
+            <li
+              key={`${title}-${item.title}-${item.dateValue ?? ''}-${item.secondaryText ?? ''}`}
+              className="clinical-list-item"
+            >
+              <div className="clinical-list-main">
+                <p className="clinical-item-title">{item.title}</p>
+                {item.secondaryText ? (
+                  <p className="clinical-item-secondary">{item.secondaryText}</p>
+                ) : null}
+              </div>
+
+              <div className="clinical-item-meta">
+                {item.dateLabel && item.dateValue ? (
+                  <>
+                    <span className="clinical-item-date-label">
+                      {item.dateLabel}
+                    </span>
+                    <span className="clinical-item-date-value">
+                      {item.dateValue}
+                    </span>
+                  </>
+                ) : (
+                  <span className="clinical-item-date-value">--</span>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="empty-state">{emptyMessage}</p>
+      )}
+    </section>
+  )
+}
 
 function App() {
   return (
@@ -367,31 +496,24 @@ function App() {
                   ))}
                 </div>
               </section>
+
+              <ClinicalSummarySection
+                title="Active Problems"
+                items={activeProblems}
+              />
+              <ClinicalSummarySection
+                title="Current Medications"
+                items={currentMedications}
+              />
+              <ClinicalSummarySection
+                title="Known Allergies"
+                items={knownAllergies}
+              />
+              <ClinicalSummarySection
+                title="Most Recent Vitals"
+                items={mostRecentVitals}
+              />
             </div>
-
-            <section className="summary-card counts-card">
-              <div className="counts-header">
-                <div>
-                  <h3>Resource Counts</h3>
-                  <p>
-                    Rails-inspired Phase 1 categories derived from patient
-                    bundle data where available.
-                  </p>
-                </div>
-                <span className="availability-badge">Bundle-derived</span>
-              </div>
-
-              <div className="counts-grid">
-                {resourceCounts.map((item) => (
-                  <article key={item.label} className="count-tile">
-                    <p className="count-value">
-                      {item.count === null ? 'Unavailable' : item.count}
-                    </p>
-                    <p className="count-label">{item.label}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
           </div>
         </section>
 
@@ -421,7 +543,7 @@ function App() {
                 <li>Demographics</li>
                 <li>Contact information</li>
                 <li>Emergency contacts</li>
-                <li>Resource counts</li>
+                <li>Clinical summary sections</li>
               </ul>
             </article>
 
@@ -430,7 +552,7 @@ function App() {
               <ul>
                 <li>Primary patient load via Patient/$everything</li>
                 <li>Patient-only fallback if bundle fetch fails</li>
-                <li>Unavailable counts when bundle data is missing</li>
+                <li>Clinical sections use Conditions, MedicationRequest, AllergyIntolerance, and Observation data</li>
                 <li>FHIR field extraction guided by the Rails patient model</li>
               </ul>
             </article>
