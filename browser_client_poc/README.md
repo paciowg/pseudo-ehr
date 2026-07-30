@@ -1,6 +1,6 @@
 # PACIO POC Standalone Browser Client
 
-The goal of this area of the pseudo-ehr is to explore the cost and value of a PACIO (https://pacioproject.org/) reference implementation that
+The goal of this area of the pseudo-ehr is to explore the cost and value of a PACIO (https://pacioproject.org/) demonstration and reference implementation that
 
 * Has no code or dependency relationship on the existing pseudo-ehr Ruby on Rails reference implementation
 * Uses standard TypeScript and web app infrastructure (Vite, React) that may be more accessible as a reference implementation than Ruby and Rails
@@ -12,17 +12,27 @@ The initial application exploration will
 * Start with Vite, Typescript, React
 * Use @types/fhir and fhirpath.js to simplify implementation
 * Interact with FHIR servers using standard JS fetch to get resources
+* Support only open FHIR endpoints to start with (leaving open future support for SMART-on-FHIR)
 
-## First Steps
+## Phase 1
 
-Application development will take the following steps:
+Initial application development will support the following:
 
 1. Connect to a FHIR server (the app keeps a list of previously used FHIR servers and a short reference name for each in browser local storage)
 2. List the Patient records on the server
 3. Allow the user to filter or search for patients
 4. When a patient is selected
-   1. That patient's full record is loaded (using $everything operator)
+   1. That patient's full record is loaded (using $everything operator with _include and )
    2. A patient summary page is displayed
+
+Phase 1 should be completed in a manner that supports implementation future PACIO reference capabilities in later iterations.
+
+## Phase 2
+
+Once basic FHIR support is in place some PACIO specific functionality will be explored. Candidates include:
+
+1. Transition of Care document bundle builder
+2. Advanced Directive document bundle builder
 
 ## Proposed architectural choices
 
