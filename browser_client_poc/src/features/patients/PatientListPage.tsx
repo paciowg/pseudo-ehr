@@ -55,7 +55,6 @@ export function PatientListPage() {
     <section className="panel">
       <div className="panel-header">
         <div>
-          <p className="section-kicker">Step 2</p>
           <h2>Browse patients</h2>
         </div>
       </div>

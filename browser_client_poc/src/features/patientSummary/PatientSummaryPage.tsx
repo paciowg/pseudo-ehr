@@ -95,7 +95,6 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
     <section className="panel">
       <div className="panel-header">
         <div>
-          <p className="section-kicker">Step 3</p>
           <h2>Patient summary</h2>
         </div>
       </div>
