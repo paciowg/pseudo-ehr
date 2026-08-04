@@ -181,7 +181,9 @@
 
 .primary-button,
 .secondary-button,
-.link-button {
+.link-button,
+.saved-server-select-button,
+.saved-server-delete-button {
   border: 0;
   border-radius: 999px;
   font: inherit;
@@ -234,13 +236,17 @@
 
 .primary-button:hover,
 .secondary-button:hover,
-.link-button:hover {
+.link-button:hover,
+.saved-server-select-button:hover,
+.saved-server-delete-button:hover {
   transform: translateY(-1px);
 }
 
 .primary-button:disabled,
 .secondary-button:disabled,
-.link-button:disabled {
+.link-button:disabled,
+.saved-server-select-button:disabled,
+.saved-server-delete-button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
   transform: none;
@@ -277,10 +283,37 @@
   background: #f8fafc;
 }
 
-.saved-server-item.active {
-  border-color: #818cf8;
+.saved-server-item {
+  align-items: stretch;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.saved-server-select-button {
+  flex: 1;
+  text-align: left;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1rem;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.saved-server-select-button:hover {
   background: #eef2ff;
-  box-shadow: inset 0 0 0 1px #c7d2fe;
+  border-color: #c7d2fe;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.12);
+}
+
+.saved-server-select-button:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
+}
+
+.saved-server-content {
+  display: grid;
+  gap: 0.25rem;
 }
 
 .saved-server-name,
@@ -295,25 +328,32 @@
 .saved-server-url,
 .saved-server-meta,
 .patient-meta,
-.patient-summary-meta {
+.patient-summary-meta,
+.saved-server-last-used {
   margin: 0.25rem 0 0;
   color: #475569;
   font-size: 0.95rem;
 }
 
-.saved-server-meta {
-  display: grid;
-  justify-items: end;
-  align-content: space-between;
-  text-align: right;
-  gap: 0.5rem;
+.saved-server-delete-button {
+  align-self: center;
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #b91c1c;
+  font-size: 1rem;
 }
 
-.saved-server-actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+.saved-server-delete-button:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.saved-server-delete-button:focus-visible {
+  outline: 2px solid #f87171;
+  outline-offset: 2px;
 }
 
 .active-server-banner,
@@ -607,14 +647,9 @@ dd {
     grid-column: span 1;
   }
 
-  .saved-server-meta,
   .clinical-item-meta {
     justify-items: start;
     text-align: left;
-  }
-
-  .saved-server-actions {
-    justify-content: flex-start;
   }
 }
 
@@ -639,8 +674,15 @@ dd {
   }
 
   .clinical-list-item,
-  .saved-server-item,
   .patient-list-item {
     flex-direction: column;
+  }
+
+  .saved-server-item {
+    align-items: stretch;
+  }
+
+  .saved-server-delete-button {
+    align-self: flex-end;
   }
 }

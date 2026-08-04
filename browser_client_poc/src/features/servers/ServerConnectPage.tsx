@@ -114,31 +114,28 @@ export function ServerConnectPage() {
             <ul className="saved-server-list">
               {savedServers.map((server) => (
                 <li key={server.id} className="saved-server-item">
-                  <div>
-                    <p className="saved-server-name">{server.label}</p>
-                    <p className="saved-server-url">{server.baseUrl}</p>
-                  </div>
-                  <div className="saved-server-meta">
-                    <span>
-                      Last used {new Date(server.lastUsedAt).toLocaleString()}
+                  <button
+                    type="button"
+                    className="saved-server-select-button"
+                    onClick={() => handleUseSavedServer(server.baseUrl)}
+                  >
+                    <span className="saved-server-content">
+                      <span className="saved-server-name">{server.label}</span>
+                      <span className="saved-server-url">{server.baseUrl}</span>
+                      <span className="saved-server-last-used">
+                        Last used {new Date(server.lastUsedAt).toLocaleString()}
+                      </span>
                     </span>
-                    <div className="saved-server-actions">
-                      <button
-                        type="button"
-                        className="link-button"
-                        onClick={() => handleUseSavedServer(server.baseUrl)}
-                      >
-                        Use
-                      </button>
-                      <button
-                        type="button"
-                        className="link-button link-button-danger"
-                        onClick={() => deleteServer(server.baseUrl)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="saved-server-delete-button"
+                    aria-label={`Remove saved server ${server.label}`}
+                    onClick={() => deleteServer(server.baseUrl)}
+                  >
+                    🗑
+                  </button>
                 </li>
               ))}
             </ul>
