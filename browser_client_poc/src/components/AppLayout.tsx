@@ -10,7 +10,6 @@ export function AppLayout({ children }: AppLayoutProps) {
     <div className="app-shell">
       <header className="app-header">
         <div>
-          <p className="eyebrow">PACIO Explorer Reference Client</p>
           <h1>PACIO Explorer Reference Client</h1>
         </div>
 
