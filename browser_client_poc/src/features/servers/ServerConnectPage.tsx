@@ -51,169 +51,124 @@ export function ServerConnectPage() {
   }
 
   return (
-    <>
-      <section className="panel">
-        <div className="panel-header">
-          <div>
-            <p className="section-kicker">Step 1</p>
-            <h2>Connect to a FHIR server</h2>
-          </div>
-          <span className="panel-tag">Route: #/</span>
+    <section className="panel">
+      <div className="panel-header">
+        <div>
+          <h2>Connect to a FHIR server</h2>
         </div>
+        <span className="panel-tag">Route: #/</span>
+      </div>
 
-        <div className="server-layout">
-          <form className="server-form" onSubmit={handleConnect}>
-            {activeServer ? (
-              <div className="active-server-banner">
-                Active server: <strong>{activeServer.label}</strong> ·{' '}
-                {activeServer.baseUrl}
-              </div>
-            ) : null}
-
-            {successMessage ? (
-              <div className="success-banner">{successMessage}</div>
-            ) : null}
-
-            {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
-
-            <div className="field-group">
-              <label htmlFor="server-label">Server label</label>
-              <input
-                id="server-label"
-                type="text"
-                value={label}
-                onChange={(event) => setLabel(event.target.value)}
-                placeholder="Local HAPI Demo"
-              />
+      <div className="server-layout">
+        <form className="server-form" onSubmit={handleConnect}>
+          {activeServer ? (
+            <div className="active-server-banner">
+              Active server: <strong>{activeServer.label}</strong> ·{' '}
+              {activeServer.baseUrl}
             </div>
+          ) : null}
 
-            <div className="field-group">
-              <label htmlFor="server-url">FHIR base URL</label>
-              <input
-                id="server-url"
-                type="url"
-                value={baseUrl}
-                onChange={(event) => setBaseUrl(event.target.value)}
-                placeholder="https://example.com/fhir"
-              />
-            </div>
+          {successMessage ? (
+            <div className="success-banner">{successMessage}</div>
+          ) : null}
 
-            <div className="form-actions">
-              <button type="submit" className="primary-button" disabled={isConnecting}>
-                {isConnecting ? 'Connecting...' : 'Connect'}
-              </button>
+          {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
 
-              <button
-                type="button"
-                className="secondary-button outline"
-                onClick={() => {
-                  setLabel(INITIAL_LABEL)
-                  setBaseUrl(INITIAL_URL)
-                  setErrorMessage('')
-                  setSuccessMessage('')
-                }}
-                disabled={isConnecting}
-              >
-                Reset
-              </button>
-            </div>
+          <div className="field-group">
+            <label htmlFor="server-label">Server label</label>
+            <input
+              id="server-label"
+              type="text"
+              value={label}
+              onChange={(event) => setLabel(event.target.value)}
+              placeholder="Local HAPI Demo"
+            />
+          </div>
 
-            <p className="helper-text">
-              Phase 1 targets FHIR R4 demo servers. Connection validation checks
-              the server metadata endpoint before saving the server locally.
-            </p>
-          </form>
+          <div className="field-group">
+            <label htmlFor="server-url">FHIR base URL</label>
+            <input
+              id="server-url"
+              type="url"
+              value={baseUrl}
+              onChange={(event) => setBaseUrl(event.target.value)}
+              placeholder="https://example.com/fhir"
+            />
+          </div>
 
-          <div className="saved-server-panel">
-            <h3>Previously Connected Servers</h3>
+          <div className="form-actions">
+            <button type="submit" className="primary-button" disabled={isConnecting}>
+              {isConnecting ? 'Connecting...' : 'Connect'}
+            </button>
 
-            {hasSavedServers ? (
-              <ul className="saved-server-list">
-                {savedServers.map((server) => {
-                  const isActive = activeServer?.baseUrl === server.baseUrl
+            <button
+              type="button"
+              className="secondary-button outline"
+              onClick={() => {
+                setLabel(INITIAL_LABEL)
+                setBaseUrl(INITIAL_URL)
+                setErrorMessage('')
+                setSuccessMessage('')
+              }}
+              disabled={isConnecting}
+            >
+              Reset
+            </button>
+          </div>
 
-                  return (
-                    <li
-                      key={server.id}
-                      className={isActive ? 'saved-server-item active' : 'saved-server-item'}
-                    >
-                      <div>
-                        <p className="saved-server-name">{server.label}</p>
-                        <p className="saved-server-url">{server.baseUrl}</p>
+          <p className="helper-text">
+            Connection validation checks the server metadata endpoint before
+            saving the server locally.
+          </p>
+        </form>
+
+        <div className="saved-server-panel">
+          <h3>Previously Connected Servers</h3>
+
+          {hasSavedServers ? (
+            <ul className="saved-server-list">
+              {savedServers.map((server) => {
+                const isActive = activeServer?.baseUrl === server.baseUrl
+
+                return (
+                  <li
+                    key={server.id}
+                    className={isActive ? 'saved-server-item active' : 'saved-server-item'}
+                  >
+                    <div>
+                      <p className="saved-server-name">{server.label}</p>
+                      <p className="saved-server-url">{server.baseUrl}</p>
+                    </div>
+                    <div className="saved-server-meta">
+                      <span>
+                        Last used {new Date(server.lastUsedAt).toLocaleString()}
+                      </span>
+                      <div className="saved-server-actions">
+                        <button
+                          type="button"
+                          className="link-button"
+                          onClick={() => handleUseSavedServer(server.baseUrl)}
+                        >
+                          Use
+                        </button>
+                        <button
+                          type="button"
+                          className="link-button link-button-danger"
+                          onClick={() => deleteServer(server.baseUrl)}
+                        >
+                          Remove
+                        </button>
                       </div>
-                      <div className="saved-server-meta">
-                        <span>
-                          Last used {new Date(server.lastUsedAt).toLocaleString()}
-                        </span>
-                        <div className="saved-server-actions">
-                          <button
-                            type="button"
-                            className="link-button"
-                            onClick={() => handleUseSavedServer(server.baseUrl)}
-                          >
-                            Use
-                          </button>
-                          <button
-                            type="button"
-                            className="link-button link-button-danger"
-                            onClick={() => deleteServer(server.baseUrl)}
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
-                    </li>
-                  )
-                })}
-              </ul>
-            ) : (
-              <p className="empty-state">No saved servers yet.</p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="panel">
-        <div className="panel-header">
-          <div>
-            <p className="section-kicker">Implementation Notes</p>
-            <h2>What this first pass establishes</h2>
-          </div>
-        </div>
-
-        <div className="notes-grid">
-          <article className="note-card">
-            <h3>Agreed scope</h3>
-            <ul>
-              <li>Read-only Phase 1</li>
-              <li>FHIR R4 demo endpoints</li>
-              <li>Local saved-server persistence</li>
-              <li>Hash-based routing for static hosting</li>
+                    </div>
+                  </li>
+                )
+              })}
             </ul>
-          </article>
-
-          <article className="note-card">
-            <h3>Patient summary shape</h3>
-            <ul>
-              <li>Personal information</li>
-              <li>Demographics</li>
-              <li>Contact information</li>
-              <li>Emergency contacts</li>
-              <li>Clinical summary sections</li>
-            </ul>
-          </article>
-
-          <article className="note-card">
-            <h3>Data behavior</h3>
-            <ul>
-              <li>Connect by validating CapabilityStatement metadata</li>
-              <li>Load up to 100 Patient resources</li>
-              <li>Filter patients client-side</li>
-              <li>Use Patient/$everything with Patient fallback</li>
-            </ul>
-          </article>
+          ) : (
+            <p className="empty-state">No saved servers yet.</p>
+          )}
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   )
 }

@@ -10,13 +10,8 @@ export function AppLayout({ children }: AppLayoutProps) {
     <div className="app-shell">
       <header className="app-header">
         <div>
-          <p className="eyebrow">PACIO Browser Client POC</p>
-          <h1>Phase 1 browser client</h1>
-          <p className="subtitle">
-            A read-only browser client for connecting directly to FHIR R4 demo
-            servers, browsing patients, and rendering a browser-based patient
-            summary without a backend application server.
-          </p>
+          <p className="eyebrow">PACIO Explorer Reference Client</p>
+          <h1>PACIO Explorer Reference Client</h1>
         </div>
 
         <div className="header-status-card">
@@ -27,8 +22,6 @@ export function AppLayout({ children }: AppLayoutProps) {
             Patients
           </a>
           <span className="status-pill">FHIR R4</span>
-          <span className="status-pill">Read-only</span>
-          <span className="status-pill">No backend</span>
         </div>
       </header>
 
