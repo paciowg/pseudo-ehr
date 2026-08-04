@@ -50,5 +50,12 @@ export function getCodeableConceptText(codeableConcept: CodeableConcept | undefi
 }
 
 export function formatDate(value: string | undefined) {
-  return value || placeholderValue()
+  if (!value) return placeholderValue()
+
+  const isoDateMatch = value.match(/^(\d{4}-\d{2}-\d{2})/)
+  if (isoDateMatch) {
+    return isoDateMatch[1]
+  }
+
+  return value
 }
