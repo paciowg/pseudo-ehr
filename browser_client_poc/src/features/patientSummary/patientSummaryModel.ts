@@ -85,6 +85,39 @@ const RESPIRATORY_RATE_CODES = new Set(['9279-1'])
 const BODY_TEMPERATURE_CODES = new Set(['8310-5'])
 const OXYGEN_SATURATION_CODES = new Set(['2708-6', '59408-5'])
 
+const CONTACT_RELATIONSHIP_CODE_MAP: Record<string, string> = {
+  BRO: 'Brother',
+  CHD: 'Child',
+  DAU: 'Daughter',
+  DAUC: 'Daughter',
+  DAUINLAW: 'Daughter-in-law',
+  DOMPART: 'Domestic partner',
+  FAMMEMB: 'Family member',
+  FTH: 'Father',
+  FRND: 'Friend',
+  GRDFTH: 'Grandfather',
+  GRDMTH: 'Grandmother',
+  HUSB: 'Husband',
+  MTH: 'Mother',
+  NBOR: 'Neighbor',
+  NCHILD: 'Natural child',
+  NIECE: 'Niece',
+  NEPHEW: 'Nephew',
+  PARN: 'Parent',
+  PRN: 'Parent',
+  SIS: 'Sister',
+  SIBC: 'Sibling',
+  SIGOTHR: 'Significant other',
+  SON: 'Son',
+  SONC: 'Son',
+  SONINLAW: 'Son-in-law',
+  SPO: 'Spouse',
+  STPCHLD: 'Stepchild',
+  UNCLE: 'Uncle',
+  AUNT: 'Aunt',
+  WIFE: 'Wife',
+}
+
 export function buildPatientSummaryModel(input: {
   patient: Patient
   bundle: Bundle | null
@@ -201,10 +234,17 @@ function getEmergencyContacts(patient: Patient): EmergencyContact[] {
 
 function getRelationship(relationships: CodeableConcept[] | undefined) {
   const relationship = relationships?.[0]
+  const coding = relationship?.coding?.[0]
+  const code = coding?.code?.toUpperCase()
+
+  if (code && CONTACT_RELATIONSHIP_CODE_MAP[code]) {
+    return CONTACT_RELATIONSHIP_CODE_MAP[code]
+  }
+
   return (
-    relationship?.coding?.[0]?.display ||
-    relationship?.coding?.[0]?.code ||
+    coding?.display ||
     relationship?.text ||
+    coding?.code ||
     'Unknown'
   )
 }
