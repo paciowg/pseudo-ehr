@@ -116,9 +116,11 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
                 <p className="patient-summary-name">{summary.patientName}</p>
                 <p className="patient-summary-meta">{summary.patientMeta}</p>
               </div>
-              <div className={`bundle-status ${summary.bundleStatusTone}`}>
-                {summary.bundleStatusText}
-              </div>
+              {summary.bundleStatusText ? (
+                <div className={`bundle-status ${summary.bundleStatusTone}`}>
+                  {summary.bundleStatusText}
+                </div>
+              ) : null}
             </section>
 
             <div className="summary-grid">
