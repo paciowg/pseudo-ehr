@@ -40,7 +40,7 @@ export function filterPatients(items: PatientListItem[], query: string) {
   if (!normalizedQuery) return items
 
   return items.filter((patient) => {
-    const haystack = [patient.name, patient.dob, patient.gender, patient.mrn]
+    const haystack = [patient.name, patient.dob, patient.mrn]
       .join(' ')
       .toLowerCase()
 

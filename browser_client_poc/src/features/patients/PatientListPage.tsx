@@ -70,7 +70,7 @@ export function PatientListPage() {
             type="text"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search by name, DOB, gender, or MRN"
+            placeholder="Search by name, DOB, or MRN"
           />
         </div>
 
