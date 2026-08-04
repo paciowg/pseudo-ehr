@@ -58,7 +58,6 @@ export function PatientListPage() {
           <p className="section-kicker">Step 2</p>
           <h2>Browse patients</h2>
         </div>
-        <span className="panel-tag">Route: #/patients</span>
       </div>
 
       <div className="patient-list-panel full-width-panel">

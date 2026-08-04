@@ -56,7 +56,6 @@ export function ServerConnectPage() {
         <div>
           <h2>Connect to a FHIR server</h2>
         </div>
-        <span className="panel-tag">Route: #/</span>
       </div>
 
       <div className="server-layout">
