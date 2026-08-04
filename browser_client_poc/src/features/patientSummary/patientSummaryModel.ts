@@ -1,4 +1,5 @@
 import type {
+  AllergyIntolerance,
   Bundle,
   CodeableConcept,
   Coding,
@@ -258,17 +259,26 @@ function getCurrentMedications(bundle: Bundle | null): ClinicalListItem[] {
 function getKnownAllergies(bundle: Bundle | null): ClinicalListItem[] {
   return getBundleResources<AllergyIntolerance>(bundle, 'AllergyIntolerance')
     .filter((allergy) => allergy.verificationStatus?.coding?.[0]?.code !== 'entered-in-error')
-    .map((allergy) => ({
-      title: getCodeableConceptText(allergy.code) || placeholderValue(),
-      dateLabel: allergy.recordedDate ? 'Recorded' : undefined,
-      dateValue: allergy.recordedDate,
-      secondaryText:
-        allergy.type === 'allergy'
-          ? `${capitalize(allergy.category?.[0] || 'Allergy')} allergy`
-          : allergy.type
-            ? capitalize(allergy.type)
-            : undefined,
-    }))
+    .map((allergy) => {
+      const hasLastOccurrence = Boolean(allergy.lastOccurrence)
+      const dateValue = allergy.lastOccurrence || allergy.recordedDate
+
+      return {
+        title: getCodeableConceptText(allergy.code) || placeholderValue(),
+        dateLabel: dateValue
+          ? hasLastOccurrence
+            ? 'Last occurrence'
+            : 'Recorded'
+          : undefined,
+        dateValue,
+        secondaryText:
+          allergy.type === 'allergy'
+            ? `${capitalize(allergy.category?.[0] || 'Allergy')} allergy`
+            : allergy.type
+              ? capitalize(allergy.type)
+              : undefined,
+      }
+    })
     .slice(0, 10)
 }
 
