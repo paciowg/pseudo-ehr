@@ -48,7 +48,7 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   justify-content: flex-end;
-  max-width: 22rem;
+  max-width: 24rem;
 }
 
 .status-pill {
@@ -161,7 +161,14 @@
   font: inherit;
 }
 
-.form-actions {
+.field-group input:focus {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
+}
+
+.form-actions,
+.inline-actions,
+.page-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
@@ -178,7 +185,8 @@
     transform 0.15s ease,
     box-shadow 0.15s ease,
     background-color 0.15s ease,
-    color 0.15s ease;
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .primary-button,
@@ -196,6 +204,11 @@
 .secondary-button {
   background: #e2e8f0;
   color: #0f172a;
+}
+
+.secondary-button.outline {
+  background: #fff;
+  border: 1px solid #cbd5e1;
 }
 
 .secondary-button.compact {
@@ -218,6 +231,14 @@
 .secondary-button:hover,
 .link-button:hover {
   transform: translateY(-1px);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled,
+.link-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
 }
 
 .helper-text {
@@ -249,6 +270,12 @@
   border-radius: 16px;
   padding: 1rem;
   background: #f8fafc;
+}
+
+.saved-server-item.active {
+  border-color: #818cf8;
+  background: #eef2ff;
+  box-shadow: inset 0 0 0 1px #c7d2fe;
 }
 
 .saved-server-name,
@@ -284,17 +311,40 @@
   justify-content: flex-end;
 }
 
-.active-server-banner {
+.active-server-banner,
+.info-banner,
+.warning-banner,
+.error-banner,
+.success-banner {
   margin-bottom: 1rem;
   border-radius: 14px;
   padding: 0.9rem 1rem;
-  background: #eef2ff;
-  color: #312e81;
   font-weight: 600;
 }
 
+.active-server-banner,
+.info-banner {
+  background: #eef2ff;
+  color: #312e81;
+}
+
+.success-banner {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.warning-banner {
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+.error-banner {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
 .patient-search-group {
-  max-width: 28rem;
+  max-width: 32rem;
 }
 
 .patient-list,
@@ -325,7 +375,8 @@
 }
 
 .bundle-status,
-.clinical-summary-cap {
+.clinical-summary-cap,
+.server-chip {
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
@@ -339,9 +390,19 @@
   color: #166534;
 }
 
+.bundle-status.warning {
+  background: #fff7ed;
+  color: #9a3412;
+}
+
 .clinical-summary-cap {
   background: #e0f2fe;
   color: #075985;
+}
+
+.server-chip {
+  background: #eef2ff;
+  color: #4338ca;
 }
 
 .summary-grid {
@@ -410,6 +471,10 @@ dd {
   padding: 1rem;
 }
 
+.contact-card h4 {
+  margin: 0 0 0.75rem;
+}
+
 .contact-card h4 span {
   font-weight: 600;
   color: #92400e;
@@ -470,6 +535,27 @@ dd {
   padding: 1rem;
   color: #64748b;
   background: #f8fafc;
+}
+
+.metric-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.metric-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  font-size: 0.92rem;
+  font-weight: 700;
 }
 
 .notes-grid {
@@ -547,7 +633,9 @@ dd {
     font-size: 2rem;
   }
 
-  .clinical-list-item {
+  .clinical-list-item,
+  .saved-server-item,
+  .patient-list-item {
     flex-direction: column;
   }
 }

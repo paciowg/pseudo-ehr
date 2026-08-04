@@ -26,12 +26,13 @@ The browser POC should use a new visual design and should aim to present a simpl
 
 Phase 1 will support the following core flow:
 
-1. Connect to a FHIR server
+1. Connect to a FHIR R4 server
 2. List Patient records on that server
-3. Allow the user to filter or search patients
+3. Allow client-side patient filtering after loading up to 100 patients
 4. Select a patient
 5. Load that patient's data primarily through `Patient/{id}/$everything`
-6. Display a patient summary page
+6. If needed, fall back to `Patient/{id}`
+7. Display a patient summary page
 
 Phase 1 should be implemented in a way that supports future PACIO-oriented enhancements without requiring major restructuring.
 
@@ -51,6 +52,37 @@ This means the POC will not include:
 - other write operations against the FHIR server
 
 The Rails patient page may be used as inspiration for displayed information, but not for mutation features in Phase 1.
+
+### Routing
+
+Phase 1 uses a tiny hand-rolled hash-based route switch rather than React Router.
+
+Current route targets:
+
+- `#/` for server selection / connection
+- `#/patients` for patient list
+- `#/patients/:id` for patient summary
+
+This choice keeps the app lightweight and compatible with static hosting environments such as GitHub Pages.
+
+### Browser persistence
+
+Saved servers are stored in browser local storage.
+
+Rules:
+
+- localStorage key for saved servers: `pacio.browserClient.savedServers`
+- localStorage key for active server: `pacio.browserClient.activeServer`
+- uniqueness is based on normalized base URL
+- normalized base URL removes leading/trailing whitespace and trailing slashes
+- latest used server moves to the top of the saved list
+- label is editable metadata associated with the server
+
+### FHIR version target
+
+Phase 1 targets FHIR R4.
+
+The implementation assumes open browser-accessible FHIR R4 demo servers.
 
 ### Patient summary content
 
@@ -102,23 +134,31 @@ This layout is intentionally inspired by the Rails patient summary while allowin
 
 ## Data-loading approach
 
+### Server validation strategy
+
+The connect flow validates the target server using `GET /metadata`.
+
+The server is considered connectable when the response is a `CapabilityStatement` and reports a FHIR version beginning with `4.`.
+
 ### Primary patient detail loading strategy
 
 The primary mechanism for loading patient detail is:
 
 - `Patient/{id}/$everything`
 
-The patient summary page should derive both summary information and clinical summary sections from the patient resource and returned bundle data.
+The patient summary page derives both summary information and clinical summary sections from the patient resource and returned bundle data.
 
 ### Failure and fallback rule
 
 If `$everything` fails, is unsupported, or returns incomplete related-resource data:
 
 - the app should still display whatever can be derived from the `Patient` resource itself
-- related clinical sections that depend on bundle data should be shown as unavailable or empty as appropriate
+- related clinical sections that depend on bundle data should be shown as unavailable
 - the implementation should not introduce a large first-pass fallback system that issues many separate resource-type queries
 
-This keeps Phase 1 simpler while still allowing graceful degradation.
+If `Patient/{id}` also fails:
+
+- the page should show an error state
 
 ## FHIR data extraction rules
 
@@ -141,11 +181,11 @@ Use the following extraction rules where possible:
 
 - date of birth
   - use `birthDate`
-  - if missing, display a standard missing-value placeholder
+  - if missing, display `--`
 
 - gender
   - use `gender`
-  - if missing, display a standard missing-value placeholder
+  - if missing, display `--`
 
 - medical record number
   - use the first identifier whose `type.coding.code` is `MR`
@@ -157,7 +197,7 @@ Use the following extraction rules where possible:
 - language
   - derive from `communication.first.language.coding.first.code`
   - display uppercase code where appropriate
-  - if missing, display a standard missing-value placeholder
+  - if missing, display `--`
 
 ### Contact information
 
@@ -202,7 +242,7 @@ Follow Rails-inspired behavior where possible:
 - relationship comes from the first relationship coding and may be mapped to a friendlier label
 - name may come from `contact.name.text`, or from formatted structured name data
 - address may come from `contact.address.text`, or from formatted structured address data
-- missing relationship may fall back to an `"Unknown"`-style display label
+- missing relationship may fall back to an `Unknown` display label
 
 ### Clinical section sources
 
@@ -211,38 +251,53 @@ For the first implementation pass, the clinical summary sections should use thes
 - Active Problems
   - `Condition`
 - Current Medications
-  - `MedicationRequest`
+  - `MedicationStatement`
 - Known Allergies
   - `AllergyIntolerance`
 - Most Recent Vitals
   - `Observation`
 
-These source assumptions are sufficient for the sample data and the initial POC, even if they are not a perfect clinical abstraction for every production use case.
+### Clinical inclusion rules
+
+Current inclusion rules for the first pass:
+
+- Active Problems
+  - include `Condition`
+  - prefer active / recurrence / relapse clinical status values when present
+
+- Current Medications
+  - include `MedicationStatement`
+  - prefer statuses such as `active`, `completed`, `intended`, and `on-hold` when present
+
+- Known Allergies
+  - include `AllergyIntolerance`
+  - exclude entries explicitly marked `entered-in-error`
+
+- Most Recent Vitals
+  - include `Observation`
+  - use final or amended observations where practical
+  - derive one latest entry for:
+    - blood pressure
+    - heart rate
+    - respiratory rate
+    - body temperature
+    - oxygen saturation
+  - blood pressure should support panel/component extraction
 
 ## Display conventions
 
-The exact wording can be refined during implementation, but the app should use consistent conventions for:
+Use consistent conventions for:
 
 - missing patient field values
 - empty emergency contact lists
 - empty clinical summary sections
 - unavailable bundle-derived data
 
-A likely initial convention is:
+Current conventions:
 
-- use a placeholder such as `--` or `—` for missing simple field values
-- use `None recorded` for empty clinical lists
-- use `Unavailable` when a section cannot be computed due to missing or failed bundle data
-
-## Initial route assumptions
-
-The current route direction is:
-
-- `/` for server selection / connection
-- `/patients` for patient list
-- `/patients/:id` for patient summary
-
-These routes are considered a good starting point for the initial implementation sketch.
+- missing scalar field values: `--`
+- empty loaded clinical lists: `None recorded`
+- bundle-derived sections unavailable due to fallback: `Unavailable`
 
 ## Architectural direction
 
@@ -253,31 +308,17 @@ The browser client should favor a clear separation between:
 - React page and component rendering
 - local browser persistence for saved servers and related client state
 
-The implementation should remain simple and understandable rather than mirroring the Rails app's backend-oriented layers.
+Current lightweight structure:
 
-## Non-blocking open questions
-
-The following questions remain open, but they do not block implementation sketching:
-
-- whether the clinical summary cards will later become navigable
-- whether a query/debug panel should be included in Phase 1
-- whether fixture-based mock data should be included immediately for local development
-- the exact final placeholder text for missing and unavailable values
-- the exact component and folder structure inside the React application
+- `src/lib/fhir/`
+- `src/lib/routing/`
+- `src/features/servers/`
+- `src/features/patients/`
+- `src/features/patientSummary/`
+- `src/components/`
 
 ## Immediate next step
 
-The next step after this document is to sketch the initial implementation for Phase 1, including:
-
-- page structure
-- route structure
-- component hierarchy
-- data-fetch flow
-- patient-summary view model / helper responsibilities
-- derivation approach for:
-  - active problems
-  - current medications
-  - known allergies
-  - most recent vitals
+The current next step is Phase 1 implementation and refinement against selected demo servers.
 
 This document should be updated as implementation decisions become more concrete.
