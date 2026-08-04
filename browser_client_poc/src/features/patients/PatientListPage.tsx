@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { fetchPatients } from '../../lib/fhir/client'
+import { navigateTo } from '../../lib/routing/routes'
 import { useSavedServers } from '../servers/useSavedServers'
 import { buildPatientListItems, filterPatients } from './patientListModel'
 
@@ -83,21 +84,18 @@ export function PatientListPage() {
             <ul className="patient-list full-width-patient-list">
               {visiblePatients.map((patient) => (
                 <li key={patient.id} className="patient-list-item">
-                  <div>
-                    <p className="patient-name">{patient.name}</p>
-                    <p className="patient-meta">
-                      {patient.gender} · DOB {patient.dob}
-                    </p>
-                    <p className="patient-meta">MRN {patient.mrn}</p>
-                  </div>
                   <button
                     type="button"
-                    className="secondary-button compact"
-                    onClick={() => {
-                      window.location.hash = `/patients/${patient.id}`
-                    }}
+                    className="patient-select-button"
+                    onClick={() => navigateTo(`/patients/${patient.id}`)}
                   >
-                    View
+                    <span className="patient-list-content">
+                      <span className="patient-name">{patient.name}</span>
+                      <span className="patient-meta">
+                        {patient.gender} · DOB {patient.dob}
+                      </span>
+                      <span className="patient-meta">MRN {patient.mrn}</span>
+                    </span>
                   </button>
                 </li>
               ))}

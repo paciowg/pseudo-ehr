@@ -201,7 +201,8 @@
 .secondary-button,
 .link-button,
 .saved-server-select-button,
-.saved-server-delete-button {
+.saved-server-delete-button,
+.patient-select-button {
   border: 0;
   border-radius: 999px;
   font: inherit;
@@ -256,7 +257,8 @@
 .secondary-button:hover,
 .link-button:hover,
 .saved-server-select-button:hover,
-.saved-server-delete-button:hover {
+.saved-server-delete-button:hover,
+.patient-select-button:hover {
   transform: translateY(-1px);
 }
 
@@ -264,7 +266,8 @@
 .secondary-button:disabled,
 .link-button:disabled,
 .saved-server-select-button:disabled,
-.saved-server-delete-button:disabled {
+.saved-server-delete-button:disabled,
+.patient-select-button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
   transform: none;
@@ -284,7 +287,9 @@
   padding: 0;
 }
 
-.saved-server-list {
+.saved-server-list,
+.patient-list,
+.clinical-list {
   display: grid;
   gap: 0.85rem;
 }
@@ -301,14 +306,16 @@
   background: #f8fafc;
 }
 
-.saved-server-item {
+.saved-server-item,
+.patient-list-item {
   align-items: stretch;
   padding: 0;
   background: transparent;
   border: 0;
 }
 
-.saved-server-select-button {
+.saved-server-select-button,
+.patient-select-button {
   flex: 1;
   text-align: left;
   border: 1px solid #e2e8f0;
@@ -318,18 +325,21 @@
   color: #0f172a;
 }
 
-.saved-server-select-button:hover {
+.saved-server-select-button:hover,
+.patient-select-button:hover {
   background: #eef2ff;
   border-color: #c7d2fe;
   box-shadow: 0 8px 20px rgba(99, 102, 241, 0.12);
 }
 
-.saved-server-select-button:focus-visible {
+.saved-server-select-button:focus-visible,
+.patient-select-button:focus-visible {
   outline: 2px solid #818cf8;
   outline-offset: 2px;
 }
 
-.saved-server-content {
+.saved-server-content,
+.patient-list-content {
   display: grid;
   gap: 0.2rem;
 }
@@ -432,14 +442,8 @@
   max-width: 32rem;
 }
 
-.patient-list,
-.clinical-list {
-  display: grid;
-  gap: 0.85rem;
-}
-
 .full-width-patient-list .patient-list-item {
-  align-items: center;
+  align-items: stretch;
 }
 
 .patient-list-item.selected {
@@ -714,12 +718,12 @@ dd {
     font-size: 2rem;
   }
 
-  .clinical-list-item,
-  .patient-list-item {
+  .clinical-list-item {
     flex-direction: column;
   }
 
-  .saved-server-item {
+  .saved-server-item,
+  .patient-list-item {
     align-items: stretch;
   }
 
