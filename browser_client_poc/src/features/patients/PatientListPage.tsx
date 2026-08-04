@@ -53,7 +53,7 @@ export function PatientListPage() {
     <section className="panel">
       <div className="panel-header">
         <div>
-          <h2>Browse patients</h2>
+          <h2>Browse patients — {patients.length} loaded</h2>
         </div>
 
         <div className="panel-server-details">
@@ -63,11 +63,6 @@ export function PatientListPage() {
       </div>
 
       <div className="patient-list-panel full-width-panel">
-        <div className="metric-row">
-          <span className="metric-pill">Loaded patients: {patients.length}</span>
-          <span className="metric-pill">Visible patients: {visiblePatients.length}</span>
-        </div>
-
         <div className="field-group patient-search-group">
           <label htmlFor="patient-search">Search patients</label>
           <input
