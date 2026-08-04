@@ -114,11 +114,6 @@ export function ServerConnectPage() {
               Reset
             </button>
           </div>
-
-          <p className="helper-text">
-            Connection validation checks the server metadata endpoint before
-            saving the server locally.
-          </p>
         </form>
 
         <div className="saved-server-panel">
