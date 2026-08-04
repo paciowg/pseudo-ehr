@@ -20,7 +20,6 @@ export function AppLayout({ children }: AppLayoutProps) {
           <a className="status-pill" href={getRouteHref('/patients')}>
             Patients
           </a>
-          <span className="status-pill">FHIR R4</span>
         </div>
       </header>
 

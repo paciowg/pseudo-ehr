@@ -65,7 +65,6 @@ export function PatientListPage() {
         </div>
 
         <div className="metric-row">
-          <span className="server-chip">FHIR R4</span>
           <span className="metric-pill">Loaded patients: {patients.length}</span>
           <span className="metric-pill">Visible patients: {visiblePatients.length}</span>
         </div>
