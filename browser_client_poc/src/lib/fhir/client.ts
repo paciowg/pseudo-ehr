@@ -1,7 +1,10 @@
-import type { Bundle, CapabilityStatement, Patient } from 'fhir/r4'
+import type { Bundle, BundleEntry, BundleLink, CapabilityStatement, Patient } from 'fhir/r4'
 import { normalizeBaseUrl } from '../../features/servers/serverStorage'
 
 type FhirJson = Bundle | CapabilityStatement | Patient
+
+const DEFAULT_PATIENT_EVERYTHING_MAX_RESULTS = 500
+const DEFAULT_PATIENT_EVERYTHING_PAGE_COUNT = 250
 
 async function fhirGet<T extends FhirJson>(baseUrl: string, path: string): Promise<T> {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
@@ -11,6 +14,20 @@ async function fhirGet<T extends FhirJson>(baseUrl: string, path: string): Promi
     },
   })
 
+  return parseFhirResponse<T>(response)
+}
+
+async function fhirGetAbsolute<T extends FhirJson>(url: string): Promise<T> {
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'application/fhir+json, application/json',
+    },
+  })
+
+  return parseFhirResponse<T>(response)
+}
+
+async function parseFhirResponse<T extends FhirJson>(response: Response): Promise<T> {
   const contentType = response.headers.get('content-type') || ''
   const hasJsonBody = contentType.includes('json')
   const payload = hasJsonBody ? await response.json() : null
@@ -28,6 +45,68 @@ async function fhirGet<T extends FhirJson>(baseUrl: string, path: string): Promi
   return payload as T
 }
 
+function getNextLink(bundle: Bundle) {
+  return bundle.link?.find((link: BundleLink) => link.relation === 'next')?.url
+}
+
+function mergeBundles(bundles: Bundle[]): Bundle {
+  const allEntries: BundleEntry[] = []
+  const seenKeys = new Set<string>()
+
+  for (const bundle of bundles) {
+    for (const entry of bundle.entry ?? []) {
+      const resourceType = entry.resource?.resourceType || 'unknown'
+      const resourceId = entry.resource?.id || entry.fullUrl || JSON.stringify(entry.resource)
+      const key = `${resourceType}-${resourceId}`
+
+      if (seenKeys.has(key)) continue
+
+      seenKeys.add(key)
+      allEntries.push(entry)
+    }
+  }
+
+  const firstBundle = bundles[0]
+
+  return {
+    ...firstBundle,
+    entry: allEntries,
+    total: allEntries.length,
+    link: firstBundle.link?.filter((link) => link.relation !== 'next'),
+  }
+}
+
+async function fetchPaginatedBundle(
+  initialPath: string,
+  baseUrl: string,
+  maxResults: number,
+): Promise<Bundle> {
+  const bundles: Bundle[] = []
+  let bundle = await fhirGet<Bundle>(baseUrl, initialPath)
+
+  if (bundle.resourceType !== 'Bundle') {
+    throw new Error('The server did not return a Bundle resource.')
+  }
+
+  bundles.push(bundle)
+  let collectedEntries = bundle.entry?.length ?? 0
+  let nextUrl = getNextLink(bundle)
+
+  while (nextUrl && collectedEntries < maxResults) {
+    const nextBundle = await fhirGetAbsolute<Bundle>(nextUrl)
+
+    if (nextBundle.resourceType !== 'Bundle') {
+      throw new Error('The server did not return a Bundle resource.')
+    }
+
+    bundles.push(nextBundle)
+    collectedEntries += nextBundle.entry?.length ?? 0
+    nextUrl = getNextLink(nextBundle)
+  }
+
+  return mergeBundles(bundles)
+}
+
 export async function validateFhirServer(baseUrl: string) {
   const capabilityStatement = await fhirGet<CapabilityStatement>(baseUrl, '/metadata')
 
@@ -37,7 +116,9 @@ export async function validateFhirServer(baseUrl: string) {
 
   const fhirVersion = capabilityStatement.fhirVersion || ''
   if (!fhirVersion.startsWith('4.')) {
-    throw new Error(`Unsupported FHIR version: ${fhirVersion || 'unknown'}. Phase 1 targets FHIR R4.`)
+    throw new Error(
+      `Unsupported FHIR version: ${fhirVersion || 'unknown'}. Phase 1 targets FHIR R4.`,
+    )
   }
 
   return capabilityStatement
@@ -57,15 +138,27 @@ export async function fetchPatient(baseUrl: string, patientId: string) {
   return patient
 }
 
-export async function fetchPatientEverything(baseUrl: string, patientId: string) {
-  const bundle = await fhirGet<Bundle>(
+export async function fetchPatientEverything(
+  baseUrl: string,
+  patientId: string,
+  options?: {
+    maxResults?: number
+    pageCount?: number
+  },
+) {
+  const maxResults = options?.maxResults ?? DEFAULT_PATIENT_EVERYTHING_MAX_RESULTS
+  const pageCount = options?.pageCount ?? DEFAULT_PATIENT_EVERYTHING_PAGE_COUNT
+
+  const searchParams = new URLSearchParams({
+    _count: String(pageCount),
+    _include: '*',
+    _revinclude: '*',
+    '_include:iterate': '*',
+  })
+
+  return fetchPaginatedBundle(
+    `/Patient/${encodeURIComponent(patientId)}/$everything?${searchParams.toString()}`,
     baseUrl,
-    `/Patient/${encodeURIComponent(patientId)}/$everything`,
+    maxResults,
   )
-
-  if (bundle.resourceType !== 'Bundle') {
-    throw new Error('The server did not return a Bundle for Patient/$everything.')
-  }
-
-  return bundle
 }

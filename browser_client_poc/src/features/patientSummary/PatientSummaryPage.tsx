@@ -29,12 +29,18 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
 
     async function load() {
       try {
-        const bundle = await fetchPatientEverything(activeServer.baseUrl, patientId)
+        const bundle = await fetchPatientEverything(activeServer.baseUrl, patientId, {
+          maxResults: 500,
+          pageCount: 250,
+        })
+
         const patient =
           bundle.entry
             ?.map((entry) => entry.resource)
-            .find((resource) => resource?.resourceType === 'Patient' && resource.id === patientId) ||
-          (await fetchPatient(activeServer.baseUrl, patientId))
+            .find(
+              (resource) =>
+                resource?.resourceType === 'Patient' && resource.id === patientId,
+            ) || (await fetchPatient(activeServer.baseUrl, patientId))
 
         if (!isMounted) return
 
