@@ -266,6 +266,12 @@ function getActiveProblems(bundle: Bundle | null): ClinicalListItem[] {
       const status = condition.clinicalStatus?.coding?.[0]?.code
       return !status || ['active', 'recurrence', 'relapse'].includes(status)
     })
+    .sort((a, b) =>
+      sortByDateDesc(
+        a.onsetDateTime || a.recordedDate,
+        b.onsetDateTime || b.recordedDate,
+      ),
+    )
     .map((condition) => {
       const rawDateValue = condition.onsetDateTime || condition.recordedDate
 
@@ -284,6 +290,12 @@ function getCurrentMedications(bundle: Bundle | null): ClinicalListItem[] {
       const status = statement.status
       return !status || ['active', 'completed', 'intended', 'on-hold'].includes(status)
     })
+    .sort((a, b) =>
+      sortByDateDesc(
+        a.dateAsserted || a.effectiveDateTime || a.effectivePeriod?.start,
+        b.dateAsserted || b.effectiveDateTime || b.effectivePeriod?.start,
+      ),
+    )
     .map((statement) => {
       const rawDateValue =
         statement.dateAsserted ||
@@ -305,6 +317,12 @@ function getCurrentMedications(bundle: Bundle | null): ClinicalListItem[] {
 function getKnownAllergies(bundle: Bundle | null): ClinicalListItem[] {
   return getBundleResources<AllergyIntolerance>(bundle, 'AllergyIntolerance')
     .filter((allergy) => allergy.verificationStatus?.coding?.[0]?.code !== 'entered-in-error')
+    .sort((a, b) =>
+      sortByDateDesc(
+        a.lastOccurrence || a.recordedDate,
+        b.lastOccurrence || b.recordedDate,
+      ),
+    )
     .map((allergy) => {
       const hasLastOccurrence = Boolean(allergy.lastOccurrence)
       const rawDateValue = allergy.lastOccurrence || allergy.recordedDate
@@ -437,6 +455,12 @@ function getObservationDate(observation: Observation) {
 function sortByObservationDateDesc(a: Observation, b: Observation) {
   const aDate = Date.parse(getObservationDate(a) || '')
   const bDate = Date.parse(getObservationDate(b) || '')
+  return bDate - aDate
+}
+
+function sortByDateDesc(a: string | undefined, b: string | undefined) {
+  const aDate = Date.parse(a || '')
+  const bDate = Date.parse(b || '')
   return bDate - aDate
 }
 
