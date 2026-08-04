@@ -105,23 +105,6 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
       </div>
 
       <div className="summary-preview-panel full-width-panel">
-        <div className="page-actions">
-          <button
-            type="button"
-            className="secondary-button outline"
-            onClick={() => navigateTo('/patients')}
-          >
-            Back to patients
-          </button>
-          <button
-            type="button"
-            className="secondary-button outline"
-            onClick={() => navigateTo('/')}
-          >
-            Change server
-          </button>
-        </div>
-
         {isLoading ? <div className="info-banner">Loading patient summary...</div> : null}
         {fallbackMessage ? <div className="warning-banner">{fallbackMessage}</div> : null}
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
