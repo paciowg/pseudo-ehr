@@ -3,8 +3,8 @@ import { validateFhirServer } from '../../lib/fhir/client'
 import { navigateTo } from '../../lib/routing/routes'
 import { useSavedServers } from './useSavedServers'
 
-const INITIAL_LABEL = 'Local HAPI Demo'
-const INITIAL_URL = 'http://localhost:8080/fhir'
+const INITIAL_LABEL = ''
+const INITIAL_URL = ''
 
 export function ServerConnectPage() {
   const { savedServers, activeServer, connectServer, activateServer, deleteServer } =
