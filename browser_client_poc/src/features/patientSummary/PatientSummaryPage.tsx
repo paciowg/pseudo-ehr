@@ -97,13 +97,14 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
         <div>
           <h2>Patient summary</h2>
         </div>
+
+        <div className="panel-server-details">
+          <span className="panel-server-label">{activeServer.label}</span>
+          <span className="panel-server-url">{activeServer.baseUrl}</span>
+        </div>
       </div>
 
       <div className="summary-preview-panel full-width-panel">
-        <div className="active-server-banner">
-          Active server: <strong>{activeServer.label}</strong> · {activeServer.baseUrl}
-        </div>
-
         <div className="page-actions">
           <button
             type="button"
