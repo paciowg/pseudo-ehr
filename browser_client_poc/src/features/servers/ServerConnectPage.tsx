@@ -50,6 +50,16 @@ export function ServerConnectPage() {
     navigateTo('/patients')
   }
 
+  function handleDeleteSavedServer(baseUrlToDelete: string, labelToDelete: string) {
+    const confirmed = window.confirm(
+      `Remove saved server "${labelToDelete}" from the list?`,
+    )
+
+    if (!confirmed) return
+
+    deleteServer(baseUrlToDelete)
+  }
+
   return (
     <section className="panel">
       <div className="panel-header">
@@ -134,7 +144,9 @@ export function ServerConnectPage() {
                     type="button"
                     className="saved-server-delete-button"
                     aria-label={`Remove saved server ${server.label}`}
-                    onClick={() => deleteServer(server.baseUrl)}
+                    onClick={() =>
+                      handleDeleteSavedServer(server.baseUrl, server.label)
+                    }
                   >
                     🗑
                   </button>
