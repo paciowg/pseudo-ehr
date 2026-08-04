@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { fetchPatients } from '../../lib/fhir/client'
-import { navigateTo } from '../../lib/routing/routes'
 import { useSavedServers } from '../servers/useSavedServers'
 import { buildPatientListItems, filterPatients } from './patientListModel'
 
@@ -13,7 +12,6 @@ export function PatientListPage() {
 
   useEffect(() => {
     if (!activeServer) {
-      navigateTo('/')
       return
     }
 
@@ -80,16 +78,6 @@ export function PatientListPage() {
           />
         </div>
 
-        <div className="page-actions">
-          <button
-            type="button"
-            className="secondary-button outline"
-            onClick={() => navigateTo('/')}
-          >
-            Back to server selection
-          </button>
-        </div>
-
         {isLoading ? <div className="info-banner">Loading patients...</div> : null}
 
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
@@ -109,7 +97,9 @@ export function PatientListPage() {
                   <button
                     type="button"
                     className="secondary-button compact"
-                    onClick={() => navigateTo(`/patients/${patient.id}`)}
+                    onClick={() => {
+                      window.location.hash = `/patients/${patient.id}`
+                    }}
                   >
                     View
                   </button>

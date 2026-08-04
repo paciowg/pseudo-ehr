@@ -7,7 +7,7 @@ const INITIAL_LABEL = ''
 const INITIAL_URL = ''
 
 export function ServerConnectPage() {
-  const { savedServers, activeServer, connectServer, activateServer, deleteServer } =
+  const { savedServers, connectServer, activateServer, deleteServer } =
     useSavedServers()
 
   const [label, setLabel] = useState(INITIAL_LABEL)
@@ -60,13 +60,6 @@ export function ServerConnectPage() {
 
       <div className="server-layout">
         <form className="server-form" onSubmit={handleConnect}>
-          {activeServer ? (
-            <div className="active-server-banner">
-              Active server: <strong>{activeServer.label}</strong> ·{' '}
-              {activeServer.baseUrl}
-            </div>
-          ) : null}
-
           {successMessage ? (
             <div className="success-banner">{successMessage}</div>
           ) : null}
@@ -119,42 +112,35 @@ export function ServerConnectPage() {
 
           {hasSavedServers ? (
             <ul className="saved-server-list">
-              {savedServers.map((server) => {
-                const isActive = activeServer?.baseUrl === server.baseUrl
-
-                return (
-                  <li
-                    key={server.id}
-                    className={isActive ? 'saved-server-item active' : 'saved-server-item'}
-                  >
-                    <div>
-                      <p className="saved-server-name">{server.label}</p>
-                      <p className="saved-server-url">{server.baseUrl}</p>
+              {savedServers.map((server) => (
+                <li key={server.id} className="saved-server-item">
+                  <div>
+                    <p className="saved-server-name">{server.label}</p>
+                    <p className="saved-server-url">{server.baseUrl}</p>
+                  </div>
+                  <div className="saved-server-meta">
+                    <span>
+                      Last used {new Date(server.lastUsedAt).toLocaleString()}
+                    </span>
+                    <div className="saved-server-actions">
+                      <button
+                        type="button"
+                        className="link-button"
+                        onClick={() => handleUseSavedServer(server.baseUrl)}
+                      >
+                        Use
+                      </button>
+                      <button
+                        type="button"
+                        className="link-button link-button-danger"
+                        onClick={() => deleteServer(server.baseUrl)}
+                      >
+                        Remove
+                      </button>
                     </div>
-                    <div className="saved-server-meta">
-                      <span>
-                        Last used {new Date(server.lastUsedAt).toLocaleString()}
-                      </span>
-                      <div className="saved-server-actions">
-                        <button
-                          type="button"
-                          className="link-button"
-                          onClick={() => handleUseSavedServer(server.baseUrl)}
-                        >
-                          Use
-                        </button>
-                        <button
-                          type="button"
-                          className="link-button link-button-danger"
-                          onClick={() => deleteServer(server.baseUrl)}
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                )
-              })}
+                  </div>
+                </li>
+              ))}
             </ul>
           ) : (
             <p className="empty-state">No saved servers yet.</p>

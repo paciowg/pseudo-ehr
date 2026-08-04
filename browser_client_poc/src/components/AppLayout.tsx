@@ -1,11 +1,19 @@
 import type { ReactNode } from 'react'
-import { getRouteHref } from '../lib/routing/routes'
+import { getRouteHref, navigateTo } from '../lib/routing/routes'
+import { useSavedServers } from '../features/servers/useSavedServers'
 
 type AppLayoutProps = {
   children: ReactNode
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
+  const { activeServer, disconnectServer } = useSavedServers()
+
+  function handleDisconnect() {
+    disconnectServer()
+    navigateTo('/')
+  }
+
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -13,14 +21,16 @@ export function AppLayout({ children }: AppLayoutProps) {
           <h1>PACIO Explorer Reference Client</h1>
         </div>
 
-        <div className="header-status-card">
-          <a className="status-pill" href={getRouteHref('/')}>
-            Server connect
-          </a>
-          <a className="status-pill" href={getRouteHref('/patients')}>
-            Patients
-          </a>
-        </div>
+        {activeServer ? (
+          <div className="header-status-card">
+            <a className="status-pill" href={getRouteHref('/patients')}>
+              Patients
+            </a>
+            <button type="button" className="status-pill status-pill-button" onClick={handleDisconnect}>
+              Disconnect
+            </button>
+          </div>
+        ) : null}
       </header>
 
       <main className="app-main">{children}</main>

@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import {
+  clearActiveServer,
   getActiveServer,
   getSavedServers,
   removeSavedServer,
@@ -29,6 +30,11 @@ export function useSavedServers() {
     return nextServer
   }, [refresh])
 
+  const disconnectServer = useCallback(() => {
+    clearActiveServer()
+    refresh()
+  }, [refresh])
+
   const deleteServer = useCallback((baseUrl: string) => {
     removeSavedServer(baseUrl)
     refresh()
@@ -40,9 +46,10 @@ export function useSavedServers() {
       activeServer,
       connectServer,
       activateServer,
+      disconnectServer,
       deleteServer,
       refresh,
     }),
-    [savedServers, activeServer, connectServer, activateServer, deleteServer, refresh],
+    [savedServers, activeServer, connectServer, activateServer, disconnectServer, deleteServer, refresh],
   )
 }

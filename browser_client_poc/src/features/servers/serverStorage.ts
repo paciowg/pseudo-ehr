@@ -74,7 +74,7 @@ export function removeSavedServer(baseUrl: string) {
   writeJson(SAVED_SERVERS_KEY, next)
 
   const active = getActiveServer()
-  if (active?.baseUrl === normalized) {
+  if (active?.baseUrl === normalized && isBrowser()) {
     window.localStorage.removeItem(ACTIVE_SERVER_KEY)
   }
 }
@@ -88,6 +88,11 @@ export function getActiveServer(): SavedServer | null {
     id: createServerId(active.baseUrl),
     baseUrl: normalizeBaseUrl(active.baseUrl),
   }
+}
+
+export function clearActiveServer() {
+  if (!isBrowser()) return
+  window.localStorage.removeItem(ACTIVE_SERVER_KEY)
 }
 
 export function setActiveServer(server: SavedServer) {
