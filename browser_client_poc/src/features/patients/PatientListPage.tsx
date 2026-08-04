@@ -53,7 +53,7 @@ export function PatientListPage() {
     <section className="panel">
       <div className="panel-header">
         <div>
-          <h2>Browse patients — {patients.length} loaded</h2>
+          <h2>Browse patients — {patients.length} available</h2>
         </div>
 
         <div className="panel-server-details">
