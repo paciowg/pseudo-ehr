@@ -80,7 +80,6 @@ export function ServerConnectPage() {
               type="text"
               value={label}
               onChange={(event) => setLabel(event.target.value)}
-              placeholder="Local HAPI Demo"
             />
           </div>
 
@@ -91,7 +90,6 @@ export function ServerConnectPage() {
               type="url"
               value={baseUrl}
               onChange={(event) => setBaseUrl(event.target.value)}
-              placeholder="https://example.com/fhir"
             />
           </div>
 
