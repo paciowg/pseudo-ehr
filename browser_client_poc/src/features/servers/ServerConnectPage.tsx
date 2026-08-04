@@ -120,8 +120,10 @@ export function ServerConnectPage() {
                     onClick={() => handleUseSavedServer(server.baseUrl)}
                   >
                     <span className="saved-server-content">
-                      <span className="saved-server-name">{server.label}</span>
-                      <span className="saved-server-url">{server.baseUrl}</span>
+                      <span className="saved-server-primary-line">
+                        <span className="saved-server-name">{server.label}</span>
+                        <span className="saved-server-url">{server.baseUrl}</span>
+                      </span>
                       <span className="saved-server-last-used">
                         Last used {new Date(server.lastUsedAt).toLocaleString()}
                       </span>
