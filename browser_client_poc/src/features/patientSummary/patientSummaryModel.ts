@@ -226,11 +226,15 @@ function getActiveProblems(bundle: Bundle | null): ClinicalListItem[] {
       const status = condition.clinicalStatus?.coding?.[0]?.code
       return !status || ['active', 'recurrence', 'relapse'].includes(status)
     })
-    .map((condition) => ({
-      title: getCodeableConceptText(condition.code) || placeholderValue(),
-      dateLabel: condition.onsetDateTime ? 'Onset' : condition.recordedDate ? 'Recorded' : undefined,
-      dateValue: condition.onsetDateTime || condition.recordedDate,
-    }))
+    .map((condition) => {
+      const rawDateValue = condition.onsetDateTime || condition.recordedDate
+
+      return {
+        title: getCodeableConceptText(condition.code) || placeholderValue(),
+        dateLabel: condition.onsetDateTime ? 'Onset' : condition.recordedDate ? 'Recorded' : undefined,
+        dateValue: rawDateValue ? formatDate(rawDateValue) : undefined,
+      }
+    })
     .slice(0, 10)
 }
 
@@ -240,19 +244,21 @@ function getCurrentMedications(bundle: Bundle | null): ClinicalListItem[] {
       const status = statement.status
       return !status || ['active', 'completed', 'intended', 'on-hold'].includes(status)
     })
-    .map((statement) => ({
-      title:
-        getCodeableConceptText(statement.medicationCodeableConcept) ||
-        statement.medicationReference?.display ||
-        placeholderValue(),
-      dateLabel: statement.dateAsserted || statement.effectiveDateTime || statement.effectivePeriod?.start
-        ? 'Recorded'
-        : undefined,
-      dateValue:
+    .map((statement) => {
+      const rawDateValue =
         statement.dateAsserted ||
         statement.effectiveDateTime ||
-        statement.effectivePeriod?.start,
-    }))
+        statement.effectivePeriod?.start
+
+      return {
+        title:
+          getCodeableConceptText(statement.medicationCodeableConcept) ||
+          statement.medicationReference?.display ||
+          placeholderValue(),
+        dateLabel: rawDateValue ? 'Recorded' : undefined,
+        dateValue: rawDateValue ? formatDate(rawDateValue) : undefined,
+      }
+    })
     .slice(0, 10)
 }
 
@@ -261,16 +267,16 @@ function getKnownAllergies(bundle: Bundle | null): ClinicalListItem[] {
     .filter((allergy) => allergy.verificationStatus?.coding?.[0]?.code !== 'entered-in-error')
     .map((allergy) => {
       const hasLastOccurrence = Boolean(allergy.lastOccurrence)
-      const dateValue = allergy.lastOccurrence || allergy.recordedDate
+      const rawDateValue = allergy.lastOccurrence || allergy.recordedDate
 
       return {
         title: getCodeableConceptText(allergy.code) || placeholderValue(),
-        dateLabel: dateValue
+        dateLabel: rawDateValue
           ? hasLastOccurrence
             ? 'Last occurrence'
             : 'Recorded'
           : undefined,
-        dateValue,
+        dateValue: rawDateValue ? formatDate(rawDateValue) : undefined,
         secondaryText:
           allergy.type === 'allergy'
             ? `${capitalize(allergy.category?.[0] || 'Allergy')} allergy`
