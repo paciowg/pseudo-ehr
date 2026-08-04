@@ -509,6 +509,10 @@
   align-self: start;
 }
 
+.summary-card > h3 {
+  margin-bottom: 0.85rem;
+}
+
 .summary-card.wide {
   grid-column: span 2;
 }
