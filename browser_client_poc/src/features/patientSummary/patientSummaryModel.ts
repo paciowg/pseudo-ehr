@@ -1,6 +1,4 @@
 import type {
-  Address,
-  AllergyIntolerance,
   Bundle,
   CodeableConcept,
   Coding,
@@ -12,7 +10,6 @@ import type {
   Observation,
   Patient,
   Quantity,
-  Reference,
 } from 'fhir/r4'
 import {
   formatAddress,
@@ -100,19 +97,13 @@ export function buildPatientSummaryModel(input: {
   const birthDate = patient.birthDate || placeholderValue()
   const gender = patient.gender ? capitalize(patient.gender) : placeholderValue()
   const mrn = getFirstMrn(patient.identifier) || placeholderValue()
-  const patientMeta = [
-    gender,
-    `DOB: ${birthDate}`,
-    `MRN: ${mrn}`,
-  ].join(' · ')
+  const patientMeta = [gender, `DOB: ${birthDate}`, `MRN: ${mrn}`].join(' · ')
 
   return {
     patientId: patient.id || '',
     patientName,
     patientMeta,
-    bundleStatusText: bundleAvailable
-      ? '$everything data available'
-      : 'Showing patient-only fallback data',
+    bundleStatusText: bundleAvailable ? '' : 'Showing patient-only fallback data',
     bundleStatusTone: bundleAvailable ? 'success' : 'warning',
     personalInformation: {
       firstName,
