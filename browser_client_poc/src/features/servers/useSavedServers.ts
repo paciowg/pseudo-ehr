@@ -1,55 +1,24 @@
-import { useCallback, useMemo, useState } from 'react'
-import {
-  clearActiveServer,
-  getActiveServer,
-  getSavedServers,
-  removeSavedServer,
-  saveServer,
-  setActiveServer,
-  type SavedServer,
-} from './serverStorage'
+import { createContext, useContext } from 'react'
+import type { SavedServer } from './serverStorage'
+
+export type SavedServersContextValue = {
+  savedServers: SavedServer[]
+  activeServer: SavedServer | null
+  connectServer: (input: { label: string; baseUrl: string }) => SavedServer
+  activateServer: (server: SavedServer) => SavedServer
+  disconnectServer: () => void
+  deleteServer: (baseUrl: string) => void
+  refresh: () => void
+}
+
+export const SavedServersContext = createContext<SavedServersContextValue | null>(null)
 
 export function useSavedServers() {
-  const [savedServers, setSavedServers] = useState<SavedServer[]>(() => getSavedServers())
-  const [activeServer, setActiveServerState] = useState<SavedServer | null>(() => getActiveServer())
+  const context = useContext(SavedServersContext)
 
-  const refresh = useCallback(() => {
-    setSavedServers(getSavedServers())
-    setActiveServerState(getActiveServer())
-  }, [])
+  if (!context) {
+    throw new Error('useSavedServers must be used within a SavedServersProvider.')
+  }
 
-  const connectServer = useCallback((input: { label: string; baseUrl: string }) => {
-    const server = saveServer(input)
-    refresh()
-    return server
-  }, [refresh])
-
-  const activateServer = useCallback((server: SavedServer) => {
-    const nextServer = setActiveServer(server)
-    refresh()
-    return nextServer
-  }, [refresh])
-
-  const disconnectServer = useCallback(() => {
-    clearActiveServer()
-    refresh()
-  }, [refresh])
-
-  const deleteServer = useCallback((baseUrl: string) => {
-    removeSavedServer(baseUrl)
-    refresh()
-  }, [refresh])
-
-  return useMemo(
-    () => ({
-      savedServers,
-      activeServer,
-      connectServer,
-      activateServer,
-      disconnectServer,
-      deleteServer,
-      refresh,
-    }),
-    [savedServers, activeServer, connectServer, activateServer, disconnectServer, deleteServer, refresh],
-  )
+  return context
 }
