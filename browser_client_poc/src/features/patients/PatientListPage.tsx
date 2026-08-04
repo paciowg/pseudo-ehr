@@ -55,13 +55,14 @@ export function PatientListPage() {
         <div>
           <h2>Browse patients</h2>
         </div>
+
+        <div className="panel-server-details">
+          <span className="panel-server-label">{activeServer.label}</span>
+          <span className="panel-server-url">{activeServer.baseUrl}</span>
+        </div>
       </div>
 
       <div className="patient-list-panel full-width-panel">
-        <div className="active-server-banner">
-          Active server: <strong>{activeServer.label}</strong> · {activeServer.baseUrl}
-        </div>
-
         <div className="metric-row">
           <span className="metric-pill">Loaded patients: {patients.length}</span>
           <span className="metric-pill">Visible patients: {visiblePatients.length}</span>

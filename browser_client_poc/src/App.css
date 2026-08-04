@@ -99,6 +99,24 @@
   color: #0f172a;
 }
 
+.panel-server-details {
+  display: grid;
+  justify-items: end;
+  gap: 0.2rem;
+  text-align: right;
+}
+
+.panel-server-label {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.panel-server-url {
+  color: #475569;
+  font-size: 0.95rem;
+  word-break: break-all;
+}
+
 .section-kicker {
   margin: 0 0 0.35rem;
   font-size: 0.8rem;
@@ -669,7 +687,8 @@ dd {
     grid-column: span 1;
   }
 
-  .clinical-item-meta {
+  .clinical-item-meta,
+  .panel-server-details {
     justify-items: start;
     text-align: left;
   }
