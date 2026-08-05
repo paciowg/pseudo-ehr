@@ -20,16 +20,24 @@ export function PatientListPage() {
     setIsLoading(true)
     setErrorMessage('')
 
+    console.log(`Connecting to FHIR server ${activeServer.label} (${activeServer.baseUrl})`)
+
     fetchPatients(activeServer.baseUrl, 100)
       .then((bundle) => {
         if (!isMounted) return
-        setPatients(buildPatientListItems(bundle))
+
+        const patientItems = buildPatientListItems(bundle)
+        setPatients(patientItems)
+
+        console.log(`${patientItems.length} patient records returned`)
       })
       .catch((error) => {
         if (!isMounted) return
         setErrorMessage(
           error instanceof Error ? error.message : 'Unable to load patients.',
         )
+
+        console.error('Failed to load patients from FHIR server.', error)
       })
       .finally(() => {
         if (!isMounted) return

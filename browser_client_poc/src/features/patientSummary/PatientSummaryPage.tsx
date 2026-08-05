@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { BundleEntry } from 'fhir/r4'
 import { ClinicalSummarySection } from '../../components/ClinicalSummarySection'
 import { fetchPatient, fetchPatientEverything } from '../../lib/fhir/client'
 import { navigateTo } from '../../lib/routing/routes'
@@ -7,6 +8,30 @@ import { buildPatientSummaryModel, type PatientSummaryModel } from './patientSum
 
 type PatientSummaryPageProps = {
   patientId: string
+}
+
+function logBundleResourceSummary(patientId: string, entries: BundleEntry[] | undefined) {
+  const resourceCounts = new Map<string, number>()
+
+  for (const entry of entries ?? []) {
+    const resourceType = entry.resource?.resourceType || 'Unknown'
+    resourceCounts.set(resourceType, (resourceCounts.get(resourceType) ?? 0) + 1)
+  }
+
+  console.log(`Retrieving data for patient ${patientId}`)
+
+  if (resourceCounts.size === 0) {
+    console.log('0 resources returned')
+    return
+  }
+
+  Array.from(resourceCounts.entries())
+    .sort(([resourceTypeA], [resourceTypeB]) =>
+      resourceTypeA.localeCompare(resourceTypeB),
+    )
+    .forEach(([resourceType, count]) => {
+      console.log(`${count} ${resourceType} resource${count === 1 ? '' : 's'}`)
+    })
 }
 
 export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
@@ -44,6 +69,8 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
 
         if (!isMounted) return
 
+        logBundleResourceSummary(patientId, bundle.entry)
+
         setSummary(
           buildPatientSummaryModel({
             patient,
@@ -51,10 +78,19 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
             bundleAvailable: true,
           }),
         )
-      } catch {
+      } catch (everythingError) {
+        console.warn(
+          `Failed to retrieve $everything data for patient ${patientId}. Falling back to Patient/${patientId}.`,
+          everythingError,
+        )
+
         try {
           const patient = await fetchPatient(activeServer.baseUrl, patientId)
           if (!isMounted) return
+
+          console.log(`Retrieving data for patient ${patientId}`)
+          console.log('Fallback to Patient resource only')
+          console.log('1 Patient resource')
 
           setSummary(
             buildPatientSummaryModel({
@@ -73,6 +109,8 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
               ? error.message
               : 'Unable to load the patient summary.',
           )
+
+          console.error(`Failed to load summary for patient ${patientId}.`, error)
         }
       } finally {
         if (!isMounted) return
