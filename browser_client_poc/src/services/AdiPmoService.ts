@@ -1,9 +1,9 @@
 import type {
+  Binary,
   Bundle,
   BundleEntry,
   CodeableConcept,
   Composition,
-  DocumentReference,
   Patient,
   Practitioner,
   PractitionerRole,
@@ -16,7 +16,6 @@ import {
   getDisplayNameFromHumanName,
   getPractitionerRoleDisplayName,
 } from '../lib/fhir/formatters'
-import { buildDocumentBundleReference } from './DocumentReferenceService'
 
 export type PmoStatus = 'preliminary' | 'final' | 'amended'
 
@@ -36,8 +35,8 @@ export type CreateAdiPmoBundleInput = {
   pdfBase64: string
 }
 
-const ADI_DOCUMENT_REFERENCE_PROFILE =
-  'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/ADI-DocumentReference'
+const ADI_SOURCE_FORM_BINARY_PROFILE =
+  'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/ADI-ADISourceFormInformation'
 const ADI_PMO_COMPOSITION_PROFILE =
   'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/ADI-PMOComposition'
 const ADI_DOC_VERSION_EXTENSION_URL =
@@ -74,6 +73,18 @@ function getPatientDisplayName(patient: Patient) {
   return getDisplayNameFromHumanName(patient.name?.[0]) || patient.id || 'Unknown patient'
 }
 
+function buildSourceFormBinary(input: CreateAdiPmoBundleInput): Binary {
+  return {
+    resourceType: 'Binary',
+    id: 'source-form-binary',
+    meta: {
+      profile: [ADI_SOURCE_FORM_BINARY_PROFILE],
+    },
+    contentType: 'application/pdf',
+    data: input.pdfBase64,
+  }
+}
+
 function buildComposition(input: CreateAdiPmoBundleInput): Composition {
   const patientDisplayName = getPatientDisplayName(input.patient)
   const authorDisplayName = getPractitionerRoleDisplayName(
@@ -81,11 +92,7 @@ function buildComposition(input: CreateAdiPmoBundleInput): Composition {
     input.practitionerByReference,
   )
 
-  const sourceFormDocumentReference: DocumentReference = buildDocumentBundleReference({
-    pdfBase64: input.pdfBase64,
-    createdAt: input.createdAt,
-    patientReference: `Patient/${input.patient.id}`,
-  })
+  const sourceFormBinary = buildSourceFormBinary(input)
 
   return {
     resourceType: 'Composition',
@@ -149,7 +156,7 @@ function buildComposition(input: CreateAdiPmoBundleInput): Composition {
         },
         entry: [
           {
-            reference: '#source-form-document-reference',
+            reference: '#source-form-binary',
           },
         ],
       },
@@ -166,15 +173,7 @@ function buildComposition(input: CreateAdiPmoBundleInput): Composition {
         },
       },
     ],
-    contained: [
-      {
-        ...sourceFormDocumentReference,
-        id: 'source-form-document-reference',
-        meta: {
-          profile: [ADI_DOCUMENT_REFERENCE_PROFILE],
-        },
-      },
-    ],
+    contained: [sourceFormBinary],
   }
 }
 
