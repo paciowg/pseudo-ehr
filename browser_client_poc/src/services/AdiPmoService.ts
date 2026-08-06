@@ -7,12 +7,14 @@ import type {
   Patient,
   Practitioner,
   PractitionerRole,
-  Reference,
   Resource,
 } from 'fhir/r4'
-import { createBundle } from '../../lib/fhir/client'
-import { getDisplayNameFromHumanName, getPractitionerRoleDisplayName } from '../../lib/fhir/formatters'
-import { buildDocumentBundleReference } from './adiDocumentReferenceService'
+import { createBundle } from '../lib/fhir/client'
+import {
+  getDisplayNameFromHumanName,
+  getPractitionerRoleDisplayName,
+} from '../lib/fhir/formatters'
+import { buildDocumentBundleReference } from './DocumentReferenceService'
 
 export type PmoStatus = 'preliminary' | 'final' | 'amended'
 
@@ -206,7 +208,6 @@ export function buildAdiPmoBundle(input: CreateAdiPmoBundleInput): Bundle {
   const additionalResources: Resource[] = []
 
   additionalResources.push(input.patient)
-
   additionalResources.push(input.practitionerRole)
 
   if (practitionerReference) {

@@ -1,5 +1,5 @@
 import type { CodeableConcept, DocumentReference, Reference } from 'fhir/r4'
-import { createDocumentReference } from '../../lib/fhir/client'
+import { createDocumentReference } from '../lib/fhir/client'
 
 type CreateServerDocumentReferenceInput = {
   baseUrl: string

@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Bundle, Patient, Practitioner, PractitionerRole } from 'fhir/r4'
-import {
-  createDocumentReference,
-  fetchPatient,
-  fetchPractitionerRoles,
-} from '../../lib/fhir/client'
+import { fetchPatient, fetchPractitionerRoles } from '../../lib/fhir/client'
 import {
   getDisplayNameFromHumanName,
   getPractitionerRoleDisplayName,
@@ -15,8 +11,8 @@ import {
   buildAdiPmoBundle,
   type PmoAttesterOption,
   writeAdiPmoBundle,
-} from './adiPmoService'
-import { writeServerDocumentReference } from './adiDocumentReferenceService'
+} from '../../services/AdiPmoService'
+import { writeServerDocumentReference } from '../../services/DocumentReferenceService'
 
 type PatientPmoCreatePageProps = {
   patientId: string
