@@ -1,4 +1,12 @@
-import type { Address, CodeableConcept, ContactPoint, HumanName, Identifier } from 'fhir/r4'
+import type {
+  Address,
+  CodeableConcept,
+  ContactPoint,
+  HumanName,
+  Identifier,
+  Practitioner,
+  PractitionerRole,
+} from 'fhir/r4'
 
 export function placeholderValue() {
   return '--'
@@ -58,4 +66,32 @@ export function formatDate(value: string | undefined) {
   }
 
   return value
+}
+
+export function getPractitionerDisplayName(practitioner: Practitioner | undefined) {
+  if (!practitioner) return ''
+  return getDisplayNameFromHumanName(practitioner.name?.[0]) || practitioner.id || ''
+}
+
+export function getPractitionerRoleDisplayName(
+  role: PractitionerRole,
+  practitionerByReference: Map<string, Practitioner>,
+) {
+  const practitionerReference = role.practitioner?.reference
+  const practitioner = practitionerReference
+    ? practitionerByReference.get(practitionerReference)
+    : undefined
+
+  const practitionerName = getPractitionerDisplayName(practitioner)
+  const roleLabel =
+    role.code?.[0]?.text ||
+    role.code?.[0]?.coding?.[0]?.display ||
+    role.code?.[0]?.coding?.[0]?.code ||
+    ''
+
+  if (practitionerName && roleLabel) {
+    return `${practitionerName} — ${roleLabel}`
+  }
+
+  return practitionerName || roleLabel || role.id || placeholderValue()
 }

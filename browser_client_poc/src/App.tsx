@@ -6,6 +6,7 @@ import { AppLayout } from './components/AppLayout'
 import { ServerConnectPage } from './features/servers/ServerConnectPage'
 import { PatientListPage } from './features/patients/PatientListPage'
 import { PatientSummaryPage } from './features/patientSummary/PatientSummaryPage'
+import { PatientPmoCreatePage } from './features/patientSummary/PatientPmoCreatePage'
 import { useSavedServers } from './features/servers/useSavedServers'
 
 function App() {
@@ -29,6 +30,9 @@ function App() {
       {route.name === 'patients' ? <PatientListPage /> : null}
       {route.name === 'patientDetail' ? (
         <PatientSummaryPage patientId={route.patientId} />
+      ) : null}
+      {route.name === 'patientPmoCreate' ? (
+        <PatientPmoCreatePage patientId={route.patientId} />
       ) : null}
     </AppLayout>
   )

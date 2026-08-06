@@ -1,7 +1,16 @@
-import type { Bundle, BundleEntry, BundleLink, CapabilityStatement, Patient } from 'fhir/r4'
+import type {
+  Bundle,
+  BundleEntry,
+  BundleLink,
+  CapabilityStatement,
+  Patient,
+  Practitioner,
+  PractitionerRole,
+  Resource,
+} from 'fhir/r4'
 import { normalizeBaseUrl } from '../../features/servers/serverStorage'
 
-type FhirJson = Bundle | CapabilityStatement | Patient
+type FhirJson = Bundle | CapabilityStatement | Patient | Practitioner | PractitionerRole
 
 const DEFAULT_PATIENT_EVERYTHING_MAX_RESULTS = 500
 const DEFAULT_PATIENT_EVERYTHING_PAGE_COUNT = 250
@@ -27,7 +36,25 @@ async function fhirGetAbsolute<T extends FhirJson>(url: string): Promise<T> {
   return parseFhirResponse<T>(response)
 }
 
-async function parseFhirResponse<T extends FhirJson>(response: Response): Promise<T> {
+async function fhirPost<TResponse = Resource>(
+  baseUrl: string,
+  resourceType: string,
+  body: Resource,
+): Promise<TResponse> {
+  const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
+  const response = await fetch(`${normalizedBaseUrl}/${resourceType}`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/fhir+json, application/json',
+      'Content-Type': 'application/fhir+json',
+    },
+    body: JSON.stringify(body),
+  })
+
+  return parseFhirResponse<TResponse>(response)
+}
+
+async function parseFhirResponse<T>(response: Response): Promise<T> {
   const contentType = response.headers.get('content-type') || ''
   const hasJsonBody = contentType.includes('json')
   const payload = hasJsonBody ? await response.json() : null
@@ -136,6 +163,25 @@ export async function fetchPatient(baseUrl: string, patientId: string) {
   }
 
   return patient
+}
+
+export async function fetchPractitioners(baseUrl: string, count = 100) {
+  return fhirGet<Bundle>(baseUrl, `/Practitioner?_count=${count}`)
+}
+
+export async function fetchPractitionerRoles(baseUrl: string, count = 100) {
+  return fhirGet<Bundle>(
+    baseUrl,
+    `/PractitionerRole?_count=${count}&_include=PractitionerRole:practitioner`,
+  )
+}
+
+export async function createBundle(baseUrl: string, bundle: Bundle) {
+  return fhirPost<Bundle>(baseUrl, 'Bundle', bundle)
+}
+
+export async function createDocumentReference(baseUrl: string, documentReference: Resource) {
+  return fhirPost<Resource>(baseUrl, 'DocumentReference', documentReference)
 }
 
 export async function fetchPatientEverything(

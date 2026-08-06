@@ -147,7 +147,8 @@
 .server-form,
 .saved-server-panel,
 .patient-list-panel,
-.summary-preview-panel {
+.summary-preview-panel,
+.pmo-form-panel {
   border: 1px solid #e2e8f0;
   border-radius: 20px;
   background: #fff;
@@ -174,7 +175,8 @@
   color: #334155;
 }
 
-.field-group input {
+.field-group input,
+.field-group select {
   width: 100%;
   border: 1px solid #cbd5e1;
   border-radius: 14px;
@@ -184,7 +186,8 @@
   font: inherit;
 }
 
-.field-group input:focus {
+.field-group input:focus,
+.field-group select:focus {
   outline: 2px solid #818cf8;
   outline-offset: 2px;
 }
@@ -195,6 +198,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+.page-actions-spaced {
+  margin-bottom: 1rem;
 }
 
 .primary-button,
@@ -689,6 +696,12 @@ dd {
   margin-top: 0.5rem;
 }
 
+.file-input-hint {
+  margin: -0.5rem 0 1rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 1100px) {
   .app-header,
   .panel-header,
@@ -732,6 +745,7 @@ dd {
   .saved-server-panel,
   .patient-list-panel,
   .summary-preview-panel,
+  .pmo-form-panel,
   .summary-card,
   .note-card {
     padding: 1rem;
