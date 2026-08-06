@@ -11,6 +11,7 @@ import type {
 } from 'fhir/r4'
 import { createBundle } from '../lib/fhir/client'
 import { withUrnUuidBundleReferences } from '../lib/fhir/bundleReferences'
+import { closeBundleReferences } from '../lib/fhir/closedBundle'
 import {
   getDisplayNameFromHumanName,
   getPractitionerRoleDisplayName,
@@ -230,14 +231,21 @@ export function buildAdiPmoBundle(input: CreateAdiPmoBundleInput): Bundle {
     })
   }
 
-  const bundle: Bundle = {
+  return {
     resourceType: 'Bundle',
     type: 'document',
     timestamp: input.createdAt,
     entry: entries,
   }
+}
 
-  return withUrnUuidBundleReferences(bundle)
+export async function buildClosedAdiPmoBundle(
+  baseUrl: string,
+  input: CreateAdiPmoBundleInput,
+) {
+  const initialBundle = buildAdiPmoBundle(input)
+  const closedBundle = await closeBundleReferences(baseUrl, initialBundle)
+  return withUrnUuidBundleReferences(closedBundle)
 }
 
 export async function writeAdiPmoBundle(baseUrl: string, bundle: Bundle) {

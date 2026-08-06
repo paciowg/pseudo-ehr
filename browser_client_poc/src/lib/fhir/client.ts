@@ -10,7 +10,13 @@ import type {
 } from 'fhir/r4'
 import { normalizeBaseUrl } from '../../features/servers/serverStorage'
 
-type FhirJson = Bundle | CapabilityStatement | Patient | Practitioner | PractitionerRole
+type FhirJson =
+  | Bundle
+  | CapabilityStatement
+  | Patient
+  | Practitioner
+  | PractitionerRole
+  | Resource
 
 const DEFAULT_PATIENT_EVERYTHING_MAX_RESULTS = 500
 const DEFAULT_PATIENT_EVERYTHING_PAGE_COUNT = 250
@@ -174,6 +180,22 @@ export async function fetchPractitionerRoles(baseUrl: string, count = 100) {
     baseUrl,
     `/PractitionerRole?_count=${count}&_include=PractitionerRole:practitioner`,
   )
+}
+
+export async function fetchResourceByReference(baseUrl: string, reference: string) {
+  const normalizedReference = reference.trim().replace(/^\/+/, '')
+
+  if (!normalizedReference.includes('/')) {
+    throw new Error(`Unsupported reference format: ${reference}`)
+  }
+
+  const resource = await fhirGet<Resource>(baseUrl, `/${normalizedReference}`)
+
+  if (!resource.resourceType || !resource.id) {
+    throw new Error(`The server did not return a valid resource for reference ${reference}.`)
+  }
+
+  return resource
 }
 
 export async function createBundle(baseUrl: string, bundle: Bundle) {

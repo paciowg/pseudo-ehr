@@ -47,6 +47,46 @@ function replaceInternalReferences(
   }
 }
 
+export function getBundleResourceReferences(bundle: Bundle) {
+  const references = new Set<string>()
+
+  function collectReferences(node: unknown) {
+    if (Array.isArray(node)) {
+      for (const item of node) {
+        collectReferences(item)
+      }
+      return
+    }
+
+    if (!isObject(node)) {
+      return
+    }
+
+    const referenceValue = node.reference
+    if (
+      typeof referenceValue === 'string' &&
+      !referenceValue.startsWith('#') &&
+      !referenceValue.startsWith('urn:uuid:') &&
+      !referenceValue.includes('://') &&
+      referenceValue.includes('/')
+    ) {
+      references.add(referenceValue)
+    }
+
+    for (const value of Object.values(node)) {
+      collectReferences(value)
+    }
+  }
+
+  for (const entry of bundle.entry ?? []) {
+    if (entry.resource) {
+      collectReferences(entry.resource)
+    }
+  }
+
+  return references
+}
+
 export function withUrnUuidBundleReferences(bundle: Bundle): Bundle {
   const nextBundle = cloneBundle(bundle)
   const fullUrlByReference = new Map<string, string>()

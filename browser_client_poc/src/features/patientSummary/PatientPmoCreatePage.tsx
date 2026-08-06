@@ -8,7 +8,7 @@ import {
 import { navigateTo } from '../../lib/routing/routes'
 import { useSavedServers } from '../servers/useSavedServers'
 import {
-  buildAdiPmoBundle,
+  buildClosedAdiPmoBundle,
   type PmoAttesterOption,
   writeAdiPmoBundle,
 } from '../../services/AdiPmoService'
@@ -228,7 +228,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
       const pdfBase64 = await readFileAsBase64(pdfFile)
       const now = new Date().toISOString()
 
-      const bundle = buildAdiPmoBundle({
+      const bundle = await buildClosedAdiPmoBundle(activeServer.baseUrl, {
         patient,
         practitionerRole: authorRole,
         practitionerByReference,
