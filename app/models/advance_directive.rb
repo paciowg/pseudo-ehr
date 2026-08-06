@@ -50,8 +50,18 @@ class AdvanceDirective < Resource
   private
 
   def get_contents
-    attachements = @fhir_doc_ref.content.map(&:attachment)
-    non_json_atchmts = attachements.select do |atchmt|
+    # Contents can come from attachments from the DocumentReference or within the ADI Bundle pointed to by the
+    # DocumentReference; in the latter case they may be contained resources in the ADI Composition
+    # NOTE: this is an over simplification and there may be other options, e.g. as Binary references in the bundle
+    attachments = @fhir_doc_ref.content.map(&:attachment)
+    @compositions.each do |composition|
+      composition.fhir_resource.contained.each do |contained|
+        contained.content.each do |content|
+          attachments << content.attachment if content.attachment
+        end
+      end
+    end
+    non_json_atchmts = attachments.select do |atchmt|
       type = atchmt.contentType
       type.present? && type != 'application/fhir+json' && type != 'application/json'
     end
