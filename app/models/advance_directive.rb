@@ -52,26 +52,32 @@ class AdvanceDirective < Resource
   def get_contents
     # Contents can come from attachments from the DocumentReference or within the ADI Bundle pointed to by the
     # DocumentReference; in the latter case they may be contained resources in the ADI Composition
-    # NOTE: this is an over simplification and there may be other options, e.g. as Binary references in the bundle
+
+    # TODO: This should instead 1) start with the advance_directive_source_form section of the composition and
+    # grab what it points to; that might be a Bundle entry instead of contained, but we don't have the full
+    # Bundle here so we'd need to send that in as well
+
     attachments = @fhir_doc_ref.content.map(&:attachment)
-    @compositions.each do |composition|
-      composition.fhir_resource.contained.each do |contained|
-        contained.content.each do |content|
-          attachments << content.attachment if content.attachment
-        end
-      end
-    end
     non_json_atchmts = attachments.select do |atchmt|
       type = atchmt.contentType
       type.present? && type != 'application/fhir+json' && type != 'application/json'
     end
-
-    non_json_atchmts.map do |atchmt|
+    results = non_json_atchmts.map do |atchmt|
       ContentAttachment.new(
         title: atchmt.title || description, type: atchmt.contentType, data: atchmt.data,
         url: atchmt.url, creation_date: parse_date(atchmt.creation)
       )
     end
+    binaries = []
+    @compositions.each do |composition|
+      composition.fhir_resource.contained.each do |contained|
+        if contained.resourceType == 'Binary' && contained.contentType == 'application/pdf' && contained.data
+          binaries << contained
+        end
+      end
+    end
+    results += binaries.map { |binary| ContentAttachment.new(title: description, type: binary.contentType, data: binary.data) }
+    return results
   end
 
   def read_doc_creation_date
