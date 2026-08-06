@@ -10,6 +10,7 @@ import type {
   Resource,
 } from 'fhir/r4'
 import { createBundle } from '../lib/fhir/client'
+import { withUrnUuidBundleReferences } from '../lib/fhir/bundleReferences'
 import {
   getDisplayNameFromHumanName,
   getPractitionerRoleDisplayName,
@@ -229,12 +230,14 @@ export function buildAdiPmoBundle(input: CreateAdiPmoBundleInput): Bundle {
     })
   }
 
-  return {
+  const bundle: Bundle = {
     resourceType: 'Bundle',
     type: 'document',
     timestamp: input.createdAt,
     entry: entries,
   }
+
+  return withUrnUuidBundleReferences(bundle)
 }
 
 export async function writeAdiPmoBundle(baseUrl: string, bundle: Bundle) {
