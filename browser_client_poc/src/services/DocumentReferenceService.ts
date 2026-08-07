@@ -1,4 +1,9 @@
-import type { CodeableConcept, DocumentReference, Reference } from 'fhir/r4'
+import type {
+  CodeableConcept,
+  DocumentReference,
+  Identifier,
+  Reference,
+} from 'fhir/r4'
 import { createDocumentReference } from '../lib/fhir/client'
 
 type CreateServerDocumentReferenceInput = {
@@ -13,10 +18,17 @@ type CreateServerDocumentReferenceInput = {
   description: string
   version?: string
   createdAt: string
+  profileUrls?: string[]
+  custodian?: Reference
+  identifier?: Identifier[]
+  masterIdentifier?: Identifier
+  jurisdiction?: CodeableConcept
 }
 
 const ADI_DOC_VERSION_EXTENSION_URL =
   'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-docVersionNumber-extension'
+const ADI_JURISDICTION_EXTENSION_URL =
+  'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-jurisdiction-extension'
 
 export function buildDocumentBundleReference(input: {
   pdfBase64: string
@@ -69,24 +81,44 @@ export function buildDocumentBundleReference(input: {
 export function buildServerDocumentReference(
   input: Omit<CreateServerDocumentReferenceInput, 'baseUrl'>,
 ): DocumentReference {
+  const extension = [
+    ...(input.version
+      ? [
+          {
+            url: ADI_DOC_VERSION_EXTENSION_URL,
+            valueString: input.version,
+          },
+        ]
+      : []),
+    ...(input.jurisdiction
+      ? [
+          {
+            url: ADI_JURISDICTION_EXTENSION_URL,
+            valueCodeableConcept: input.jurisdiction,
+          },
+        ]
+      : []),
+  ]
+
   return {
     resourceType: 'DocumentReference',
-    status: 'current',
-    docStatus: input.docStatus,
-    ...(input.version
+    ...(input.profileUrls && input.profileUrls.length > 0
       ? {
-          extension: [
-            {
-              url: ADI_DOC_VERSION_EXTENSION_URL,
-              valueString: input.version,
-            },
-          ],
+          meta: {
+            profile: input.profileUrls,
+          },
         }
       : {}),
+    status: 'current',
+    docStatus: input.docStatus,
+    ...(extension.length > 0 ? { extension } : {}),
+    ...(input.masterIdentifier ? { masterIdentifier: input.masterIdentifier } : {}),
+    ...(input.identifier ? { identifier: input.identifier } : {}),
     type: input.type,
     ...(input.category ? { category: input.category } : {}),
     subject: input.subject,
     author: input.author,
+    ...(input.custodian ? { custodian: input.custodian } : {}),
     date: input.createdAt,
     description: input.description,
     content: [
@@ -115,6 +147,11 @@ export async function writeServerDocumentReference(
     description: input.description,
     version: input.version,
     createdAt: input.createdAt,
+    profileUrls: input.profileUrls,
+    custodian: input.custodian,
+    identifier: input.identifier,
+    masterIdentifier: input.masterIdentifier,
+    jurisdiction: input.jurisdiction,
   })
 
   return createDocumentReference(input.baseUrl, documentReference)

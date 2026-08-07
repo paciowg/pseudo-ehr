@@ -1,6 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { Bundle, Patient, Practitioner, PractitionerRole } from 'fhir/r4'
-import { fetchPatient, fetchPractitionerRoles } from '../../lib/fhir/client'
+import type {
+  Bundle,
+  CodeableConcept,
+  Identifier,
+  Organization,
+  Patient,
+  Practitioner,
+  PractitionerRole,
+  Reference,
+} from 'fhir/r4'
+import {
+  fetchOrganizations,
+  fetchPatient,
+  fetchPractitionerRoles,
+} from '../../lib/fhir/client'
 import {
   getDisplayNameFromHumanName,
   getPractitionerRoleDisplayName,
@@ -25,6 +38,15 @@ type PractitionerRoleOption = {
   label: string
   role: PractitionerRole
 }
+
+type OrganizationOption = {
+  value: string
+  label: string
+  organization: Organization
+}
+
+const ADI_DOCUMENT_REFERENCE_PROFILE_URL =
+  'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/ADI-DocumentReference'
 
 function toIsoDateTimeLocalValue(date: Date) {
   const year = date.getFullYear()
@@ -75,6 +97,28 @@ function getPractitionerRoleOptions(
     .sort((a, b) => a.label.localeCompare(b.label))
 }
 
+function getOrganizationDisplayName(organization: Organization) {
+  return (
+    organization.name ||
+    organization.alias?.find(Boolean) ||
+    organization.id ||
+    'Organization'
+  )
+}
+
+function getOrganizationOptions(bundle: Bundle): OrganizationOption[] {
+  return (bundle.entry ?? [])
+    .map((entry) => entry.resource)
+    .filter((resource): resource is Organization => resource?.resourceType === 'Organization')
+    .filter((organization) => Boolean(organization.id))
+    .map((organization) => ({
+      value: organization.id!,
+      label: getOrganizationDisplayName(organization),
+      organization,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+}
+
 function getAttesterOptions(
   patient: Patient | null,
   roleOptions: PractitionerRoleOption[],
@@ -120,6 +164,46 @@ function getAttesterOptions(
   })
 }
 
+function normalizeJurisdictionCodePart(value: string | undefined) {
+  if (!value) return ''
+  return value.trim().toUpperCase()
+}
+
+function getPatientJurisdiction(patient: Patient): CodeableConcept | undefined {
+  const address = patient.address?.find(
+    (item) => item.country?.trim() && item.state?.trim(),
+  )
+
+  if (!address) return undefined
+
+  const country = normalizeJurisdictionCodePart(address.country)
+  const state = normalizeJurisdictionCodePart(address.state)
+
+  if (!country || !state) return undefined
+
+  return {
+    coding: [
+      {
+        system: 'urn:iso:std:iso:3166:-2',
+        code: `${country}-${state}`,
+      },
+    ],
+    text: `${country}-${state}`,
+  }
+}
+
+function createDocumentIdentifier(): Identifier {
+  const value =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `docref-${Date.now()}-${Math.random().toString(16).slice(2)}`
+
+  return {
+    system: 'urn:ietf:rfc:3986',
+    value,
+  }
+}
+
 export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
   const { activeServer } = useSavedServers()
   const [patient, setPatient] = useState<Patient | null>(null)
@@ -127,6 +211,8 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
   const [practitionerByReference, setPractitionerByReference] = useState<
     Map<string, Practitioner>
   >(new Map())
+  const [custodianOptions, setCustodianOptions] = useState<OrganizationOption[]>([])
+  const [custodianReference, setCustodianReference] = useState('')
   const [status, setStatus] = useState<PmoStatus>('final')
   const [authorRoleId, setAuthorRoleId] = useState('')
   const [attesterReference, setAttesterReference] = useState('')
@@ -149,9 +235,10 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
 
     async function load() {
       try {
-        const [patientResult, practitionerRoleBundle] = await Promise.all([
+        const [patientResult, practitionerRoleBundle, organizationBundle] = await Promise.all([
           fetchPatient(activeServer.baseUrl, patientId),
           fetchPractitionerRoles(activeServer.baseUrl, 200),
+          fetchOrganizations(activeServer.baseUrl, 200),
         ])
 
         if (!isMounted) return
@@ -161,11 +248,16 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
           practitionerRoleBundle,
           practitionerMap,
         )
+        const organizations = getOrganizationOptions(organizationBundle)
 
         setPatient(patientResult)
         setPractitionerByReference(practitionerMap)
         setPractitionerRoles(roleOptions)
+        setCustodianOptions(organizations)
         setAuthorRoleId(roleOptions[0]?.value || '')
+        setCustodianReference(
+          organizations[0]?.organization.id ? `Organization/${organizations[0].organization.id}` : '',
+        )
       } catch (error) {
         if (!isMounted) return
         setErrorMessage(
@@ -204,6 +296,17 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
 
     const authorRole = practitionerRoles.find((option) => option.value === authorRoleId)?.role
     const attester = attesterOptions.find((option) => option.reference === attesterReference)
+    const identifier = createDocumentIdentifier()
+    const jurisdiction = getPatientJurisdiction(patient)
+    const custodian = custodianReference
+      ? ({
+          reference: custodianReference,
+          display:
+            custodianOptions.find(
+              (option) => `Organization/${option.organization.id}` === custodianReference,
+            )?.label || undefined,
+        } satisfies Reference)
+      : undefined
 
     if (!authorRole) {
       setErrorMessage('Please select an author.')
@@ -289,6 +392,11 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         description: `${getDisplayNameFromHumanName(patient.name?.[0]) || 'Patient'} ADI POLST PMO Document`,
         version: '1',
         createdAt: now,
+        profileUrls: [ADI_DOCUMENT_REFERENCE_PROFILE_URL],
+        custodian,
+        identifier: [identifier],
+        masterIdentifier: identifier,
+        jurisdiction,
       })
 
       setSuccessMessage('ADI POLST PMO Bundle and DocumentReference created successfully.')
@@ -380,6 +488,23 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
                 {attesterOptions.map((option) => (
                   <option key={option.reference} value={option.reference}>
                     {option.display}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="field-group">
+              <label htmlFor="pmo-custodian">Custodian (Organization)</label>
+              <select
+                id="pmo-custodian"
+                value={custodianReference}
+                onChange={(event) => setCustodianReference(event.target.value)}
+                disabled={isSubmitting}
+              >
+                <option value="">None</option>
+                {custodianOptions.map((option) => (
+                  <option key={option.value} value={`Organization/${option.value}`}>
+                    {option.label}
                   </option>
                 ))}
               </select>

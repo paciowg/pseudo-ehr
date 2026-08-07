@@ -3,6 +3,7 @@ import type {
   BundleEntry,
   BundleLink,
   CapabilityStatement,
+  Organization,
   Patient,
   Practitioner,
   PractitionerRole,
@@ -13,6 +14,7 @@ import { normalizeBaseUrl } from '../../features/servers/serverStorage'
 type FhirJson =
   | Bundle
   | CapabilityStatement
+  | Organization
   | Patient
   | Practitioner
   | PractitionerRole
@@ -180,6 +182,10 @@ export async function fetchPractitionerRoles(baseUrl: string, count = 100) {
     baseUrl,
     `/PractitionerRole?_count=${count}&_include=PractitionerRole:practitioner`,
   )
+}
+
+export async function fetchOrganizations(baseUrl: string, count = 100) {
+  return fhirGet<Bundle>(baseUrl, `/Organization?_count=${count}`)
 }
 
 export async function fetchResourceByReference(baseUrl: string, reference: string) {
