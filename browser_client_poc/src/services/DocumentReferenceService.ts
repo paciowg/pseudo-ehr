@@ -2,6 +2,7 @@ import type {
   CodeableConcept,
   DocumentReference,
   Identifier,
+  Period,
   Reference,
 } from 'fhir/r4'
 import { createDocumentReference } from '../lib/fhir/client'
@@ -23,6 +24,7 @@ type CreateServerDocumentReferenceInput = {
   identifier?: Identifier[]
   masterIdentifier?: Identifier
   jurisdiction?: CodeableConcept
+  contextPeriod?: Period
 }
 
 const ADI_DOC_VERSION_EXTENSION_URL =
@@ -100,6 +102,13 @@ export function buildServerDocumentReference(
       : []),
   ]
 
+  const context =
+    input.contextPeriod
+      ? {
+          period: input.contextPeriod,
+        }
+      : undefined
+
   return {
     resourceType: 'DocumentReference',
     ...(input.profileUrls && input.profileUrls.length > 0
@@ -121,6 +130,7 @@ export function buildServerDocumentReference(
     ...(input.custodian ? { custodian: input.custodian } : {}),
     date: input.createdAt,
     description: input.description,
+    ...(context ? { context } : {}),
     content: [
       {
         attachment: {
@@ -152,6 +162,7 @@ export async function writeServerDocumentReference(
     identifier: input.identifier,
     masterIdentifier: input.masterIdentifier,
     jurisdiction: input.jurisdiction,
+    contextPeriod: input.contextPeriod,
   })
 
   return createDocumentReference(input.baseUrl, documentReference)

@@ -55,6 +55,12 @@ function toIsoDateTimeLocalValue(date: Date) {
   return `${year}-${month}-${day}`
 }
 
+function addOneYearToDateValue(dateValue: string) {
+  const date = new Date(`${dateValue}T00:00:00Z`)
+  date.setUTCFullYear(date.getUTCFullYear() + 1)
+  return toIsoDateTimeLocalValue(date)
+}
+
 async function readFileAsBase64(file: File) {
   const buffer = await file.arrayBuffer()
   let binary = ''
@@ -98,12 +104,7 @@ function getPractitionerRoleOptions(
 }
 
 function getOrganizationDisplayName(organization: Organization) {
-  return (
-    organization.name ||
-    organization.alias?.find(Boolean) ||
-    organization.id ||
-    'Organization'
-  )
+  return organization.name || organization.alias?.find(Boolean) || organization.id || 'Organization'
 }
 
 function getOrganizationOptions(bundle: Bundle): OrganizationOption[] {
@@ -129,8 +130,7 @@ function getAttesterOptions(
   if (patient?.id) {
     options.push({
       reference: `Patient/${patient.id}`,
-      display:
-        getDisplayNameFromHumanName(patient.name?.[0]) || patient.id || 'Patient',
+      display: getDisplayNameFromHumanName(patient.name?.[0]) || patient.id || 'Patient',
     })
   }
 
@@ -170,9 +170,7 @@ function normalizeJurisdictionCodePart(value: string | undefined) {
 }
 
 function getPatientJurisdiction(patient: Patient): CodeableConcept | undefined {
-  const address = patient.address?.find(
-    (item) => item.country?.trim() && item.state?.trim(),
-  )
+  const address = patient.address?.find((item) => item.country?.trim() && item.state?.trim())
 
   if (!address) return undefined
 
@@ -217,11 +215,21 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
   const [authorRoleId, setAuthorRoleId] = useState('')
   const [attesterReference, setAttesterReference] = useState('')
   const [signedDate, setSignedDate] = useState(toIsoDateTimeLocalValue(new Date()))
+  const [contextPeriodEnd, setContextPeriodEnd] = useState(
+    addOneYearToDateValue(toIsoDateTimeLocalValue(new Date())),
+  )
+  const [hasEditedContextPeriodEnd, setHasEditedContextPeriodEnd] = useState(false)
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+
+  useEffect(() => {
+    if (!hasEditedContextPeriodEnd) {
+      setContextPeriodEnd(addOneYearToDateValue(signedDate))
+    }
+  }, [signedDate, hasEditedContextPeriodEnd])
 
   useEffect(() => {
     if (!activeServer) {
@@ -244,10 +252,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         if (!isMounted) return
 
         const practitionerMap = getPractitionerMap(practitionerRoleBundle)
-        const roleOptions = getPractitionerRoleOptions(
-          practitionerRoleBundle,
-          practitionerMap,
-        )
+        const roleOptions = getPractitionerRoleOptions(practitionerRoleBundle, practitionerMap)
         const organizations = getOrganizationOptions(organizationBundle)
 
         setPatient(patientResult)
@@ -261,9 +266,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
       } catch (error) {
         if (!isMounted) return
         setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : 'Unable to load PMO creation data.',
+          error instanceof Error ? error.message : 'Unable to load PMO creation data.',
         )
       } finally {
         if (!isMounted) return
@@ -397,14 +400,16 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         identifier: [identifier],
         masterIdentifier: identifier,
         jurisdiction,
+        contextPeriod: {
+          start: new Date(signedDate).toISOString(),
+          end: new Date(contextPeriodEnd).toISOString(),
+        },
       })
 
       setSuccessMessage('ADI POLST PMO Bundle and DocumentReference created successfully.')
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to create the ADI POLST PMO document.',
+        error instanceof Error ? error.message : 'Unable to create the ADI POLST PMO document.',
       )
     } finally {
       setIsSubmitting(false)
@@ -517,6 +522,20 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
                 type="date"
                 value={signedDate}
                 onChange={(event) => setSignedDate(event.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div className="field-group">
+              <label htmlFor="pmo-context-period-end">Relevant through</label>
+              <input
+                id="pmo-context-period-end"
+                type="date"
+                value={contextPeriodEnd}
+                onChange={(event) => {
+                  setContextPeriodEnd(event.target.value)
+                  setHasEditedContextPeriodEnd(true)
+                }}
                 disabled={isSubmitting}
               />
             </div>
