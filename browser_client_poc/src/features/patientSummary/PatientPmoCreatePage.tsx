@@ -26,6 +26,7 @@ import {
   writeAdiPmoBundle,
 } from '../../services/AdiPmoService'
 import { writeServerDocumentReference } from '../../services/DocumentReferenceService'
+import { setPatientSuccessMessage } from './patientSuccessMessage'
 
 type PatientPmoCreatePageProps = {
   patientId: string
@@ -406,7 +407,11 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         },
       })
 
-      setSuccessMessage('ADI POLST PMO Bundle and DocumentReference created successfully.')
+      setPatientSuccessMessage({
+        patientId,
+        message: 'ADI PMO created successfully.',
+      })
+      navigateTo(`/patients/${patientId}`)
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : 'Unable to create the ADI POLST PMO document.',
