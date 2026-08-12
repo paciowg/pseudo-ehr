@@ -14,13 +14,11 @@ export function setPatientSuccessMessage(message: PatientSuccessMessage) {
   window.localStorage.setItem(PATIENT_SUCCESS_MESSAGE_KEY, JSON.stringify(message))
 }
 
-export function consumePatientSuccessMessage(patientId: string) {
+export function getPatientSuccessMessage(patientId: string) {
   if (!isBrowser()) return ''
 
   const raw = window.localStorage.getItem(PATIENT_SUCCESS_MESSAGE_KEY)
   if (!raw) return ''
-
-  window.localStorage.removeItem(PATIENT_SUCCESS_MESSAGE_KEY)
 
   try {
     const parsed = JSON.parse(raw) as PatientSuccessMessage
@@ -28,4 +26,9 @@ export function consumePatientSuccessMessage(patientId: string) {
   } catch {
     return ''
   }
+}
+
+export function clearPatientSuccessMessage() {
+  if (!isBrowser()) return
+  window.localStorage.removeItem(PATIENT_SUCCESS_MESSAGE_KEY)
 }

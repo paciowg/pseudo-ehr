@@ -5,7 +5,10 @@ import { fetchPatient, fetchPatientEverything } from '../../lib/fhir/client'
 import { navigateTo } from '../../lib/routing/routes'
 import { useSavedServers } from '../servers/useSavedServers'
 import { buildPatientSummaryModel, type PatientSummaryModel } from './patientSummaryModel'
-import { consumePatientSuccessMessage } from './patientSuccessMessage'
+import {
+  clearPatientSuccessMessage,
+  getPatientSuccessMessage,
+} from './patientSuccessMessage'
 
 type PatientSummaryPageProps = {
   patientId: string
@@ -44,7 +47,13 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
   const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
-    setSuccessMessage(consumePatientSuccessMessage(patientId))
+    const message = getPatientSuccessMessage(patientId)
+    if (message) {
+      setSuccessMessage(message)
+      clearPatientSuccessMessage()
+    } else {
+      setSuccessMessage('')
+    }
   }, [patientId])
 
   useEffect(() => {
