@@ -18,7 +18,7 @@ import {
   getDisplayNameFromHumanName,
   getPractitionerRoleDisplayName,
 } from '../../lib/fhir/formatters'
-import { navigateTo } from '../../lib/routing/routes'
+import { getRouteHref, navigateTo } from '../../lib/routing/routes'
 import { useSavedServers } from '../servers/useSavedServers'
 import {
   buildClosedAdiPmoBundle,
@@ -26,7 +26,7 @@ import {
   writeAdiPmoBundle,
 } from '../../services/AdiPmoService'
 import { writeServerDocumentReference } from '../../services/DocumentReferenceService'
-import { setPatientSuccessMessage } from './patientSuccessMessage'
+import { setRouteNotification } from '../../lib/routing/routeNotification'
 
 type PatientPmoCreatePageProps = {
   patientId: string
@@ -407,9 +407,10 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         },
       })
 
-      setPatientSuccessMessage({
-        patientId,
+      setRouteNotification({
+        routeHref: getRouteHref(`/patients/${patientId}`),
         message: 'ADI PMO created successfully.',
+        tone: 'success',
       })
       navigateTo(`/patients/${patientId}`)
     } catch (error) {

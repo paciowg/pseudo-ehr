@@ -5,10 +5,6 @@ import { fetchPatient, fetchPatientEverything } from '../../lib/fhir/client'
 import { navigateTo } from '../../lib/routing/routes'
 import { useSavedServers } from '../servers/useSavedServers'
 import { buildPatientSummaryModel, type PatientSummaryModel } from './patientSummaryModel'
-import {
-  clearPatientSuccessMessage,
-  getPatientSuccessMessage,
-} from './patientSuccessMessage'
 
 type PatientSummaryPageProps = {
   patientId: string
@@ -44,17 +40,6 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [fallbackMessage, setFallbackMessage] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
-
-  useEffect(() => {
-    const message = getPatientSuccessMessage(patientId)
-    if (message) {
-      setSuccessMessage(message)
-      clearPatientSuccessMessage()
-    } else {
-      setSuccessMessage('')
-    }
-  }, [patientId])
 
   useEffect(() => {
     if (!activeServer) {
@@ -159,7 +144,6 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
 
       <div className="summary-preview-panel full-width-panel">
         {isLoading ? <div className="info-banner">Loading patient summary...</div> : null}
-        {successMessage ? <div className="success-banner">{successMessage}</div> : null}
         {fallbackMessage ? <div className="warning-banner">{fallbackMessage}</div> : null}
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
 
