@@ -1,15 +1,18 @@
+import type { ReactNode } from 'react'
 import type { ClinicalListItem } from '../features/patientSummary/patientSummaryModel'
 
 type ClinicalSummarySectionProps = {
   title: string
   items: ClinicalListItem[]
   emptyMessage?: string
+  footer?: ReactNode
 }
 
 export function ClinicalSummarySection({
   title,
   items,
   emptyMessage = 'None recorded',
+  footer,
 }: ClinicalSummarySectionProps) {
   const visibleItems = items.slice(0, 10)
 
@@ -54,6 +57,8 @@ export function ClinicalSummarySection({
       ) : (
         <p className="empty-state">{emptyMessage}</p>
       )}
+
+      {footer ? <div className="clinical-section-footer">{footer}</div> : null}
     </section>
   )
 }

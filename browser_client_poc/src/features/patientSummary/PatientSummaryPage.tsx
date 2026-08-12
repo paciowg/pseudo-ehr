@@ -143,16 +143,6 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
       </div>
 
       <div className="summary-preview-panel full-width-panel">
-        <div className="page-actions page-actions-spaced">
-          <button
-            type="button"
-            className="primary-button"
-            onClick={() => navigateTo(`/patients/${patientId}/pmo`)}
-          >
-            Create ADI POLST PMO
-          </button>
-        </div>
-
         {isLoading ? <div className="info-banner">Loading patient summary...</div> : null}
         {fallbackMessage ? <div className="warning-banner">{fallbackMessage}</div> : null}
         {errorMessage ? <div className="error-banner">{errorMessage}</div> : null}
@@ -295,6 +285,22 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
                 title="Most Recent Vitals"
                 items={summary.mostRecentVitals}
                 emptyMessage={summary.clinicalSectionEmptyMessage}
+              />
+              <ClinicalSummarySection
+                title="Advance Directives"
+                items={summary.advanceDirectives}
+                emptyMessage={summary.clinicalSectionEmptyMessage}
+                footer={
+                  <div className="clinical-section-footer">
+                    <button
+                      type="button"
+                      className="secondary-button outline compact"
+                      onClick={() => navigateTo(`/patients/${patientId}/pmo`)}
+                    >
+                      Create ADI PMO
+                    </button>
+                  </div>
+                }
               />
             </div>
           </>

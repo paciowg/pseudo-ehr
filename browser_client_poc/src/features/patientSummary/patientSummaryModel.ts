@@ -5,6 +5,7 @@ import type {
   Coding,
   Condition,
   ContactPoint,
+  DocumentReference,
   Extension,
   HumanName,
   MedicationStatement,
@@ -67,6 +68,7 @@ export type PatientSummaryModel = {
   currentMedications: ClinicalListItem[]
   knownAllergies: ClinicalListItem[]
   mostRecentVitals: ClinicalListItem[]
+  advanceDirectives: ClinicalListItem[]
   clinicalSectionEmptyMessage: string
 }
 
@@ -84,6 +86,8 @@ const HEART_RATE_CODES = new Set(['8867-4'])
 const RESPIRATORY_RATE_CODES = new Set(['9279-1'])
 const BODY_TEMPERATURE_CODES = new Set(['8310-5'])
 const OXYGEN_SATURATION_CODES = new Set(['2708-6', '59408-5'])
+const ADVANCE_DIRECTIVE_CATEGORY_CODES = new Set(['42348-3'])
+const ADVANCE_DIRECTIVE_DESCRIPTION_MAX_LENGTH = 120
 
 const CONTACT_RELATIONSHIP_CODE_MAP: Record<string, string> = {
   BRO: 'Brother',
@@ -163,6 +167,7 @@ export function buildPatientSummaryModel(input: {
     currentMedications: bundleAvailable ? getCurrentMedications(bundle) : [],
     knownAllergies: bundleAvailable ? getKnownAllergies(bundle) : [],
     mostRecentVitals: bundleAvailable ? getMostRecentVitals(bundle) : [],
+    advanceDirectives: bundleAvailable ? getAdvanceDirectives(bundle) : [],
     clinicalSectionEmptyMessage: bundleAvailable ? 'None recorded' : 'Unavailable',
   }
 }
@@ -386,6 +391,23 @@ function getMostRecentVitals(bundle: Bundle | null): ClinicalListItem[] {
   ].filter((item): item is ClinicalListItem => Boolean(item))
 }
 
+function getAdvanceDirectives(bundle: Bundle | null): ClinicalListItem[] {
+  return getBundleResources<DocumentReference>(bundle, 'DocumentReference')
+    .filter((documentReference) =>
+      documentReference.category?.some((category) =>
+        hasCoding(category.coding, ADVANCE_DIRECTIVE_CATEGORY_CODES),
+      ),
+    )
+    .sort((a, b) => sortByDateDesc(a.date, b.date))
+    .map((documentReference) => ({
+      title: getCodeableConceptText(documentReference.type) || placeholderValue(),
+      dateLabel: documentReference.date ? 'Date' : undefined,
+      dateValue: documentReference.date ? formatDate(documentReference.date) : undefined,
+      secondaryText: truncateText(documentReference.description, ADVANCE_DIRECTIVE_DESCRIPTION_MAX_LENGTH),
+    }))
+    .slice(0, 10)
+}
+
 function getLatestBloodPressure(observations: Observation[]): ClinicalListItem | null {
   const candidates = observations
     .filter((observation) => hasCoding(observation.code?.coding, BLOOD_PRESSURE_PANEL_CODES))
@@ -437,6 +459,15 @@ function quantityObservationToItem(
 function formatQuantity(quantity: Quantity | undefined) {
   if (quantity?.value == null) return placeholderValue()
   return `${quantity.value} ${quantity.unit || ''}`.trim()
+}
+
+function truncateText(value: string | undefined, maxLength: number) {
+  if (!value) return undefined
+
+  const normalized = value.trim()
+  if (normalized.length <= maxLength) return normalized
+
+  return `${normalized.slice(0, Math.max(0, maxLength - 3)).trimEnd()}...`
 }
 
 function hasCoding(coding: Coding[] | undefined, codes: Set<string>) {

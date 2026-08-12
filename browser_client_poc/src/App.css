@@ -643,6 +643,12 @@ dd {
   font-weight: 700;
 }
 
+.clinical-section-footer {
+  margin-top: 0.25rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
 .empty-state {
   margin: 0;
   border: 1px dashed #cbd5e1;
