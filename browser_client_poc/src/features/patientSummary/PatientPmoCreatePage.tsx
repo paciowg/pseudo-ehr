@@ -124,8 +124,7 @@ function getOrganizationOptions(bundle: Bundle): OrganizationOption[] {
 function getAttesterOptions(
   patient: Patient | null,
   roleOptions: PractitionerRoleOption[],
-  practitionerByReference: Map<string, Practitioner>,
-): PmoAttesterOption[] {
+) {
   const options: PmoAttesterOption[] = []
 
   if (patient?.id) {
@@ -140,29 +139,9 @@ function getAttesterOptions(
       reference: `PractitionerRole/${roleOption.role.id}`,
       display: roleOption.label,
     })
-
-    const practitionerReference = roleOption.role.practitioner?.reference
-    const practitioner = practitionerReference
-      ? practitionerByReference.get(practitionerReference)
-      : undefined
-
-    if (practitioner?.id) {
-      options.push({
-        reference: `Practitioner/${practitioner.id}`,
-        display:
-          getDisplayNameFromHumanName(practitioner.name?.[0]) ||
-          practitioner.id ||
-          'Practitioner',
-      })
-    }
   }
 
-  const seen = new Set<string>()
-  return options.filter((option) => {
-    if (seen.has(option.reference)) return false
-    seen.add(option.reference)
-    return true
-  })
+  return options
 }
 
 function normalizeJurisdictionCodePart(value: string | undefined) {
@@ -283,8 +262,8 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
   }, [activeServer, patientId])
 
   const attesterOptions = useMemo(
-    () => getAttesterOptions(patient, practitionerRoles, practitionerByReference),
-    [patient, practitionerRoles, practitionerByReference],
+    () => getAttesterOptions(patient, practitionerRoles),
+    [patient, practitionerRoles],
   )
 
   useEffect(() => {
