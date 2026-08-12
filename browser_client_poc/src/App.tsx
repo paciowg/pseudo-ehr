@@ -7,6 +7,7 @@ import { ServerConnectPage } from './features/servers/ServerConnectPage'
 import { PatientListPage } from './features/patients/PatientListPage'
 import { PatientSummaryPage } from './features/patientSummary/PatientSummaryPage'
 import { PatientPmoCreatePage } from './features/patientSummary/PatientPmoCreatePage'
+import { AdvanceDirectiveDetailPage } from './features/patientSummary/AdvanceDirectiveDetailPage'
 import { useSavedServers } from './features/servers/useSavedServers'
 import {
   clearRouteNotification,
@@ -55,6 +56,12 @@ function App() {
       ) : null}
       {route.name === 'patientPmoCreate' ? (
         <PatientPmoCreatePage patientId={route.patientId} />
+      ) : null}
+      {route.name === 'advanceDirectiveDetail' ? (
+        <AdvanceDirectiveDetailPage
+          patientId={route.patientId}
+          documentReferenceId={route.documentReferenceId}
+        />
       ) : null}
     </AppLayout>
   )

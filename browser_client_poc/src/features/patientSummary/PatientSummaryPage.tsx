@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { BundleEntry } from 'fhir/r4'
 import { ClinicalSummarySection } from '../../components/ClinicalSummarySection'
+import { SelectableClinicalSummarySection } from '../../components/SelectableClinicalSummarySection'
 import { fetchPatient, fetchPatientEverything } from '../../lib/fhir/client'
 import { navigateTo } from '../../lib/routing/routes'
 import { useSavedServers } from '../servers/useSavedServers'
@@ -286,10 +287,15 @@ export function PatientSummaryPage({ patientId }: PatientSummaryPageProps) {
                 items={summary.mostRecentVitals}
                 emptyMessage={summary.clinicalSectionEmptyMessage}
               />
-              <ClinicalSummarySection
+              <SelectableClinicalSummarySection
                 title="Advance Directives"
                 items={summary.advanceDirectives}
                 emptyMessage={summary.clinicalSectionEmptyMessage}
+                onSelect={(item) =>
+                  navigateTo(
+                    `/patients/${patientId}/advance-directives/${item.id}`,
+                  )
+                }
                 footer={
                   <div className="clinical-section-footer">
                     <button

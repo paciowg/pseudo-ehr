@@ -3,6 +3,7 @@ import type {
   BundleEntry,
   BundleLink,
   CapabilityStatement,
+  DocumentReference,
   Organization,
   Patient,
   Practitioner,
@@ -14,6 +15,7 @@ import { normalizeBaseUrl } from '../../features/servers/serverStorage'
 type FhirJson =
   | Bundle
   | CapabilityStatement
+  | DocumentReference
   | Organization
   | Patient
   | Practitioner
@@ -171,6 +173,19 @@ export async function fetchPatient(baseUrl: string, patientId: string) {
   }
 
   return patient
+}
+
+export async function fetchDocumentReference(baseUrl: string, documentReferenceId: string) {
+  const documentReference = await fhirGet<DocumentReference>(
+    baseUrl,
+    `/DocumentReference/${encodeURIComponent(documentReferenceId)}`,
+  )
+
+  if (documentReference.resourceType !== 'DocumentReference') {
+    throw new Error('The server did not return a DocumentReference resource.')
+  }
+
+  return documentReference
 }
 
 export async function fetchPractitioners(baseUrl: string, count = 100) {

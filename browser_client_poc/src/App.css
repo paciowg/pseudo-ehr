@@ -209,7 +209,8 @@
 .link-button,
 .saved-server-select-button,
 .saved-server-delete-button,
-.patient-select-button {
+.patient-select-button,
+.clinical-select-button {
   border: 0;
   border-radius: 999px;
   font: inherit;
@@ -265,7 +266,8 @@
 .link-button:hover,
 .saved-server-select-button:hover,
 .saved-server-delete-button:hover,
-.patient-select-button:hover {
+.patient-select-button:hover,
+.clinical-select-button:hover {
   transform: translateY(-1px);
 }
 
@@ -274,7 +276,8 @@
 .link-button:disabled,
 .saved-server-select-button:disabled,
 .saved-server-delete-button:disabled,
-.patient-select-button:disabled {
+.patient-select-button:disabled,
+.clinical-select-button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
   transform: none;
@@ -303,7 +306,8 @@
 
 .saved-server-item,
 .patient-list-item,
-.clinical-list-item {
+.clinical-list-item,
+.clinical-list-selectable-item {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
@@ -322,7 +326,8 @@
 }
 
 .saved-server-select-button,
-.patient-select-button {
+.patient-select-button,
+.clinical-select-button {
   flex: 1;
   text-align: left;
   border: 1px solid #e2e8f0;
@@ -333,14 +338,16 @@
 }
 
 .saved-server-select-button:hover,
-.patient-select-button:hover {
+.patient-select-button:hover,
+.clinical-select-button:hover {
   background: #eef2ff;
   border-color: #c7d2fe;
   box-shadow: 0 8px 20px rgba(99, 102, 241, 0.12);
 }
 
 .saved-server-select-button:focus-visible,
-.patient-select-button:focus-visible {
+.patient-select-button:focus-visible,
+.clinical-select-button:focus-visible {
   outline: 2px solid #818cf8;
   outline-offset: 2px;
 }
@@ -540,6 +547,10 @@
   gap: 0.2rem;
 }
 
+.detail-list {
+  gap: 1rem;
+}
+
 dt {
   font-size: 0.78rem;
   text-transform: uppercase;
@@ -553,6 +564,11 @@ dd {
   color: #0f172a;
   line-height: 1.5;
   font-weight: 600;
+}
+
+.preformatted-detail {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .stacked-details {
@@ -601,6 +617,19 @@ dd {
   align-items: start;
   gap: 0.75rem 1rem;
   padding: 0.85rem 1rem;
+}
+
+.clinical-list-selectable-item {
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.clinical-select-button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.75rem 1rem;
 }
 
 .clinical-list-main {
@@ -735,7 +764,8 @@ dd {
     text-align: left;
   }
 
-  .clinical-list-item {
+  .clinical-list-item,
+  .clinical-select-button {
     grid-template-columns: 1fr;
   }
 }
@@ -761,7 +791,8 @@ dd {
     font-size: 2rem;
   }
 
-  .clinical-list-item {
+  .clinical-list-item,
+  .clinical-select-button {
     grid-template-columns: 1fr;
   }
 

@@ -62,6 +62,7 @@ Current route targets:
 - `#/` for server selection / connection
 - `#/patients` for patient list
 - `#/patients/:id` for patient summary
+- `#/patients/:id/advance-directives/:documentReferenceId` for advance directive detail
 
 This choice keeps the app lightweight and compatible with static hosting environments such as GitHub Pages.
 
@@ -97,19 +98,21 @@ The Phase 1 patient summary page should display Rails-inspired content including
   - current medications
   - known allergies
   - most recent vitals
+  - advance directives
 
 ### Clinical summary sections
 
-The patient page should include the following non-interactive clinical summary sections:
+The patient page should include the following non-interactive or selectable clinical summary sections:
 
 - Active Problems
 - Current Medications
 - Known Allergies
 - Most Recent Vitals
+- Advance Directives
 
 For the first pass:
 
-- these sections are display-only
+- these sections are display-only except for Advance Directives
 - each section should show up to 10 items
 - each section should show dates when available
 - each section should show a clear empty state such as `None recorded`
@@ -129,6 +132,7 @@ The initial patient page should follow this general layout:
     - current medications
     - known allergies
     - most recent vitals
+    - advance directives
 
 This layout is intentionally inspired by the Rails patient summary while allowing a fresh visual design for the browser POC.
 
@@ -159,6 +163,12 @@ If `$everything` fails, is unsupported, or returns incomplete related-resource d
 If `Patient/{id}` also fails:
 
 - the page should show an error state
+
+### Advance directive detail loading strategy
+
+The advance directive detail page loads `DocumentReference/{id}` directly.
+
+This is intended to be more reliable than requiring the page to retain and reuse the original `$everything` bundle in memory.
 
 ## FHIR data extraction rules
 
@@ -256,6 +266,8 @@ For the first implementation pass, the clinical summary sections should use thes
   - `AllergyIntolerance`
 - Most Recent Vitals
   - `Observation`
+- Advance Directives
+  - `DocumentReference` filtered to category LOINC `42348-3`
 
 ### Clinical inclusion rules
 
@@ -283,6 +295,12 @@ Current inclusion rules for the first pass:
     - body temperature
     - oxygen saturation
   - blood pressure should support panel/component extraction
+
+- Advance Directives
+  - include `DocumentReference`
+  - require category coding containing LOINC `42348-3`
+  - show type, date, and truncated description in the patient summary
+  - support click-through to a detail page
 
 ## Display conventions
 

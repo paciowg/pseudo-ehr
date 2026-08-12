@@ -38,6 +38,10 @@ export type ClinicalListItem = {
   secondaryText?: string
 }
 
+export type SelectableClinicalListItem = ClinicalListItem & {
+  id: string
+}
+
 export type PatientSummaryModel = {
   patientId: string
   patientName: string
@@ -68,7 +72,7 @@ export type PatientSummaryModel = {
   currentMedications: ClinicalListItem[]
   knownAllergies: ClinicalListItem[]
   mostRecentVitals: ClinicalListItem[]
-  advanceDirectives: ClinicalListItem[]
+  advanceDirectives: SelectableClinicalListItem[]
   clinicalSectionEmptyMessage: string
 }
 
@@ -391,19 +395,24 @@ function getMostRecentVitals(bundle: Bundle | null): ClinicalListItem[] {
   ].filter((item): item is ClinicalListItem => Boolean(item))
 }
 
-function getAdvanceDirectives(bundle: Bundle | null): ClinicalListItem[] {
+function getAdvanceDirectives(bundle: Bundle | null): SelectableClinicalListItem[] {
   return getBundleResources<DocumentReference>(bundle, 'DocumentReference')
     .filter((documentReference) =>
+      Boolean(documentReference.id) &&
       documentReference.category?.some((category) =>
         hasCoding(category.coding, ADVANCE_DIRECTIVE_CATEGORY_CODES),
       ),
     )
     .sort((a, b) => sortByDateDesc(a.date, b.date))
     .map((documentReference) => ({
+      id: documentReference.id!,
       title: getCodeableConceptText(documentReference.type) || placeholderValue(),
       dateLabel: documentReference.date ? 'Date' : undefined,
       dateValue: documentReference.date ? formatDate(documentReference.date) : undefined,
-      secondaryText: truncateText(documentReference.description, ADVANCE_DIRECTIVE_DESCRIPTION_MAX_LENGTH),
+      secondaryText: truncateText(
+        documentReference.description,
+        ADVANCE_DIRECTIVE_DESCRIPTION_MAX_LENGTH,
+      ),
     }))
     .slice(0, 10)
 }

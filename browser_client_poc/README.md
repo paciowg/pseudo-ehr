@@ -26,6 +26,9 @@ Initial application development supports the following:
    1. That patient's full record is loaded primarily using `$everything`
    2. If `$everything` fails, the app falls back to `Patient/{id}`
    3. A patient summary page is displayed
+6. When an advance directive is selected from the patient summary
+   1. The app loads `DocumentReference/{id}`
+   2. A generic advance directive detail page is displayed
 
 Phase 1 is read-only.
 
@@ -39,8 +42,9 @@ The patient summary displays:
 - current medications
 - known allergies
 - most recent vitals
+- advance directives
 
-The initial clinical summary sections are non-interactive and show up to 10 items with dates where available and clear empty states.
+The initial clinical summary sections are non-interactive except for Advance Directives, which support selection and drill-in to a detail page. Each section shows up to 10 items with dates where available and clear empty states.
 
 Display conventions:
 
@@ -53,6 +57,7 @@ Routing uses a small hash-based route switch:
 - `#/`
 - `#/patients`
 - `#/patients/:id`
+- `#/patients/:id/advance-directives/:documentReferenceId`
 
 This keeps the app simple and friendly to static hosting environments.
 
@@ -79,7 +84,7 @@ Current structure:
 - `src/lib/routing/` for hash route parsing and navigation
 - `src/features/servers/` for saved server state and connection flow
 - `src/features/patients/` for patient list loading and filtering
-- `src/features/patientSummary/` for patient summary derivation and rendering
+- `src/features/patientSummary/` for patient summary derivation, rendering, and advance directive detail pages
 - `src/components/` for reusable presentational components
 
 ## Running the app
@@ -90,6 +95,7 @@ Start the Vite dev server in `browser_client_poc/` and open the app in a browser
 - `GET /Patient?_count=100`
 - `GET /Patient/{id}`
 - `GET /Patient/{id}/$everything`
+- `GET /DocumentReference/{id}`
 
 # React + TypeScript + Vite
 

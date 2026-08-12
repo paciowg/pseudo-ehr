@@ -3,6 +3,7 @@ export type AppRoute =
   | { name: 'patients' }
   | { name: 'patientDetail'; patientId: string }
   | { name: 'patientPmoCreate'; patientId: string }
+  | { name: 'advanceDirectiveDetail'; patientId: string; documentReferenceId: string }
 
 export function parseHashRoute(hash: string): AppRoute {
   const raw = hash.replace(/^#/, '') || '/'
@@ -16,6 +17,18 @@ export function parseHashRoute(hash: string): AppRoute {
 
   if (segments.length === 1 && segments[0] === 'patients') {
     return { name: 'patients' }
+  }
+
+  if (
+    segments.length === 4 &&
+    segments[0] === 'patients' &&
+    segments[2] === 'advance-directives'
+  ) {
+    return {
+      name: 'advanceDirectiveDetail',
+      patientId: decodeURIComponent(segments[1]),
+      documentReferenceId: decodeURIComponent(segments[3]),
+    }
   }
 
   if (
