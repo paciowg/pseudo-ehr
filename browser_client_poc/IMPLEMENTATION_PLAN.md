@@ -315,7 +315,21 @@ Current conventions:
 
 - missing scalar field values: `--`
 - empty loaded clinical lists: `None recorded`
-- bundle-derived sections unavailable due to fallback: `Unavailable`
+- unavailable bundle-derived sections: `Unavailable`
+
+## ADI document versioning
+
+When the browser client creates an ADI document bundle and companion ADI `DocumentReference`, the ADI document version number should be a UTC timestamp-derived string in `YYYYMMDDhhmmss` format.
+
+Rules:
+
+- the version number is not a simple incrementing integer
+- the version number should be derived from the document creation timestamp
+- for newly created documents in this app, the version number should be generated from the same creation instant used for `Bundle.timestamp`
+- for newly created documents in this app, `Composition.date` should also use that same instant
+- the ADI version number should be written consistently anywhere the ADI docVersionNumber extension is populated
+
+This aligns the implementation more closely with CDA-style timestamp labeling while preserving room for future handling of imported historical documents where `Composition.date` may differ from the bundle creation timestamp.
 
 ## Architectural direction
 

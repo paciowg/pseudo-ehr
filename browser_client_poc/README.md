@@ -67,6 +67,19 @@ For more detailed planning and current decisions, see:
 
 - `IMPLEMENTATION_PLAN.md`
 
+## ADI document versioning
+
+When the browser client creates an ADI document bundle and companion ADI `DocumentReference`, the ADI version number is generated as a UTC timestamp string in `YYYYMMDDhhmmss` format.
+
+For newly created documents in this app:
+
+- the version number is derived from the document creation instant
+- `Bundle.timestamp` uses that same creation instant
+- `Composition.date` also uses that same creation instant
+- the ADI doc version extension is populated consistently from that derived version value
+
+This supports timestamp-labeled version ordering aligned with CDA-oriented guidance, while leaving room for future handling of imported historical documents where `Composition.date` may differ from bundle creation time.
+
 ## Phase 2
 
 Once basic FHIR support is in place some PACIO specific functionality will be explored. Candidates include:

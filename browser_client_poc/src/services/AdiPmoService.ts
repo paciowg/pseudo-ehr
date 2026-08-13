@@ -13,6 +13,7 @@ import { createBundle } from '../lib/fhir/client'
 import { withUrnUuidBundleReferences } from '../lib/fhir/bundleReferences'
 import { closeBundleReferences } from '../lib/fhir/closedBundle'
 import {
+  formatAdiVersionNumber,
   getDisplayNameFromHumanName,
   getPractitionerRoleDisplayName,
 } from '../lib/fhir/formatters'
@@ -91,7 +92,7 @@ function buildComposition(input: CreateAdiPmoBundleInput): Composition {
     input.practitionerRole,
     input.practitionerByReference,
   )
-
+  const versionNumber = formatAdiVersionNumber(input.createdAt)
   const sourceFormBinary = buildSourceFormBinary(input)
 
   return {
@@ -107,7 +108,7 @@ function buildComposition(input: CreateAdiPmoBundleInput): Composition {
     extension: [
       {
         url: ADI_DOC_VERSION_EXTENSION_URL,
-        valueString: '1',
+        valueString: versionNumber,
       },
     ],
     status: input.status,

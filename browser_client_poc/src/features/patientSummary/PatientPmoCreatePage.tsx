@@ -15,6 +15,7 @@ import {
   fetchPractitionerRoles,
 } from '../../lib/fhir/client'
 import {
+  formatAdiVersionNumber,
   getDisplayNameFromHumanName,
   getPractitionerRoleDisplayName,
 } from '../../lib/fhir/formatters'
@@ -313,6 +314,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
     try {
       const pdfBase64 = await readFileAsBase64(pdfFile)
       const now = new Date().toISOString()
+      const versionNumber = formatAdiVersionNumber(now)
 
       const bundle = await buildClosedAdiPmoBundle(activeServer.baseUrl, {
         patient,
@@ -373,7 +375,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         contentType: 'application/fhir+json',
         docStatus: status,
         description: `${getDisplayNameFromHumanName(patient.name?.[0]) || 'Patient'} ADI POLST PMO Document`,
-        version: '1',
+        version: versionNumber,
         createdAt: now,
         profileUrls: [ADI_DOCUMENT_REFERENCE_PROFILE_URL],
         custodian,
