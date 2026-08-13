@@ -194,7 +194,8 @@
 
 .form-actions,
 .inline-actions,
-.page-actions {
+.page-actions,
+.attachment-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
@@ -676,6 +677,31 @@ dd {
   margin-top: 0.25rem;
   display: flex;
   justify-content: flex-start;
+}
+
+.bundle-sections {
+  display: grid;
+  gap: 1rem;
+}
+
+.bundle-section-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1rem;
+  background: #f8fafc;
+}
+
+.bundle-section-code {
+  margin: 0.35rem 0 0.6rem;
+  color: #475569;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.bundle-section-text {
+  margin: 0;
+  color: #334155;
+  line-height: 1.6;
 }
 
 .empty-state {

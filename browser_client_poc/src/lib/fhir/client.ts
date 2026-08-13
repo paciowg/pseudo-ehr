@@ -188,6 +188,54 @@ export async function fetchDocumentReference(baseUrl: string, documentReferenceI
   return documentReference
 }
 
+export async function fetchBundle(baseUrl: string, bundleId: string) {
+  const bundle = await fhirGet<Bundle>(baseUrl, `/Bundle/${encodeURIComponent(bundleId)}`)
+
+  if (bundle.resourceType !== 'Bundle') {
+    throw new Error('The server did not return a Bundle resource.')
+  }
+
+  return bundle
+}
+
+export async function fetchBundleByReference(baseUrl: string, reference: string) {
+  const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
+  const trimmedReference = reference.trim()
+
+  if (!trimmedReference) {
+    throw new Error('Bundle reference was empty.')
+  }
+
+  if (trimmedReference.startsWith('http://') || trimmedReference.startsWith('https://')) {
+    if (!trimmedReference.startsWith(`${normalizedBaseUrl}/`)) {
+      throw new Error(`Unsupported external Bundle reference: ${reference}`)
+    }
+
+    const relativePath = trimmedReference.slice(normalizedBaseUrl.length)
+    const bundle = await fhirGet<Bundle>(baseUrl, relativePath.startsWith('/') ? relativePath : `/${relativePath}`)
+
+    if (bundle.resourceType !== 'Bundle') {
+      throw new Error('The server did not return a Bundle resource.')
+    }
+
+    return bundle
+  }
+
+  const normalizedReference = trimmedReference.replace(/^\/+/, '')
+
+  if (!normalizedReference.startsWith('Bundle/')) {
+    throw new Error(`Unsupported Bundle reference format: ${reference}`)
+  }
+
+  const bundle = await fhirGet<Bundle>(baseUrl, `/${normalizedReference}`)
+
+  if (bundle.resourceType !== 'Bundle') {
+    throw new Error('The server did not return a Bundle resource.')
+  }
+
+  return bundle
+}
+
 export async function fetchPractitioners(baseUrl: string, count = 100) {
   return fhirGet<Bundle>(baseUrl, `/Practitioner?_count=${count}`)
 }
