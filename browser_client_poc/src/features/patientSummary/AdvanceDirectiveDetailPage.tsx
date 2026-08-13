@@ -52,6 +52,9 @@ type BundleDerivedData = {
   pdfViewers: AttachmentViewer[]
 }
 
+const ADI_DOC_VERSION_EXTENSION_URL =
+  'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-docVersionNumber-extension'
+
 function joinValues(values: string[]) {
   return values.filter(Boolean).join(', ')
 }
@@ -134,11 +137,25 @@ function formatSecurityLabels(documentReference: DocumentReference) {
   return formatCodeableConcepts(documentReference.securityLabel)
 }
 
+function getAdiVersionFromExtensions(
+  extensions: { url?: string; valueString?: string }[] | undefined,
+) {
+  const version = extensions?.find(
+    (extension) => extension.url === ADI_DOC_VERSION_EXTENSION_URL,
+  )?.valueString
+
+  return version || placeholderValue()
+}
+
 function buildDocumentReferenceRows(documentReference: DocumentReference): DetailRow[] {
   return [
     { label: 'Id', value: documentReference.id || placeholderValue() },
     { label: 'Status', value: documentReference.status || placeholderValue() },
     { label: 'Document status', value: documentReference.docStatus || placeholderValue() },
+    {
+      label: 'Version',
+      value: getAdiVersionFromExtensions(documentReference.extension),
+    },
     {
       label: 'Type',
       value: getCodeableConceptText(documentReference.type) || placeholderValue(),
@@ -272,6 +289,10 @@ function buildBundleDerivedRows(bundle: Bundle, composition: Composition): Detai
     { label: 'Bundle type', value: bundle.type || placeholderValue() },
     { label: 'Composition id', value: composition.id || placeholderValue() },
     { label: 'Status', value: composition.status || placeholderValue() },
+    {
+      label: 'Version',
+      value: getAdiVersionFromExtensions(composition.extension),
+    },
     { label: 'Title', value: composition.title || placeholderValue() },
     {
       label: 'Type',
