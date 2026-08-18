@@ -8,6 +8,7 @@ import type {
   Patient,
   Practitioner,
   PractitionerRole,
+  RelatedPerson,
   Resource,
 } from 'fhir/r4'
 import { normalizeBaseUrl } from '../../features/servers/serverStorage'
@@ -20,6 +21,7 @@ type FhirJson =
   | Patient
   | Practitioner
   | PractitionerRole
+  | RelatedPerson
   | Resource
 
 const DEFAULT_PATIENT_EVERYTHING_MAX_RESULTS = 500
@@ -212,7 +214,10 @@ export async function fetchBundleByReference(baseUrl: string, reference: string)
     }
 
     const relativePath = trimmedReference.slice(normalizedBaseUrl.length)
-    const bundle = await fhirGet<Bundle>(baseUrl, relativePath.startsWith('/') ? relativePath : `/${relativePath}`)
+    const bundle = await fhirGet<Bundle>(
+      baseUrl,
+      relativePath.startsWith('/') ? relativePath : `/${relativePath}`,
+    )
 
     if (bundle.resourceType !== 'Bundle') {
       throw new Error('The server did not return a Bundle resource.')
@@ -249,6 +254,13 @@ export async function fetchPractitionerRoles(baseUrl: string, count = 100) {
 
 export async function fetchOrganizations(baseUrl: string, count = 100) {
   return fhirGet<Bundle>(baseUrl, `/Organization?_count=${count}`)
+}
+
+export async function fetchRelatedPersons(baseUrl: string, patientId: string, count = 100) {
+  return fhirGet<Bundle>(
+    baseUrl,
+    `/RelatedPerson?patient=${encodeURIComponent(patientId)}&_count=${count}`,
+  )
 }
 
 export async function fetchResourceByReference(baseUrl: string, reference: string) {

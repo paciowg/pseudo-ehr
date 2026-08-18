@@ -8,14 +8,17 @@ import type {
   Practitioner,
   PractitionerRole,
   Reference,
+  RelatedPerson,
 } from 'fhir/r4'
 import {
   fetchOrganizations,
   fetchPatient,
   fetchPractitionerRoles,
+  fetchRelatedPersons,
 } from '../../lib/fhir/client'
 import {
   formatAdiVersionNumber,
+  getCodeableConceptText,
   getDisplayNameFromHumanName,
   getPractitionerRoleDisplayName,
 } from '../../lib/fhir/formatters'
@@ -122,9 +125,37 @@ function getOrganizationOptions(bundle: Bundle): OrganizationOption[] {
     .sort((a, b) => a.label.localeCompare(b.label))
 }
 
+function getRelatedPersons(bundle: Bundle): RelatedPerson[] {
+  return (bundle.entry ?? [])
+    .map((entry) => entry.resource)
+    .filter((resource): resource is RelatedPerson => resource?.resourceType === 'RelatedPerson')
+    .filter((relatedPerson) => Boolean(relatedPerson.id))
+    .sort((a, b) => {
+      const aName = getDisplayNameFromHumanName(a.name?.[0]) || a.id || ''
+      const bName = getDisplayNameFromHumanName(b.name?.[0]) || b.id || ''
+      return aName.localeCompare(bName)
+    })
+}
+
+function getRelatedPersonDisplayName(relatedPerson: RelatedPerson) {
+  const name =
+    getDisplayNameFromHumanName(relatedPerson.name?.[0]) ||
+    relatedPerson.patient?.display ||
+    relatedPerson.id ||
+    'Related person'
+
+  const relationship =
+    relatedPerson.relationship?.length
+      ? getCodeableConceptText(relatedPerson.relationship[0])
+      : ''
+
+  return relationship ? `${name} — RelatedPerson (${relationship})` : `${name} — RelatedPerson`
+}
+
 function getAttesterOptions(
   patient: Patient | null,
   roleOptions: PractitionerRoleOption[],
+  relatedPersons: RelatedPerson[],
 ) {
   const options: PmoAttesterOption[] = []
 
@@ -139,6 +170,15 @@ function getAttesterOptions(
     options.push({
       reference: `PractitionerRole/${roleOption.role.id}`,
       display: roleOption.label,
+    })
+  }
+
+  for (const relatedPerson of relatedPersons) {
+    if (!relatedPerson.id) continue
+
+    options.push({
+      reference: `RelatedPerson/${relatedPerson.id}`,
+      display: getRelatedPersonDisplayName(relatedPerson),
     })
   }
 
@@ -190,6 +230,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
   const [practitionerByReference, setPractitionerByReference] = useState<
     Map<string, Practitioner>
   >(new Map())
+  const [relatedPersons, setRelatedPersons] = useState<RelatedPerson[]>([])
   const [custodianOptions, setCustodianOptions] = useState<OrganizationOption[]>([])
   const [custodianReference, setCustodianReference] = useState('')
   const [status, setStatus] = useState<PmoStatus>('final')
@@ -224,10 +265,16 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
 
     async function load() {
       try {
-        const [patientResult, practitionerRoleBundle, organizationBundle] = await Promise.all([
+        const [
+          patientResult,
+          practitionerRoleBundle,
+          organizationBundle,
+          relatedPersonBundle,
+        ] = await Promise.all([
           fetchPatient(activeServer.baseUrl, patientId),
           fetchPractitionerRoles(activeServer.baseUrl, 200),
           fetchOrganizations(activeServer.baseUrl, 200),
+          fetchRelatedPersons(activeServer.baseUrl, patientId, 200),
         ])
 
         if (!isMounted) return
@@ -235,10 +282,12 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         const practitionerMap = getPractitionerMap(practitionerRoleBundle)
         const roleOptions = getPractitionerRoleOptions(practitionerRoleBundle, practitionerMap)
         const organizations = getOrganizationOptions(organizationBundle)
+        const relatedPersonOptions = getRelatedPersons(relatedPersonBundle)
 
         setPatient(patientResult)
         setPractitionerByReference(practitionerMap)
         setPractitionerRoles(roleOptions)
+        setRelatedPersons(relatedPersonOptions)
         setCustodianOptions(organizations)
         setAuthorRoleId(roleOptions[0]?.value || '')
         setCustodianReference(
@@ -263,8 +312,8 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
   }, [activeServer, patientId])
 
   const attesterOptions = useMemo(
-    () => getAttesterOptions(patient, practitionerRoles),
-    [patient, practitionerRoles],
+    () => getAttesterOptions(patient, practitionerRoles, relatedPersons),
+    [patient, practitionerRoles, relatedPersons],
   )
 
   useEffect(() => {
