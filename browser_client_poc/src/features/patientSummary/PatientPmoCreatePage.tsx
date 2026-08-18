@@ -373,6 +373,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         practitionerRole: authorRole,
         practitionerByReference,
         attester,
+        custodian,
         status,
         signedDate: new Date(signedDate).toISOString(),
         createdAt: now,

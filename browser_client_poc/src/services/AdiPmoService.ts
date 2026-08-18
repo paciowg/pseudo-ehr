@@ -7,6 +7,7 @@ import type {
   Patient,
   Practitioner,
   PractitionerRole,
+  Reference,
   Resource,
 } from 'fhir/r4'
 import { createBundle } from '../lib/fhir/client'
@@ -30,6 +31,7 @@ export type CreateAdiPmoBundleInput = {
   practitionerRole: PractitionerRole
   practitionerByReference: Map<string, Practitioner>
   attester: PmoAttesterOption
+  custodian?: Reference
   status: PmoStatus
   signedDate: string
   createdAt: string
@@ -138,6 +140,7 @@ function buildComposition(input: CreateAdiPmoBundleInput): Composition {
         },
       },
     ],
+    ...(input.custodian ? { custodian: input.custodian } : {}),
     section: [
       {
         title: 'Advance directive source form',
