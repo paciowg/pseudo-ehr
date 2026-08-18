@@ -47,6 +47,7 @@ const ADI_DOC_VERSION_EXTENSION_URL =
 const ADI_TEMP_CODE_SYSTEM = 'http://hl7.org/fhir/us/pacio-adi/CodeSystem/ADITempCS'
 const ADI_DOCUMENT_IDENTIFIER_SYSTEM =
   'https://pacioproject.org/adi-document-identifier'
+const SOURCE_FORM_BINARY_ID = 'source-form-binary'
 
 function createPmoType(): CodeableConcept {
   return {
@@ -81,7 +82,7 @@ function getPatientDisplayName(patient: Patient) {
 function buildSourceFormBinary(input: CreateAdiPmoBundleInput): Binary {
   return {
     resourceType: 'Binary',
-    id: 'source-form-binary',
+    id: SOURCE_FORM_BINARY_ID,
     meta: {
       profile: [ADI_SOURCE_FORM_BINARY_PROFILE],
     },
@@ -90,14 +91,16 @@ function buildSourceFormBinary(input: CreateAdiPmoBundleInput): Binary {
   }
 }
 
-function buildComposition(input: CreateAdiPmoBundleInput): Composition {
+function buildComposition(
+  input: CreateAdiPmoBundleInput,
+  sourceFormBinary: Binary,
+): Composition {
   const patientDisplayName = getPatientDisplayName(input.patient)
   const authorDisplayName = getPractitionerRoleDisplayName(
     input.practitionerRole,
     input.practitionerByReference,
   )
   const versionNumber = formatAdiVersionNumber(input.createdAt)
-  const sourceFormBinary = buildSourceFormBinary(input)
 
   return {
     resourceType: 'Composition',
@@ -162,7 +165,7 @@ function buildComposition(input: CreateAdiPmoBundleInput): Composition {
         },
         entry: [
           {
-            reference: '#source-form-binary',
+            reference: `${sourceFormBinary.resourceType}/${sourceFormBinary.id}`,
           },
         ],
       },
@@ -179,7 +182,6 @@ function buildComposition(input: CreateAdiPmoBundleInput): Composition {
         },
       },
     ],
-    contained: [sourceFormBinary],
   }
 }
 
@@ -193,11 +195,16 @@ function escapeHtml(value: string) {
 }
 
 export function buildAdiPmoBundle(input: CreateAdiPmoBundleInput): Bundle {
-  const composition = buildComposition(input)
+  const sourceFormBinary = buildSourceFormBinary(input)
+  const composition = buildComposition(input, sourceFormBinary)
   const entries: BundleEntry[] = [
     {
       fullUrl: `urn:uuid:${crypto.randomUUID()}`,
       resource: composition,
+    },
+    {
+      fullUrl: `${sourceFormBinary.resourceType}/${sourceFormBinary.id}`,
+      resource: sourceFormBinary,
     },
   ]
 
