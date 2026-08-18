@@ -52,6 +52,8 @@ type OrganizationOption = {
 
 const ADI_DOCUMENT_REFERENCE_PROFILE_URL =
   'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/ADI-DocumentReference'
+const ADI_DOCUMENT_IDENTIFIER_SYSTEM =
+  'https://pacioproject.org/adi-document-identifier'
 
 function toIsoDateTimeLocalValue(date: Date) {
   const year = date.getFullYear()
@@ -219,7 +221,7 @@ function createDocumentIdentifier(): Identifier {
       : `docref-${Date.now()}-${Math.random().toString(16).slice(2)}`
 
   return {
-    system: 'urn:ietf:rfc:3986',
+    system: ADI_DOCUMENT_IDENTIFIER_SYSTEM,
     value,
   }
 }

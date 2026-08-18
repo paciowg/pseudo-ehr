@@ -43,6 +43,8 @@ const ADI_PMO_COMPOSITION_PROFILE =
 const ADI_DOC_VERSION_EXTENSION_URL =
   'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-docVersionNumber-extension'
 const ADI_TEMP_CODE_SYSTEM = 'http://hl7.org/fhir/us/pacio-adi/CodeSystem/ADITempCS'
+const ADI_DOCUMENT_IDENTIFIER_SYSTEM =
+  'https://pacioproject.org/adi-document-identifier'
 
 function createPmoType(): CodeableConcept {
   return {
@@ -101,8 +103,8 @@ function buildComposition(input: CreateAdiPmoBundleInput): Composition {
       profile: [ADI_PMO_COMPOSITION_PROFILE],
     },
     identifier: {
-      system: 'urn:ietf:rfc:3986',
-      value: `urn:uuid:${crypto.randomUUID()}`,
+      system: ADI_DOCUMENT_IDENTIFIER_SYSTEM,
+      value: crypto.randomUUID(),
     },
     language: 'en-US',
     extension: [

@@ -49,10 +49,6 @@ type BundleDerivedData = {
 const ADI_DOC_VERSION_EXTENSION_URL =
   'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-docVersionNumber-extension'
 
-function joinValues(values: string[]) {
-  return values.filter(Boolean).join(', ')
-}
-
 function formatReference(reference: Reference | undefined) {
   if (!reference) return placeholderValue()
   return reference.display || reference.reference || placeholderValue()
@@ -79,13 +75,7 @@ function formatCodeableConcepts(concepts: CodeableConcept[] | undefined) {
 }
 
 function formatIdentifier(identifier: Identifier | undefined) {
-  if (!identifier) return ''
-
-  return joinValues(
-    [identifier.system, identifier.value].filter(
-      (value): value is string => Boolean(value),
-    ),
-  )
+  return identifier?.value || ''
 }
 
 function formatIdentifiers(identifiers: Identifier[] | undefined) {
@@ -129,13 +119,13 @@ function formatAttester(composition: Composition | undefined) {
 
   return composition.attester
     .map((attester) =>
-      joinValues(
-        [
-          attester.mode || '',
-          attester.party?.display || attester.party?.reference || '',
-          attester.time ? formatDate(attester.time) : '',
-        ].filter(Boolean),
-      ),
+      [
+        attester.mode || '',
+        attester.party?.display || attester.party?.reference || '',
+        attester.time ? formatDate(attester.time) : '',
+      ]
+        .filter(Boolean)
+        .join(', '),
     )
     .join(', ')
 }
@@ -172,6 +162,11 @@ function buildDocumentDetailsRows(
   const compositionVersion = getAdiVersionFromExtensions(composition?.extension)
   const documentReferenceVersion = getAdiVersionFromExtensions(documentReference.extension)
 
+  const compositionCategories = formatCodeableConcepts(composition?.category)
+  const compositionSubject = formatReference(composition?.subject)
+  const compositionAuthor = formatReferences(composition?.author)
+  const compositionCustodian = formatReference(composition?.custodian)
+
   return [
     {
       label: 'Status',
@@ -195,22 +190,22 @@ function buildDocumentDetailsRows(
     {
       label: 'Category',
       value:
-        formatCodeableConcepts(composition?.category) !== placeholderValue()
-          ? formatCodeableConcepts(composition?.category)
+        compositionCategories !== placeholderValue()
+          ? compositionCategories
           : formatCodeableConcepts(documentReference.category),
     },
     {
       label: 'Subject',
       value:
-        formatReference(composition?.subject) !== placeholderValue()
-          ? formatReference(composition?.subject)
+        compositionSubject !== placeholderValue()
+          ? compositionSubject
           : formatReference(documentReference.subject),
     },
     {
       label: 'Author',
       value:
-        formatReferences(composition?.author) !== placeholderValue()
-          ? formatReferences(composition?.author)
+        compositionAuthor !== placeholderValue()
+          ? compositionAuthor
           : formatReferences(documentReference.author),
     },
     {
@@ -220,8 +215,8 @@ function buildDocumentDetailsRows(
     {
       label: 'Custodian',
       value:
-        formatReference(composition?.custodian) !== placeholderValue()
-          ? formatReference(composition?.custodian)
+        compositionCustodian !== placeholderValue()
+          ? compositionCustodian
           : formatReference(documentReference.custodian),
     },
     {
