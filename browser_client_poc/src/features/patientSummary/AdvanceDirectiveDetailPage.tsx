@@ -43,12 +43,6 @@ type AttachmentViewer = {
 
 type BundleDerivedData = {
   composition: Composition
-  rows: DetailRow[]
-  sections: {
-    title: string
-    code: string
-    text: string
-  }[]
   pdfViewers: AttachmentViewer[]
 }
 
@@ -84,43 +78,24 @@ function formatCodeableConcepts(concepts: CodeableConcept[] | undefined) {
   return values.length > 0 ? values.join(', ') : placeholderValue()
 }
 
+function formatIdentifier(identifier: Identifier | undefined) {
+  if (!identifier) return ''
+
+  return joinValues(
+    [identifier.system, identifier.value].filter(
+      (value): value is string => Boolean(value),
+    ),
+  )
+}
+
 function formatIdentifiers(identifiers: Identifier[] | undefined) {
   if (!identifiers || identifiers.length === 0) return placeholderValue()
 
   const values = identifiers
-    .map((identifier) =>
-      joinValues(
-        [identifier.system, identifier.value].filter(
-          (value): value is string => Boolean(value),
-        ),
-      ),
-    )
+    .map((identifier) => formatIdentifier(identifier))
     .filter(Boolean)
 
   return values.length > 0 ? values.join(', ') : placeholderValue()
-}
-
-function formatAttachment(attachment: Attachment | undefined) {
-  if (!attachment) return placeholderValue()
-
-  const values = [
-    attachment.title,
-    attachment.contentType,
-    attachment.url,
-    attachment.creation ? `Created ${formatDate(attachment.creation)}` : '',
-  ].filter(Boolean)
-
-  return values.length > 0 ? values.join(' · ') : placeholderValue()
-}
-
-function formatAttachments(content: DocumentReference['content'] | undefined) {
-  if (!content || content.length === 0) return placeholderValue()
-
-  const values = content
-    .map((item) => formatAttachment(item.attachment))
-    .filter((value) => value !== placeholderValue())
-
-  return values.length > 0 ? values.join('\n') : placeholderValue()
 }
 
 function formatContextPeriod(documentReference: DocumentReference) {
@@ -144,41 +119,114 @@ function getAdiVersionFromExtensions(
     (extension) => extension.url === ADI_DOC_VERSION_EXTENSION_URL,
   )?.valueString
 
-  return version || placeholderValue()
+  return version || ''
 }
 
-function buildDocumentReferenceRows(documentReference: DocumentReference): DetailRow[] {
+function formatAttester(composition: Composition | undefined) {
+  if (!composition?.attester || composition.attester.length === 0) {
+    return placeholderValue()
+  }
+
+  return composition.attester
+    .map((attester) =>
+      joinValues(
+        [
+          attester.mode || '',
+          attester.party?.display || attester.party?.reference || '',
+          attester.time ? formatDate(attester.time) : '',
+        ].filter(Boolean),
+      ),
+    )
+    .join(', ')
+}
+
+function getCombinedIdentifiers(
+  composition: Composition | undefined,
+  documentReference: DocumentReference,
+) {
+  const allIdentifiers = [
+    ...(composition?.identifier ? [composition.identifier] : []),
+    ...(documentReference.identifier ?? []),
+  ]
+
+  const seen = new Set<string>()
+  const deduplicated: Identifier[] = []
+
+  for (const identifier of allIdentifiers) {
+    const key = formatIdentifier(identifier)
+    if (!key || seen.has(key)) continue
+
+    seen.add(key)
+    deduplicated.push(identifier)
+  }
+
+  return deduplicated
+}
+
+function buildDocumentDetailsRows(
+  documentReference: DocumentReference,
+  composition: Composition | undefined,
+): DetailRow[] {
+  const compositionStatus = composition?.status
+  const documentReferenceStatus = documentReference.docStatus || documentReference.status
+  const compositionVersion = getAdiVersionFromExtensions(composition?.extension)
+  const documentReferenceVersion = getAdiVersionFromExtensions(documentReference.extension)
+
   return [
-    { label: 'Id', value: documentReference.id || placeholderValue() },
-    { label: 'Status', value: documentReference.status || placeholderValue() },
-    { label: 'Document status', value: documentReference.docStatus || placeholderValue() },
+    {
+      label: 'Status',
+      value: compositionStatus || documentReferenceStatus || placeholderValue(),
+    },
     {
       label: 'Version',
-      value: getAdiVersionFromExtensions(documentReference.extension),
+      value: compositionVersion || documentReferenceVersion || placeholderValue(),
+    },
+    {
+      label: 'Title',
+      value: composition?.title || placeholderValue(),
     },
     {
       label: 'Type',
-      value: getCodeableConceptText(documentReference.type) || placeholderValue(),
+      value:
+        getCodeableConceptText(composition?.type) ||
+        getCodeableConceptText(documentReference.type) ||
+        placeholderValue(),
     },
     {
       label: 'Category',
-      value: formatCodeableConcepts(documentReference.category),
+      value:
+        formatCodeableConcepts(composition?.category) !== placeholderValue()
+          ? formatCodeableConcepts(composition?.category)
+          : formatCodeableConcepts(documentReference.category),
     },
     {
       label: 'Subject',
-      value: formatReference(documentReference.subject),
+      value:
+        formatReference(composition?.subject) !== placeholderValue()
+          ? formatReference(composition?.subject)
+          : formatReference(documentReference.subject),
     },
     {
       label: 'Author',
-      value: formatReferences(documentReference.author),
+      value:
+        formatReferences(composition?.author) !== placeholderValue()
+          ? formatReferences(composition?.author)
+          : formatReferences(documentReference.author),
+    },
+    {
+      label: 'Attester',
+      value: formatAttester(composition),
     },
     {
       label: 'Custodian',
-      value: formatReference(documentReference.custodian),
+      value:
+        formatReference(composition?.custodian) !== placeholderValue()
+          ? formatReference(composition?.custodian)
+          : formatReference(documentReference.custodian),
     },
     {
       label: 'Date',
-      value: formatDate(documentReference.date),
+      value: formatDate(composition?.date || documentReference.date),
     },
     {
       label: 'Description',
@@ -194,7 +242,7 @@ function buildDocumentReferenceRows(documentReference: DocumentReference): Detai
     },
     {
       label: 'Identifier(s)',
-      value: formatIdentifiers(documentReference.identifier),
+      value: formatIdentifiers(getCombinedIdentifiers(composition, documentReference)),
     },
     {
       label: 'Context period',
@@ -203,10 +251,6 @@ function buildDocumentReferenceRows(documentReference: DocumentReference): Detai
     {
       label: 'Security label',
       value: formatSecurityLabels(documentReference),
-    },
-    {
-      label: 'Content',
-      value: formatAttachments(documentReference.content),
     },
   ]
 }
@@ -272,82 +316,6 @@ function getDocumentComposition(bundle: Bundle) {
       .find((resource): resource is Composition => resource?.resourceType === 'Composition') ||
     null
   )
-}
-
-function normalizeDivText(value: string | undefined) {
-  if (!value) return placeholderValue()
-
-  return value
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim() || placeholderValue()
-}
-
-function buildBundleDerivedRows(bundle: Bundle, composition: Composition): DetailRow[] {
-  return [
-    { label: 'Bundle id', value: bundle.id || placeholderValue() },
-    { label: 'Bundle type', value: bundle.type || placeholderValue() },
-    { label: 'Composition id', value: composition.id || placeholderValue() },
-    { label: 'Status', value: composition.status || placeholderValue() },
-    {
-      label: 'Version',
-      value: getAdiVersionFromExtensions(composition.extension),
-    },
-    { label: 'Title', value: composition.title || placeholderValue() },
-    {
-      label: 'Type',
-      value: getCodeableConceptText(composition.type) || placeholderValue(),
-    },
-    {
-      label: 'Category',
-      value: formatCodeableConcepts(composition.category),
-    },
-    {
-      label: 'Subject',
-      value: formatReference(composition.subject),
-    },
-    {
-      label: 'Author',
-      value: formatReferences(composition.author),
-    },
-    {
-      label: 'Attester',
-      value:
-        composition.attester && composition.attester.length > 0
-          ? composition.attester
-              .map((attester) =>
-                joinValues(
-                  [
-                    attester.mode || '',
-                    attester.party?.display || attester.party?.reference || '',
-                    attester.time ? formatDate(attester.time) : '',
-                  ].filter(Boolean),
-                ),
-              )
-              .join(', ')
-          : placeholderValue(),
-    },
-    {
-      label: 'Custodian',
-      value: formatReference(composition.custodian),
-    },
-    {
-      label: 'Date',
-      value: formatDate(composition.date),
-    },
-    {
-      label: 'Identifier',
-      value: formatIdentifiers(composition.identifier ? [composition.identifier] : undefined),
-    },
-  ]
-}
-
-function getBundleSections(composition: Composition) {
-  return (composition.section ?? []).map((section, index) => ({
-    title: section.title || `Section ${index + 1}`,
-    code: getCodeableConceptText(section.code) || placeholderValue(),
-    text: normalizeDivText(section.text?.div),
-  }))
 }
 
 function createBlobUrlViewer(label: string, mimeType: string, byteCharacters: string) {
@@ -479,8 +447,6 @@ function buildBundleDerivedData(bundle: Bundle): BundleDerivedData | null {
 
   return {
     composition,
-    rows: buildBundleDerivedRows(bundle, composition),
-    sections: getBundleSections(composition),
     pdfViewers: getBundlePdfViewers(bundle, composition),
   }
 }
@@ -575,9 +541,12 @@ export function AdvanceDirectiveDetailPage({
     }
   }, [activeServer, patientId, documentReferenceId])
 
-  const documentReferenceRows = useMemo(
-    () => (documentReference ? buildDocumentReferenceRows(documentReference) : []),
-    [documentReference],
+  const documentDetailsRows = useMemo(
+    () =>
+      documentReference
+        ? buildDocumentDetailsRows(documentReference, bundleDerivedData?.composition)
+        : [],
+    [documentReference, bundleDerivedData],
   )
 
   if (!activeServer) {
@@ -633,85 +602,35 @@ export function AdvanceDirectiveDetailPage({
               </div>
             </section>
 
-            {bundleDerivedData ? (
-              <>
-                {bundleDerivedData.pdfViewers.length > 0 ? (
-                  <section className="summary-card wide">
-                    <h3>Source Attachments</h3>
-                    <div className="attachment-actions">
-                      {bundleDerivedData.pdfViewers.map((viewer) => (
-                        <button
-                          key={viewer.label}
-                          type="button"
-                          className="secondary-button outline"
-                          onClick={viewer.open}
-                        >
-                          {viewer.label}
-                        </button>
-                      ))}
-                    </div>
-                  </section>
-                ) : null}
-
-                <section className="summary-card wide">
-                  <h3>Document Bundle Details</h3>
-                  <dl className="stacked-details detail-list">
-                    {bundleDerivedData.rows.map((row) => (
-                      <div key={row.label}>
-                        <dt>{row.label}</dt>
-                        <dd className="preformatted-detail">{row.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </section>
-
-                {bundleDerivedData.sections.length > 0 ? (
-                  <section className="summary-card wide">
-                    <h3>Composition Sections</h3>
-                    <div className="bundle-sections">
-                      {bundleDerivedData.sections.map((section) => (
-                        <article
-                          key={`${section.title}-${section.code}`}
-                          className="bundle-section-card"
-                        >
-                          <h4>{section.title}</h4>
-                          <p className="bundle-section-code">{section.code}</p>
-                          <p className="bundle-section-text">{section.text}</p>
-                        </article>
-                      ))}
-                    </div>
-                  </section>
-                ) : null}
-
-                <section className="summary-card wide">
-                  <h3>DocumentReference Details</h3>
-                  <p className="helper-text">
-                    Bundle and Composition values are shown above when available. The original
-                    DocumentReference is shown here for reference.
-                  </p>
-                  <dl className="stacked-details detail-list">
-                    {documentReferenceRows.map((row) => (
-                      <div key={row.label}>
-                        <dt>{row.label}</dt>
-                        <dd className="preformatted-detail">{row.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </section>
-              </>
-            ) : (
-              <section className="summary-card wide">
-                <h3>DocumentReference Details</h3>
-                <dl className="stacked-details detail-list">
-                  {documentReferenceRows.map((row) => (
-                    <div key={row.label}>
-                      <dt>{row.label}</dt>
-                      <dd className="preformatted-detail">{row.value}</dd>
-                    </div>
+            {bundleDerivedData?.pdfViewers.length ? (
+              <section className="summary-card wide source-attachments-section">
+                <h3>Source Attachments</h3>
+                <div className="attachment-actions">
+                  {bundleDerivedData.pdfViewers.map((viewer) => (
+                    <button
+                      key={viewer.label}
+                      type="button"
+                      className="secondary-button outline"
+                      onClick={viewer.open}
+                    >
+                      {viewer.label}
+                    </button>
                   ))}
-                </dl>
+                </div>
               </section>
-            )}
+            ) : null}
+
+            <section className="summary-card wide">
+              <h3>Document Details</h3>
+              <dl className="stacked-details detail-list">
+                {documentDetailsRows.map((row) => (
+                  <div key={row.label}>
+                    <dt>{row.label}</dt>
+                    <dd className="preformatted-detail">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
           </>
         ) : null}
       </div>
