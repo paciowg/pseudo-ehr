@@ -162,14 +162,8 @@ function getAttesterOptions(
   if (patient?.id) {
     options.push({
       reference: `Patient/${patient.id}`,
-      display: getDisplayNameFromHumanName(patient.name?.[0]) || patient.id || 'Patient',
-    })
-  }
-
-  for (const roleOption of roleOptions) {
-    options.push({
-      reference: `PractitionerRole/${roleOption.role.id}`,
-      display: roleOption.label,
+      display:
+        `${getDisplayNameFromHumanName(patient.name?.[0]) || patient.id || 'Patient'} — Patient`,
     })
   }
 
@@ -179,6 +173,13 @@ function getAttesterOptions(
     options.push({
       reference: `RelatedPerson/${relatedPerson.id}`,
       display: getRelatedPersonDisplayName(relatedPerson),
+    })
+  }
+
+  for (const roleOption of roleOptions) {
+    options.push({
+      reference: `PractitionerRole/${roleOption.role.id}`,
+      display: roleOption.label,
     })
   }
 
