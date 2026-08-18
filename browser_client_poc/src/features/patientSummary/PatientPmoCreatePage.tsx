@@ -411,7 +411,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
     <section className="panel">
       <div className="panel-header">
         <div>
-          <h2>Create ADI POLST PMO</h2>
+          <h2>Create ADI PMO</h2>
         </div>
 
         <div className="panel-server-details">
@@ -545,7 +545,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
 
             <div className="form-actions">
               <button type="submit" className="primary-button" disabled={isSubmitting}>
-                {isSubmitting ? 'Creating...' : 'Create ADI POLST PMO'}
+                {isSubmitting ? 'Creating...' : 'Create ADI PMO'}
               </button>
             </div>
           </form>
