@@ -26,11 +26,18 @@ export type PmoAttesterOption = {
   display: string
 }
 
+export type PmoDataEntererOption = {
+  reference: string
+  display: string
+}
+
 export type CreateAdiPmoBundleInput = {
   patient: Patient
   practitionerRole: PractitionerRole
   practitionerByReference: Map<string, Practitioner>
   attester: PmoAttesterOption
+  facilitator?: Reference
+  dataEnterer?: PmoDataEntererOption
   custodian?: Reference
   status: PmoStatus
   signedDate: string
@@ -44,10 +51,16 @@ const ADI_PMO_COMPOSITION_PROFILE =
   'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/ADI-PMOComposition'
 const ADI_DOC_VERSION_EXTENSION_URL =
   'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-docVersionNumber-extension'
+const ADI_DATA_ENTERER_EXTENSION_URL =
+  'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-dataEnterer-extension'
 const ADI_TEMP_CODE_SYSTEM = 'http://hl7.org/fhir/us/pacio-adi/CodeSystem/ADITempCS'
 const ADI_DOCUMENT_IDENTIFIER_SYSTEM =
   'https://pacioproject.org/adi-document-identifier'
-const SOURCE_FORM_BINARY_ID = 'source-form-binary'
+const ACP_SERVICES_CODE = {
+  system: ADI_TEMP_CODE_SYSTEM,
+  code: 'acp-services',
+  display: 'Advance care planning services',
+} as const
 
 function createPmoType(): CodeableConcept {
   return {
@@ -59,6 +72,19 @@ function createPmoType(): CodeableConcept {
       },
     ],
     text: 'Portable medical order form',
+  }
+}
+
+function createClinicalNoteCategory(): CodeableConcept {
+  return {
+    coding: [
+      {
+        system: 'http://loinc.org',
+        code: '107903-7',
+        display: 'Clinical note',
+      },
+    ],
+    text: 'Clinical note',
   }
 }
 
@@ -91,6 +117,43 @@ function buildSourceFormBinary(input: CreateAdiPmoBundleInput): Binary {
   }
 }
 
+const SOURCE_FORM_BINARY_ID = 'source-form-binary'
+
+function getStatusLabel(status: PmoStatus) {
+  return status.charAt(0).toUpperCase() + status.slice(1)
+}
+
+function buildCompositionNarrative(input: {
+  patientDisplayName: string
+  authorDisplayName: string
+  attesterDisplay: string
+  signedDate: string
+  status: PmoStatus
+  facilitatorDisplay?: string
+  dataEntererDisplay?: string
+}) {
+  const detailParts = [
+    `Status: ${escapeHtml(getStatusLabel(input.status))}`,
+    `Author: ${escapeHtml(input.authorDisplayName)}`,
+    `Attester: ${escapeHtml(input.attesterDisplay)}`,
+    `Date signed: ${escapeHtml(input.signedDate)}`,
+    input.facilitatorDisplay
+      ? `Facilitator: ${escapeHtml(input.facilitatorDisplay)}`
+      : '',
+    input.dataEntererDisplay
+      ? `Data enterer: ${escapeHtml(input.dataEntererDisplay)}`
+      : '',
+    'Includes advance directive source form PDF.',
+  ].filter(Boolean)
+
+  return {
+    status: 'generated',
+    div: `<div xmlns="http://www.w3.org/1999/xhtml"><p>ADI Portable Medical Order for ${escapeHtml(
+      input.patientDisplayName,
+    )}.</p><p>${detailParts.join(' ')}</p></div>`,
+  } satisfies Composition['text']
+}
+
 function buildComposition(
   input: CreateAdiPmoBundleInput,
   sourceFormBinary: Binary,
@@ -112,15 +175,35 @@ function buildComposition(
       value: crypto.randomUUID(),
     },
     language: 'en-US',
+    text: buildCompositionNarrative({
+      patientDisplayName,
+      authorDisplayName,
+      attesterDisplay: input.attester.display,
+      signedDate: input.signedDate,
+      status: input.status,
+      facilitatorDisplay: input.facilitator?.display,
+      dataEntererDisplay: input.dataEnterer?.display,
+    }),
     extension: [
       {
         url: ADI_DOC_VERSION_EXTENSION_URL,
         valueString: versionNumber,
       },
+      ...(input.dataEnterer
+        ? [
+            {
+              url: ADI_DATA_ENTERER_EXTENSION_URL,
+              valueReference: {
+                reference: input.dataEnterer.reference,
+                display: input.dataEnterer.display,
+              },
+            },
+          ]
+        : []),
     ],
     status: input.status,
     type: createPmoType(),
-    category: [createAhdCategory()],
+    category: [createClinicalNoteCategory(), createAhdCategory()],
     subject: {
       reference: `Patient/${input.patient.id}`,
       display: patientDisplayName,
@@ -144,6 +227,21 @@ function buildComposition(
       },
     ],
     ...(input.custodian ? { custodian: input.custodian } : {}),
+    ...(input.facilitator
+      ? {
+          event: [
+            {
+              code: [
+                {
+                  coding: [ACP_SERVICES_CODE],
+                  text: ACP_SERVICES_CODE.display,
+                },
+              ],
+              detail: [input.facilitator],
+            },
+          ],
+        }
+      : {}),
     section: [
       {
         title: 'Advance directive source form',
@@ -178,7 +276,15 @@ function buildComposition(
             patientDisplayName,
           )}. Author: ${escapeHtml(authorDisplayName)}. Attester: ${escapeHtml(
             input.attester.display,
-          )}. Signed: ${escapeHtml(input.signedDate)}.</p></div>`,
+          )}. Signed: ${escapeHtml(input.signedDate)}${
+            input.facilitator?.display
+              ? `. Facilitator: ${escapeHtml(input.facilitator.display)}`
+              : ''
+          }${
+            input.dataEnterer?.display
+              ? `. Data enterer: ${escapeHtml(input.dataEnterer.display)}`
+              : ''
+          }.</p></div>`,
         },
       },
     ],
@@ -212,6 +318,8 @@ export function buildAdiPmoBundle(input: CreateAdiPmoBundleInput): Bundle {
     `Patient/${input.patient.id}`,
     `PractitionerRole/${input.practitionerRole.id}`,
     input.attester.reference,
+    ...(input.facilitator?.reference ? [input.facilitator.reference] : []),
+    ...(input.dataEnterer?.reference ? [input.dataEnterer.reference] : []),
   ])
 
   const practitionerReference = input.practitionerRole.practitioner?.reference

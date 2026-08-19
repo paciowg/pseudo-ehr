@@ -7,6 +7,7 @@ import type {
   CodeableConcept,
   Composition,
   DocumentReference,
+  Extension,
   Identifier,
   Reference,
   Resource,
@@ -48,6 +49,11 @@ type BundleDerivedData = {
 
 const ADI_DOC_VERSION_EXTENSION_URL =
   'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-docVersionNumber-extension'
+const ADI_DATA_ENTERER_EXTENSION_URL =
+  'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-dataEnterer-extension'
+const ADI_FACILITATOR_PROFILE_URL =
+  'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/ADI-Facilitator'
+const ACP_SERVICES_CODE = 'acp-services'
 
 function formatReference(reference: Reference | undefined) {
   if (!reference) return placeholderValue()
@@ -112,6 +118,15 @@ function getAdiVersionFromExtensions(
   return version || ''
 }
 
+function getDataEntererFromExtensions(extensions: Extension[] | undefined) {
+  const extension = extensions?.find(
+    (item) => item.url === ADI_DATA_ENTERER_EXTENSION_URL,
+  )
+
+  const valueReference = extension?.valueReference
+  return valueReference ? formatReference(valueReference) : placeholderValue()
+}
+
 function formatAttester(composition: Composition | undefined) {
   if (!composition?.attester || composition.attester.length === 0) {
     return placeholderValue()
@@ -128,6 +143,34 @@ function formatAttester(composition: Composition | undefined) {
         .join(', '),
     )
     .join(', ')
+}
+
+function getFacilitators(composition: Composition | undefined) {
+  if (!composition?.event || composition.event.length === 0) {
+    return placeholderValue()
+  }
+
+  const facilitatorReferences = composition.event
+    .filter((event) =>
+      event.code?.some((codeableConcept) =>
+        codeableConcept.coding?.some((coding) => coding.code === ACP_SERVICES_CODE),
+      ),
+    )
+    .flatMap((event) => event.detail ?? [])
+    .filter((reference) => {
+      const type = reference.type
+      const targetProfile = reference.extension
+        ?.find((extension) => extension.url === 'http://hl7.org/fhir/StructureDefinition/targetProfile')
+        ?.valueUri
+
+      return (
+        reference.reference ||
+        type === 'PractitionerRole' ||
+        targetProfile === ADI_FACILITATOR_PROFILE_URL
+      )
+    })
+
+  return formatReferences(facilitatorReferences)
 }
 
 function getCombinedIdentifiers(
@@ -207,6 +250,14 @@ function buildDocumentDetailsRows(
         compositionAuthor !== placeholderValue()
           ? compositionAuthor
           : formatReferences(documentReference.author),
+    },
+    {
+      label: 'Facilitator',
+      value: getFacilitators(composition),
+    },
+    {
+      label: 'Data enterer',
+      value: getDataEntererFromExtensions(composition?.extension),
     },
     {
       label: 'Attester',

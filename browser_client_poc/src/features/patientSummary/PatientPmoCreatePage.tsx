@@ -20,6 +20,7 @@ import {
   formatAdiVersionNumber,
   getCodeableConceptText,
   getDisplayNameFromHumanName,
+  getPractitionerDisplayName,
   getPractitionerRoleDisplayName,
 } from '../../lib/fhir/formatters'
 import { getRouteHref, navigateTo } from '../../lib/routing/routes'
@@ -27,6 +28,7 @@ import { useSavedServers } from '../servers/useSavedServers'
 import {
   buildClosedAdiPmoBundle,
   type PmoAttesterOption,
+  type PmoDataEntererOption,
   writeAdiPmoBundle,
 } from '../../services/AdiPmoService'
 import { writeServerDocumentReference } from '../../services/DocumentReferenceService'
@@ -51,6 +53,12 @@ type OrganizationOption = {
 }
 
 type AuthenticatorOption = {
+  value: string
+  label: string
+  reference: Reference
+}
+
+type FacilitatorOption = {
   value: string
   label: string
   reference: Reference
@@ -119,6 +127,17 @@ function getPractitionerRoleOptions(
 }
 
 function getAuthenticatorOptions(roleOptions: PractitionerRoleOption[]) {
+  return roleOptions.map((roleOption) => ({
+    value: `PractitionerRole/${roleOption.role.id}`,
+    label: roleOption.label,
+    reference: {
+      reference: `PractitionerRole/${roleOption.role.id}`,
+      display: roleOption.label,
+    },
+  }))
+}
+
+function getFacilitatorOptions(roleOptions: PractitionerRoleOption[]): FacilitatorOption[] {
   return roleOptions.map((roleOption) => ({
     value: `PractitionerRole/${roleOption.role.id}`,
     label: roleOption.label,
@@ -207,6 +226,56 @@ function getAttesterOptions(
   return options
 }
 
+function getDataEntererOptions(
+  patient: Patient | null,
+  roleOptions: PractitionerRoleOption[],
+  practitionerByReference: Map<string, Practitioner>,
+  relatedPersons: RelatedPerson[],
+): PmoDataEntererOption[] {
+  const options: PmoDataEntererOption[] = []
+  const practitionerReferencesCoveredByRole = new Set<string>()
+
+  if (patient?.id) {
+    options.push({
+      reference: `Patient/${patient.id}`,
+      display:
+        `${getDisplayNameFromHumanName(patient.name?.[0]) || patient.id || 'Patient'} — Patient`,
+    })
+  }
+
+  for (const relatedPerson of relatedPersons) {
+    if (!relatedPerson.id) continue
+
+    options.push({
+      reference: `RelatedPerson/${relatedPerson.id}`,
+      display: getRelatedPersonDisplayName(relatedPerson),
+    })
+  }
+
+  for (const roleOption of roleOptions) {
+    options.push({
+      reference: `PractitionerRole/${roleOption.role.id}`,
+      display: roleOption.label,
+    })
+
+    const practitionerReference = roleOption.role.practitioner?.reference
+    if (practitionerReference) {
+      practitionerReferencesCoveredByRole.add(practitionerReference)
+    }
+  }
+
+  for (const [practitionerReference, practitioner] of practitionerByReference.entries()) {
+    if (practitionerReferencesCoveredByRole.has(practitionerReference)) continue
+
+    options.push({
+      reference: practitionerReference,
+      display: `${getPractitionerDisplayName(practitioner) || practitioner.id || practitionerReference} — Practitioner`,
+    })
+  }
+
+  return options
+}
+
 function normalizeJurisdictionCodePart(value: string | undefined) {
   if (!value) return ''
   return value.trim().toUpperCase()
@@ -259,6 +328,8 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
   const [authorRoleId, setAuthorRoleId] = useState('')
   const [attesterReference, setAttesterReference] = useState('')
   const [authenticatorReference, setAuthenticatorReference] = useState('')
+  const [facilitatorReference, setFacilitatorReference] = useState('')
+  const [dataEntererReference, setDataEntererReference] = useState('')
   const [signedDate, setSignedDate] = useState(toIsoDateTimeLocalValue(new Date()))
   const [contextPeriodEnd, setContextPeriodEnd] = useState(
     addOneYearToDateValue(toIsoDateTimeLocalValue(new Date())),
@@ -344,6 +415,22 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
     [practitionerRoles],
   )
 
+  const facilitatorOptions = useMemo(
+    () => getFacilitatorOptions(practitionerRoles),
+    [practitionerRoles],
+  )
+
+  const dataEntererOptions = useMemo(
+    () =>
+      getDataEntererOptions(
+        patient,
+        practitionerRoles,
+        practitionerByReference,
+        relatedPersons,
+      ),
+    [patient, practitionerRoles, practitionerByReference, relatedPersons],
+  )
+
   useEffect(() => {
     if (!attesterReference && attesterOptions.length > 0) {
       setAttesterReference(attesterOptions[0].reference)
@@ -356,6 +443,18 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
     }
   }, [authenticatorOptions, authenticatorReference])
 
+  useEffect(() => {
+    if (!facilitatorReference && facilitatorOptions.length > 0) {
+      setFacilitatorReference(facilitatorOptions[0].value)
+    }
+  }, [facilitatorOptions, facilitatorReference])
+
+  useEffect(() => {
+    if (!dataEntererReference && dataEntererOptions.length > 0) {
+      setDataEntererReference(dataEntererOptions[0].reference)
+    }
+  }, [dataEntererOptions, dataEntererReference])
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -366,6 +465,12 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
     const authenticator = authenticatorOptions.find(
       (option) => option.value === authenticatorReference,
     )?.reference
+    const facilitator = facilitatorOptions.find(
+      (option) => option.value === facilitatorReference,
+    )?.reference
+    const dataEnterer = dataEntererOptions.find(
+      (option) => option.reference === dataEntererReference,
+    )
     const documentIdentifier = createIdentifier(ADI_DOCUMENT_IDENTIFIER_SYSTEM)
     const setIdentifier = createIdentifier(ADI_DOCUMENT_SET_IDENTIFIER_SYSTEM)
     const jurisdiction = getPatientJurisdiction(patient)
@@ -414,6 +519,8 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         practitionerRole: authorRole,
         practitionerByReference,
         attester,
+        facilitator,
+        dataEnterer,
         custodian,
         status,
         signedDate: signingTime,
@@ -559,6 +666,40 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
                 {practitionerRoles.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="field-group">
+              <label htmlFor="pmo-facilitator">Facilitator</label>
+              <select
+                id="pmo-facilitator"
+                value={facilitatorReference}
+                onChange={(event) => setFacilitatorReference(event.target.value)}
+                disabled={isSubmitting}
+              >
+                <option value="">None</option>
+                {facilitatorOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="field-group">
+              <label htmlFor="pmo-data-enterer">Data enterer</label>
+              <select
+                id="pmo-data-enterer"
+                value={dataEntererReference}
+                onChange={(event) => setDataEntererReference(event.target.value)}
+                disabled={isSubmitting}
+              >
+                <option value="">None</option>
+                {dataEntererOptions.map((option) => (
+                  <option key={option.reference} value={option.reference}>
+                    {option.display}
                   </option>
                 ))}
               </select>
