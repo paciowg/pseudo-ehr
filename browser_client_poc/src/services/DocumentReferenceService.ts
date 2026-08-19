@@ -11,6 +11,7 @@ type CreateServerDocumentReferenceInput = {
   baseUrl: string
   subject: Reference
   author: Reference[]
+  authenticator?: Reference
   type: CodeableConcept
   category?: CodeableConcept[]
   contentUrl: string
@@ -19,6 +20,7 @@ type CreateServerDocumentReferenceInput = {
   description: string
   version?: string
   createdAt: string
+  authenticationTime?: string
   profileUrls?: string[]
   custodian?: Reference
   identifier?: Identifier[]
@@ -31,6 +33,8 @@ const ADI_DOC_VERSION_EXTENSION_URL =
   'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-docVersionNumber-extension'
 const ADI_JURISDICTION_EXTENSION_URL =
   'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/adi-jurisdiction-extension'
+const US_CORE_AUTHENTICATION_TIME_EXTENSION_URL =
+  'http://hl7.org/fhir/us/core/StructureDefinition/us-core-authentication-time'
 
 export function buildDocumentBundleReference(input: {
   pdfBase64: string
@@ -84,6 +88,14 @@ export function buildServerDocumentReference(
   input: Omit<CreateServerDocumentReferenceInput, 'baseUrl'>,
 ): DocumentReference {
   const extension = [
+    ...(input.authenticationTime
+      ? [
+          {
+            url: US_CORE_AUTHENTICATION_TIME_EXTENSION_URL,
+            valueDateTime: input.authenticationTime,
+          },
+        ]
+      : []),
     ...(input.version
       ? [
           {
@@ -127,6 +139,7 @@ export function buildServerDocumentReference(
     ...(input.category ? { category: input.category } : {}),
     subject: input.subject,
     author: input.author,
+    ...(input.authenticator ? { authenticator: input.authenticator } : {}),
     ...(input.custodian ? { custodian: input.custodian } : {}),
     date: input.createdAt,
     description: input.description,
@@ -149,6 +162,7 @@ export async function writeServerDocumentReference(
   const documentReference = buildServerDocumentReference({
     subject: input.subject,
     author: input.author,
+    authenticator: input.authenticator,
     type: input.type,
     category: input.category,
     contentUrl: input.contentUrl,
@@ -157,6 +171,7 @@ export async function writeServerDocumentReference(
     description: input.description,
     version: input.version,
     createdAt: input.createdAt,
+    authenticationTime: input.authenticationTime,
     profileUrls: input.profileUrls,
     custodian: input.custodian,
     identifier: input.identifier,

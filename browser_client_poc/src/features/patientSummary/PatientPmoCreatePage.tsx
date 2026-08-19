@@ -20,6 +20,7 @@ import {
   formatAdiVersionNumber,
   getCodeableConceptText,
   getDisplayNameFromHumanName,
+  getPractitionerDisplayName,
   getPractitionerRoleDisplayName,
 } from '../../lib/fhir/formatters'
 import { getRouteHref, navigateTo } from '../../lib/routing/routes'
@@ -50,10 +51,18 @@ type OrganizationOption = {
   organization: Organization
 }
 
+type AuthenticatorOption = {
+  value: string
+  label: string
+  reference: Reference
+}
+
 const ADI_DOCUMENT_REFERENCE_PROFILE_URL =
   'http://hl7.org/fhir/us/pacio-adi/StructureDefinition/ADI-DocumentReference'
 const ADI_DOCUMENT_IDENTIFIER_SYSTEM =
   'https://pacioproject.org/adi-document-identifier'
+const ADI_DOCUMENT_SET_IDENTIFIER_SYSTEM =
+  'https://pacioproject.org/adi-document-set-identifier'
 
 function toIsoDateTimeLocalValue(date: Date) {
   const year = date.getFullYear()
@@ -108,6 +117,50 @@ function getPractitionerRoleOptions(
       role,
     }))
     .sort((a, b) => a.label.localeCompare(b.label))
+}
+
+function getAuthenticatorOptions(
+  roleOptions: PractitionerRoleOption[],
+  practitionerByReference: Map<string, Practitioner>,
+) {
+  const options: AuthenticatorOption[] = []
+  const seenValues = new Set<string>()
+
+  for (const roleOption of roleOptions) {
+    const roleReference = `PractitionerRole/${roleOption.role.id}`
+    if (!seenValues.has(roleReference)) {
+      options.push({
+        value: roleReference,
+        label: `${roleOption.label} — PractitionerRole`,
+        reference: {
+          reference: roleReference,
+          display: roleOption.label,
+        },
+      })
+      seenValues.add(roleReference)
+    }
+
+    const practitionerReference = roleOption.role.practitioner?.reference
+    if (!practitionerReference) continue
+
+    const practitioner = practitionerByReference.get(practitionerReference)
+    const practitionerLabel =
+      getPractitionerDisplayName(practitioner) || roleOption.role.practitioner?.display || practitionerReference
+
+    if (!seenValues.has(practitionerReference)) {
+      options.push({
+        value: practitionerReference,
+        label: `${practitionerLabel} — Practitioner`,
+        reference: {
+          reference: practitionerReference,
+          display: practitionerLabel,
+        },
+      })
+      seenValues.add(practitionerReference)
+    }
+  }
+
+  return options.sort((a, b) => a.label.localeCompare(b.label))
 }
 
 function getOrganizationDisplayName(organization: Organization) {
@@ -214,14 +267,14 @@ function getPatientJurisdiction(patient: Patient): CodeableConcept | undefined {
   }
 }
 
-function createDocumentIdentifier(): Identifier {
+function createIdentifier(system: string): Identifier {
   const value =
     typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
       ? crypto.randomUUID()
-      : `docref-${Date.now()}-${Math.random().toString(16).slice(2)}`
+      : `identifier-${Date.now()}-${Math.random().toString(16).slice(2)}`
 
   return {
-    system: ADI_DOCUMENT_IDENTIFIER_SYSTEM,
+    system,
     value,
   }
 }
@@ -239,6 +292,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
   const [status, setStatus] = useState<PmoStatus>('final')
   const [authorRoleId, setAuthorRoleId] = useState('')
   const [attesterReference, setAttesterReference] = useState('')
+  const [authenticatorReference, setAuthenticatorReference] = useState('')
   const [signedDate, setSignedDate] = useState(toIsoDateTimeLocalValue(new Date()))
   const [contextPeriodEnd, setContextPeriodEnd] = useState(
     addOneYearToDateValue(toIsoDateTimeLocalValue(new Date())),
@@ -319,11 +373,22 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
     [patient, practitionerRoles, relatedPersons],
   )
 
+  const authenticatorOptions = useMemo(
+    () => getAuthenticatorOptions(practitionerRoles, practitionerByReference),
+    [practitionerRoles, practitionerByReference],
+  )
+
   useEffect(() => {
     if (!attesterReference && attesterOptions.length > 0) {
       setAttesterReference(attesterOptions[0].reference)
     }
   }, [attesterOptions, attesterReference])
+
+  useEffect(() => {
+    if (!authenticatorReference && authenticatorOptions.length > 0) {
+      setAuthenticatorReference(authenticatorOptions[0].value)
+    }
+  }, [authenticatorOptions, authenticatorReference])
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -332,7 +397,11 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
 
     const authorRole = practitionerRoles.find((option) => option.value === authorRoleId)?.role
     const attester = attesterOptions.find((option) => option.reference === attesterReference)
-    const identifier = createDocumentIdentifier()
+    const authenticator = authenticatorOptions.find(
+      (option) => option.value === authenticatorReference,
+    )?.reference
+    const documentIdentifier = createIdentifier(ADI_DOCUMENT_IDENTIFIER_SYSTEM)
+    const setIdentifier = createIdentifier(ADI_DOCUMENT_SET_IDENTIFIER_SYSTEM)
     const jurisdiction = getPatientJurisdiction(patient)
     const custodian = custodianReference
       ? ({
@@ -354,6 +423,11 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
       return
     }
 
+    if (!authenticator) {
+      setErrorMessage('Please select an authenticator.')
+      return
+    }
+
     if (!pdfFile) {
       setErrorMessage('Please upload a PDF source form.')
       return
@@ -366,6 +440,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
     try {
       const pdfBase64 = await readFileAsBase64(pdfFile)
       const now = new Date().toISOString()
+      const signingTime = new Date(signedDate).toISOString()
       const versionNumber = formatAdiVersionNumber(now)
 
       const bundle = await buildClosedAdiPmoBundle(activeServer.baseUrl, {
@@ -375,7 +450,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         attester,
         custodian,
         status,
-        signedDate: new Date(signedDate).toISOString(),
+        signedDate: signingTime,
         createdAt: now,
         pdfBase64,
       })
@@ -402,6 +477,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
             display: getPractitionerRoleDisplayName(authorRole, practitionerByReference),
           },
         ],
+        authenticator,
         type: {
           coding: [
             {
@@ -430,13 +506,14 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         description: `${getDisplayNameFromHumanName(patient.name?.[0]) || 'Patient'} ADI POLST PMO Document`,
         version: versionNumber,
         createdAt: now,
+        authenticationTime: signingTime,
         profileUrls: [ADI_DOCUMENT_REFERENCE_PROFILE_URL],
         custodian,
-        identifier: [identifier],
-        masterIdentifier: identifier,
+        identifier: [setIdentifier],
+        masterIdentifier: documentIdentifier,
         jurisdiction,
         contextPeriod: {
-          start: new Date(signedDate).toISOString(),
+          start: signingTime,
           end: new Date(contextPeriodEnd).toISOString(),
         },
       })
@@ -533,6 +610,23 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
                 {attesterOptions.map((option) => (
                   <option key={option.reference} value={option.reference}>
                     {option.display}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="field-group">
+              <label htmlFor="pmo-authenticator">Authenticator party</label>
+              <select
+                id="pmo-authenticator"
+                value={authenticatorReference}
+                onChange={(event) => setAuthenticatorReference(event.target.value)}
+                disabled={isSubmitting}
+              >
+                <option value="">Select an authenticator</option>
+                {authenticatorOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
                   </option>
                 ))}
               </select>
