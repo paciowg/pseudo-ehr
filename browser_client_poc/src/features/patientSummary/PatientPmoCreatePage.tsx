@@ -20,7 +20,6 @@ import {
   formatAdiVersionNumber,
   getCodeableConceptText,
   getDisplayNameFromHumanName,
-  getPractitionerDisplayName,
   getPractitionerRoleDisplayName,
 } from '../../lib/fhir/formatters'
 import { getRouteHref, navigateTo } from '../../lib/routing/routes'
@@ -119,48 +118,15 @@ function getPractitionerRoleOptions(
     .sort((a, b) => a.label.localeCompare(b.label))
 }
 
-function getAuthenticatorOptions(
-  roleOptions: PractitionerRoleOption[],
-  practitionerByReference: Map<string, Practitioner>,
-) {
-  const options: AuthenticatorOption[] = []
-  const seenValues = new Set<string>()
-
-  for (const roleOption of roleOptions) {
-    const roleReference = `PractitionerRole/${roleOption.role.id}`
-    if (!seenValues.has(roleReference)) {
-      options.push({
-        value: roleReference,
-        label: `${roleOption.label} — PractitionerRole`,
-        reference: {
-          reference: roleReference,
-          display: roleOption.label,
-        },
-      })
-      seenValues.add(roleReference)
-    }
-
-    const practitionerReference = roleOption.role.practitioner?.reference
-    if (!practitionerReference) continue
-
-    const practitioner = practitionerByReference.get(practitionerReference)
-    const practitionerLabel =
-      getPractitionerDisplayName(practitioner) || roleOption.role.practitioner?.display || practitionerReference
-
-    if (!seenValues.has(practitionerReference)) {
-      options.push({
-        value: practitionerReference,
-        label: `${practitionerLabel} — Practitioner`,
-        reference: {
-          reference: practitionerReference,
-          display: practitionerLabel,
-        },
-      })
-      seenValues.add(practitionerReference)
-    }
-  }
-
-  return options.sort((a, b) => a.label.localeCompare(b.label))
+function getAuthenticatorOptions(roleOptions: PractitionerRoleOption[]) {
+  return roleOptions.map((roleOption) => ({
+    value: `PractitionerRole/${roleOption.role.id}`,
+    label: roleOption.label,
+    reference: {
+      reference: `PractitionerRole/${roleOption.role.id}`,
+      display: roleOption.label,
+    },
+  }))
 }
 
 function getOrganizationDisplayName(organization: Organization) {
@@ -374,8 +340,8 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
   )
 
   const authenticatorOptions = useMemo(
-    () => getAuthenticatorOptions(practitionerRoles, practitionerByReference),
-    [practitionerRoles, practitionerByReference],
+    () => getAuthenticatorOptions(practitionerRoles),
+    [practitionerRoles],
   )
 
   useEffect(() => {
