@@ -78,6 +78,10 @@ function toIsoDateTimeLocalValue(date: Date) {
   return `${year}-${month}-${day}`
 }
 
+function toUtcMidnightIso(dateValue: string) {
+  return `${dateValue}T00:00:00.000Z`
+}
+
 function addOneYearToDateValue(dateValue: string) {
   const date = new Date(`${dateValue}T00:00:00Z`)
   date.setUTCFullYear(date.getUTCFullYear() + 1)
@@ -383,9 +387,12 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         setPractitionerRoles(roleOptions)
         setRelatedPersons(relatedPersonOptions)
         setCustodianOptions(organizations)
-        setAuthorRoleId(roleOptions[0]?.value || '')
-        setCustodianReference(
-          organizations[0]?.organization.id ? `Organization/${organizations[0].organization.id}` : '',
+        setAuthorRoleId((current) => current || roleOptions[0]?.value || '')
+        setCustodianReference((current) =>
+          current ||
+          (organizations[0]?.organization.id
+            ? `Organization/${organizations[0].organization.id}`
+            : ''),
         )
       } catch (error) {
         if (!isMounted) return
@@ -433,25 +440,25 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
 
   useEffect(() => {
     if (!attesterReference && attesterOptions.length > 0) {
-      setAttesterReference(attesterOptions[0].reference)
+      setAttesterReference((current) => current || attesterOptions[0].reference)
     }
   }, [attesterOptions, attesterReference])
 
   useEffect(() => {
     if (!authenticatorReference && authenticatorOptions.length > 0) {
-      setAuthenticatorReference(authenticatorOptions[0].value)
+      setAuthenticatorReference((current) => current || authenticatorOptions[0].value)
     }
   }, [authenticatorOptions, authenticatorReference])
 
   useEffect(() => {
     if (!facilitatorReference && facilitatorOptions.length > 0) {
-      setFacilitatorReference(facilitatorOptions[0].value)
+      setFacilitatorReference((current) => current || facilitatorOptions[0].value)
     }
   }, [facilitatorOptions, facilitatorReference])
 
   useEffect(() => {
     if (!dataEntererReference && dataEntererOptions.length > 0) {
-      setDataEntererReference(dataEntererOptions[0].reference)
+      setDataEntererReference((current) => current || dataEntererOptions[0].reference)
     }
   }, [dataEntererOptions, dataEntererReference])
 
@@ -511,8 +518,29 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
     try {
       const pdfBase64 = await readFileAsBase64(pdfFile)
       const now = new Date().toISOString()
-      const signingTime = new Date(signedDate).toISOString()
+      const signingTime = toUtcMidnightIso(signedDate)
+      const contextPeriodEndTime = toUtcMidnightIso(contextPeriodEnd)
       const versionNumber = formatAdiVersionNumber(now)
+
+      console.log(
+        [
+          'Creating an ADI document with the following data:',
+          `- Patient: ${getDisplayNameFromHumanName(patient.name?.[0]) || patient.id || patientId}`,
+          `- Server: ${activeServer.label} (${activeServer.baseUrl})`,
+          `- Document status: ${status}`,
+          `- Author (PractitionerRole): ${getPractitionerRoleDisplayName(authorRole, practitionerByReference)}`,
+          `- Facilitator: ${facilitator?.display || 'None'}`,
+          `- Data enterer: ${dataEnterer?.display || 'None'}`,
+          `- Attester party: ${attester.display}`,
+          `- Authenticator party: ${authenticator.display || authenticator.reference || 'Unknown'}`,
+          `- Custodian (Organization): ${custodian?.display || custodian?.reference || 'None'}`,
+          `- Date signed: ${signedDate}`,
+          `- Relevant through: ${contextPeriodEnd}`,
+          `- Signing time (UTC): ${signingTime}`,
+          `- Context period end (UTC): ${contextPeriodEndTime}`,
+          `- Source form PDF: ${pdfFile.name}`,
+        ].join('\n'),
+      )
 
       const bundle = await buildClosedAdiPmoBundle(activeServer.baseUrl, {
         patient,
@@ -587,7 +615,7 @@ export function PatientPmoCreatePage({ patientId }: PatientPmoCreatePageProps) {
         jurisdiction,
         contextPeriod: {
           start: signingTime,
-          end: new Date(contextPeriodEnd).toISOString(),
+          end: contextPeriodEndTime,
         },
       })
 
