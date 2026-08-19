@@ -213,6 +213,10 @@ function buildDocumentDetailsRows(
       value: formatAttester(composition),
     },
     {
+      label: 'Authenticator',
+      value: formatReference(documentReference.authenticator),
+    },
+    {
       label: 'Custodian',
       value:
         compositionCustodian !== placeholderValue()
