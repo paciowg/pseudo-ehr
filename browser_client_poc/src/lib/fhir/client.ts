@@ -30,6 +30,8 @@ const DEFAULT_PATIENT_EVERYTHING_PAGE_COUNT = 250
 async function fhirGet<T extends FhirJson>(baseUrl: string, path: string): Promise<T> {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
   const response = await fetch(`${normalizedBaseUrl}${path}`, {
+    // Avoid stale FHIR responses when a server is reset and reuses resource URLs.
+    cache: 'no-store',
     headers: {
       Accept: 'application/fhir+json, application/json',
     },
@@ -40,6 +42,8 @@ async function fhirGet<T extends FhirJson>(baseUrl: string, path: string): Promi
 
 async function fhirGetAbsolute<T extends FhirJson>(url: string): Promise<T> {
   const response = await fetch(url, {
+    // Avoid stale FHIR responses when a server is reset and reuses resource URLs.
+    cache: 'no-store',
     headers: {
       Accept: 'application/fhir+json, application/json',
     },
@@ -56,6 +60,8 @@ async function fhirPost<TResponse = Resource>(
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
   const response = await fetch(`${normalizedBaseUrl}/${resourceType}`, {
     method: 'POST',
+    // Keep all app requests out of the browser HTTP cache for consistency.
+    cache: 'no-store',
     headers: {
       Accept: 'application/fhir+json, application/json',
       'Content-Type': 'application/fhir+json',
